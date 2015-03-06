@@ -32,8 +32,8 @@ class XmlImportExportPlugin extends MantisPlugin {
 	 * @return void
 	 */
 	function register() {
-		$this->name = plugin_lang_get( 'title' );
-		$this->description = plugin_lang_get( 'description' );
+		$this->name = plugin_langget( 'title' );
+		$this->description = plugin_langget( 'description' );
 		$this->page = "config_page";
 
 		$this->version = '1.3.0';
@@ -74,7 +74,7 @@ class XmlImportExportPlugin extends MantisPlugin {
 	 * @return array
 	 */
 	function import_issues_menu() {
-		return array( '<a href="' . plugin_page( 'import' ) . '">' . plugin_lang_get( 'import' ) . '</a>', );
+		return array( '<a href="' . plugin_page( 'import' ) . '">' . plugin_langget( 'import' ) . '</a>', );
 	}
 
 	/**
@@ -82,10 +82,10 @@ class XmlImportExportPlugin extends MantisPlugin {
 	 * @return array
 	 */
 	function export_issues_menu() {
-		if( !access_has_project_level( plugin_config_get( 'export_threshold' ) ) ) {
+		if( !\Flickerbox\Access::has_project_level( plugin_config_get( 'export_threshold' ) ) ) {
 			return array();
 		}
-		return array( '<a href="' . plugin_page( 'export' ) . '">' . plugin_lang_get( 'export' ) . '</a>', );
+		return array( '<a href="' . plugin_page( 'export' ) . '">' . plugin_langget( 'export' ) . '</a>', );
 	}
 
 	/**
@@ -96,7 +96,7 @@ class XmlImportExportPlugin extends MantisPlugin {
 		$t_result = extension_loaded( 'xmlreader' ) && extension_loaded( 'xmlwriter' );
 		if( !$t_result ) {
 			# @todo returning false should trigger some error reporting, needs rethinking error_api
-			error_parameters( plugin_lang_get( 'error_no_xml' ) );
+			\Flickerbox\Error::parameters( plugin_langget( 'error_no_xml' ) );
 			trigger_error( ERROR_PLUGIN_INSTALL_FAILED, ERROR );
 		}
 		return $t_result;

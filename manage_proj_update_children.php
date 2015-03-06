@@ -34,29 +34,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_hierarchy_api.php' );
 
-form_security_validate( 'manage_proj_update_children' );
+\Flickerbox\Form::security_validate( 'manage_proj_update_children' );
 
 auth_reauthenticate();
 
-$f_project_id = gpc_get_int( 'project_id' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 
-$t_subproject_ids = current_user_get_accessible_subprojects( $f_project_id, true );
+$t_subproject_ids = \Flickerbox\Current_User::get_accessible_subprojects( $f_project_id, true );
 foreach ( $t_subproject_ids as $t_subproject_id ) {
-	$f_inherit_child = gpc_get_bool( 'inherit_child_' . $t_subproject_id, false );
+	$f_inherit_child = \Flickerbox\GPC::get_bool( 'inherit_child_' . $t_subproject_id, false );
 	project_hierarchy_update( $t_subproject_id, $f_project_id, $f_inherit_child );
 }
 
-form_security_purge( 'manage_proj_update_children' );
+\Flickerbox\Form::security_purge( 'manage_proj_update_children' );
 
 print_successful_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

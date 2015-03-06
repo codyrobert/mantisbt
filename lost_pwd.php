@@ -39,20 +39,13 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'lost_pwd' );
+\Flickerbox\Form::security_validate( 'lost_pwd' );
 
 # lost password feature disabled or reset password via email disabled -> stop here!
 if( OFF == config_get( 'lost_password_feature' ) ||
@@ -66,8 +59,8 @@ if( auth_is_user_authenticated() ) {
 	auth_logout();
 }
 
-$f_username = gpc_get_string( 'username' );
-$f_email = gpc_get_string( 'email' );
+$f_username = \Flickerbox\GPC::get_string( 'username' );
+$f_email = \Flickerbox\GPC::get_string( 'email' );
 
 email_ensure_valid( $f_email );
 
@@ -80,7 +73,7 @@ if( !$t_row ) {
 	trigger_error( ERROR_LOST_PASSWORD_NOT_MATCHING_DATA, ERROR );
 }
 
-if( is_blank( $f_email ) ) {
+if( \Flickerbox\Utility::is_blank( $f_email ) ) {
 	trigger_error( ERROR_LOST_PASSWORD_NO_EMAIL_SPECIFIED, ERROR );
 }
 
@@ -99,11 +92,11 @@ email_send_confirm_hash_url( $t_user_id, $t_confirm_hash );
 
 user_increment_lost_password_in_progress_count( $t_user_id );
 
-form_security_purge( 'lost_pwd' );
+\Flickerbox\Form::security_purge( 'lost_pwd' );
 
 $t_redirect_url = 'login_page.php';
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 ?>
 
 <br />
@@ -111,20 +104,20 @@ html_page_top();
 <table class="width50" cellspacing="1">
 <tr>
 	<td class="center">
-		<strong><?php echo lang_get( 'lost_password_done_title' ) ?></strong>
+		<strong><?php echo \Flickerbox\Lang::get( 'lost_password_done_title' ) ?></strong>
 	</td>
 </tr>
 <tr>
 	<td>
 		<br/>
-		<?php echo lang_get( 'reset_request_in_progress_msg' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'reset_request_in_progress_msg' ) ?>
 		<br/><br/>
 	</td>
 </tr>
 </table>
 <br />
-<?php print_bracket_link( 'login_page.php', lang_get( 'proceed' ) ); ?>
+<?php print_bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'proceed' ) ); ?>
 </div>
 
 <?php
-html_page_bottom1a( __FILE__ );
+\Flickerbox\HTML::page_bottom1a( __FILE__ );

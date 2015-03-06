@@ -40,21 +40,14 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'bug_revision_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * Bugnote Data Structure Definition
@@ -193,12 +186,12 @@ function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_
 		$t_time_tracking_enabled = config_get( 'time_tracking_enabled' );
 		if( ON == $t_time_tracking_enabled && $c_time_tracking > 0 ) {
 			$t_time_tracking_without_note = config_get( 'time_tracking_without_note' );
-			if( is_blank( $p_bugnote_text ) && OFF == $t_time_tracking_without_note ) {
-				error_parameters( lang_get( 'bugnote' ) );
+			if( \Flickerbox\Utility::is_blank( $p_bugnote_text ) && OFF == $t_time_tracking_without_note ) {
+				\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'bugnote' ) );
 				trigger_error( ERROR_EMPTY_FIELD, ERROR );
 			}
 			$c_type = TIME_TRACKING;
-		} else if( is_blank( $p_bugnote_text ) ) {
+		} else if( \Flickerbox\Utility::is_blank( $p_bugnote_text ) ) {
 			# This is not time tracking (i.e. it's a normal bugnote)
 			# @todo should we not trigger an error in this case ?
 			return false;
@@ -217,11 +210,11 @@ function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_
 
 	# get user information
 	if( $p_user_id === null ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	# Check for private bugnotes.
-	if( $p_private && access_has_bug_level( config_get( 'set_view_status_threshold' ), $p_bug_id, $p_user_id ) ) {
+	if( $p_private && \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $p_bug_id, $p_user_id ) ) {
 		$t_view_state = VS_PRIVATE;
 	} else {
 		$t_view_state = VS_PUBLIC;
@@ -257,7 +250,7 @@ function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_
 	event_signal( 'EVENT_BUGNOTE_ADD', array( $p_bug_id, $t_bugnote_id ) );
 
 	# only send email if the text is not blank, otherwise, it is just recording of time without a comment.
-	if( true == $p_send_email && !is_blank( $t_bugnote_text ) ) {
+	if( true == $p_send_email && !\Flickerbox\Utility::is_blank( $t_bugnote_text ) ) {
 		email_generic( $p_bug_id, 'bugnote', 'email_notification_title_for_action_bugnote_submitted' );
 	}
 
@@ -346,11 +339,11 @@ function bugnote_get_field( $p_bugnote_id, $p_field_name ) {
 	}
 
 	if( $s_vars == null ) {
-		$s_vars = getClassProperties( 'BugnoteData', 'public' );
+		$s_vars = \Flickerbox\Utility::getClassProperties( 'BugnoteData', 'public' );
 	}
 
 	if( !array_key_exists( $p_field_name, $s_vars ) ) {
-		error_parameters( $p_field_name );
+		\Flickerbox\Error::parameters( $p_field_name );
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 	}
 
@@ -387,7 +380,7 @@ function bugnote_get_latest_id( $p_bug_id ) {
  */
 function bugnote_get_all_visible_bugnotes( $p_bug_id, $p_user_bugnote_order, $p_user_bugnote_limit, $p_user_id = null ) {
 	if( $p_user_id === null ) {
-		$t_user_id = auth_get_current_user_id();
+		$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	} else {
 		$t_user_id = $p_user_id;
 	}
@@ -397,8 +390,8 @@ function bugnote_get_all_visible_bugnotes( $p_bug_id, $p_user_bugnote_order, $p_
 
 	$t_all_bugnotes = bugnote_get_all_bugnotes( $p_bug_id );
 
-	$t_private_bugnote_visible = access_compare_level( $t_user_access_level, config_get( 'private_bugnote_threshold' ) );
-	$t_time_tracking_visible = access_compare_level( $t_user_access_level, config_get( 'time_tracking_view_threshold' ) );
+	$t_private_bugnote_visible = \Flickerbox\Access::compare_level( $t_user_access_level, config_get( 'private_bugnote_threshold' ) );
+	$t_time_tracking_visible = \Flickerbox\Access::compare_level( $t_user_access_level, config_get( 'time_tracking_view_threshold' ) );
 
 	$t_bugnotes = array();
 	$t_bugnote_count = count( $t_all_bugnotes );
@@ -536,7 +529,7 @@ function bugnote_set_text( $p_bugnote_id, $p_bugnote_text ) {
 	$t_bugnote_text_id = bugnote_get_field( $p_bugnote_id, 'bugnote_text_id' );
 
 	# insert an 'original' revision if needed
-	if( bug_revision_count( $t_bug_id, REV_BUGNOTE, $p_bugnote_id ) < 1 ) {
+	if( \Flickerbox\Bug\Revision::count( $t_bug_id, REV_BUGNOTE, $p_bugnote_id ) < 1 ) {
 		$t_user_id = bugnote_get_field( $p_bugnote_id, 'reporter_id' );
 		$t_timestamp = bugnote_get_field( $p_bugnote_id, 'last_modified' );
 		bug_revision_add( $t_bug_id, $t_user_id, REV_BUGNOTE, $t_old_text, $p_bugnote_id, $t_timestamp );
@@ -550,7 +543,7 @@ function bugnote_set_text( $p_bugnote_id, $p_bugnote_text ) {
 	bug_update_date( $t_bug_id );
 
 	# insert a new revision
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_revision_id = bug_revision_add( $t_bug_id, $t_user_id, REV_BUGNOTE, $p_bugnote_text, $p_bugnote_id );
 
 	# log new bugnote
@@ -607,13 +600,13 @@ function bugnote_stats_get_events_array( $p_bug_id, $p_from, $p_to ) {
 	$c_to = strtotime( $p_to ) + SECONDS_PER_DAY - 1;
 	$c_from = strtotime( $p_from );
 
-	if( !is_blank( $c_from ) ) {
+	if( !\Flickerbox\Utility::is_blank( $c_from ) ) {
 		$t_from_where = ' AND bn.date_submitted >= ' . $c_from;
 	} else {
 		$t_from_where = '';
 	}
 
-	if( !is_blank( $c_to ) ) {
+	if( !\Flickerbox\Utility::is_blank( $c_to ) ) {
 		$t_to_where = ' AND bn.date_submitted <= ' . $c_to;
 	} else {
 		$t_to_where = '';
@@ -651,7 +644,7 @@ function bugnote_stats_get_project_array( $p_project_id, $p_from, $p_to, $p_cost
 	$c_from = strtotime( $p_from );
 
 	if( $c_to === false || $c_from === false ) {
-		error_parameters( array( $p_from, $p_to ) );
+		\Flickerbox\Error::parameters( array( $p_from, $p_to ) );
 		trigger_error( ERROR_GENERIC, ERROR );
 	}
 
@@ -662,14 +655,14 @@ function bugnote_stats_get_project_array( $p_project_id, $p_from, $p_to, $p_cost
 		$t_project_where = '';
 	}
 
-	if( !is_blank( $c_from ) ) {
+	if( !\Flickerbox\Utility::is_blank( $c_from ) ) {
 		$t_from_where = ' AND bn.date_submitted >= ' . db_param();
 		$t_params[] = $c_from;
 	} else {
 		$t_from_where = '';
 	}
 
-	if( !is_blank( $c_to ) ) {
+	if( !\Flickerbox\Utility::is_blank( $c_to ) ) {
 		$t_to_where = ' AND bn.date_submitted <= ' . db_param();
 		$t_params[] = $c_to;
 	} else {

@@ -23,11 +23,11 @@
  */
 
 auth_reauthenticate( );
-access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-html_page_top( plugin_lang_get( 'title' ) );
+\Flickerbox\HTML::page_top( plugin_langget( 'title' ) );
 
-print_manage_menu( );
+\Flickerbox\HTML::print_manage_menu( );
 
 $g_current_font_selected = array(
 	'arial' => false,
@@ -71,21 +71,21 @@ function print_font_checked( $p_font_name ) {
 <div id="graph-config-div" class="form-container">
 	<form id="graph-config-form" action="<?php echo plugin_page( 'config_edit' )?>" method="post">
 		<fieldset>
-			<legend><span><?php echo plugin_lang_get( 'title' ) . ': ' . plugin_lang_get( 'config' )?></span></legend>
-			<?php echo form_security_field( 'plugin_graph_config_edit' ) ?>
+			<legend><span><?php echo plugin_langget( 'title' ) . ': ' . plugin_langget( 'config' )?></span></legend>
+			<?php echo \Flickerbox\Form::security_field( 'plugin_graph_config_edit' ) ?>
 
 			<div class="field-container">
-				<label><span><?php echo plugin_lang_get( 'library' )?></span></label>
+				<label><span><?php echo plugin_langget( 'library' )?></span></label>
 				<span class="radio">
 					<input type="radio" id="ecz-library" name="eczlibrary" value="1" <?php echo( ON == plugin_config_get( 'eczlibrary' ) ) ? 'checked="checked" ' : ''?>/>
-					<label for="ecz-library"><?php echo plugin_lang_get( 'bundled' )?></label>
+					<label for="ecz-library"><?php echo plugin_langget( 'bundled' )?></label>
 					<input type="radio" id="jpgraph-library" name="eczlibrary" value="0" <?php echo( OFF == plugin_config_get( 'eczlibrary' ) ) ? 'checked="checked" ' : ''?>/>
 					<label for="jpgraph-library">JpGraph</label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label><span><?php echo plugin_lang_get( 'window_width' )?></span></label>
+				<label><span><?php echo plugin_langget( 'window_width' )?></span></label>
 				<span class="input">
 					<input type="text" name="window_width" value="<?php echo plugin_config_get( 'window_width' )?>" />
 				</span>
@@ -93,14 +93,14 @@ function print_font_checked( $p_font_name ) {
 			</div>
 
 			<div class="field-container">
-				<label><span><?php echo plugin_lang_get( 'bar_aspect' )?></span></label>
+				<label><span><?php echo plugin_langget( 'bar_aspect' )?></span></label>
 				<span class="input">
 					<input type="text" name="bar_aspect" value="<?php echo plugin_config_get( 'bar_aspect' )?>" />
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label><span><?php echo plugin_lang_get( 'summary_graphs_per_row' )?></span></label>
+				<label><span><?php echo plugin_langget( 'summary_graphs_per_row' )?></span></label>
 				<span class="input">
 					<input type="text" name="summary_graphs_per_row" value="<?php echo plugin_config_get( 'summary_graphs_per_row' )?>" />
 				</span>
@@ -108,7 +108,7 @@ function print_font_checked( $p_font_name ) {
 			</div>
 
 			<div class="field-container">
-				<label><span><?php echo plugin_lang_get( 'font' )?></span></label>
+				<label><span><?php echo plugin_langget( 'font' )?></span></label>
 				<span class="radio">
 					Sans-serif:<br />
 					<label><input type="radio" name="font" value="arial"<?php echo print_font_checked( 'arial' )?>/>Arial</label><br />
@@ -126,10 +126,10 @@ function print_font_checked( $p_font_name ) {
 				<span class="label-style"></span>
 			</div>
 
-			<?php if( current_user_is_administrator() ) {?>
+			<?php if( \Flickerbox\Current_User::is_administrator() ) {?>
 				<div class="field-container">
-					<label><span><?php echo plugin_lang_get( 'jpgraph_path' )?>
-					<br /><span class="small"><?php echo plugin_lang_get( 'jpgraph_path_default' )?></span>
+					<label><span><?php echo plugin_langget( 'jpgraph_path' )?>
+					<br /><span class="small"><?php echo plugin_langget( 'jpgraph_path_default' )?></span>
 					</span></label>
 					<span class="input">
 						<input type="text" name="jpgraph_path" value="<?php echo plugin_config_get( 'jpgraph_path' )?>" />
@@ -139,19 +139,19 @@ function print_font_checked( $p_font_name ) {
 			<?php } ?>
 
 			<div class="field-container">
-				<label><span><?php echo plugin_lang_get( 'jpgraph_antialias' )?>
-				<br /><span class="small"><?php echo plugin_lang_get( 'jpgraph_antialias_info' )?></span>
+				<label><span><?php echo plugin_langget( 'jpgraph_antialias' )?>
+				<br /><span class="small"><?php echo plugin_langget( 'jpgraph_antialias_info' )?></span>
 				</span></label>
 				<span class="radio">
-					<label><input type="radio" name="jpgraph_antialias" value="1" <?php echo( ON == plugin_config_get( 'jpgraph_antialias' ) ) ? 'checked="checked" ' : ''?>/><?php echo plugin_lang_get( 'enabled' )?></label>
-					<label><input type="radio" name="jpgraph_antialias" value="0" <?php echo( OFF == plugin_config_get( 'jpgraph_antialias' ) ) ? 'checked="checked" ' : ''?>/><?php echo plugin_lang_get( 'disabled' )?></label>
+					<label><input type="radio" name="jpgraph_antialias" value="1" <?php echo( ON == plugin_config_get( 'jpgraph_antialias' ) ) ? 'checked="checked" ' : ''?>/><?php echo plugin_langget( 'enabled' )?></label>
+					<label><input type="radio" name="jpgraph_antialias" value="0" <?php echo( OFF == plugin_config_get( 'jpgraph_antialias' ) ) ? 'checked="checked" ' : ''?>/><?php echo plugin_langget( 'disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'change_configuration' )?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'change_configuration' )?>" /></span>
 		</fieldset>
 	</form>
 </div>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

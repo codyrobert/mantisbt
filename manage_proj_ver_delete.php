@@ -36,39 +36,32 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'version_api.php' );
 
-form_security_validate( 'manage_proj_ver_delete' );
+\Flickerbox\Form::security_validate( 'manage_proj_ver_delete' );
 
 auth_reauthenticate();
 
-$f_version_id = gpc_get_int( 'version_id' );
+$f_version_id = \Flickerbox\GPC::get_int( 'version_id' );
 
-$t_version_info = version_get( $f_version_id );
+$t_version_info = \Flickerbox\Version::get( $f_version_id );
 $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $t_version_info->project_id;
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $t_version_info->project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_version_info->project_id );
 
 # Confirm with the user
-helper_ensure_confirmed( lang_get( 'version_delete_sure' ) .
-	'<br/>' . lang_get( 'version_label' ) . lang_get( 'word_separator' ) . string_display_line( $t_version_info->version ),
-	lang_get( 'delete_version_button' ) );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'version_delete_sure' ) .
+	'<br/>' . \Flickerbox\Lang::get( 'version_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::display_line( $t_version_info->version ),
+	\Flickerbox\Lang::get( 'delete_version_button' ) );
 
-version_remove( $f_version_id );
+\Flickerbox\Version::remove( $f_version_id );
 
-form_security_purge( 'manage_proj_ver_delete' );
+\Flickerbox\Form::security_purge( 'manage_proj_ver_delete' );
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

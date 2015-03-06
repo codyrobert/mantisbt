@@ -35,14 +35,9 @@ if( !defined( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'authentication_api.php' );
 require_api( 'database_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * this function only gets the field names, by appending strings
@@ -89,7 +84,7 @@ function get_field_names() {
  */
 function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $p_redirect_url = '' ) {
 	if( null === $p_user_id ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	# protected account check
@@ -97,7 +92,7 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 		user_ensure_unprotected( $p_user_id );
 	}
 
-	if( is_blank( $p_redirect_url ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_redirect_url ) ) {
 		$p_redirect_url = 'print_all_bug_page.php';
 	}
 
@@ -142,13 +137,13 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 <br />
 <div>
 <form method="post" action="print_all_bug_options_update.php">
-<?php echo form_security_field( 'print_all_bug_options_update' ) ?>
+<?php echo \Flickerbox\Form::security_field( 'print_all_bug_options_update' ) ?>
 <input type="hidden" name="user_id" value="<?php echo $p_user_id ?>" />
-<input type="hidden" name="redirect_url" value="<?php echo string_attribute( $p_redirect_url ) ?>" />
+<input type="hidden" name="redirect_url" value="<?php echo \Flickerbox\String::attribute( $p_redirect_url ) ?>" />
 <table class="width75" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo lang_get( 'printing_preferences_title' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'printing_preferences_title' ) ?>
 	</td>
 	<td class="right">
 	</td>
@@ -162,7 +157,7 @@ for( $i=0; $i <$t_field_name_count; $i++ ) {
 ?>
 
 	<th class="category">
-		<?php echo lang_get( $t_field_name_arr[$i] ) ?>
+		<?php echo \Flickerbox\Lang::get( $t_field_name_arr[$i] ) ?>
 	</th>
 	<td>
 		<input type="checkbox" name="<?php echo 'print_' . $t_field_name_arr[$i]; ?>"
@@ -181,7 +176,7 @@ for( $i=0; $i <$t_field_name_count; $i++ ) {
 <tr>
 	<td>&#160;</td>
 	<td>
-		<input type="submit" class="button" value="<?php echo lang_get( 'update_prefs_button' ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_prefs_button' ) ?>" />
 	</td>
 </tr>
 </table>
@@ -192,8 +187,8 @@ for( $i=0; $i <$t_field_name_count; $i++ ) {
 
 <div class="border center">
 	<form method="post" action="print_all_bug_options_reset.php">
-	<?php echo form_security_field( 'print_all_bug_options_reset' ) ?>
-	<input type="submit" class="button" value="<?php echo lang_get( 'reset_prefs_button' ) ?>" />
+	<?php echo \Flickerbox\Form::security_field( 'print_all_bug_options_reset' ) ?>
+	<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'reset_prefs_button' ) ?>" />
 	</form>
 </div>
 

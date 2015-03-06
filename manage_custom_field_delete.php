@@ -37,44 +37,37 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-form_security_validate( 'manage_custom_field_delete' );
+\Flickerbox\Form::security_validate( 'manage_custom_field_delete' );
 
 auth_reauthenticate();
-access_ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
 
-$f_field_id	= gpc_get_int( 'field_id' );
-$f_return = strip_tags( gpc_get_string( 'return', 'manage_custom_field_page.php' ) );
+$f_field_id	= \Flickerbox\GPC::get_int( 'field_id' );
+$f_return = strip_tags( \Flickerbox\GPC::get_string( 'return', 'manage_custom_field_page.php' ) );
 
 $t_definition = custom_field_get_definition( $f_field_id );
 
 if( 0 < count( custom_field_get_project_ids( $f_field_id ) ) ) {
-	helper_ensure_confirmed( lang_get( 'confirm_used_custom_field_deletion' ) .
-		'<br/>' . lang_get( 'custom_field_label' ) . lang_get( 'word_separator' ) . string_attribute( $t_definition['name'] ),
-		lang_get( 'field_delete_button' ) );
+	helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_used_custom_field_deletion' ) .
+		'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
+		\Flickerbox\Lang::get( 'field_delete_button' ) );
 } else {
-	helper_ensure_confirmed( lang_get( 'confirm_custom_field_deletion' ) .
-		'<br/>' . lang_get( 'custom_field_label' ) . lang_get( 'word_separator' ) . string_attribute( $t_definition['name'] ),
-		lang_get( 'field_delete_button' ) );
+	helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_deletion' ) .
+		'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
+		\Flickerbox\Lang::get( 'field_delete_button' ) );
 }
 
 custom_field_destroy( $f_field_id );
 
-form_security_purge( 'manage_custom_field_delete' );
+\Flickerbox\Form::security_purge( 'manage_custom_field_delete' );
 
-html_page_top( null, $f_return );
+\Flickerbox\HTML::page_top( null, $f_return );
 
-html_operation_successful( $f_return );
+\Flickerbox\HTML::operation_successful( $f_return );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

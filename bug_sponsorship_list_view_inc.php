@@ -41,28 +41,20 @@ if( !defined( 'BUG_SPONSORSHIP_LIST_VIEW_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'collapse_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'sponsorship_api.php' );
-require_api( 'utility_api.php' );
 
 #
 # Determine whether the sponsorship section should be shown.
 #
 
-if( ( config_get( 'enable_sponsorship' ) == ON ) && ( access_has_bug_level( config_get( 'view_sponsorship_total_threshold' ), $f_bug_id ) ) ) {
-	$t_sponsorship_ids = sponsorship_get_all_ids( $f_bug_id );
+if( ( config_get( 'enable_sponsorship' ) == ON ) && ( \Flickerbox\Access::has_bug_level( config_get( 'view_sponsorship_total_threshold' ), $f_bug_id ) ) ) {
+	$t_sponsorship_ids = \Flickerbox\Sponsorship::get_all_ids( $f_bug_id );
 
 	$t_sponsorships_exist = count( $t_sponsorship_ids ) > 0;
-	$t_can_sponsor = !bug_is_readonly( $f_bug_id ) && !current_user_is_anonymous();
+	$t_can_sponsor = !bug_is_readonly( $f_bug_id ) && !\Flickerbox\Current_User::is_anonymous();
 
 	$t_show_sponsorships = $t_sponsorships_exist || $t_can_sponsor;
 } else {
@@ -79,24 +71,24 @@ if( $t_show_sponsorships ) {
 <a id="sponsorships"></a> <br />
 
 <?php
-	collapse_open( 'sponsorship' );
+	\Flickerbox\Collapse::open( 'sponsorship' );
 ?>
 
 <table class="width100" cellspacing="1">
 	<tr>
 		<td width="50" rowspan="3">
-			<img src="images/dollars.gif" alt="<?php echo lang_get( 'sponsor_verb' ) ?>" />
+			<img src="images/dollars.gif" alt="<?php echo \Flickerbox\Lang::get( 'sponsor_verb' ) ?>" />
 		</td>
 		<td class="form-title" colspan="2">
 		<?php
-			collapse_icon( 'sponsorship' );
+			\Flickerbox\Collapse::icon( 'sponsorship' );
 
-			echo lang_get( 'users_sponsoring_bug' );
+			echo \Flickerbox\Lang::get( 'users_sponsoring_bug' );
 
-			$t_details_url = lang_get( 'sponsorship_process_url' );
-			if( !is_blank( $t_details_url ) ) {
+			$t_details_url = \Flickerbox\Lang::get( 'sponsorship_process_url' );
+			if( !\Flickerbox\Utility::is_blank( $t_details_url ) ) {
 				echo '&#160;[<a href="' . $t_details_url . '">'
-					. lang_get( 'sponsorship_more_info' ) . '</a>]';
+					. \Flickerbox\Lang::get( 'sponsorship_more_info' ) . '</a>]';
 			}
 		?>
 		</td>
@@ -106,14 +98,14 @@ if( $t_show_sponsorships ) {
 	if( $t_can_sponsor ) {
 ?>
 	<tr class="row-1">
-		<th class="category" width="15%"><?php echo lang_get( 'sponsor_issue' ) ?></th>
+		<th class="category" width="15%"><?php echo \Flickerbox\Lang::get( 'sponsor_issue' ) ?></th>
 		<td>
 			<form method="post" action="bug_set_sponsorship.php">
-				<?php echo form_security_field( 'bug_set_sponsorship' ) ?>
-				<?php echo sponsorship_get_currency() ?>
+				<?php echo \Flickerbox\Form::security_field( 'bug_set_sponsorship' ) ?>
+				<?php echo \Flickerbox\Sponsorship::get_currency() ?>
 				<input type="hidden" name="bug_id" value="<?php echo $f_bug_id ?>" size="4" />
 				<input type="text" name="amount" value="<?php echo config_get( 'minimum_sponsorship_amount' )  ?>" size="4" />
-				<input type="submit" class="button" name="sponsor" value="<?php echo lang_get( 'sponsor_verb' ) ?>" />
+				<input type="submit" class="button" name="sponsor" value="<?php echo \Flickerbox\Lang::get( 'sponsor_verb' ) ?>" />
 			</form>
 		</td>
 	</tr>
@@ -124,26 +116,26 @@ if( $t_show_sponsorships ) {
 	if( $t_total_sponsorship > 0 ) {
 ?>
 	<tr class="row-2">
-		<th class="category" width="15%"><?php echo lang_get( 'sponsors_list' ) ?></th>
+		<th class="category" width="15%"><?php echo \Flickerbox\Lang::get( 'sponsors_list' ) ?></th>
 		<td>
 		<?php
-			echo sprintf( lang_get( 'total_sponsorship_amount' ),
-				sponsorship_format_amount( $t_total_sponsorship ) );
+			echo sprintf( \Flickerbox\Lang::get( 'total_sponsorship_amount' ),
+				\Flickerbox\Sponsorship::format_amount( $t_total_sponsorship ) );
 
-			if( access_has_bug_level( config_get( 'view_sponsorship_details_threshold' ), $f_bug_id ) ) {
+			if( \Flickerbox\Access::has_bug_level( config_get( 'view_sponsorship_details_threshold' ), $f_bug_id ) ) {
 				echo '<br /><br />';
 				$i = 0;
 				foreach ( $t_sponsorship_ids as $t_id ) {
-					$t_sponsorship = sponsorship_get( $t_id );
+					$t_sponsorship = \Flickerbox\Sponsorship::get( $t_id );
 					$t_date_added = date( config_get( 'normal_date_format' ), $t_sponsorship->date_submitted );
 
 					echo ($i > 0) ? '<br />' : '';
 					$i++;
 
-					echo sprintf( lang_get( 'label' ), $t_date_added ) . lang_get( 'word_separator' );
+					echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_date_added ) . \Flickerbox\Lang::get( 'word_separator' );
 					print_user( $t_sponsorship->user_id );
-					echo ' (' . sponsorship_format_amount( $t_sponsorship->amount ) . ')';
-					if( access_has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
+					echo ' (' . \Flickerbox\Sponsorship::format_amount( $t_sponsorship->amount ) . ')';
+					if( \Flickerbox\Access::has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
 						echo ' ' . get_enum_element( 'sponsorship', $t_sponsorship->paid );
 					}
 				}
@@ -157,26 +149,26 @@ if( $t_show_sponsorships ) {
 </table>
 
 <?php
-	collapse_closed( 'sponsorship' );
+	\Flickerbox\Collapse::closed( 'sponsorship' );
 ?>
 
 <table class="width100" cellspacing="1">
 	<tr>
 		<td class="form-title">
 <?php
-			collapse_icon( 'sponsorship' );
-			echo lang_get( 'users_sponsoring_bug' );
+			\Flickerbox\Collapse::icon( 'sponsorship' );
+			echo \Flickerbox\Lang::get( 'users_sponsoring_bug' );
 
-			$t_details_url = lang_get( 'sponsorship_process_url' );
-			if( !is_blank( $t_details_url ) ) {
+			$t_details_url = \Flickerbox\Lang::get( 'sponsorship_process_url' );
+			if( !\Flickerbox\Utility::is_blank( $t_details_url ) ) {
 				echo '&#160;[<a href="' . $t_details_url . '">'
-					. lang_get( 'sponsorship_more_info' ) . '</a>]';
+					. \Flickerbox\Lang::get( 'sponsorship_more_info' ) . '</a>]';
 			}
 
 			if( $t_total_sponsorship > 0 ) {
 				echo ' <span style="font-weight: normal;">(';
-				echo sprintf( lang_get( 'total_sponsorship_amount' ),
-				sponsorship_format_amount( $t_total_sponsorship ) );
+				echo sprintf( \Flickerbox\Lang::get( 'total_sponsorship_amount' ),
+				\Flickerbox\Sponsorship::format_amount( $t_total_sponsorship ) );
 				echo ')</span>';
 			}
 ?>
@@ -185,5 +177,5 @@ if( $t_show_sponsorships ) {
 </table>
 
 <?php
-	collapse_end( 'sponsorship' );
+	\Flickerbox\Collapse::end( 'sponsorship' );
 } # If sponsorship enabled

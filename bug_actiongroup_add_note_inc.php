@@ -38,16 +38,10 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * Prints the title for the custom action page.
@@ -56,7 +50,7 @@ require_api( 'utility_api.php' );
 function action_add_note_print_title() {
 	echo '<tr>';
 	echo '<td class="form-title" colspan="2">';
-	echo lang_get( 'add_bugnote_title' );
+	echo \Flickerbox\Lang::get( 'add_bugnote_title' );
 	echo '</td></tr>';
 }
 
@@ -72,7 +66,7 @@ function action_add_note_print_fields() {
 	<tbody>
 		<tr>
 			<th class="category">
-				<?php lang_get( 'add_bugnote_title' ); ?>
+				<?php \Flickerbox\Lang::get( 'add_bugnote_title' ); ?>
 			</th>
 			<td>
 				<textarea name="bugnote_text" cols="80" rows="10"></textarea>
@@ -82,12 +76,12 @@ function action_add_note_print_fields() {
 		<!-- View Status -->
 		<tr class="row-2">
 			<th class="category">
-				<?php echo lang_get( 'view_status' ) ?>
+				<?php echo \Flickerbox\Lang::get( 'view_status' ) ?>
 			</th>
 			<td>
 <?php
 	$t_default_state = config_get( 'default_bugnote_view_status' );
-	if( access_has_project_level( config_get( 'set_view_status_threshold' ) ) ) { ?>
+	if( \Flickerbox\Access::has_project_level( config_get( 'set_view_status_threshold' ) ) ) { ?>
 				<select name="view_state">
 					<?php print_enum_string_option_list( 'view_state', $t_default_state ) ?>
 				</select>
@@ -106,7 +100,7 @@ function action_add_note_print_fields() {
 	<tfoot>
 		<tr>
 			<td colspan="2" class="center">
-				<input type="submit" class="button" value="<?php echo lang_get( 'add_bugnote_button' ); ?>" />
+				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_bugnote_button' ); ?>" />
 			</td>
 		</tr>
 	</tfoot>
@@ -120,10 +114,10 @@ function action_add_note_print_fields() {
  * @return string|null On failure: the reason why the action could not be validated. On success: null.
  */
 function action_add_note_validate( $p_bug_id ) {
-	$f_bugnote_text = gpc_get_string( 'bugnote_text' );
+	$f_bugnote_text = \Flickerbox\GPC::get_string( 'bugnote_text' );
 
-	if( is_blank( $f_bugnote_text ) ) {
-		error_parameters( lang_get( 'bugnote' ) );
+	if( \Flickerbox\Utility::is_blank( $f_bugnote_text ) ) {
+		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'bugnote' ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 
@@ -131,11 +125,11 @@ function action_add_note_validate( $p_bug_id ) {
 	$t_bug_id = $p_bug_id;
 
 	if( bug_is_readonly( $t_bug_id ) ) {
-		return lang_get( 'actiongroup_error_issue_is_readonly' );
+		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
-	if( !access_has_bug_level( $t_add_bugnote_threshold, $t_bug_id ) ) {
-		return lang_get( 'access_denied' );
+	if( !\Flickerbox\Access::has_bug_level( $t_add_bugnote_threshold, $t_bug_id ) ) {
+		return \Flickerbox\Lang::get( 'access_denied' );
 	}
 
 	return null;
@@ -148,8 +142,8 @@ function action_add_note_validate( $p_bug_id ) {
  * @return null Previous validation ensures that this function doesn't fail. Therefore we can always return null to indicate no errors occurred.
  */
 function action_add_note_process( $p_bug_id ) {
-	$f_bugnote_text = gpc_get_string( 'bugnote_text' );
-	$f_view_state = gpc_get_int( 'view_state' );
+	$f_bugnote_text = \Flickerbox\GPC::get_string( 'bugnote_text' );
+	$f_view_state = \Flickerbox\GPC::get_int( 'view_state' );
 	bugnote_add( $p_bug_id, $f_bugnote_text, '0:00', $f_view_state != VS_PUBLIC );
 	return null;
 }

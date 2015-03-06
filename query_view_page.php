@@ -36,29 +36,23 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
-require_api( 'compress_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'filter_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'rss_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-$t_query_arr = filter_db_get_available_queries();
+$t_query_arr = \Flickerbox\Filter::db_get_available_queries();
 
 # Special case: if we've deleted our last query, we have nothing to show here.
 if( count( $t_query_arr ) < 1 ) {
 	print_header_redirect( 'view_all_bug_page.php' );
 }
 
-compress_enable();
+\Flickerbox\Compress::enable();
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 
 $t_rss_enabled = config_get( 'rss_enabled' );
 ?>
@@ -78,16 +72,16 @@ foreach( $t_query_arr as $t_id => $t_name ) {
 
 	if( OFF != $t_rss_enabled ) {
 		# Use the "new" RSS link style.
-		print_rss( rss_get_issues_feed_url( null, null, $t_id ), lang_get( 'rss' ) );
+		print_rss( \Flickerbox\RSS::get_issues_feed_url( null, null, $t_id ), \Flickerbox\Lang::get( 'rss' ) );
 		echo ' ';
 	}
 
 	$t_query_id = (int)$t_id;
 	print_link( 'view_all_set.php?type=3&source_query_id=' . $t_query_id, $t_name );
 
-	if( filter_db_can_delete_filter( $t_id ) ) {
+	if( \Flickerbox\Filter::db_can_delete_filter( $t_id ) ) {
 		echo ' ';
-		print_button( 'query_delete_page.php?source_query_id=' . $t_query_id, lang_get( 'delete_query' ) );
+		print_button( 'query_delete_page.php?source_query_id=' . $t_query_id, \Flickerbox\Lang::get( 'delete_query' ) );
 	}
 
 	print '</td>';
@@ -110,4 +104,4 @@ if( ( $t_column_count > 0 ) && ( $t_column_count < $t_max_column_count ) ) {
 </table>
 </div>
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

@@ -36,24 +36,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
-form_security_validate( 'bug_monitor_delete' );
+\Flickerbox\Form::security_validate( 'bug_monitor_delete' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 $t_bug = bug_get( $f_bug_id, true );
-$f_user_id = gpc_get_int( 'user_id', NO_USER );
+$f_user_id = \Flickerbox\GPC::get_int( 'user_id', NO_USER );
 
-$t_logged_in_user_id = auth_get_current_user_id();
+$t_logged_in_user_id = \Flickerbox\Auth::get_current_user_id();
 
 if( $f_user_id === NO_USER ) {
 	$t_user_id = $t_logged_in_user_id;
@@ -75,13 +70,13 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 if( $t_logged_in_user_id == $t_user_id ) {
-	access_ensure_bug_level( config_get( 'monitor_bug_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'monitor_bug_threshold' ), $f_bug_id );
 } else {
-	access_ensure_bug_level( config_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
 }
 
 bug_unmonitor( $f_bug_id, $t_user_id );
 
-form_security_purge( 'bug_monitor_delete' );
+\Flickerbox\Form::security_purge( 'bug_monitor_delete' );
 
 print_successful_redirect_to_bug( $f_bug_id );

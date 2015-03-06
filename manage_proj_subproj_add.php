@@ -37,26 +37,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
 require_api( 'project_hierarchy_api.php' );
 
-form_security_validate( 'manage_proj_subproj_add' );
+\Flickerbox\Form::security_validate( 'manage_proj_subproj_add' );
 
 auth_reauthenticate();
 
-$f_project_id    = gpc_get_int( 'project_id' );
-$f_subproject_id = gpc_get_int( 'subproject_id' );
+$f_project_id    = \Flickerbox\GPC::get_int( 'project_id' );
+$f_subproject_id = \Flickerbox\GPC::get_int( 'subproject_id' );
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 
 project_ensure_exists( $f_project_id );
 project_ensure_exists( $f_subproject_id );
@@ -66,12 +59,12 @@ if( $f_project_id == $f_subproject_id ) {
 }
 project_hierarchy_add( $f_subproject_id, $f_project_id );
 
-form_security_purge( 'manage_proj_subproj_add' );
+\Flickerbox\Form::security_purge( 'manage_proj_subproj_add' );
 
 $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

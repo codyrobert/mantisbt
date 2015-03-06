@@ -33,16 +33,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'columns_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'csv_api.php' );
-require_api( 'file_api.php' );
-require_api( 'filter_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
 helper_begin_long_process();
 
@@ -55,7 +51,7 @@ $t_nl = csv_get_newline();
 $t_sep = csv_get_separator();
 
 # Get bug rows according to the current filter
-$t_rows = filter_get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_rows = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 if( $t_rows === false ) {
 	print_header_redirect( 'view_all_set.php?type=0' );
 }
@@ -70,11 +66,11 @@ $t_filename = csv_get_default_filename();
 # Make sure that IE can download the attachments under https.
 header( 'Pragma: public' );
 
-header( 'Content-Type: text/csv; name=' . urlencode( file_clean_name( $t_filename ) ) );
+header( 'Content-Type: text/csv; name=' . urlencode( \Flickerbox\File::clean_name( $t_filename ) ) );
 header( 'Content-Transfer-Encoding: BASE64;' );
 
 # Added Quotes (") around file name.
-header( 'Content-Disposition: attachment; filename="' . urlencode( file_clean_name( $t_filename ) ) . '"' );
+header( 'Content-Disposition: attachment; filename="' . urlencode( \Flickerbox\File::clean_name( $t_filename ) ) . '"' );
 
 # Get columns to be exported
 $t_columns = csv_get_columns();

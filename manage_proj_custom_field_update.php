@@ -35,38 +35,32 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'manage_proj_custom_field_update' );
+\Flickerbox\Form::security_validate( 'manage_proj_custom_field_update' );
 
 auth_reauthenticate();
 
-$f_field_id	= gpc_get_int( 'field_id' );
-$f_project_id	= gpc_get_int( 'project_id' );
-$f_sequence	= gpc_get_int( 'sequence' );
+$f_field_id	= \Flickerbox\GPC::get_int( 'field_id' );
+$f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
+$f_sequence	= \Flickerbox\GPC::get_int( 'sequence' );
 
 # We should check both since we are in the project section and an
 #  admin might raise the first threshold and not realize they need
 #  to raise the second
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
-access_ensure_project_level( config_get( 'custom_field_link_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'custom_field_link_threshold' ), $f_project_id );
 
 custom_field_set_sequence( $f_field_id, $f_project_id, $f_sequence );
 
-form_security_purge( 'manage_proj_custom_field_update' );
+\Flickerbox\Form::security_purge( 'manage_proj_custom_field_update' );
 
 $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

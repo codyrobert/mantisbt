@@ -35,28 +35,21 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'database_api.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/print_all_bug_options_inc.php' );
 
-form_security_validate( 'print_all_bug_options_reset' );
+\Flickerbox\Form::security_validate( 'print_all_bug_options_reset' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
 # protected account check
-current_user_ensure_unprotected();
+\Flickerbox\Current_User::ensure_unprotected();
 
 # get user id
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 # get the fields list
 $t_field_name_arr = get_field_names();
@@ -73,20 +66,20 @@ $t_query = 'UPDATE {user_print_pref} SET print_pref=' . db_param() . ' WHERE use
 
 $t_result = db_query( $t_query, array( $t_default, $t_user_id ) );
 
-form_security_purge( 'print_all_bug_options_reset' );
+\Flickerbox\Form::security_purge( 'print_all_bug_options_reset' );
 
 $t_redirect_url = 'print_all_bug_options_page.php';
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
 
 if( $t_result ) {
-	html_operation_successful( $t_redirect_url );
+	\Flickerbox\HTML::operation_successful( $t_redirect_url );
 } else {
 	echo '<div class="failure-msg">';
-	echo error_string( ERROR_GENERIC ) . '<br />';
-	print_bracket_link( $t_redirect_url, lang_get( 'proceed' ) );
+	echo \Flickerbox\Error::string( ERROR_GENERIC ) . '<br />';
+	print_bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
 	echo '</div>';
 }
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

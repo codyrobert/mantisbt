@@ -40,23 +40,16 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-form_security_validate( 'bugnote_delete' );
+\Flickerbox\Form::security_validate( 'bugnote_delete' );
 
-$f_bugnote_id = gpc_get_int( 'bugnote_id' );
+$f_bugnote_id = \Flickerbox\GPC::get_int( 'bugnote_id' );
 
 $t_bug_id = bugnote_get_field( $f_bugnote_id, 'bug_id' );
 
@@ -68,20 +61,20 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 # Check if the current user is allowed to delete the bugnote
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 $t_reporter_id = bugnote_get_field( $f_bugnote_id, 'reporter_id' );
 
 if( $t_user_id == $t_reporter_id ) {
-	access_ensure_bugnote_level( config_get( 'bugnote_user_delete_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( config_get( 'bugnote_user_delete_threshold' ), $f_bugnote_id );
 } else {
-	access_ensure_bugnote_level( config_get( 'delete_bugnote_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( config_get( 'delete_bugnote_threshold' ), $f_bugnote_id );
 }
 
-helper_ensure_confirmed( lang_get( 'delete_bugnote_sure_msg' ),
-						 lang_get( 'delete_bugnote_button' ) );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'delete_bugnote_sure_msg' ),
+						 \Flickerbox\Lang::get( 'delete_bugnote_button' ) );
 
 bugnote_delete( $f_bugnote_id );
 
-form_security_purge( 'bugnote_delete' );
+\Flickerbox\Form::security_purge( 'bugnote_delete' );
 
-print_successful_redirect( string_get_bug_view_url( $t_bug_id ) . '#bugnotes' );
+print_successful_redirect( \Flickerbox\String::get_bug_view_url( $t_bug_id ) . '#bugnotes' );

@@ -40,30 +40,21 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'sponsorship_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'bug_set_sponsorship' );
+\Flickerbox\Form::security_validate( 'bug_set_sponsorship' );
 
 # anonymous users are not allowed to sponsor issues
-if( current_user_is_anonymous() ) {
-	access_denied();
+if( \Flickerbox\Current_User::is_anonymous() ) {
+	\Flickerbox\Access::denied();
 }
 
-$f_bug_id	= gpc_get_int( 'bug_id' );
-$f_amount	= gpc_get_int( 'amount' );
+$f_bug_id	= \Flickerbox\GPC::get_int( 'bug_id' );
+$f_amount	= \Flickerbox\GPC::get_int( 'amount' );
 
 $t_bug = bug_get( $f_bug_id, true );
 if( $t_bug->project_id != helper_get_current_project() ) {
@@ -76,22 +67,22 @@ if( config_get( 'enable_sponsorship' ) == OFF ) {
 	trigger_error( ERROR_SPONSORSHIP_NOT_ENABLED, ERROR );
 }
 
-access_ensure_bug_level( config_get( 'sponsor_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'sponsor_threshold' ), $f_bug_id );
 
 helper_ensure_confirmed(
-	sprintf( lang_get( 'confirm_sponsorship' ), $f_bug_id, sponsorship_format_amount( $f_amount ) ),
-	lang_get( 'sponsor_issue' ) );
+	sprintf( \Flickerbox\Lang::get( 'confirm_sponsorship' ), $f_bug_id, \Flickerbox\Sponsorship::format_amount( $f_amount ) ),
+	\Flickerbox\Lang::get( 'sponsor_issue' ) );
 
 if( $f_amount == 0 ) {
 	# if amount == 0, delete sponsorship by current user (if any)
-	$t_sponsorship_id = sponsorship_get_id( $f_bug_id );
+	$t_sponsorship_id = \Flickerbox\Sponsorship::get_id( $f_bug_id );
 	if( $t_sponsorship_id !== false ) {
-		sponsorship_delete( $t_sponsorship_id );
+		\Flickerbox\Sponsorship::delete( $t_sponsorship_id );
 	}
 } else {
 	# add sponsorship
-	$t_user = auth_get_current_user_id();
-	if( is_blank( user_get_email( $t_user ) ) ) {
+	$t_user = \Flickerbox\Auth::get_current_user_id();
+	if( \Flickerbox\Utility::is_blank( user_get_email( $t_user ) ) ) {
 		trigger_error( ERROR_SPONSORSHIP_SPONSOR_NO_EMAIL, ERROR );
 	} else {
 		$t_sponsorship = new SponsorshipData;
@@ -99,10 +90,10 @@ if( $f_amount == 0 ) {
 		$t_sponsorship->user_id = $t_user;
 		$t_sponsorship->amount = $f_amount;
 
-		sponsorship_set( $t_sponsorship );
+		\Flickerbox\Sponsorship::set( $t_sponsorship );
 	}
 }
 
-form_security_purge( 'bug_set_sponsorship' );
+\Flickerbox\Form::security_purge( 'bug_set_sponsorship' );
 
 print_header_redirect_view( $f_bug_id );

@@ -34,26 +34,20 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'manage_proj_cat_copy' );
+\Flickerbox\Form::security_validate( 'manage_proj_cat_copy' );
 
 auth_reauthenticate();
 
-$f_project_id		= gpc_get_int( 'project_id' );
-$f_other_project_id	= gpc_get_int( 'other_project_id' );
-$f_copy_from		= gpc_get_bool( 'copy_from' );
-$f_copy_to			= gpc_get_bool( 'copy_to' );
+$f_project_id		= \Flickerbox\GPC::get_int( 'project_id' );
+$f_other_project_id	= \Flickerbox\GPC::get_int( 'other_project_id' );
+$f_copy_from		= \Flickerbox\GPC::get_bool( 'copy_from' );
+$f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_other_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_other_project_id );
 
 if( $f_copy_from ) {
 	$t_src_project_id = $f_other_project_id;
@@ -65,17 +59,17 @@ if( $f_copy_from ) {
 	trigger_error( ERROR_CATEGORY_NO_ACTION, ERROR );
 }
 
-$t_rows = category_get_all_rows( $t_src_project_id );
+$t_rows = \Flickerbox\Category::get_all_rows( $t_src_project_id );
 
 foreach ( $t_rows as $t_row ) {
 	$t_name = $t_row['name'];
 
-	if( category_is_unique( $t_dst_project_id, $t_name ) ) {
-		category_add( $t_dst_project_id, $t_name );
+	if( \Flickerbox\Category::is_unique( $t_dst_project_id, $t_name ) ) {
+		\Flickerbox\Category::add( $t_dst_project_id, $t_name );
 	}
 }
 
-form_security_purge( 'manage_proj_cat_copy' );
+\Flickerbox\Form::security_purge( 'manage_proj_cat_copy' );
 
 if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_page.php';

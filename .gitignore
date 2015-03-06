@@ -1,3 +1,6 @@
+# composer
+vendor/*
+
 # Config files - v1.2.x config files - keep for convenience for dev machines switching branches
 config_inc.php
 custom_constants_inc.php

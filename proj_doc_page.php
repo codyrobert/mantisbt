@@ -40,32 +40,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'file_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
 
-$f_project_id = gpc_get_int( 'project_id', helper_get_current_project() );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id', helper_get_current_project() );
 
 # Check if project documentation feature is enabled.
-if( OFF == config_get( 'enable_project_documentation' ) || !file_is_uploading_enabled() ) {
-	access_denied();
+if( OFF == config_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
+	\Flickerbox\Access::denied();
 }
 
 # Override the current page to make sure we get the appropriate project-specific configuration
 $g_project_override = $f_project_id;
 
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 $t_pub = VS_PUBLIC;
 $t_priv = VS_PRIVATE;
 $t_admin = config_get_global( 'admin_site_threshold' );
@@ -104,7 +96,7 @@ $t_query = 'SELECT pft.id, pft.project_id, pft.filename, pft.filesize, pft.title
 			ORDER BY pt.name ASC, pft.title ASC';
 $t_result = db_query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_id, $t_admin ) );
 
-html_page_top( lang_get( 'docs_link' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'docs_link' ) );
 ?>
 <br />
 <div class="table-container">
@@ -113,16 +105,16 @@ html_page_top( lang_get( 'docs_link' ) );
 
 <tr>
 	<td class="form-title">
-		<?php echo lang_get( 'project_documentation_title' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'project_documentation_title' ) ?>
 	</td>
 	<td class="right">
-		<?php print_doc_menu( 'proj_doc_page.php' ) ?>
+		<?php \Flickerbox\HTML::print_doc_menu( 'proj_doc_page.php' ) ?>
 	</td>
 </tr>
 
 <tr class="row-category2">
-	<th><?php echo lang_get( 'filename' ); ?></th>
-	<th><?php echo lang_get( 'description' ); ?></th>
+	<th><?php echo \Flickerbox\Lang::get( 'filename' ); ?></th>
+	<th><?php echo \Flickerbox\Lang::get( 'description' ); ?></th>
 </tr>
 </thead>
 
@@ -132,8 +124,8 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 	$i++;
 	extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 	$v_filesize = number_format( $v_filesize );
-	$v_title = string_display( $v_title );
-	$v_description = string_display_links( $v_description );
+	$v_title = \Flickerbox\String::display( $v_title );
+	$v_description = \Flickerbox\String::display_links( $v_description );
 	$v_date_added = date( config_get( 'normal_date_format' ), $v_date_added );
 
 ?>
@@ -144,13 +136,13 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 	$t_href = '<a href="file_download.php?file_id='.$v_id.'&amp;type=doc">';
 	echo $t_href;
 	print_file_icon( $v_filename );
-	echo '</a>&#160;' . $t_href . $v_title . '</a> (' . $v_filesize . lang_get( 'word_separator' ) . lang_get( 'bytes' ) . ')';
+	echo '</a>&#160;' . $t_href . $v_title . '</a> (' . $v_filesize . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'bytes' ) . ')';
 ?>
 			<br />
 			<span class="small">
 <?php
 	if( $v_project_id == ALL_PROJECTS ) {
-		echo lang_get( 'all_projects' ) . '<br/>';
+		echo \Flickerbox\Lang::get( 'all_projects' ) . '<br/>';
 	} else if( $v_project_id != $f_project_id ) {
 		$t_project_name = project_get_name( $v_project_id );
 		echo $t_project_name . '<br/>';
@@ -161,11 +153,11 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 		</span>
 		<span class="floatright">
 <?php
-	if( access_has_project_level( config_get( 'upload_project_file_threshold', null, null, $v_project_id ), $v_project_id ) ) {
+	if( \Flickerbox\Access::has_project_level( config_get( 'upload_project_file_threshold', null, null, $v_project_id ), $v_project_id ) ) {
 		echo '&#160;';
-		print_button( 'proj_doc_edit_page.php?file_id='.$v_id, lang_get( 'edit_link' ) );
+		print_button( 'proj_doc_edit_page.php?file_id='.$v_id, \Flickerbox\Lang::get( 'edit_link' ) );
 		echo '&#160;';
-		print_button( 'proj_doc_delete.php?file_id=' . $v_id, lang_get( 'delete_link' ) );
+		print_button( 'proj_doc_delete.php?file_id=' . $v_id, \Flickerbox\Lang::get( 'delete_link' ) );
 	}
 ?>
 		</span>
@@ -181,4 +173,4 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 </div>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

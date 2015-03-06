@@ -30,14 +30,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
-require_api( 'html_api.php' );
 
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/print_all_bug_options_inc.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 edit_printing_prefs();
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

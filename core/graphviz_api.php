@@ -37,8 +37,6 @@
  * @uses utility_api.php
  */
 
-require_api( 'constant_inc.php' );
-require_api( 'utility_api.php' );
 
 # constant(s) defining the output formats supported by dot and neato.
 define( 'GRAPHVIZ_ATTRIBUTED_DOT', 0 );

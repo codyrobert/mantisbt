@@ -37,18 +37,13 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'email_api.php' );
 require_api( 'event_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 $g_cache_html_valid_tags = '';
 $g_cache_html_valid_tags_single_line = '';
@@ -59,7 +54,7 @@ $g_cache_html_valid_tags_single_line = '';
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_preserve_spaces_at_bol( $p_string ) {
+function \Flickerbox\String::preserve_spaces_at_bol( $p_string ) {
 	$t_lines = explode( "\n", $p_string );
 	$t_line_count = count( $t_lines );
 	for( $i = 0;$i < $t_line_count;$i++ ) {
@@ -95,7 +90,7 @@ function string_preserve_spaces_at_bol( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_no_break( $p_string ) {
+function \Flickerbox\String::no_break( $p_string ) {
 	if( strpos( $p_string, ' ' ) !== false ) {
 		return '<span class="nowrap">' . $p_string . '</span>';
 	} else {
@@ -111,7 +106,7 @@ function string_no_break( $p_string ) {
  * @param integer $p_wrap   Number of characters to wrap text at.
  * @return string
  */
-function string_nl2br( $p_string, $p_wrap = 100 ) {
+function \Flickerbox\String::nl2br( $p_string, $p_wrap = 100 ) {
 	$t_output = '';
 	$t_pieces = preg_split( '/(<pre[^>]*>.*?<\/pre>)/is', $p_string, -1, PREG_SPLIT_DELIM_CAPTURE );
 	if( isset( $t_pieces[1] ) ) {
@@ -142,7 +137,7 @@ function string_nl2br( $p_string, $p_wrap = 100 ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_display( $p_string ) {
+function \Flickerbox\String::display( $p_string ) {
 	$t_data = event_signal( 'EVENT_DISPLAY_TEXT', $p_string, true );
 	return $t_data;
 }
@@ -152,7 +147,7 @@ function string_display( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_display_line( $p_string ) {
+function \Flickerbox\String::display_line( $p_string ) {
 	$t_data = event_signal( 'EVENT_DISPLAY_TEXT', $p_string, false );
 	return $t_data;
 }
@@ -163,7 +158,7 @@ function string_display_line( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_display_links( $p_string ) {
+function \Flickerbox\String::display_links( $p_string ) {
 	$t_data = event_signal( 'EVENT_DISPLAY_FORMATTED', $p_string, true );
 	return $t_data;
 }
@@ -174,7 +169,7 @@ function string_display_links( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_display_line_links( $p_string ) {
+function \Flickerbox\String::display_line_links( $p_string ) {
 	$t_data = event_signal( 'EVENT_DISPLAY_FORMATTED', $p_string, false );
 	return $t_data;
 }
@@ -185,13 +180,13 @@ function string_display_line_links( $p_string ) {
  * @return string
  */
 function string_rss_links( $p_string ) {
-	# rss can not start with &#160; which spaces will be replaced into by string_display().
+	# rss can not start with &#160; which spaces will be replaced into by \Flickerbox\String::display().
 	$t_string = trim( $p_string );
 
 	$t_string = event_signal( 'EVENT_DISPLAY_RSS', $t_string );
 
 	# another escaping to escape the special characters created by the generated links
-	return string_html_specialchars( $t_string );
+	return \Flickerbox\String::html_specialchars( $t_string );
 }
 
 /**
@@ -199,8 +194,8 @@ function string_rss_links( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_email( $p_string ) {
-	return string_strip_hrefs( $p_string );
+function \Flickerbox\String::email( $p_string ) {
+	return \Flickerbox\String::strip_hrefs( $p_string );
 }
 
 /**
@@ -209,7 +204,7 @@ function string_email( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_email_links( $p_string ) {
+function \Flickerbox\String::email_links( $p_string ) {
 	return event_signal( 'EVENT_DISPLAY_EMAIL', $p_string );
 }
 
@@ -218,8 +213,8 @@ function string_email_links( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_textarea( $p_string ) {
-	return string_html_specialchars( $p_string );
+function \Flickerbox\String::textarea( $p_string ) {
+	return \Flickerbox\String::html_specialchars( $p_string );
 }
 
 /**
@@ -227,8 +222,8 @@ function string_textarea( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_attribute( $p_string ) {
-	return string_html_specialchars( $p_string );
+function \Flickerbox\String::attribute( $p_string ) {
+	return \Flickerbox\String::html_specialchars( $p_string );
 }
 
 /**
@@ -236,7 +231,7 @@ function string_attribute( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_url( $p_string ) {
+function \Flickerbox\String::url( $p_string ) {
 	return rawurlencode( $p_string );
 }
 
@@ -246,7 +241,7 @@ function string_url( $p_string ) {
  * @param boolean $p_return_absolute Whether to return the absolute URL to this Mantis instance.
  * @return string
  */
-function string_sanitize_url( $p_url, $p_return_absolute = false ) {
+function \Flickerbox\String::sanitize_url( $p_url, $p_return_absolute = false ) {
 	$t_url = strip_tags( urldecode( $p_url ) );
 
 	$t_path = rtrim( config_get( 'path' ), '/' );
@@ -334,7 +329,7 @@ $g_string_process_bug_link_callback = array();
  * @param boolean $p_fqdn           Whether to return an absolute or relative link.
  * @return string
  */
-function string_process_bug_link( $p_string, $p_include_anchor = true, $p_detail_info = true, $p_fqdn = false ) {
+function \Flickerbox\String::process_bug_link( $p_string, $p_include_anchor = true, $p_detail_info = true, $p_fqdn = false ) {
 	global $g_string_process_bug_link_callback;
 
 	$t_tag = config_get( 'bug_link_tag' );
@@ -349,8 +344,8 @@ function string_process_bug_link( $p_string, $p_include_anchor = true, $p_detail
 			$g_string_process_bug_link_callback[$p_include_anchor][$p_detail_info][$p_fqdn] = create_function( '$p_array', '
 										if( bug_exists( (int)$p_array[2] ) ) {
 											$t_project_id = bug_get_field( (int)$p_array[2], \'project_id\' );
-											if( access_has_bug_level( config_get( \'view_bug_threshold\', null, null, $t_project_id ), (int)$p_array[2] ) ) {
-												return $p_array[1] . string_get_bug_view_link( (int)$p_array[2], null, ' . ( $p_detail_info ? 'true' : 'false' ) . ', ' . ( $p_fqdn ? 'true' : 'false' ) . ');
+											if( \Flickerbox\Access::has_bug_level( config_get( \'view_bug_threshold\', null, null, $t_project_id ), (int)$p_array[2] ) ) {
+												return $p_array[1] . \Flickerbox\String::get_bug_view_link( (int)$p_array[2], null, ' . ( $p_detail_info ? 'true' : 'false' ) . ', ' . ( $p_fqdn ? 'true' : 'false' ) . ');
 											}
 										}
 										return $p_array[0];
@@ -362,7 +357,7 @@ function string_process_bug_link( $p_string, $p_include_anchor = true, $p_detail
 										#  the summary lookup on a non-existant bug.  But here, we
 										#  can create the link and by the time it is clicked on, the
 										#  bug may exist.
-										return $p_array[1] . string_get_bug_view_url_with_fqdn( (int)$p_array[2], null );
+										return $p_array[1] . \Flickerbox\String::get_bug_view_url_with_fqdn( (int)$p_array[2], null );
 										' );
 		}
 	}
@@ -392,7 +387,7 @@ $g_string_process_bugnote_link_callback = array();
  * @param boolean $p_fqdn           Whether to return an absolute or relative link.
  * @return string
  */
-function string_process_bugnote_link( $p_string, $p_include_anchor = true, $p_detail_info = true, $p_fqdn = false ) {
+function \Flickerbox\String::process_bugnote_link( $p_string, $p_include_anchor = true, $p_detail_info = true, $p_fqdn = false ) {
 	global $g_string_process_bugnote_link_callback;
 	$t_tag = config_get( 'bugnote_link_tag' );
 
@@ -410,7 +405,7 @@ function string_process_bugnote_link( $p_string, $p_include_anchor = true, $p_de
 						$t_bug_id = bugnote_get_field( (int)$p_array[2], \'bug_id\' );
 						if( bug_exists( $t_bug_id ) ) {
 							$g_project_override = bug_get_field( $t_bug_id, \'project_id\' );
-							if(   access_compare_level(
+							if(   \Flickerbox\Access::compare_level(
 										user_get_access_level( auth_get_current_user_id(),
 										bug_get_field( $t_bug_id, \'project_id\' ) ),
 										config_get( \'private_bugnote_threshold\' )
@@ -420,7 +415,7 @@ function string_process_bugnote_link( $p_string, $p_include_anchor = true, $p_de
 							) {
 								$g_project_override = null;
 								return $p_array[1] .
-									string_get_bugnote_view_link(
+									\Flickerbox\String::get_bugnote_view_link(
 										$t_bug_id,
 										(int)$p_array[2],
 										null,
@@ -444,7 +439,7 @@ function string_process_bugnote_link( $p_string, $p_include_anchor = true, $p_de
 					#  bug may exist.
 					$t_bug_id = bugnote_get_field( (int)$p_array[2], \'bug_id\' );
 					if( bug_exists( $t_bug_id ) ) {
-						return $p_array[1] . string_get_bugnote_view_url_with_fqdn( $t_bug_id, (int)$p_array[2], null );
+						return $p_array[1] . \Flickerbox\String::get_bugnote_view_url_with_fqdn( $t_bug_id, (int)$p_array[2], null );
 					} else {
 						return $p_array[0];
 					}
@@ -461,7 +456,7 @@ function string_process_bugnote_link( $p_string, $p_include_anchor = true, $p_de
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_insert_hrefs( $p_string ) {
+function \Flickerbox\String::insert_hrefs( $p_string ) {
 	static $s_url_regex = null;
 	static $s_email_regex = null;
 	static $s_anchor_regex = '/(<a[^>]*>.*?<\/a>)/is';
@@ -528,7 +523,7 @@ function string_insert_hrefs( $p_string ) {
  * @param string $p_string String to be processed.
  * @return string
  */
-function string_strip_hrefs( $p_string ) {
+function \Flickerbox\String::strip_hrefs( $p_string ) {
 	# First grab mailto: hrefs.  We don't care whether the URL is actually
 	# correct - just that it's inside an href attribute.
 	$p_string = preg_replace( '/<a\s[^\>]*href="mailto:([^\"]+)"[^\>]*>[^\<]*<\/a>/si', '\1', $p_string );
@@ -546,19 +541,19 @@ function string_strip_hrefs( $p_string ) {
  * @param boolean $p_multiline Whether the string being processed is a multi-line string.
  * @return string
  */
-function string_restore_valid_html_tags( $p_string, $p_multiline = true ) {
+function \Flickerbox\String::restore_valid_html_tags( $p_string, $p_multiline = true ) {
 	global $g_cache_html_valid_tags_single_line, $g_cache_html_valid_tags;
 
-	if( is_blank( ( $p_multiline ? $g_cache_html_valid_tags : $g_cache_html_valid_tags_single_line ) ) ) {
+	if( \Flickerbox\Utility::is_blank( ( $p_multiline ? $g_cache_html_valid_tags : $g_cache_html_valid_tags_single_line ) ) ) {
 		$t_html_valid_tags = config_get( $p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line' );
 
-		if( OFF === $t_html_valid_tags || is_blank( $t_html_valid_tags ) ) {
+		if( OFF === $t_html_valid_tags || \Flickerbox\Utility::is_blank( $t_html_valid_tags ) ) {
 			return $p_string;
 		}
 
 		$t_tags = explode( ',', $t_html_valid_tags );
 		foreach( $t_tags as $t_key => $t_value ) {
-			if( !is_blank( $t_value ) ) {
+			if( !\Flickerbox\Utility::is_blank( $t_value ) ) {
 				$t_tags[$t_key] = trim( $t_value );
 			}
 		}
@@ -588,7 +583,7 @@ function string_restore_valid_html_tags( $p_string, $p_multiline = true ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_page( $p_action, $p_user_id = null ) {
+function \Flickerbox\String::get_bug_page( $p_action, $p_user_id = null ) {
 	switch( $p_action ) {
 		case 'view':
 			return 'bug_view_page.php';
@@ -610,7 +605,7 @@ function string_get_bug_page( $p_action, $p_user_id = null ) {
  * @param boolean $p_fqdn        Whether to return an absolute or relative link.
  * @return string
  */
-function string_get_bug_view_link( $p_bug_id, $p_user_id = null, $p_detail_info = true, $p_fqdn = false ) {
+function \Flickerbox\String::get_bug_view_link( $p_bug_id, $p_user_id = null, $p_detail_info = true, $p_fqdn = false ) {
 	if( bug_exists( $p_bug_id ) ) {
 		$t_link = '<a href="';
 		if( $p_fqdn ) {
@@ -618,11 +613,11 @@ function string_get_bug_view_link( $p_bug_id, $p_user_id = null, $p_detail_info 
 		} else {
 			$t_link .= config_get_global( 'short_path' );
 		}
-		$t_link .= string_get_bug_view_url( $p_bug_id, $p_user_id ) . '"';
+		$t_link .= \Flickerbox\String::get_bug_view_url( $p_bug_id, $p_user_id ) . '"';
 		if( $p_detail_info ) {
-			$t_summary = string_attribute( bug_get_field( $p_bug_id, 'summary' ) );
+			$t_summary = \Flickerbox\String::attribute( bug_get_field( $p_bug_id, 'summary' ) );
 			$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
-			$t_status = string_attribute( get_enum_element( 'status', bug_get_field( $p_bug_id, 'status' ), $t_project_id ) );
+			$t_status = \Flickerbox\String::attribute( get_enum_element( 'status', bug_get_field( $p_bug_id, 'status' ), $t_project_id ) );
 			$t_link .= ' title="[' . $t_status . '] ' . $t_summary . '"';
 
 			$t_resolved = bug_get_field( $p_bug_id, 'status' ) >= config_get( 'bug_resolved_status_threshold', null, null, $t_project_id );
@@ -648,7 +643,7 @@ function string_get_bug_view_link( $p_bug_id, $p_user_id = null, $p_detail_info 
  * @param boolean $p_fqdn        Whether to return an absolute or relative link.
  * @return string
  */
-function string_get_bugnote_view_link( $p_bug_id, $p_bugnote_id, $p_user_id = null, $p_detail_info = true, $p_fqdn = false ) {
+function \Flickerbox\String::get_bugnote_view_link( $p_bug_id, $p_bugnote_id, $p_user_id = null, $p_detail_info = true, $p_fqdn = false ) {
 	$t_bug_id = (int)$p_bug_id;
 
 	if( bug_exists( $t_bug_id ) && bugnote_exists( $p_bugnote_id ) ) {
@@ -659,10 +654,10 @@ function string_get_bugnote_view_link( $p_bug_id, $p_bugnote_id, $p_user_id = nu
 			$t_link .= config_get_global( 'short_path' );
 		}
 
-		$t_link .= string_get_bugnote_view_url( $p_bug_id, $p_bugnote_id, $p_user_id ) . '"';
+		$t_link .= \Flickerbox\String::get_bugnote_view_url( $p_bug_id, $p_bugnote_id, $p_user_id ) . '"';
 		if( $p_detail_info ) {
-			$t_reporter = string_attribute( user_get_name( bugnote_get_field( $p_bugnote_id, 'reporter_id' ) ) );
-			$t_update_date = string_attribute( date( config_get( 'normal_date_format' ), ( bugnote_get_field( $p_bugnote_id, 'last_modified' ) ) ) );
+			$t_reporter = \Flickerbox\String::attribute( user_get_name( bugnote_get_field( $p_bugnote_id, 'reporter_id' ) ) );
+			$t_update_date = \Flickerbox\String::attribute( date( config_get( 'normal_date_format' ), ( bugnote_get_field( $p_bugnote_id, 'last_modified' ) ) ) );
 			$t_link .= ' title="' . bug_format_id( $t_bug_id ) . ': [' . $t_update_date . '] ' . $t_reporter . '"';
 		}
 
@@ -679,7 +674,7 @@ function string_get_bugnote_view_link( $p_bug_id, $p_bugnote_id, $p_user_id = nu
  * @param integer $p_bug_id A bug identifier.
  * @return string
  */
-function string_get_bug_view_url( $p_bug_id ) {
+function \Flickerbox\String::get_bug_view_url( $p_bug_id ) {
 	return 'view.php?id=' . $p_bug_id;
 }
 
@@ -689,7 +684,7 @@ function string_get_bug_view_url( $p_bug_id ) {
  * @param integer $p_bugnote_id A bugnote identifier.
  * @return string
  */
-function string_get_bugnote_view_url( $p_bug_id, $p_bugnote_id ) {
+function \Flickerbox\String::get_bugnote_view_url( $p_bug_id, $p_bugnote_id ) {
 	return 'view.php?id=' . $p_bug_id . '#c' . $p_bugnote_id;
 }
 
@@ -703,8 +698,8 @@ function string_get_bugnote_view_url( $p_bug_id, $p_bugnote_id ) {
  * @param integer $p_user_id    A valid user identifier.
  * @return string
  */
-function string_get_bugnote_view_url_with_fqdn( $p_bug_id, $p_bugnote_id, $p_user_id = null ) {
-	return config_get( 'path' ) . string_get_bug_view_url( $p_bug_id, $p_user_id ) . '#c' . $p_bugnote_id;
+function \Flickerbox\String::get_bugnote_view_url_with_fqdn( $p_bug_id, $p_bugnote_id, $p_user_id = null ) {
+	return config_get( 'path' ) . \Flickerbox\String::get_bug_view_url( $p_bug_id, $p_user_id ) . '#c' . $p_bugnote_id;
 }
 
 /**
@@ -715,8 +710,8 @@ function string_get_bugnote_view_url_with_fqdn( $p_bug_id, $p_bugnote_id, $p_use
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_view_url_with_fqdn( $p_bug_id, $p_user_id = null ) {
-	return config_get( 'path' ) . string_get_bug_view_url( $p_bug_id, $p_user_id );
+function \Flickerbox\String::get_bug_view_url_with_fqdn( $p_bug_id, $p_user_id = null ) {
+	return config_get( 'path' ) . \Flickerbox\String::get_bug_view_url( $p_bug_id, $p_user_id );
 }
 
 /**
@@ -725,8 +720,8 @@ function string_get_bug_view_url_with_fqdn( $p_bug_id, $p_user_id = null ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_view_page( $p_user_id = null ) {
-	return string_get_bug_page( 'view', $p_user_id );
+function \Flickerbox\String::get_bug_view_page( $p_user_id = null ) {
+	return \Flickerbox\String::get_bug_page( 'view', $p_user_id );
 }
 
 /**
@@ -736,9 +731,9 @@ function string_get_bug_view_page( $p_user_id = null ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_update_link( $p_bug_id, $p_user_id = null ) {
-	$t_summary = string_attribute( bug_get_field( $p_bug_id, 'summary' ) );
-	return '<a href="' . helper_mantis_url( string_get_bug_update_url( $p_bug_id, $p_user_id ) ) . '" title="' . $t_summary . '">' . bug_format_id( $p_bug_id ) . '</a>';
+function \Flickerbox\String::get_bug_update_link( $p_bug_id, $p_user_id = null ) {
+	$t_summary = \Flickerbox\String::attribute( bug_get_field( $p_bug_id, 'summary' ) );
+	return '<a href="' . helper_mantis_url( \Flickerbox\String::get_bug_update_url( $p_bug_id, $p_user_id ) ) . '" title="' . $t_summary . '">' . bug_format_id( $p_bug_id ) . '</a>';
 }
 
 /**
@@ -748,8 +743,8 @@ function string_get_bug_update_link( $p_bug_id, $p_user_id = null ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_update_url( $p_bug_id, $p_user_id = null ) {
-	return string_get_bug_update_page( $p_user_id ) . '?bug_id=' . $p_bug_id;
+function \Flickerbox\String::get_bug_update_url( $p_bug_id, $p_user_id = null ) {
+	return \Flickerbox\String::get_bug_update_page( $p_user_id ) . '?bug_id=' . $p_bug_id;
 }
 
 /**
@@ -758,8 +753,8 @@ function string_get_bug_update_url( $p_bug_id, $p_user_id = null ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_update_page( $p_user_id = null ) {
-	return string_get_bug_page( 'update', $p_user_id );
+function \Flickerbox\String::get_bug_update_page( $p_user_id = null ) {
+	return \Flickerbox\String::get_bug_page( 'update', $p_user_id );
 }
 
 /**
@@ -768,8 +763,8 @@ function string_get_bug_update_page( $p_user_id = null ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_report_link( $p_user_id = null ) {
-	return '<a href="' . helper_mantis_url( string_get_bug_report_url( $p_user_id ) ) . '">' . lang_get( 'report_bug_link' ) . '</a>';
+function \Flickerbox\String::get_bug_report_link( $p_user_id = null ) {
+	return '<a href="' . helper_mantis_url( \Flickerbox\String::get_bug_report_url( $p_user_id ) ) . '">' . \Flickerbox\Lang::get( 'report_bug_link' ) . '</a>';
 }
 
 /**
@@ -778,8 +773,8 @@ function string_get_bug_report_link( $p_user_id = null ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_report_url( $p_user_id = null ) {
-	return string_get_bug_report_page( $p_user_id );
+function \Flickerbox\String::get_bug_report_url( $p_user_id = null ) {
+	return \Flickerbox\String::get_bug_report_page( $p_user_id );
 }
 
 /**
@@ -788,8 +783,8 @@ function string_get_bug_report_url( $p_user_id = null ) {
  * @param integer $p_user_id A valid user identifier.
  * @return string
  */
-function string_get_bug_report_page( $p_user_id = null ) {
-	return string_get_bug_page( 'report', $p_user_id );
+function \Flickerbox\String::get_bug_report_page( $p_user_id = null ) {
+	return \Flickerbox\String::get_bug_page( 'report', $p_user_id );
 }
 
 /**
@@ -798,9 +793,9 @@ function string_get_bug_report_page( $p_user_id = null ) {
  * @param string  $p_confirm_hash The confirmation hash value to include in the link.
  * @return string
  */
-function string_get_confirm_hash_url( $p_user_id, $p_confirm_hash ) {
+function \Flickerbox\String::get_confirm_hash_url( $p_user_id, $p_confirm_hash ) {
 	$t_path = config_get( 'path' );
-	return $t_path . 'verify.php?id=' . string_url( $p_user_id ) . '&confirm_hash=' . string_url( $p_confirm_hash );
+	return $t_path . 'verify.php?id=' . \Flickerbox\String::url( $p_user_id ) . '&confirm_hash=' . \Flickerbox\String::url( $p_confirm_hash );
 }
 
 /**
@@ -808,7 +803,7 @@ function string_get_confirm_hash_url( $p_user_id, $p_confirm_hash ) {
  * @param integer $p_date A date value to process.
  * @return string
  */
-function string_format_complete_date( $p_date ) {
+function \Flickerbox\String::format_complete_date( $p_date ) {
 	return date( config_get( 'complete_date_format' ), $p_date );
 }
 
@@ -820,7 +815,7 @@ function string_format_complete_date( $p_date ) {
  *                          If not set, defaults to max_dropdown_length configuration variable.
  * @return string
  */
-function string_shorten( $p_string, $p_max = null ) {
+function \Flickerbox\String::shorten( $p_string, $p_max = null ) {
 	if( $p_max === null ) {
 		$t_max = config_get( 'max_dropdown_length' );
 	} else {
@@ -869,7 +864,7 @@ function string_normalize( $p_string ) {
  * @param string $p_string The string to process.
  * @return string
  */
-function string_get_field_name( $p_string ) {
+function \Flickerbox\String::get_field_name( $p_string ) {
 	$t_map = array(
 		'attachment_count' => 'attachments',
 		'category_id' => 'category',
@@ -885,7 +880,7 @@ function string_get_field_name( $p_string ) {
 	if( isset( $t_map[$p_string] ) ) {
 		$t_string = $t_map[$p_string];
 	}
-	return lang_get_defaulted( $t_string );
+	return \Flickerbox\Lang::get_defaulted( $t_string );
 }
 
 /**
@@ -894,7 +889,7 @@ function string_get_field_name( $p_string ) {
  * @param string $p_string The string to process.
  * @return string
  */
-function string_html_entities( $p_string ) {
+function \Flickerbox\String::html_entities( $p_string ) {
 	return htmlentities( $p_string, ENT_COMPAT, 'utf-8' );
 }
 
@@ -903,7 +898,7 @@ function string_html_entities( $p_string ) {
  * @param string $p_string The string to process.
  * @return string
  */
-function string_html_specialchars( $p_string ) {
+function \Flickerbox\String::html_specialchars( $p_string ) {
 	# Remove any invalid character from the string per XML 1.0 specification
 	# http://www.w3.org/TR/2008/REC-xml-20081126/#NT-Char
 	$p_string = preg_replace( '/[^\x9\xA\xD\x20-\x{D7FF}\x{E000}-\x{FFFD}\x{10000}-\x{10FFFF}]+/u', '', $p_string );
@@ -919,7 +914,7 @@ function string_html_specialchars( $p_string ) {
  * @param string $p_string The string to process.
  * @return string
  */
-function string_prepare_header( $p_string ) {
+function \Flickerbox\String::prepare_header( $p_string ) {
 	$t_string= explode( "\n", $p_string, 2 );
 	$t_string= explode( "\r", $t_string[0], 2 );
 	return $t_string[0];

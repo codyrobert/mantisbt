@@ -32,10 +32,6 @@
  */
 
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
-require_api( 'logging_api.php' );
-require_api( 'utility_api.php' );
 
 define( 'ADODB_DIR', config_get( 'library_path' ) . 'adodb' );
 require_lib( 'adodb' . DIRECTORY_SEPARATOR . 'adodb.inc.php' );
@@ -129,7 +125,7 @@ function db_connect( $p_dsn, $p_hostname = null, $p_username = null, $p_password
 	$t_db_type = config_get_global( 'db_type' );
 
 	if( !db_check_database_support( $t_db_type ) ) {
-		error_parameters( 0, 'PHP Support for database is not enabled' );
+		\Flickerbox\Error::parameters( 0, 'PHP Support for database is not enabled' );
 		trigger_error( ERROR_DB_CONNECT_FAILED, ERROR );
 	}
 
@@ -152,7 +148,7 @@ function db_connect( $p_dsn, $p_hostname = null, $p_username = null, $p_password
 			# @todo Is there a way to translate any charset name to MySQL format? e.g. remote the dashes?
 			# @todo Is this needed for other databases?
 			db_query( 'SET NAMES UTF8' );
-		} else if( db_is_db2() && $p_db_schema !== null && !is_blank( $p_db_schema ) ) {
+		} else if( db_is_db2() && $p_db_schema !== null && !\Flickerbox\Utility::is_blank( $p_db_schema ) ) {
 			$t_result2 = db_query( 'set schema ' . $p_db_schema );
 			if( $t_result2 === false ) {
 				db_error();
@@ -303,7 +299,7 @@ function db_is_oracle() {
 function db_check_identifier_size( $p_identifier ) {
 	# Oracle does not support long object names (30 chars max)
 	if( db_is_oracle() && 30 < strlen( $p_identifier ) ) {
-		error_parameters( $p_identifier );
+		\Flickerbox\Error::parameters( $p_identifier );
 		trigger_error( ERROR_DB_IDENTIFIER_TOO_LONG, ERROR );
 	}
 }
@@ -434,7 +430,7 @@ function db_query( $p_query, array $p_arr_parms = null, $p_limit = -1, $p_offset
 			}
 		}
 		$t_log_msg = array( $p_query, $t_elapsed );
-		log_event( LOG_DATABASE, $t_log_msg );
+		\Flickerbox\Log::event( LOG_DATABASE, $t_log_msg );
 		array_push( $g_queries_array, $t_log_msg );
 	} else {
 		array_push( $g_queries_array, array( '', $t_elapsed ) );
@@ -624,7 +620,7 @@ function db_insert_id( $p_table = null, $p_field = 'id' ) {
  * @return boolean indicating whether the table exists
  */
 function db_table_exists( $p_table_name ) {
-	if( is_blank( $p_table_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_table_name ) ) {
 		return false;
 	}
 
@@ -653,7 +649,7 @@ function db_table_exists( $p_table_name ) {
 function db_index_exists( $p_table_name, $p_index_name ) {
 	global $g_db;
 
-	if( is_blank( $p_index_name ) || is_blank( $p_table_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_index_name ) || \Flickerbox\Utility::is_blank( $p_table_name ) ) {
 		return false;
 	}
 
@@ -728,9 +724,9 @@ function db_error_msg() {
  */
 function db_error( $p_query = null ) {
 	if( null !== $p_query ) {
-		error_parameters( db_error_num(), db_error_msg(), $p_query );
+		\Flickerbox\Error::parameters( db_error_num(), db_error_msg(), $p_query );
 	} else {
-		error_parameters( db_error_num(), db_error_msg() );
+		\Flickerbox\Error::parameters( db_error_num(), db_error_msg() );
 	}
 }
 
@@ -776,7 +772,7 @@ function db_prepare_string( $p_string ) {
 		case 'oci8':
 			return $p_string;
 		default:
-			error_parameters( 'db_type', $t_db_type );
+			\Flickerbox\Error::parameters( 'db_type', $t_db_type );
 			trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 	}
 }
@@ -965,7 +961,7 @@ function db_time_queries() {
 function db_get_table( $p_name ) {
 	if( strpos( $p_name, 'mantis_' ) === 0 ) {
 		$t_table = substr( $p_name, 7, strpos( $p_name, '_table' ) - 7 );
-		error_parameters(
+		\Flickerbox\Error::parameters(
 			__FUNCTION__ . "( '$p_name' )",
 			__FUNCTION__ . "( '$t_table' )"
 		);
@@ -1056,7 +1052,7 @@ function db_update_blob( $p_table, $p_column, $p_val, $p_where = null ) {
 			$t_elapsed,
 			$t_caller
 		);
-		log_event( LOG_DATABASE, var_export( $t_log_data, true ) );
+		\Flickerbox\Log::event( LOG_DATABASE, var_export( $t_log_data, true ) );
 		array_push( $g_queries_array, $t_log_data );
 	}
 

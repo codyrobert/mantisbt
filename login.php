@@ -33,23 +33,18 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
-require_api( 'session_api.php' );
-require_api( 'string_api.php' );
 
 $t_allow_perm_login = ( ON == config_get( 'allow_permanent_cookie' ) );
 
-$f_username		= gpc_get_string( 'username', '' );
-$f_password		= gpc_get_string( 'password', '' );
-$f_perm_login	= $t_allow_perm_login && gpc_get_bool( 'perm_login' );
-$t_return		= string_url( string_sanitize_url( gpc_get_string( 'return', config_get( 'default_home_page' ) ) ) );
-$f_from			= gpc_get_string( 'from', '' );
-$f_secure_session = gpc_get_bool( 'secure_session', false );
-$f_install = gpc_get_bool( 'install' );
+$f_username		= \Flickerbox\GPC::get_string( 'username', '' );
+$f_password		= \Flickerbox\GPC::get_string( 'password', '' );
+$f_perm_login	= $t_allow_perm_login && \Flickerbox\GPC::get_bool( 'perm_login' );
+$t_return		= \Flickerbox\String::url( \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'return', config_get( 'default_home_page' ) ) ) );
+$f_from			= \Flickerbox\GPC::get_string( 'from', '' );
+$f_secure_session = \Flickerbox\GPC::get_bool( 'secure_session', false );
+$f_install = \Flickerbox\GPC::get_bool( 'install' );
 
 # If upgrade required, always redirect to install page.
 if( $f_install ) {
@@ -59,12 +54,12 @@ if( $f_install ) {
 $f_username = auth_prepare_username( $f_username );
 $f_password = auth_prepare_password( $f_password );
 
-gpc_set_cookie( config_get_global( 'cookie_prefix' ) . '_secure_session', $f_secure_session ? '1' : '0' );
+\Flickerbox\GPC::set_cookie( config_get_global( 'cookie_prefix' ) . '_secure_session', $f_secure_session ? '1' : '0' );
 
 if( auth_attempt_login( $f_username, $f_password, $f_perm_login ) ) {
-	session_set( 'secure_session', $f_secure_session );
+	\Flickerbox\Session::set( 'secure_session', $f_secure_session );
 
-	if( $f_username == 'administrator' && $f_password == 'root' && ( is_blank( $t_return ) || $t_return == 'index.php' ) ) {
+	if( $f_username == 'administrator' && $f_password == 'root' && ( \Flickerbox\Utility::is_blank( $t_return ) || $t_return == 'index.php' ) ) {
 		$t_return = 'account_page.php';
 	}
 

@@ -35,30 +35,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'adm_config_set' );
+\Flickerbox\Form::security_validate( 'adm_config_set' );
 
-$f_user_id = gpc_get_int( 'user_id' );
-$f_project_id = gpc_get_int( 'project_id' );
-$f_config_option = trim( gpc_get_string( 'config_option' ) );
-$f_type = gpc_get_string( 'type' );
-$f_value = gpc_get_string( 'value' );
+$f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+$f_config_option = trim( \Flickerbox\GPC::get_string( 'config_option' ) );
+$f_type = \Flickerbox\GPC::get_string( 'type' );
+$f_value = \Flickerbox\GPC::get_string( 'value' );
 
-if( is_blank( $f_config_option ) ) {
-	error_parameters( 'config_option' );
+if( \Flickerbox\Utility::is_blank( $f_config_option ) ) {
+	\Flickerbox\Error::parameters( 'config_option' );
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
-access_ensure_global_level( config_get( 'set_configuration_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'set_configuration_threshold' ) );
 
 if( $f_project_id != ALL_PROJECTS ) {
 	project_ensure_exists( $f_project_id );
@@ -67,13 +61,13 @@ if( $f_project_id != ALL_PROJECTS ) {
 # make sure that configuration option specified is a valid one.
 $t_not_found_value = '***CONFIG OPTION NOT FOUND***';
 if( config_get_global( $f_config_option, $t_not_found_value ) === $t_not_found_value ) {
-	error_parameters( $f_config_option );
+	\Flickerbox\Error::parameters( $f_config_option );
 	trigger_error( ERROR_CONFIG_OPT_NOT_FOUND, ERROR );
 }
 
 # make sure that configuration option specified can be stored in the database
 if( !config_can_set_in_database( $f_config_option ) ) {
-	error_parameters( $f_config_option );
+	\Flickerbox\Error::parameters( $f_config_option );
 	trigger_error( ERROR_CONFIG_OPT_CANT_BE_SET_IN_DB, ERROR );
 }
 
@@ -113,7 +107,7 @@ switch( $t_type ) {
 
 config_set( $f_config_option, $t_value, $f_user_id, $f_project_id );
 
-form_security_purge( 'adm_config_set' );
+\Flickerbox\Form::security_purge( 'adm_config_set' );
 
 print_successful_redirect( 'adm_config_report.php' );
 

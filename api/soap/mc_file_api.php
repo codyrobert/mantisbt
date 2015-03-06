@@ -30,7 +30,7 @@
  * @return boolean
  */
 function mci_file_can_download_bug_attachments( $p_bug_id, $p_user_id ) {
-	$t_can_download = access_has_bug_level( config_get( 'download_attachments_threshold' ), $p_bug_id );
+	$t_can_download = \Flickerbox\Access::has_bug_level( config_get( 'download_attachments_threshold' ), $p_bug_id );
 	if( $t_can_download ) {
 		return true;
 	}
@@ -76,15 +76,15 @@ function mci_file_write_local( $p_diskfile, $p_content ) {
  * @return mixed
  */
 function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_title = '', $p_desc = '', $p_user_id = null ) {
-	if( !file_type_check( $p_name ) ) {
+	if( !\Flickerbox\File::type_check( $p_name ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'File type not allowed.' );
 	}
-	if( !file_is_name_unique( $p_name, $p_id ) ) {
+	if( !\Flickerbox\File::is_name_unique( $p_name, $p_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Duplicate filename.' );
 	}
 
 	$t_file_size = strlen( $p_content );
-	$t_max_file_size = (int)min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+	$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 	if( $t_file_size > $t_max_file_size ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'File is too big.' );
 	}
@@ -100,19 +100,19 @@ function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_ti
 	}
 
 	if( $p_user_id === null ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	if( $t_project_id == ALL_PROJECTS ) {
 		$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 	} else {
 		$t_file_path = project_get_field( $t_project_id, 'file_path' );
-		if( is_blank( $t_file_path ) ) {
+		if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
 			$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 		}
 	}
 
-	$t_unique_name = file_generate_unique_name( $t_file_path );
+	$t_unique_name = \Flickerbox\File::generate_unique_name( $t_file_path );
 	$t_disk_file_name = $t_file_path . $t_unique_name;
 
 	$t_method = config_get( 'file_upload_method' );
@@ -123,7 +123,7 @@ function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_ti
 				return SoapObjectsFactory::newSoapFault( 'Server', 'Upload folder \'' . $t_file_path . '\' doesn\'t exist.' );
 			}
 
-			file_ensure_valid_upload_path( $t_file_path );
+			\Flickerbox\File::ensure_valid_upload_path( $t_file_path );
 
 			if( !file_exists( $t_disk_file_name ) ) {
 				mci_file_write_local( $t_disk_file_name, $p_content );
@@ -213,7 +213,7 @@ function mci_file_get( $p_file_id, $p_type, $p_user_id ) {
 		$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
 	}
 
-	$t_diskfile = file_normalize_attachment_path( $t_row['diskfile'], $t_project_id );
+	$t_diskfile = \Flickerbox\File::normalize_attachment_path( $t_row['diskfile'], $t_project_id );
 	$t_content = $t_row['content'];
 
 	# Check access rights
@@ -228,7 +228,7 @@ function mci_file_get( $p_file_id, $p_type, $p_user_id ) {
 			if( OFF == config_get( 'enable_project_documentation' ) ) {
 				return mci_soap_fault_access_denied( $p_user_id );
 			}
-			if( !access_has_project_level( config_get( 'view_proj_doc_threshold' ), $t_project_id, $p_user_id ) ) {
+			if( !\Flickerbox\Access::has_project_level( config_get( 'view_proj_doc_threshold' ), $t_project_id, $p_user_id ) ) {
 				return mci_soap_fault_access_denied( $p_user_id );
 			}
 			break;

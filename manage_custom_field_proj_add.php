@@ -33,26 +33,22 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'manage_custom_field_proj_add' );
+\Flickerbox\Form::security_validate( 'manage_custom_field_proj_add' );
 
 auth_reauthenticate();
 
-$f_field_id = gpc_get_int( 'field_id' );
-$f_project_id = gpc_get_int_array( 'project_id', array() );
-$f_sequence	= gpc_get_int( 'sequence' );
+$f_field_id = \Flickerbox\GPC::get_int( 'field_id' );
+$f_project_id = \Flickerbox\GPC::get_int_array( 'project_id', array() );
+$f_sequence	= \Flickerbox\GPC::get_int( 'sequence' );
 
 $t_manage_project_threshold = config_get( 'manage_project_threshold' );
 
 foreach ( $f_project_id as $t_proj_id ) {
-	if( access_has_project_level( $t_manage_project_threshold, $t_proj_id ) ) {
+	if( \Flickerbox\Access::has_project_level( $t_manage_project_threshold, $t_proj_id ) ) {
 		if( !custom_field_is_linked( $f_field_id, $t_proj_id ) ) {
 			custom_field_link( $f_field_id, $t_proj_id );
 		}
@@ -61,6 +57,6 @@ foreach ( $f_project_id as $t_proj_id ) {
 	}
 }
 
-form_security_purge( 'manage_custom_field_proj_add' );
+\Flickerbox\Form::security_purge( 'manage_custom_field_proj_add' );
 
 print_header_redirect( 'manage_custom_field_edit_page.php?field_id=' . $f_field_id );

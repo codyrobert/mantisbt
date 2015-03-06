@@ -38,27 +38,21 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'summary_api.php' );
 require_api( 'user_api.php' );
 
-$f_project_id = gpc_get_int( 'project_id', helper_get_current_project() );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id', helper_get_current_project() );
 
 # Override the current page to make sure we get the appropriate project-specific configuration
 $g_project_override = $f_project_id;
 
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 $t_project_ids = user_get_all_accessible_projects( $t_user_id, $f_project_id );
 $t_specific_where = helper_project_specific_where( $f_project_id, $t_user_id );
@@ -111,7 +105,7 @@ $t_largest_diff 	= number_format( $t_largest_diff / SECONDS_PER_DAY, 2 );
 $t_total_time		= number_format( $t_total_time / SECONDS_PER_DAY, 2 );
 $t_average_time 	= number_format( $t_average_time / SECONDS_PER_DAY, 2 );
 
-$t_orct_arr = preg_split( '/[\)\/\(]/', lang_get( 'orct' ), -1, PREG_SPLIT_NO_EMPTY );
+$t_orct_arr = preg_split( '/[\)\/\(]/', \Flickerbox\Lang::get( 'orct' ), -1, PREG_SPLIT_NO_EMPTY );
 
 $t_orcttab = '';
 foreach ( $t_orct_arr as $t_orct_s ) {
@@ -120,18 +114,18 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 	$t_orcttab .= '</td>';
 }
 
-html_page_top( lang_get( 'summary_link' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'summary_link' ) );
 ?>
 
 <br />
 <?php
-print_summary_menu( 'summary_page.php' );
-print_summary_submenu(); ?>
+\Flickerbox\HTML::print_summary_menu( 'summary_page.php' );
+\Flickerbox\HTML::print_summary_submenu(); ?>
 <br />
 
 <div id="summary" class="section-container">
 
-<h2><?php echo lang_get( 'summary_title' ) ?></h2>
+<h2><?php echo \Flickerbox\Lang::get( 'summary_title' ) ?></h2>
 <br>
 
 <!-- LEFT COLUMN -->
@@ -142,7 +136,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'by_project' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'by_project' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -154,7 +148,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'by_status' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'by_status' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -165,7 +159,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'by_severity' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'by_severity' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -176,7 +170,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'by_category' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'by_category' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -187,11 +181,11 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th colspan="2"><?php echo lang_get( 'time_stats' ) ?></th>
+				<th colspan="2"><?php echo \Flickerbox\Lang::get( 'time_stats' ) ?></th>
 			</tr>
 		</thead>
 		<tr>
-			<td><?php echo lang_get( 'longest_open_bug' ) ?></td>
+			<td><?php echo \Flickerbox\Lang::get( 'longest_open_bug' ) ?></td>
 			<td><?php
 				if( $t_bug_id > 0 ) {
 					print_bug_link( $t_bug_id );
@@ -199,15 +193,15 @@ print_summary_submenu(); ?>
 			?></td>
 		</tr>
 		<tr>
-			<td><?php echo lang_get( 'longest_open' ) ?></td>
+			<td><?php echo \Flickerbox\Lang::get( 'longest_open' ) ?></td>
 			<td><?php echo $t_largest_diff ?></td>
 		</tr>
 		<tr>
-			<td><?php echo lang_get( 'average_time' ) ?></td>
+			<td><?php echo \Flickerbox\Lang::get( 'average_time' ) ?></td>
 			<td><?php echo $t_average_time ?></td>
 		</tr>
 		<tr>
-			<td><?php echo lang_get( 'total_time' ) ?></td>
+			<td><?php echo \Flickerbox\Lang::get( 'total_time' ) ?></td>
 			<td><?php echo $t_total_time ?></td>
 		</tr>
 	</table>
@@ -216,7 +210,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'developer_stats' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'developer_stats' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -232,10 +226,10 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'by_date' ) ?></th>
-				<td class="right"><?php echo lang_get( 'opened' ); ?></td>
-				<td class="right"><?php echo lang_get( 'resolved' ); ?></td>
-				<td class="right"><?php echo lang_get( 'balance' ); ?></td>
+				<th><?php echo \Flickerbox\Lang::get( 'by_date' ) ?></th>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'opened' ); ?></td>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'resolved' ); ?></td>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'balance' ); ?></td>
 			</tr>
 		</thead>
 		<?php summary_print_by_date( config_get( 'date_partitions' ) ) ?>
@@ -245,8 +239,8 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'most_active' ) ?></th>
-				<td class="right"><?php echo lang_get( 'score' ); ?></td>
+				<th><?php echo \Flickerbox\Lang::get( 'most_active' ) ?></th>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'score' ); ?></td>
 			</tr>
 		</thead>
 		<?php summary_print_by_activity() ?>
@@ -256,8 +250,8 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'longest_open' ) ?></th>
-				<td class="right"><?php echo lang_get( 'days' ); ?></td>
+				<th><?php echo \Flickerbox\Lang::get( 'longest_open' ) ?></th>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'days' ); ?></td>
 			</tr>
 		</thead>
 		<?php summary_print_by_age() ?>
@@ -267,7 +261,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'by_resolution' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'by_resolution' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -278,7 +272,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'by_priority' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'by_priority' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -289,7 +283,7 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'reporter_stats' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'reporter_stats' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
@@ -300,10 +294,10 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'reporter_effectiveness' ) ?></th>
-				<td class="right"><?php echo lang_get( 'severity' ); ?></td>
-				<td class="right"><?php echo lang_get( 'errors' ); ?></td>
-				<td class="right"><?php echo lang_get( 'total' ); ?></td>
+				<th><?php echo \Flickerbox\Lang::get( 'reporter_effectiveness' ) ?></th>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'severity' ); ?></td>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'errors' ); ?></td>
+				<td class="right"><?php echo \Flickerbox\Lang::get( 'total' ); ?></td>
 			</tr>
 		</thead>
 		<?php summary_print_reporter_effectiveness( config_get( 'severity_enum_string' ), config_get( 'resolution_enum_string' ) ) ?>
@@ -318,15 +312,15 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'reporter_by_resolution' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'reporter_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
+					$t_resolutions = \MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
 						echo '<td class="right">', get_enum_element( 'resolution', $t_resolution ), "</td>\n";
 					}
 
-					echo '<td class="right">', lang_get( 'percentage_errors' ), "</td>\n";
+					echo '<td class="right">', \Flickerbox\Lang::get( 'percentage_errors' ), "</td>\n";
 				?>
 			</tr>
 		</thead>
@@ -337,15 +331,15 @@ print_summary_submenu(); ?>
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo lang_get( 'developer_by_resolution' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'developer_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
+					$t_resolutions = \MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
 						echo '<td class="right">', get_enum_element( 'resolution', $t_resolution ), "</td>\n";
 					}
 
-					echo '<td class="right">', lang_get( 'percentage_fixed' ), "</td>\n";
+					echo '<td class="right">', \Flickerbox\Lang::get( 'percentage_fixed' ), "</td>\n";
 				?>
 			</tr>
 		</thead>
@@ -357,4 +351,4 @@ print_summary_submenu(); ?>
 </div>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

@@ -37,45 +37,36 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'manage_proj_cat_update' );
+\Flickerbox\Form::security_validate( 'manage_proj_cat_update' );
 
 auth_reauthenticate();
 
-$f_category_id		= gpc_get_int( 'category_id' );
-$f_project_id		= gpc_get_int( 'project_id', ALL_PROJECTS );
-$f_name				= trim( gpc_get_string( 'name' ) );
-$f_assigned_to		= gpc_get_int( 'assigned_to', 0 );
+$f_category_id		= \Flickerbox\GPC::get_int( 'category_id' );
+$f_project_id		= \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
+$f_name				= trim( \Flickerbox\GPC::get_string( 'name' ) );
+$f_assigned_to		= \Flickerbox\GPC::get_int( 'assigned_to', 0 );
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 
-if( is_blank( $f_name ) ) {
+if( \Flickerbox\Utility::is_blank( $f_name ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
-$t_row = category_get_row( $f_category_id );
+$t_row = \Flickerbox\Category::get_row( $f_category_id );
 $t_old_name = $t_row['name'];
 $t_project_id = $t_row['project_id'];
 
 # check for duplicate
 if( utf8_strtolower( $f_name ) != utf8_strtolower( $t_old_name ) ) {
-	category_ensure_unique( $t_project_id, $f_name );
+	\Flickerbox\Category::ensure_unique( $t_project_id, $f_name );
 }
 
-category_update( $f_category_id, $f_name, $f_assigned_to );
+\Flickerbox\Category::update( $f_category_id, $f_name, $f_assigned_to );
 
-form_security_purge( 'manage_proj_cat_update' );
+\Flickerbox\Form::security_purge( 'manage_proj_cat_update' );
 
 if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_page.php';
@@ -83,8 +74,8 @@ if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 }
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

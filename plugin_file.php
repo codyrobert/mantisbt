@@ -32,13 +32,11 @@ header( 'Content-type: ' );
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'gpc_api.php' );
 require_api( 'plugin_api.php' );
 
 $t_plugin_path = config_get( 'plugin_path' );
 
-$f_file = gpc_get_string( 'file' );
+$f_file = \Flickerbox\GPC::get_string( 'file' );
 
 $t_regex = '/^'
 	# File must start with plugin name, ending with /
@@ -50,7 +48,7 @@ $t_regex = '/^'
 	. ')$/';
 
 if( !preg_match( $t_regex, $f_file, $t_matches ) ) {
-	error_parameters( $f_file );
+	\Flickerbox\Error::parameters( $f_file );
 	trigger_error( ERROR_PLUGIN_INVALID_FILE, ERROR );
 }
 

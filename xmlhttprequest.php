@@ -32,21 +32,16 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'gpc_api.php' );
-require_api( 'logging_api.php' );
-require_api( 'xmlhttprequest_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-$f_entrypoint = gpc_get_string( 'entrypoint' );
+$f_entrypoint = \Flickerbox\GPC::get_string( 'entrypoint' );
 
 $t_function = 'xmlhttprequest_' . $f_entrypoint;
 if( function_exists( $t_function ) ) {
-	log_event( LOG_AJAX, 'Calling {' . $t_function . '}...' );
+	\Flickerbox\Log::event( LOG_AJAX, 'Calling {' . $t_function . '}...' );
 	call_user_func( $t_function );
 } else {
-	log_event( LOG_AJAX, 'Unknown function for entry point = ' . $t_function );
+	\Flickerbox\Log::event( LOG_AJAX, 'Unknown function for entry point = ' . $t_function );
 	echo 'unknown entry point';
 }

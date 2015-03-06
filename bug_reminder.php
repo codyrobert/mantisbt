@@ -40,26 +40,18 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'email_api.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-form_security_validate( 'bug_reminder' );
+\Flickerbox\Form::security_validate( 'bug_reminder' );
 
-$f_bug_id		= gpc_get_int( 'bug_id' );
-$f_to			= gpc_get_int_array( 'to' );
-$f_body			= gpc_get_string( 'body' );
+$f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
+$f_to			= \Flickerbox\GPC::get_int_array( 'to' );
+$f_body			= \Flickerbox\GPC::get_string( 'body' );
 
 $t_bug = bug_get( $f_bug_id, true );
 if( $t_bug->project_id != helper_get_current_project() ) {
@@ -69,11 +61,11 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 if( bug_is_readonly( $f_bug_id ) ) {
-	error_parameters( $f_bug_id );
+	\Flickerbox\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-access_ensure_bug_level( config_get( 'bug_reminder_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'bug_reminder_threshold' ), $f_bug_id );
 
 # Automatically add recipients to monitor list if they are above the monitor
 # threshold, option is enabled, and not reporter or handler.
@@ -83,7 +75,7 @@ $t_handler = bug_get_field( $f_bug_id, 'handler_id' );
 $t_reporter = bug_get_field( $f_bug_id, 'reporter_id' );
 foreach ( $f_to as $t_recipient ) {
 	if( ON == $t_reminder_recipients_monitor_bug
-		&& access_has_bug_level( $t_monitor_bug_threshold, $f_bug_id )
+		&& \Flickerbox\Access::has_bug_level( $t_monitor_bug_threshold, $f_bug_id )
 		&& $t_recipient != $t_handler
 		&& $t_recipient != $t_reporter
 	) {
@@ -111,11 +103,11 @@ if( ON == config_get( 'store_reminders' ) ) {
 	bugnote_add( $f_bug_id, $f_body, 0, config_get( 'default_reminder_view_status' ) == VS_PRIVATE, REMINDER, $t_attr, null, false );
 }
 
-form_security_purge( 'bug_reminder' );
+\Flickerbox\Form::security_purge( 'bug_reminder' );
 
-html_page_top( null, string_get_bug_view_url( $f_bug_id ) );
+\Flickerbox\HTML::page_top( null, \Flickerbox\String::get_bug_view_url( $f_bug_id ) );
 
-$t_redirect = string_get_bug_view_url( $f_bug_id );
-html_operation_successful( $t_redirect );
+$t_redirect = \Flickerbox\String::get_bug_view_url( $f_bug_id );
+\Flickerbox\HTML::operation_successful( $t_redirect );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

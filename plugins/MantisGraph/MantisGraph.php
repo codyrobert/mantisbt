@@ -28,8 +28,8 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 * @return void
 	 */
 	function register() {
-		$this->name = lang_get( 'plugin_graph_title' );
-		$this->description = lang_get( 'plugin_graph_description' );
+		$this->name = \Flickerbox\Lang::get( 'plugin_graph_title' );
+		$this->description = \Flickerbox\Lang::get( 'plugin_graph_description' );
 		$this->page = 'config';
 
 		$this->version = '1.3.0';
@@ -97,7 +97,7 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 * @return array
 	 */
 	function summary_menu() {
-		return array( '<a href="' . plugin_page( 'summary_jpgraph_page' ) . '">' . plugin_lang_get( 'menu_advanced_summary' ) . '</a>', );
+		return array( '<a href="' . plugin_page( 'summary_jpgraph_page' ) . '">' . plugin_langget( 'menu_advanced_summary' ) . '</a>', );
 	}
 
 	/**
@@ -105,7 +105,7 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 * @return array
 	 */
 	function graph_filter_menu() {
-		return array( '<a href="' . plugin_page( 'bug_graph_page.php' ) . '">' . plugin_lang_get( 'graph_bug_page_link' ) . '</a>', );
+		return array( '<a href="' . plugin_page( 'bug_graph_page.php' ) . '">' . plugin_langget( 'graph_bug_page_link' ) . '</a>', );
 	}
 
 	/**
@@ -114,12 +114,12 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 */
 	function summary_submenu() {
 		$t_icon_path = config_get( 'icon_path' );
-		return array( '<a href="' . helper_mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . plugin_lang_get( 'synthesis_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_status.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_lang_get( 'status_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_priority.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_lang_get( 'priority_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_severity.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_lang_get( 'severity_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_category.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_lang_get( 'category_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_resolution.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_lang_get( 'resolution_link' ) . '</a>',
+		return array( '<a href="' . helper_mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . plugin_langget( 'synthesis_link' ) . '</a>',
+			'<a href="' . plugin_page( 'summary_graph_imp_status.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'status_link' ) . '</a>',
+			'<a href="' . plugin_page( 'summary_graph_imp_priority.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'priority_link' ) . '</a>',
+			'<a href="' . plugin_page( 'summary_graph_imp_severity.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'severity_link' ) . '</a>',
+			'<a href="' . plugin_page( 'summary_graph_imp_category.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'category_link' ) . '</a>',
+			'<a href="' . plugin_page( 'summary_graph_imp_resolution.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'resolution_link' ) . '</a>',
 		);
 	}
 }

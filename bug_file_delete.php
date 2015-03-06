@@ -35,21 +35,16 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'file_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'bug_file_delete' );
+\Flickerbox\Form::security_validate( 'bug_file_delete' );
 
-$f_file_id = gpc_get_int( 'file_id' );
+$f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
 
-$t_bug_id = file_get_field( $f_file_id, 'bug_id' );
+$t_bug_id = \Flickerbox\File::get_field( $f_file_id, 'bug_id' );
 
 $t_bug = bug_get( $t_bug_id, true );
 if( $t_bug->project_id != helper_get_current_project() ) {
@@ -58,16 +53,16 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 	$g_project_override = $t_bug->project_id;
 }
 
-$t_attachment_owner = file_get_field( $f_file_id, 'user_id' );
-$t_current_user_is_attachment_owner = $t_attachment_owner == auth_get_current_user_id();
+$t_attachment_owner = \Flickerbox\File::get_field( $f_file_id, 'user_id' );
+$t_current_user_is_attachment_owner = $t_attachment_owner == \Flickerbox\Auth::get_current_user_id();
 if( !$t_current_user_is_attachment_owner || ( $t_current_user_is_attachment_owner && !config_get( 'allow_delete_own_attachments' ) ) ) {
-	access_ensure_bug_level( config_get( 'delete_attachments_threshold' ), $t_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'delete_attachments_threshold' ), $t_bug_id );
 }
 
-helper_ensure_confirmed( lang_get( 'delete_attachment_sure_msg' ), lang_get( 'delete_attachment_button' ) );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'delete_attachment_sure_msg' ), \Flickerbox\Lang::get( 'delete_attachment_button' ) );
 
-file_delete( $f_file_id, 'bug' );
+\Flickerbox\File::delete( $f_file_id, 'bug' );
 
-form_security_purge( 'bug_file_delete' );
+\Flickerbox\Form::security_purge( 'bug_file_delete' );
 
 print_header_redirect_view( $t_bug_id );

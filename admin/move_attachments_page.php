@@ -25,17 +25,17 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-access_ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
 
 # Page header, menu
-html_page_top( 'MantisBT Administration - Moving Attachments' );
+\Flickerbox\HTML::page_top( 'MantisBT Administration - Moving Attachments' );
 echo '<div align="center"><p>';
 print_bracket_link( helper_mantis_url( 'admin/system_utils.php' ), 'Back to System Utilities' );
 echo '</p></div>';
 
 
 # File type should be 'bug' (default) or 'project'
-$f_file_type = gpc_get( 'type', 'bug' );
+$f_file_type = \Flickerbox\GPC::get( 'type', 'bug' );
 
 function get_attachment_stats( $p_file_type, $p_in_db ) {
 	if( $p_in_db ) {
@@ -139,7 +139,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 		}
 
 		$t_file_path = $t_project['file_path'];
-		if( is_blank( $t_file_path ) ) {
+		if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
 			$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 		}
 
@@ -152,7 +152,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 		echo '<td class="center">' . $t_method . '</td>';
 
 		if( $t_upload_method == DISK ) {
-			if ( !is_blank( $t_file_path ) && $t_db_count > 0 ) {
+			if ( !\Flickerbox\Utility::is_blank( $t_file_path ) && $t_db_count > 0 ) {
 				echo '<td class="center"><input type="radio" name="to_move" value="disk:' . $t_id . '" /></td>';
 			} else {
 				echo '<td class="center">-</td>';
@@ -169,7 +169,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 		echo "</tr>\n";
 	}
 
-	echo form_security_field( 'move_attachments_project_select' );
+	echo \Flickerbox\Form::security_field( 'move_attachments_project_select' );
 ?>
 
 </table>
@@ -184,4 +184,4 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 
 <?php
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

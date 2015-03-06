@@ -36,15 +36,11 @@
  * @uses user_api.php
  */
 
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'category_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
@@ -367,7 +363,7 @@ function excel_format_target_version( BugData $p_bug ) {
  * @return string the category.
  */
 function excel_format_category_id( BugData $p_bug ) {
-	return excel_prepare_string( category_full_name( $p_bug->category_id, false ) );
+	return excel_prepare_string( \Flickerbox\Category::full_name( $p_bug->category_id, false ) );
 }
 
 /**

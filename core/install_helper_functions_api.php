@@ -413,8 +413,7 @@ function install_stored_filter_migrate() {
 	# Disable query logging even if enabled in config, due to possibility of mass spam
 	$t_log_queries = install_set_log_queries();
 
-	require_api( 'filter_api.php' );
-
+	
 	# convert filters to use the same value for the filter key and the form field
 	# Note: This list should only be updated for basic renames i.e. data + type of data remain the same
 	# before and after the rename.
@@ -475,7 +474,7 @@ function install_stored_filter_migrate() {
 		# Ff the filter version does not match the latest version, pass it through filter_ensure_valid_filter to do any updates
 		# This will set default values for filter fields
 		if( $t_filter_arr['_version'] != FILTER_VERSION ) {
-			$t_filter_arr = filter_ensure_valid_filter( $t_filter_arr );
+			$t_filter_arr = \Flickerbox\Filter::ensure_valid_filter( $t_filter_arr );
 		}
 
 		# For any fields that are being renamed, we can now perform the rename and migrate existing data.

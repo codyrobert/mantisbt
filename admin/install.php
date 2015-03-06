@@ -33,7 +33,6 @@ define( 'MANTIS_MAINTENANCE_MODE', true );
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 require_api( 'install_helper_functions_api.php' );
-require_api( 'crypto_api.php' );
 $g_error_send_page_header = false; # bypass page headers in error handler
 
 $g_failed = false;
@@ -92,16 +91,16 @@ function print_test( $p_test_description, $p_result, $p_hard_fail = true, $p_mes
 #   5 = write the config file
 #	6 = post install checks
 #	7 = done, link to login or db updater
-$t_install_state = gpc_get_int( 'install', 0 );
+$t_install_state = \Flickerbox\GPC::get_int( 'install', 0 );
 
-html_begin();
-html_head_begin();
-html_css_link( 'admin.css' );
-html_content_type();
-html_title( 'Administration - Installation' );
-html_javascript_link( 'jquery-1.11.1.min.js' );
-html_javascript_link( 'install.js' );
-html_head_end();
+\Flickerbox\HTML::begin();
+\Flickerbox\HTML::head_begin();
+\Flickerbox\HTML::css_link( 'admin.css' );
+\Flickerbox\HTML::content_type();
+\Flickerbox\HTML::title( 'Administration - Installation' );
+\Flickerbox\HTML::javascript_link( 'jquery-1.11.1.min.js' );
+\Flickerbox\HTML::javascript_link( 'install.js' );
+\Flickerbox\HTML::head_end();
 ?>
 
 <body>
@@ -193,31 +192,31 @@ if( $t_config_exists && $t_install_state <= 1 ) {
 	}
 } else {
 	# read control variables with defaults
-	$f_dsn                = gpc_get( 'dsn', config_get( 'dsn', '' ) );
-	$f_hostname           = gpc_get( 'hostname', config_get( 'hostname', 'localhost' ) );
-	$f_db_type            = gpc_get( 'db_type', config_get( 'db_type', '' ) );
-	$f_database_name      = gpc_get( 'database_name', config_get( 'database_name', 'bugtracker' ) );
-	$f_db_schema          = gpc_get( 'db_schema', config_get( 'db_schema', '' ) );
-	$f_db_username        = gpc_get( 'db_username', config_get( 'db_username', '' ) );
-	$f_db_password        = gpc_get( 'db_password', config_get( 'db_password', '' ) );
+	$f_dsn                = \Flickerbox\GPC::get( 'dsn', config_get( 'dsn', '' ) );
+	$f_hostname           = \Flickerbox\GPC::get( 'hostname', config_get( 'hostname', 'localhost' ) );
+	$f_db_type            = \Flickerbox\GPC::get( 'db_type', config_get( 'db_type', '' ) );
+	$f_database_name      = \Flickerbox\GPC::get( 'database_name', config_get( 'database_name', 'bugtracker' ) );
+	$f_db_schema          = \Flickerbox\GPC::get( 'db_schema', config_get( 'db_schema', '' ) );
+	$f_db_username        = \Flickerbox\GPC::get( 'db_username', config_get( 'db_username', '' ) );
+	$f_db_password        = \Flickerbox\GPC::get( 'db_password', config_get( 'db_password', '' ) );
 	if( CONFIGURED_PASSWORD == $f_db_password ) {
 		$f_db_password = config_get( 'db_password' );
 	}
-	$f_timezone           = gpc_get( 'timezone', config_get( 'default_timezone' ) );
+	$f_timezone           = \Flickerbox\GPC::get( 'timezone', config_get( 'default_timezone' ) );
 
 	# Set default prefix/suffix form variables ($f_db_table_XXX)
 	$t_prefix_type = $f_db_type == 'oci8' ? $f_db_type : 'other';
 	foreach( $t_prefix_defaults[$t_prefix_type] as $t_key => $t_value ) {
-		${'f_' . $t_key} = gpc_get( $t_key, $t_value );
+		${'f_' . $t_key} = \Flickerbox\GPC::get( $t_key, $t_value );
 	}
 }
-$f_admin_username = gpc_get( 'admin_username', '' );
-$f_admin_password = gpc_get( 'admin_password', '' );
+$f_admin_username = \Flickerbox\GPC::get( 'admin_username', '' );
+$f_admin_password = \Flickerbox\GPC::get( 'admin_password', '' );
 if( CONFIGURED_PASSWORD == $f_admin_password ) {
 	$f_admin_password = '';
 }
-$f_log_queries    = gpc_get_bool( 'log_queries', false );
-$f_db_exists      = gpc_get_bool( 'db_exists', false );
+$f_log_queries    = \Flickerbox\GPC::get_bool( 'log_queries', false );
+$f_db_exists      = \Flickerbox\GPC::get_bool( 'db_exists', false );
 
 if( $t_config_exists ) {
 	if( 0 == $t_install_state ) {
@@ -361,7 +360,7 @@ if( 2 == $t_install_state ) {
 	print_test( 'Setting Database Name', '' !== $f_database_name || $f_db_type == 'oci8', true, 'database name is blank' );
 
 	if( $f_db_type == 'db2' ) {
-		print_test( 'Setting Database Schema', !is_blank( $f_db_schema ), true, 'must have a schema name for AS400 in the form of DBNAME/SCHEMA' );
+		print_test( 'Setting Database Schema', !\Flickerbox\Utility::is_blank( $f_db_schema ), true, 'must have a schema name for AS400 in the form of DBNAME/SCHEMA' );
 	}
 ?>
 <tr>
@@ -462,7 +461,7 @@ if( 2 == $t_install_state ) {
 	<td bgcolor="#ffffff">
 		Checking Database Server Version
 		<?php
-		echo '<br /> Running ' . string_attribute( $f_db_type ) . ' version ' . nl2br( $t_version_info['description'] );
+		echo '<br /> Running ' . \Flickerbox\String::attribute( $f_db_type ) . ' version ' . nl2br( $t_version_info['description'] );
 		?>
 	</td>
 	<?php
@@ -586,7 +585,7 @@ if( !$g_database_upgrade ) {
 		Hostname (for Database Server)
 	</td>
 	<td>
-		<input name="hostname" type="textbox" value="<?php echo string_attribute( $f_hostname ) ?>">
+		<input name="hostname" type="textbox" value="<?php echo \Flickerbox\String::attribute( $f_hostname ) ?>">
 	</td>
 </tr>
 
@@ -596,7 +595,7 @@ if( !$g_database_upgrade ) {
 		Username (for Database)
 	</td>
 	<td>
-		<input name="db_username" type="textbox" value="<?php echo string_attribute( $f_db_username ) ?>">
+		<input name="db_username" type="textbox" value="<?php echo \Flickerbox\String::attribute( $f_db_username ) ?>">
 	</td>
 </tr>
 
@@ -606,7 +605,7 @@ if( !$g_database_upgrade ) {
 	</td>
 	<td>
 		<input name="db_password" type="password" value="<?php
-			echo !is_blank( $f_db_password ) && $t_config_exists
+			echo !\Flickerbox\Utility::is_blank( $f_db_password ) && $t_config_exists
 				? CONFIGURED_PASSWORD
 				: $f_db_password;
 		?>">
@@ -619,7 +618,7 @@ if( !$g_database_upgrade ) {
 		Database name (for Database)
 	</td>
 	<td>
-		<input name="database_name" type="textbox" value="<?php echo string_attribute( $f_database_name ) ?>">
+		<input name="database_name" type="textbox" value="<?php echo \Flickerbox\String::attribute( $f_database_name ) ?>">
 	</td>
 </tr>
 <?php
@@ -632,7 +631,7 @@ if( !$g_database_upgrade ) {
 		Admin Username (to <?php echo( !$g_database_upgrade ) ? 'create Database' : 'update Database'?> if required)
 	</td>
 	<td>
-		<input name="admin_username" type="textbox" value="<?php echo string_attribute( $f_admin_username ) ?>">
+		<input name="admin_username" type="textbox" value="<?php echo \Flickerbox\String::attribute( $f_admin_username ) ?>">
 	</td>
 </tr>
 
@@ -642,9 +641,9 @@ if( !$g_database_upgrade ) {
 	</td>
 	<td>
 		<input name="admin_password" type="password" value="<?php
-			echo !is_blank( $f_admin_password ) && $f_admin_password == $f_db_password
+			echo !\Flickerbox\Utility::is_blank( $f_admin_password ) && $f_admin_password == $f_db_password
 				? CONFIGURED_PASSWORD
-				: string_attribute( $f_admin_password );
+				: \Flickerbox\String::attribute( $f_admin_password );
 		?>">
 	</td>
 </tr>
@@ -667,7 +666,7 @@ if( !$g_database_upgrade ) {
 
 	# Default timezone, get PHP setting if not defined in Mantis
 	$t_tz = config_get_global( 'default_timezone' );
-	if( is_blank( $t_tz ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_tz ) ) {
 		$t_tz = @date_default_timezone_get();
 	}
 ?>
@@ -1034,13 +1033,13 @@ if( 4 == $t_install_state ) {
 	# @todo to be written
 	# must post data gathered to preserve it
 	?>
-		<input name="hostname" type="hidden" value="<?php echo string_attribute( $f_hostname ) ?>">
-		<input name="db_type" type="hidden" value="<?php echo string_attribute( $f_db_type ) ?>">
-		<input name="database_name" type="hidden" value="<?php echo string_attribute( $f_database_name ) ?>">
-		<input name="db_username" type="hidden" value="<?php echo string_attribute( $f_db_username ) ?>">
-		<input name="db_password" type="hidden" value="<?php echo string_attribute( f_db_password ) ?>">
-		<input name="admin_username" type="hidden" value="<?php echo string_attribute( $f_admin_username ) ?>">
-		<input name="admin_password" type="hidden" value="<?php echo string_attribute( $f_admin_password ) ?>">
+		<input name="hostname" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_hostname ) ?>">
+		<input name="db_type" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_db_type ) ?>">
+		<input name="database_name" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_database_name ) ?>">
+		<input name="db_username" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_db_username ) ?>">
+		<input name="db_password" type="hidden" value="<?php echo \Flickerbox\String::attribute( f_db_password ) ?>">
+		<input name="admin_username" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_admin_username ) ?>">
+		<input name="admin_password" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_admin_password ) ?>">
 		<input name="log_queries" type="hidden" value="<?php echo( $f_log_queries ? 1 : 0 )?>">
 		<input name="db_exists" type="hidden" value="<?php echo( $f_db_exists ? 1 : 0 )?>">
 <?php
@@ -1073,7 +1072,7 @@ if( 5 == $t_install_state ) {
 	# cryptographic purposes. If a strong source of randomness is not
 	# available the user will have to manually set this value post
 	# installation.
-	$t_crypto_master_salt = crypto_generate_random_string( 32 );
+	$t_crypto_master_salt = \Flickerbox\Crypto::generate_random_string( 32 );
 	if( $t_crypto_master_salt !== null ) {
 		$t_crypto_master_salt = base64_encode( $t_crypto_master_salt );
 	}
@@ -1195,7 +1194,7 @@ if( 6 == $t_install_state ) {
 </tr>
 
 <!-- Checking register_globals are off -->
-<?php print_test( 'Checking for register_globals are off for mantis', !ini_get_bool( 'register_globals' ), false, 'change php.ini to disable register_globals setting' )?>
+<?php print_test( 'Checking for register_globals are off for mantis', !\Flickerbox\Utility::ini_get_bool( 'register_globals' ), false, 'change php.ini to disable register_globals setting' )?>
 
 <tr>
 	<td bgcolor="#ffffff">
@@ -1328,20 +1327,20 @@ if( $g_failed && $t_install_state != 1 ) {
 	<td bgcolor="#ffffff">
 <form method='POST'>
 		<input name="install" type="hidden" value="<?php echo $t_install_state?>">
-		<input name="hostname" type="hidden" value="<?php echo string_attribute( $f_hostname ) ?>">
-		<input name="db_type" type="hidden" value="<?php echo string_attribute( $f_db_type ) ?>">
-		<input name="database_name" type="hidden" value="<?php echo string_attribute( $f_database_name ) ?>">
-		<input name="db_username" type="hidden" value="<?php echo string_attribute( $f_db_username ) ?>">
+		<input name="hostname" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_hostname ) ?>">
+		<input name="db_type" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_db_type ) ?>">
+		<input name="database_name" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_database_name ) ?>">
+		<input name="db_username" type="hidden" value="<?php echo \Flickerbox\String::attribute( $f_db_username ) ?>">
 		<input name="db_password" type="hidden" value="<?php
-			echo !is_blank( $f_db_password ) && $t_config_exists
+			echo !\Flickerbox\Utility::is_blank( $f_db_password ) && $t_config_exists
 				? CONFIGURED_PASSWORD
-				: string_attribute( $f_db_password );
+				: \Flickerbox\String::attribute( $f_db_password );
 		?>">
 		<input name="admin_username" type="hidden" value="<?php echo $f_admin_username?>">
 		<input name="admin_password" type="hidden" value="<?php
-			echo !is_blank( $f_admin_password ) && $f_admin_password == $f_db_password
+			echo !\Flickerbox\Utility::is_blank( $f_admin_password ) && $f_admin_password == $f_db_password
 				? CONFIGURED_PASSWORD
-				: string_attribute( $f_admin_password );
+				: \Flickerbox\String::attribute( $f_admin_password );
 		?>">
 		<input name="log_queries" type="hidden" value="<?php echo( $f_log_queries ? 1 : 0 )?>">
 		<input name="db_exists" type="hidden" value="<?php echo( $f_db_exists ? 1 : 0 )?>">

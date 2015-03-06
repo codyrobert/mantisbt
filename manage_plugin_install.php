@@ -35,26 +35,22 @@
 define( 'PLUGINS_DISABLED', true );
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'plugin_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'manage_plugin_install' );
+\Flickerbox\Form::security_validate( 'manage_plugin_install' );
 
 auth_reauthenticate();
-access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-$f_basename = gpc_get_string( 'name' );
+$f_basename = \Flickerbox\GPC::get_string( 'name' );
 $t_plugin = plugin_register( $f_basename, true );
 
 if( !is_null( $t_plugin ) ) {
 	plugin_install( $t_plugin );
 }
 
-form_security_purge( 'manage_plugin_install' );
+\Flickerbox\Form::security_purge( 'manage_plugin_install' );
 
 print_successful_redirect( 'manage_plugin_page.php' );

@@ -24,12 +24,12 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-form_security_validate( 'move_attachments_project_select' );
+\Flickerbox\Form::security_validate( 'move_attachments_project_select' );
 
-access_ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
 
-$f_file_type         = gpc_get( 'type' );
-$f_project_to_move  = gpc_get( 'to_move', null );
+$f_file_type         = \Flickerbox\GPC::get( 'type' );
+$f_project_to_move  = \Flickerbox\GPC::get( 'to_move', null );
 
 /**
  * Moves attachments from the specified list of projects from disk to database
@@ -69,11 +69,11 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 
 		# Project upload path
 		$t_upload_path = project_get_field( $t_project, 'file_path' );
-		if( is_blank( $t_upload_path ) ) {
+		if( \Flickerbox\Utility::is_blank( $t_upload_path ) ) {
 			$t_upload_path = config_get( 'absolute_path_default_upload_folder', '', ALL_USERS, $t_project );
 		}
 
-		if( is_blank( $t_upload_path )
+		if( \Flickerbox\Utility::is_blank( $t_upload_path )
 			|| !file_exists( $t_upload_path )
 			|| !is_dir( $t_upload_path )
 		) {
@@ -180,7 +180,7 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 
 		# Project upload path
 		$t_upload_path = project_get_upload_path( $t_project );
-		if( is_blank( $t_upload_path )
+		if( \Flickerbox\Utility::is_blank( $t_upload_path )
 			|| !file_exists( $t_upload_path )
 			|| !is_dir( $t_upload_path )
 			|| !is_writable( $t_upload_path )
@@ -275,10 +275,10 @@ if( isset( $t_array[1] ) ) {
 	}
 }
 
-form_security_purge( 'move_attachments_project_select' );
+\Flickerbox\Form::security_purge( 'move_attachments_project_select' );
 
 # Page header, menu
-html_page_top( 'MantisBT Administration - Moving Attachments' );
+\Flickerbox\HTML::page_top( 'MantisBT Administration - Moving Attachments' );
 
 ?>
 
@@ -327,4 +327,4 @@ if( empty( $t_moved ) ) {
 
 print_bracket_link( 'system_utils.php', 'Back to System Utilities' );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

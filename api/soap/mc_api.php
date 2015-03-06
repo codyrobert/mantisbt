@@ -23,7 +23,7 @@
  * @link http://www.mantisbt.org
  */
 
-# set up error_handler() as the new default error handling function
+# set up \Flickerbox\Error::handler() as the new default error handling function
 set_error_handler( 'mc_error_handler' );
 
 /**
@@ -74,7 +74,7 @@ class SoapObjectsFactory {
 	 * @return string
 	 */
 	static function newDateTimeString ( $p_timestamp ) {
-		if( $p_timestamp == null || date_is_null( $p_timestamp ) ) {
+		if( $p_timestamp == null || \Flickerbox\Date::is_null( $p_timestamp ) ) {
 			return null;
 		}
 
@@ -152,7 +152,7 @@ function mci_user_get( $p_username, $p_password, $p_user_id ) {
 
 	# if user doesn't exist, then mci_account_get_array_by_id() will throw.
 	$t_user_data['account_data'] = mci_account_get_array_by_id( $p_user_id );
-	$t_user_data['access_level'] = access_get_global_level( $p_user_id );
+	$t_user_data['access_level'] = \Flickerbox\Access::get_global_level( $p_user_id );
 	$t_user_data['timezone'] = user_pref_get_pref( $p_user_id, 'timezone' );
 
 	return $t_user_data;
@@ -185,7 +185,7 @@ function mci_check_login( $p_username, $p_password ) {
 		return false;
 	}
 
-	return auth_get_current_user_id();
+	return \Flickerbox\Auth::get_current_user_id();
 }
 
 /**
@@ -245,7 +245,7 @@ function mci_get_project_id( $p_project ) {
 
 	if( isset( $p_project['id'] ) && (int)$p_project['id'] != 0 ) {
 		$t_project_id = (int)$p_project['id'];
-	} else if( isset( $p_project['name'] ) && !is_blank( $p_project['name'] ) ) {
+	} else if( isset( $p_project['name'] ) && !\Flickerbox\Utility::is_blank( $p_project['name'] ) ) {
 		$t_project_id = project_get_id_by_name( $p_project['name'] );
 	} else {
 		$t_project_id = ALL_PROJECTS;
@@ -385,7 +385,7 @@ function mci_get_view_state_id( $p_view_state ) {
  * @return string|null The value if not empty; null otherwise.
  */
 function mci_null_if_empty( $p_value ) {
-	if( !is_blank( $p_value ) ) {
+	if( !\Flickerbox\Utility::is_blank( $p_value ) ) {
 		return $p_value;
 	}
 
@@ -420,9 +420,9 @@ function mci_get_mantis_path() {
  */
 function mci_get_enum_element( $p_enum_name, $p_val, $p_lang ) {
 	$t_enum_string = config_get( $p_enum_name . '_enum_string' );
-	$t_localized_enum_string = lang_get( $p_enum_name . '_enum_string', $p_lang );
+	$t_localized_enum_string = \Flickerbox\Lang::get( $p_enum_name . '_enum_string', $p_lang );
 
-	return MantisEnum::getLocalizedLabel( $t_enum_string, $t_localized_enum_string, $p_val );
+	return \MantisEnum::getLocalizedLabel( $t_enum_string, $t_localized_enum_string, $p_val );
 }
 
 /**
@@ -469,7 +469,7 @@ function translate_category_name_to_id( $p_category_name, $p_project_id ) {
 		return 0;
 	}
 
-	$t_cat_array = category_get_all_rows( $p_project_id );
+	$t_cat_array = \Flickerbox\Category::get_all_rows( $p_project_id );
 	foreach( $t_cat_array as $t_category_row ) {
 		if( $t_category_row['name'] == $p_category_name ) {
 			return $t_category_row['id'];
@@ -479,7 +479,7 @@ function translate_category_name_to_id( $p_category_name, $p_project_id ) {
 }
 
 /**
- * Basically this is a copy of core/filter_api.php#filter_db_get_available_queries().
+ * Basically this is a copy of core/filter_api.php#\Flickerbox\Filter::db_get_available_queries().
  * The only difference is that the result of this function is not an array of filter
  * names but an array of filter structures.
  * @param integer $p_project_id Project id.
@@ -496,13 +496,13 @@ function mci_filter_db_get_available_queries( $p_project_id = null, $p_user_id =
 	}
 
 	if( null === $p_user_id ) {
-		$t_user_id = auth_get_current_user_id();
+		$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	} else {
 		$t_user_id = (int)$p_user_id;
 	}
 
 	# If the user doesn't have access rights to stored queries, just return
-	if( !access_has_project_level( config_get( 'stored_query_use_threshold' ) ) ) {
+	if( !\Flickerbox\Access::has_project_level( config_get( 'stored_query_use_threshold' ) ) ) {
 		return $t_overall_query_arr;
 	}
 
@@ -527,8 +527,8 @@ function mci_filter_db_get_available_queries( $p_project_id = null, $p_user_id =
 			continue;
 		}
 		$t_filter = json_decode( $t_filter_detail[1], true );
-		$t_filter = filter_ensure_valid_filter( $t_filter );
-		$t_row['url'] = filter_get_url( $t_filter );
+		$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
+		$t_row['url'] = \Flickerbox\Filter::get_url( $t_filter );
 		$t_overall_query_arr[$t_row['name']] = $t_row;
 	}
 
@@ -544,7 +544,7 @@ function mci_filter_db_get_available_queries( $p_project_id = null, $p_user_id =
 function mci_category_as_array_by_id( $p_category_id ) {
 	$t_result = array();
 	$t_result['id'] = $p_category_id;
-	$t_result['name'] = category_get_name( $p_category_id );
+	$t_result['name'] = \Flickerbox\Category::get_field( $p_category_id );
 	return $t_result;
 }
 
@@ -575,7 +575,7 @@ function mci_project_version_as_array( array $p_version ) {
  * @return String the string time entry to be added to the bugnote, in 'HH:mm' format
  */
 function mci_get_time_tracking_from_note( $p_issue_id, array $p_note ) {
-	if( !access_has_bug_level( config_get( 'time_tracking_view_threshold' ), $p_issue_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'time_tracking_view_threshold' ), $p_issue_id ) ) {
 		return '00:00';
 	}
 
@@ -610,7 +610,7 @@ function mc_error_handler( $p_type, $p_error, $p_file, $p_line, array $p_context
 	# flush any language overrides to return to user's natural default
 	if( function_exists( 'db_is_connected' ) ) {
 		if( db_is_connected() ) {
-			lang_push( lang_get_default() );
+			\Flickerbox\Lang::push( \Flickerbox\Lang::get_default() );
 		}
 	}
 
@@ -626,11 +626,11 @@ function mc_error_handler( $p_type, $p_error, $p_file, $p_line, array $p_context
 			break;
 		case E_USER_ERROR:
 			$t_error_type = 'APPLICATION ERROR #' . $p_error;
-			$t_error_description = error_string( $p_error );
+			$t_error_description = \Flickerbox\Error::string( $p_error );
 			break;
 		case E_USER_WARNING:
 			$t_error_type = 'APPLICATION WARNING #' . $p_error;
-			$t_error_description = error_string( $p_error );
+			$t_error_description = \Flickerbox\Error::string( $p_error );
 			break;
 		case E_USER_NOTICE:
 			# used for debugging
@@ -675,7 +675,7 @@ function error_get_stack_trace() {
 			if( isset( $t_frame['params'] ) && ( count( $t_frame['params'] ) > 0 ) ) {
 				$t_trace .= ' Params: ';
 				foreach( $t_frame['params'] as $t_value ) {
-					$t_args[] = error_build_parameter_string( $t_value );
+					$t_args[] = \Flickerbox\Error::build_parameter_string( $t_value );
 				}
 
 				$t_trace .= '(' . implode( $t_args, ', ' ) . ')';
@@ -697,7 +697,7 @@ function error_get_stack_trace() {
 			$t_args = array();
 			if( isset( $t_frame['args'] ) ) {
 				foreach( $t_frame['args'] as $t_value ) {
-					$t_args[] = error_build_parameter_string( $t_value );
+					$t_args[] = \Flickerbox\Error::build_parameter_string( $t_value );
 				}
 
 				$t_trace .= '(' . implode( $t_args, ', ' ) . ')';
@@ -738,7 +738,7 @@ function mci_soap_fault_access_denied( $p_user_id = 0, $p_detail = '' ) {
 		$t_reason = 'Access denied';
 	}
 
-	if( !is_blank( $p_detail ) ) {
+	if( !\Flickerbox\Utility::is_blank( $p_detail ) ) {
 		$t_reason .= ' Reason: ' . $p_detail . '.';
 	}
 

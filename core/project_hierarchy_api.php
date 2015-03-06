@@ -28,7 +28,6 @@
  * @uses database_api.php
  */
 
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
 
 $g_cache_project_hierarchy = null;

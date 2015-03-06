@@ -26,9 +26,9 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-access_ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
 
-html_page_top( 'MantisBT Administration - System Utilities' );
+\Flickerbox\HTML::page_top( 'MantisBT Administration - System Utilities' );
 
 ?>
 <div class="table-container">
@@ -46,7 +46,7 @@ html_page_top( 'MantisBT Administration - System Utilities' );
 					Move attachments stored between database schema and disk files.
 				</td>
 				<td class="center">
-					<?php html_button( 'move_attachments_page.php', 'Move Attachments to Disk', array( 'type' => 'bug' ) );?>
+					<?php \Flickerbox\HTML::button( 'move_attachments_page.php', 'Move Attachments to Disk', array( 'type' => 'bug' ) );?>
 				</td>
 			</tr>
 			<tr>
@@ -54,7 +54,7 @@ html_page_top( 'MantisBT Administration - System Utilities' );
 					Move project files stored between database schema and disk.
 				</td>
 				<td class="center">
-					<?php html_button( 'move_attachments_page.php', 'Move Project Files to Disk', array( 'type' => 'project' ) );?>
+					<?php \Flickerbox\HTML::button( 'move_attachments_page.php', 'Move Project Files to Disk', array( 'type' => 'project' ) );?>
 				</td>
 			</tr>
 			<tr>
@@ -62,11 +62,11 @@ html_page_top( 'MantisBT Administration - System Utilities' );
 					Show database statistics.
 				</td>
 				<td class="center">
-					<?php html_button( 'db_stats.php', 'Display', array() );?>
+					<?php \Flickerbox\HTML::button( 'db_stats.php', 'Display', array() );?>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
 <?php
-	html_page_bottom();
+	\Flickerbox\HTML::page_bottom();

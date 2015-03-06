@@ -16,7 +16,7 @@
 
 /**
  * This include file prints out the bug file upload form
- * It POSTs to bug_file_add.php
+ * It POSTs to bug_file_add(.php
  *
  * @package MantisBT
  * @copyright Copyright 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
@@ -35,41 +35,36 @@ if( !defined( 'BUG_FILE_UPLOAD_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'collapse_api.php' );
 require_api( 'config_api.php' );
-require_api( 'file_api.php' );
-require_api( 'form_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'utility_api.php' );
 
 # check if we can allow the upload... bail out if we can't
-if( !file_allow_bug_upload( $f_bug_id ) ) {
+if( !\Flickerbox\File::allow_bug_upload( $f_bug_id ) ) {
 	return false;
 }
 
-$t_max_file_size = (int)min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 ?>
 <br />
 
 <?php
-	collapse_open( 'upload_form' );
+	\Flickerbox\Collapse::open( 'upload_form' );
 	$t_file_upload_max_num = max( 1, config_get( 'file_upload_max_num' ) );
 ?>
-<form method="post" enctype="multipart/form-data" action="bug_file_add.php">
-<?php echo form_security_field( 'bug_file_add' ) ?>
+<form method="post" enctype="multipart/form-data" action="bug_file_add(.php">
+<?php echo \Flickerbox\Form::security_field( 'bug_file_add(' ) ?>
 
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
 <?php
-		collapse_icon( 'upload_form' );
-		echo lang_get( $t_file_upload_max_num == 1 ? 'upload_file' : 'upload_files' );
+		\Flickerbox\Collapse::icon( 'upload_form' );
+		echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'upload_file' : 'upload_files' );
 ?>
 	</td>
 </tr>
 <tr class="row-1">
 	<td class="category" width="15%">
-		<?php echo lang_get( $t_file_upload_max_num == 1 ? 'select_file' : 'select_files' ) ?>
+		<?php echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'select_file' : 'select_files' ) ?>
 		<br />
 		<?php echo print_max_filesize( $t_max_file_size ); ?>
 	</td>
@@ -88,24 +83,24 @@ $t_max_file_size = (int)min( ini_get_number( 'upload_max_filesize' ), ini_get_nu
 	}
 ?>
 		<input type="submit" class="button"
-			value="<?php echo lang_get( $t_file_upload_max_num == 1 ? 'upload_file_button' : 'upload_files_button' ) ?>"
+			value="<?php echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'upload_file_button' : 'upload_files_button' ) ?>"
 		/>
 	</td>
 </tr>
 </table>
 </form>
 <?php
-collapse_closed( 'upload_form' );
+\Flickerbox\Collapse::closed( 'upload_form' );
 ?>
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
 		<?php
-			collapse_icon( 'upload_form' );
-			echo lang_get( 'upload_file' ) ?>
+			\Flickerbox\Collapse::icon( 'upload_form' );
+			echo \Flickerbox\Lang::get( 'upload_file' ) ?>
 	</td>
 </tr>
 </table>
 
 <?php
-collapse_end( 'upload_form' );
+\Flickerbox\Collapse::end( 'upload_form' );

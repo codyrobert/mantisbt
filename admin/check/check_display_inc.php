@@ -53,7 +53,7 @@ if( plugin_is_installed( 'MantisGraph' ) ) {
 
 	check_print_test_row(
 		'Checking GD library is enabled, and version 2...',
-		get_gd_version() == 2
+		\Flickerbox\Utility::get_gd_version() == 2
 	);
 
 	if( plugin_config_get( 'eczlibrary', ON ) == OFF ) {

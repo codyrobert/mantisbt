@@ -38,28 +38,21 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
 
-access_ensure_global_level( config_get( 'view_configuration_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'view_configuration_threshold' ) );
 
-$t_read_write_access = access_has_global_level( config_get( 'set_configuration_threshold' ) );
+$t_read_write_access = \Flickerbox\Access::has_global_level( config_get( 'set_configuration_threshold' ) );
 
-html_page_top( lang_get( 'configuration_report' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'configuration_report' ) );
 
-print_manage_menu( 'adm_config_report.php' );
-print_manage_config_menu( 'adm_config_report.php' );
+\Flickerbox\HTML::print_manage_menu( 'adm_config_report.php' );
+\Flickerbox\HTML::print_manage_config_menu( 'adm_config_report.php' );
 
 $t_config_types = array(
 	CONFIG_TYPE_DEFAULT => 'default',
@@ -104,7 +97,7 @@ function print_config_value_as_string( $p_type, $p_value, $p_for_display = true 
 			echo (integer)$p_value;
 			return;
 		case CONFIG_TYPE_STRING:
-			$t_value = string_nl2br( string_html_specialchars( config_eval( $p_value ) ) );
+			$t_value = \Flickerbox\String::nl2br( \Flickerbox\String::html_specialchars( config_eval( $p_value ) ) );
 			if( $p_for_display ) {
 				$t_value = '<p id="adm-config-value">\'' . $t_value . '\'</p>';
 			}
@@ -122,13 +115,13 @@ function print_config_value_as_string( $p_type, $p_value, $p_for_display = true 
 	}
 
 	if( $t_corrupted ) {
-		$t_output = $p_for_display ? lang_get( 'configuration_corrupted' ) : '';
+		$t_output = $p_for_display ? \Flickerbox\Lang::get( 'configuration_corrupted' ) : '';
 	} else {
 		$t_output = var_export( $t_value, true );
 	}
 
 	if( $p_for_display ) {
-		echo '<pre id="adm-config-value">' . string_attribute( $t_output ) . '</pre>';
+		echo '<pre id="adm-config-value">' . \Flickerbox\String::attribute( $t_output ) . '</pre>';
 	} else {
 		echo $t_output;
 	}
@@ -144,7 +137,7 @@ function print_option_list_from_array( array $p_array, $p_filter_value ) {
 	foreach( $p_array as $t_key => $t_value ) {
 		echo '<option value="' . $t_key . '"';
 		check_selected( (string)$p_filter_value, (string)$t_key );
-		echo '>' . string_attribute( $t_value ) . '</option>' . "\n";
+		echo '>' . \Flickerbox\String::attribute( $t_value ) . '</option>' . "\n";
 	}
 }
 
@@ -155,7 +148,7 @@ function print_option_list_from_array( array $p_array, $p_filter_value ) {
  */
 function check_config_value( $p_config ) {
 	if(    $p_config != META_FILTER_NONE
-	   && !is_blank( $p_config )
+	   && !\Flickerbox\Utility::is_blank( $p_config )
 	   && is_null( @config_get_global( $p_config ) )
 	) {
 		return META_FILTER_NONE;
@@ -164,9 +157,9 @@ function check_config_value( $p_config ) {
 }
 
 # Get filter values
-$t_filter_save          = gpc_get_bool( 'save' );
-$t_filter_default       = gpc_get_bool( 'default_filter_button', false );
-$t_filter_reset         = gpc_get_bool( 'reset_filter_button', false );
+$t_filter_save          = \Flickerbox\GPC::get_bool( 'save' );
+$t_filter_default       = \Flickerbox\GPC::get_bool( 'default_filter_button', false );
+$t_filter_reset         = \Flickerbox\GPC::get_bool( 'reset_filter_button', false );
 if( $t_filter_default ) {
 	$t_filter_user_value    = ALL_USERS;
 	$t_filter_project_value = ALL_PROJECTS;
@@ -176,9 +169,9 @@ if( $t_filter_default ) {
 	$t_filter_project_value = META_FILTER_NONE;
 	$t_filter_config_value  = META_FILTER_NONE;
 } else {
-	$t_filter_user_value    = gpc_get_int( 'filter_user_id', ALL_USERS );
-	$t_filter_project_value = gpc_get_int( 'filter_project_id', ALL_PROJECTS );
-	$t_filter_config_value  = check_config_value( gpc_get_string( 'filter_config_id', META_FILTER_NONE ) );
+	$t_filter_user_value    = \Flickerbox\GPC::get_int( 'filter_user_id', ALL_USERS );
+	$t_filter_project_value = \Flickerbox\GPC::get_int( 'filter_project_id', ALL_PROJECTS );
+	$t_filter_config_value  = check_config_value( \Flickerbox\GPC::get_string( 'filter_config_id', META_FILTER_NONE ) );
 }
 
 # Manage filter's persistency through cookie
@@ -193,10 +186,10 @@ if( $t_filter_save ) {
 			$t_filter_config_value,
 		)
 	);
-	gpc_set_cookie( $t_cookie_name, $t_cookie_string, true );
+	\Flickerbox\GPC::set_cookie( $t_cookie_name, $t_cookie_string, true );
 } else {
 	# Retrieve the filter from the cookie if it exists
-	$t_cookie_string = gpc_get_cookie( $t_cookie_name, null );
+	$t_cookie_string = \Flickerbox\GPC::get_cookie( $t_cookie_name, null );
 
 	if( null !== $t_cookie_string ) {
 		$t_cookie_contents = explode( ':', $t_cookie_string );
@@ -212,11 +205,11 @@ if( $t_filter_save ) {
 }
 
 # Get config edit values
-$t_edit_user_id         = gpc_get_int( 'user_id', $t_filter_user_value == META_FILTER_NONE ? ALL_USERS : $t_filter_user_value );
-$t_edit_project_id      = gpc_get_int( 'project_id', $t_filter_project_value == META_FILTER_NONE ? ALL_PROJECTS : $t_filter_project_value );
-$t_edit_option          = gpc_get_string( 'config_option', $t_filter_config_value == META_FILTER_NONE ? '' : $t_filter_config_value );
-$t_edit_type            = gpc_get_string( 'type', CONFIG_TYPE_DEFAULT );
-$t_edit_value           = gpc_get_string( 'value', '' );
+$t_edit_user_id         = \Flickerbox\GPC::get_int( 'user_id', $t_filter_user_value == META_FILTER_NONE ? ALL_USERS : $t_filter_user_value );
+$t_edit_project_id      = \Flickerbox\GPC::get_int( 'project_id', $t_filter_project_value == META_FILTER_NONE ? ALL_PROJECTS : $t_filter_project_value );
+$t_edit_option          = \Flickerbox\GPC::get_string( 'config_option', $t_filter_config_value == META_FILTER_NONE ? '' : $t_filter_config_value );
+$t_edit_type            = \Flickerbox\GPC::get_string( 'type', CONFIG_TYPE_DEFAULT );
+$t_edit_value           = \Flickerbox\GPC::get_string( 'value', '' );
 
 # Apply filters
 
@@ -236,8 +229,8 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 asort( $t_users_list );
 # Prepend '[any]' and 'All Users' to the list
 $t_users_list = array(
-		META_FILTER_NONE => '[' . lang_get( 'any' ) . ']',
-		ALL_USERS        => lang_get( 'all_users' ),
+		META_FILTER_NONE => '[' . \Flickerbox\Lang::get( 'any' ) . ']',
+		ALL_USERS        => \Flickerbox\Lang::get( 'all_users' ),
 	)
 	+ $t_users_list;
 
@@ -248,8 +241,8 @@ $t_query = 'SELECT DISTINCT project_id, pt.name as project_name
 	WHERE project_id!=0
 	ORDER BY project_name';
 $t_result = db_query( $t_query );
-$t_projects_list[META_FILTER_NONE] = '[' . lang_get( 'any' ) . ']';
-$t_projects_list[ALL_PROJECTS] = lang_get( 'all_projects' );
+$t_projects_list[META_FILTER_NONE] = '[' . \Flickerbox\Lang::get( 'any' ) . ']';
+$t_projects_list[ALL_PROJECTS] = \Flickerbox\Lang::get( 'all_projects' );
 while( $t_row = db_fetch_array( $t_result ) ) {
 	extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 	$t_projects_list[$v_project_id] = $v_project_name;
@@ -258,7 +251,7 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 # Get config list used in db
 $t_query = 'SELECT DISTINCT config_id FROM {config} ORDER BY config_id';
 $t_result = db_query( $t_query );
-$t_configs_list[META_FILTER_NONE] = '[' . lang_get( 'any' ) . ']';
+$t_configs_list[META_FILTER_NONE] = '[' . \Flickerbox\Lang::get( 'any' ) . ']';
 if( $t_filter_config_value != META_FILTER_NONE ) {
 	# Make sure the filter value exists in the list
 	$t_configs_list[$t_filter_config_value] = $t_filter_config_value;
@@ -304,19 +297,19 @@ $t_result = db_query( $t_query, $t_param );
 		<thead>
 			<tr>
 				<td class="form-title" colspan="7">
-					<?php echo lang_get( 'filters' ) ?>
+					<?php echo \Flickerbox\Lang::get( 'filters' ) ?>
 				</td>
 			</tr>
 
 			<tr class="row-category2">
 				<th>
-					<?php echo lang_get( 'username' ); ?><br />
+					<?php echo \Flickerbox\Lang::get( 'username' ); ?><br />
 				</th>
 				<th>
-					<?php echo lang_get( 'project_name' ); ?><br />
+					<?php echo \Flickerbox\Lang::get( 'project_name' ); ?><br />
 				</th>
 				<th>
-					<?php echo lang_get( 'configuration_option' ); ?><br />
+					<?php echo \Flickerbox\Lang::get( 'configuration_option' ); ?><br />
 				</th>
 			</tr>
 		</thead>
@@ -347,9 +340,9 @@ $t_result = db_query( $t_query, $t_param );
 			</tr>
 			<tr>
 				<td colspan="3">
-					<input name="apply_filter_button" type="submit" class="button-small" value="<?php echo lang_get( 'filter_button' )?>" />
-					<input name="default_filter_button" type="submit" class="button-small" value="<?php echo lang_get( 'default_filter' )?>" />
-					<input name="reset_filter_button" type="submit" class="button-small" value="<?php echo lang_get( 'reset_query' )?>" />
+					<input name="apply_filter_button" type="submit" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'filter_button' )?>" />
+					<input name="default_filter_button" type="submit" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'default_filter' )?>" />
+					<input name="reset_filter_button" type="submit" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'reset_query' )?>" />
 				</td>
 			</tr>
 		</tbody>
@@ -360,18 +353,18 @@ $t_result = db_query( $t_query, $t_param );
 <!-- CONFIGURATIONS LIST -->
 <div>
 <div id="adm-config-div" class="table-container" style="display: table">
-	<h2><?php echo lang_get( 'database_configuration' ) ?></h2>
+	<h2><?php echo \Flickerbox\Lang::get( 'database_configuration' ) ?></h2>
 	<table cellspacing="1" width="100%">
 		<thead>
 			<tr class="row-category">
-				<th><?php echo lang_get( 'username' ) ?></th>
-				<th><?php echo lang_get( 'project_name' ) ?></th>
-				<th><?php echo lang_get( 'configuration_option' ) ?></th>
-				<th><?php echo lang_get( 'configuration_option_type' ) ?></th>
-				<th><?php echo lang_get( 'configuration_option_value' ) ?></th>
-				<th><?php echo lang_get( 'access_level' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'username' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'project_name' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'configuration_option' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'configuration_option_type' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'configuration_option_value' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'access_level' ) ?></th>
 				<?php if( $t_read_write_access ) { ?>
-				<th><?php echo lang_get( 'actions' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'actions' ) ?></th>
 				<?php } ?>
 			</tr>
 		</thead>
@@ -380,7 +373,7 @@ $t_result = db_query( $t_query, $t_param );
 <?php
 # Pre-generate a form security token to avoid performance issues when the
 # db contains a large number of configurations
-$t_form_security_token = form_security_token( 'adm_config_delete' );
+$t_form_security_token = \Flickerbox\Form::security_token( 'adm_config_delete' );
 
 while( $t_row = db_fetch_array( $t_result ) ) {
 	extract( $t_row, EXTR_PREFIX_ALL, 'v' );
@@ -389,11 +382,11 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 <!-- Repeated Info Rows -->
 			<tr width="100%">
 				<td>
-					<?php echo ($v_user_id == 0) ? lang_get( 'all_users' ) : string_display_line( user_get_name( $v_user_id ) ) ?>
+					<?php echo ($v_user_id == 0) ? \Flickerbox\Lang::get( 'all_users' ) : \Flickerbox\String::display_line( user_get_name( $v_user_id ) ) ?>
 				</td>
-				<td><?php echo string_display_line( project_get_name( $v_project_id, false ) ) ?></td>
-				<td><?php echo string_display_line( $v_config_id ) ?></td>
-				<td><?php echo string_display_line( get_config_type( $v_type ) ) ?></td>
+				<td><?php echo \Flickerbox\String::display_line( project_get_name( $v_project_id, false ) ) ?></td>
+				<td><?php echo \Flickerbox\String::display_line( $v_config_id ) ?></td>
+				<td><?php echo \Flickerbox\String::display_line( get_config_type( $v_type ) ) ?></td>
 				<td style="overflow-x:auto;"><?php print_config_value_as_string( $v_type, $v_value ) ?></td>
 				<td><?php echo get_enum_element( 'access_levels', $v_access_reqd ) ?></td>
 <?php
@@ -405,7 +398,7 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 			# Update button (will populate edit form at page bottom)
 			print_button(
 				'#config_set_form',
-				lang_get( 'edit_link' ),
+				\Flickerbox\Lang::get( 'edit_link' ),
 				array(
 					'user_id'       => $v_user_id,
 					'project_id'    => $v_project_id,
@@ -418,7 +411,7 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 			# Delete button
 			print_button(
 				'adm_config_delete.php',
-				lang_get( 'delete_link' ),
+				\Flickerbox\Lang::get( 'delete_link' ),
 				array(
 					'user_id'       => $v_user_id,
 					'project_id'    => $v_project_id,
@@ -452,21 +445,21 @@ if( $t_read_write_access ) {
 <div id="config-edit-div" class="form-container">
 <form id="config_set_form" method="post" action="adm_config_set.php">
 	<fieldset>
-		<?php echo form_security_field( 'adm_config_set' ) ?>
+		<?php echo \Flickerbox\Form::security_field( 'adm_config_set' ) ?>
 
 		<!-- Title -->
 		<legend><span>
-			<?php echo lang_get( 'set_configuration_option' ) ?>
+			<?php echo \Flickerbox\Lang::get( 'set_configuration_option' ) ?>
 		</span></legend>
 
 		<!-- Username -->
 		<div class="field-container">
-			<label for="config-user-id"><span><?php echo lang_get( 'username' ) ?></span></label>
+			<label for="config-user-id"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></label>
 			<span class="select">
 				<select id="config-user-id" name="user_id">
 					<option value="<?php echo ALL_USERS; ?>"
 						<?php check_selected( $t_edit_user_id, ALL_USERS ) ?>>
-						<?php echo lang_get( 'all_users' ); ?>
+						<?php echo \Flickerbox\Lang::get( 'all_users' ); ?>
 					</option>
 					<?php print_user_option_list( $t_edit_user_id ) ?>
 				</select>
@@ -476,12 +469,12 @@ if( $t_read_write_access ) {
 
 			<!-- Project -->
 			<div class="field-container">
-				<label for="config-project-id"><span><?php echo lang_get( 'project_name' ) ?></span></label>
+				<label for="config-project-id"><span><?php echo \Flickerbox\Lang::get( 'project_name' ) ?></span></label>
 				<span class="select">
 					<select id="config-project-id" name="project_id">
 						<option value="<?php echo ALL_PROJECTS; ?>"
 							<?php check_selected( $t_edit_project_id, ALL_PROJECTS ); ?>>
-							<?php echo lang_get( 'all_projects' ); ?>
+							<?php echo \Flickerbox\Lang::get( 'all_projects' ); ?>
 						</option>
 						<?php print_project_option_list( $t_edit_project_id, false ) ?>
 					</select>
@@ -491,10 +484,10 @@ if( $t_read_write_access ) {
 
 			<!-- Config option name -->
 			<div class="field-container">
-				<label for="config-option"><span><?php echo lang_get( 'configuration_option' ) ?></span></label>
+				<label for="config-option"><span><?php echo \Flickerbox\Lang::get( 'configuration_option' ) ?></span></label>
 				<span class="input">
 					<input type="text" name="config_option"
-						value="<?php echo string_display_line( $t_edit_option ); ?>"
+						value="<?php echo \Flickerbox\String::display_line( $t_edit_option ); ?>"
 						size="64" maxlength="64" />
 				</span>
 				<span class="label-style"></span>
@@ -502,7 +495,7 @@ if( $t_read_write_access ) {
 
 			<!-- Option type -->
 			<div class="field-container">
-				<label for="config-type"><span><?php echo lang_get( 'configuration_option_type' ) ?></span></label>
+				<label for="config-type"><span><?php echo \Flickerbox\Lang::get( 'configuration_option_type' ) ?></span></label>
 				<span class="select">
 					<select id="config-type" name="type">
 						<?php print_option_list_from_array( $t_config_types, $t_edit_type ); ?>
@@ -513,7 +506,7 @@ if( $t_read_write_access ) {
 
 			<!-- Option Value -->
 			<div class="field-container">
-				<label for="config-value"><span><?php echo lang_get( 'configuration_option_value' ) ?></span></label>
+				<label for="config-value"><span><?php echo \Flickerbox\Lang::get( 'configuration_option_value' ) ?></span></label>
 				<span class="textarea">
 					<textarea name="value" cols="80" rows="10"><?php
 						print_config_value_as_string( $t_edit_type, $t_edit_value, false );
@@ -523,7 +516,7 @@ if( $t_read_write_access ) {
 			</div>
 
 			<!-- Submit button -->
-			<span class="submit-button"><input type="submit" name="config_set" class="button" value="<?php echo lang_get( 'set_configuration_option' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" name="config_set" class="button" value="<?php echo \Flickerbox\Lang::get( 'set_configuration_option' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -531,4 +524,4 @@ if( $t_read_write_access ) {
 <?php
 } # end user can change config
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

@@ -54,7 +54,7 @@ $s_CODE = STRING;
 				</listitem>
 				<listitem>
 					<para>CODE = string code, as called by
-						lang_get() function.
+						\Flickerbox\Lang::get() function.
 					</para>
 				</listitem>
 				<listitem>
@@ -65,7 +65,7 @@ $s_CODE = STRING;
 		</para>
 		<note><para>Mixing old and new formats within the file is not supported.
 		</para></note>
-		<warning><para>NEVER call <emphasis>lang_get_current()</emphasis>
+		<warning><para>NEVER call <emphasis>\Flickerbox\Lang::get_current()</emphasis>
 			from the <emphasis>Custom Strings File</emphasis>, as doing so
 			will reset the active_language, causing the code to return
 			incorrect translations if the default language is different
@@ -145,7 +145,7 @@ $s_CODE = STRING;
             <itemizedlist>
                 <listitem>
 					<para>Caption variable name.
-						This value is supplied to the lang_get() API; it is
+						This value is supplied to the \Flickerbox\Lang::get() API; it is
 						therefore mandatory to set this to a
 						<ulink url="http://php.net/language.variables.basics.php">valid PHP identifier</ulink>
 						(i.e. only letters, numbers and underscores; no spaces)
@@ -514,7 +514,7 @@ switch( $g_active_language ) {
 # Enumerations format is: "abc|lmn|xyz"
 # To use this in a custom field type "=categories" in the possible values field.
 function custom_function_override_enum_categories() {
-    $t_categories = category_get_all_rows( helper_get_current_project() );
+    $t_categories = \Flickerbox\Category::get_all_rows( helper_get_current_project() );
 
     $t_enum = array();
     foreach( $t_categories as $t_category ) {
@@ -1129,12 +1129,12 @@ $g_status_enum_workflow[CLOSED]       ='20:feedback,50:assigned';
 function custom_function_override_issue_update_validate( $p_issue_id, $p_bug_data, $p_bugnote_text ) {
 	if( $p_bug_data->status == RESOLVED ) {
 		if( $p_bug_data->resolution == OPEN ) {
-			error_parameters( 'the resolution cannot be open to resolve the issue' );
+			\Flickerbox\Error::parameters( 'the resolution cannot be open to resolve the issue' );
 			trigger_error( ERROR_VALIDATE_FAILURE, ERROR );
 		}
-		$t_version_count = count( version_get_all_rows( $p_bug_data->project_id ) );
+		$t_version_count = count( \Flickerbox\Version::get_all_rows( $p_bug_data->project_id ) );
 		if( ( $t_version_count > 0 ) && ( $p_bug_data->fixed_in_version == '' ) ) {
-			error_parameters( 'fixed in version must be set to resolve the issue' );
+			\Flickerbox\Error::parameters( 'fixed in version must be set to resolve the issue' );
 			trigger_error( ERROR_VALIDATE_FAILURE, ERROR );
 		}
 	}

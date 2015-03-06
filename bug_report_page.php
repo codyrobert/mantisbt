@@ -52,32 +52,17 @@
 $g_allow_browser_cache = 1;
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'collapse_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'date_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
-require_api( 'file_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'profile_api.php' );
 require_api( 'project_api.php' );
 require_api( 'relationship_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
-require_api( 'version_api.php' );
 
-$f_master_bug_id = gpc_get_int( 'm_id', 0 );
+$f_master_bug_id = \Flickerbox\GPC::get_int( 'm_id', 0 );
 
 if( $f_master_bug_id > 0 ) {
 	# master bug exists...
@@ -85,7 +70,7 @@ if( $f_master_bug_id > 0 ) {
 
 	# master bug is not read-only...
 	if( bug_is_readonly( $f_master_bug_id ) ) {
-		error_parameters( $f_master_bug_id );
+		\Flickerbox\Error::parameters( $f_master_bug_id );
 		trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 	}
 
@@ -102,7 +87,7 @@ if( $f_master_bug_id > 0 ) {
 		$t_changed_project = false;
 	}
 
-	access_ensure_project_level( config_get( 'report_bug_threshold' ) );
+	\Flickerbox\Access::ensure_project_level( config_get( 'report_bug_threshold' ) );
 
 	$f_build				= $t_bug->build;
 	$f_platform				= $t_bug->platform;
@@ -129,10 +114,10 @@ if( $f_master_bug_id > 0 ) {
 } else {
 	# Get Project Id and set it as current
 	$t_current_project = helper_get_current_project();
-	$t_project_id = gpc_get_int( 'project_id', $t_current_project );
+	$t_project_id = \Flickerbox\GPC::get_int( 'project_id', $t_current_project );
 
 	# If all projects, use default project if set
-	$t_default_project = user_pref_get_pref( auth_get_current_user_id(), 'default_project' );
+	$t_default_project = user_pref_get_pref( \Flickerbox\Auth::get_current_user_id(), 'default_project' );
 	if( ALL_PROJECTS == $t_project_id && ALL_PROJECTS != $t_default_project ) {
 		$t_project_id = $t_default_project;
 	}
@@ -151,39 +136,39 @@ if( $f_master_bug_id > 0 ) {
 		print_header_redirect( 'login_select_proj_page.php?ref=bug_report_page.php' );
 	}
 
-	access_ensure_project_level( config_get( 'report_bug_threshold' ) );
+	\Flickerbox\Access::ensure_project_level( config_get( 'report_bug_threshold' ) );
 
-	$f_build				= gpc_get_string( 'build', '' );
-	$f_platform				= gpc_get_string( 'platform', '' );
-	$f_os					= gpc_get_string( 'os', '' );
-	$f_os_build				= gpc_get_string( 'os_build', '' );
-	$f_product_version		= gpc_get_string( 'product_version', '' );
-	$f_target_version		= gpc_get_string( 'target_version', '' );
-	$f_profile_id			= gpc_get_int( 'profile_id', 0 );
-	$f_handler_id			= gpc_get_int( 'handler_id', 0 );
+	$f_build				= \Flickerbox\GPC::get_string( 'build', '' );
+	$f_platform				= \Flickerbox\GPC::get_string( 'platform', '' );
+	$f_os					= \Flickerbox\GPC::get_string( 'os', '' );
+	$f_os_build				= \Flickerbox\GPC::get_string( 'os_build', '' );
+	$f_product_version		= \Flickerbox\GPC::get_string( 'product_version', '' );
+	$f_target_version		= \Flickerbox\GPC::get_string( 'target_version', '' );
+	$f_profile_id			= \Flickerbox\GPC::get_int( 'profile_id', 0 );
+	$f_handler_id			= \Flickerbox\GPC::get_int( 'handler_id', 0 );
 
-	$f_category_id			= gpc_get_int( 'category_id', 0 );
-	$f_reproducibility		= gpc_get_int( 'reproducibility', (int)config_get( 'default_bug_reproducibility' ) );
-	$f_eta					= gpc_get_int( 'eta', (int)config_get( 'default_bug_eta' ) );
-	$f_severity				= gpc_get_int( 'severity', (int)config_get( 'default_bug_severity' ) );
-	$f_priority				= gpc_get_int( 'priority', (int)config_get( 'default_bug_priority' ) );
-	$f_summary				= gpc_get_string( 'summary', '' );
-	$f_description			= gpc_get_string( 'description', '' );
-	$f_steps_to_reproduce	= gpc_get_string( 'steps_to_reproduce', config_get( 'default_bug_steps_to_reproduce' ) );
-	$f_additional_info		= gpc_get_string( 'additional_info', config_get( 'default_bug_additional_info' ) );
-	$f_view_state			= gpc_get_int( 'view_state', (int)config_get( 'default_bug_view_status' ) );
-	$f_due_date				= gpc_get_string( 'due_date', '' );
+	$f_category_id			= \Flickerbox\GPC::get_int( 'category_id', 0 );
+	$f_reproducibility		= \Flickerbox\GPC::get_int( 'reproducibility', (int)config_get( 'default_bug_reproducibility' ) );
+	$f_eta					= \Flickerbox\GPC::get_int( 'eta', (int)config_get( 'default_bug_eta' ) );
+	$f_severity				= \Flickerbox\GPC::get_int( 'severity', (int)config_get( 'default_bug_severity' ) );
+	$f_priority				= \Flickerbox\GPC::get_int( 'priority', (int)config_get( 'default_bug_priority' ) );
+	$f_summary				= \Flickerbox\GPC::get_string( 'summary', '' );
+	$f_description			= \Flickerbox\GPC::get_string( 'description', '' );
+	$f_steps_to_reproduce	= \Flickerbox\GPC::get_string( 'steps_to_reproduce', config_get( 'default_bug_steps_to_reproduce' ) );
+	$f_additional_info		= \Flickerbox\GPC::get_string( 'additional_info', config_get( 'default_bug_additional_info' ) );
+	$f_view_state			= \Flickerbox\GPC::get_int( 'view_state', (int)config_get( 'default_bug_view_status' ) );
+	$f_due_date				= \Flickerbox\GPC::get_string( 'due_date', '' );
 
 	if( $f_due_date == '' ) {
-		$f_due_date = date_get_null();
+		$f_due_date = \Flickerbox\Date::get_null();
 	}
 
 	$t_changed_project		= false;
 }
 
-$f_report_stay			= gpc_get_bool( 'report_stay', false );
-$f_copy_notes_from_parent         = gpc_get_bool( 'copy_notes_from_parent', false );
-$f_copy_attachments_from_parent   = gpc_get_bool( 'copy_attachments_from_parent', false );
+$f_report_stay			= \Flickerbox\GPC::get_bool( 'report_stay', false );
+$f_copy_notes_from_parent         = \Flickerbox\GPC::get_bool( 'copy_notes_from_parent', false );
+$f_copy_attachments_from_parent   = \Flickerbox\GPC::get_bool( 'copy_attachments_from_parent', false );
 
 $t_fields = config_get( 'bug_report_page_fields' );
 $t_fields = columns_filter_disabled( $t_fields );
@@ -194,7 +179,7 @@ $t_show_eta = in_array( 'eta', $t_fields );
 $t_show_severity = in_array( 'severity', $t_fields );
 $t_show_priority = in_array( 'priority', $t_fields );
 $t_show_steps_to_reproduce = in_array( 'steps_to_reproduce', $t_fields );
-$t_show_handler = in_array( 'handler', $t_fields ) && access_has_project_level( config_get( 'update_bug_assign_threshold' ) );
+$t_show_handler = in_array( 'handler', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'update_bug_assign_threshold' ) );
 $t_show_profiles = config_get( 'enable_profiles' );
 $t_show_platform = $t_show_profiles && in_array( 'platform', $t_fields );
 $t_show_os = $t_show_profiles && in_array( 'os', $t_fields );
@@ -202,26 +187,26 @@ $t_show_os_version = $t_show_profiles && in_array( 'os_version', $t_fields );
 $t_show_resolution = in_array( 'resolution', $t_fields );
 $t_show_status = in_array( 'status', $t_fields );
 
-$t_show_versions = version_should_show_product_version( $t_project_id );
+$t_show_versions = \Flickerbox\Version::should_show_product_version( $t_project_id );
 $t_show_product_version = $t_show_versions && in_array( 'product_version', $t_fields );
 $t_show_product_build = $t_show_versions && in_array( 'product_build', $t_fields ) && config_get( 'enable_product_build' ) == ON;
-$t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields ) && access_has_project_level( config_get( 'roadmap_update_threshold' ) );
+$t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold' ) );
 $t_show_additional_info = in_array( 'additional_info', $t_fields );
-$t_show_due_date = in_array( 'due_date', $t_fields ) && access_has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), auth_get_current_user_id() );
-$t_show_attachments = in_array( 'attachments', $t_fields ) && file_allow_bug_upload();
-$t_show_view_state = in_array( 'view_state', $t_fields ) && access_has_project_level( config_get( 'set_view_status_threshold' ) );
+$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), \Flickerbox\Auth::get_current_user_id() );
+$t_show_attachments = in_array( 'attachments', $t_fields ) && \Flickerbox\File::allow_bug_upload();
+$t_show_view_state = in_array( 'view_state', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'set_view_status_threshold' ) );
 
 if( $t_show_due_date ) {
-	require_js( 'jscalendar/calendar.js' );
-	require_js( 'jscalendar/lang/calendar-en.js' );
-	require_js( 'jscalendar/calendar-setup.js' );
-	require_css( 'calendar-blue.css' );
+	\Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
+	\Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
+	\Flickerbox\HTML::require_js( 'jscalendar/calendar-setup.js' );
+	\Flickerbox\HTML::require_css( 'calendar-blue.css' );
 }
 
 # don't index bug report page
-html_robots_noindex();
+\Flickerbox\HTML::robots_noindex();
 
-html_page_top( lang_get( 'report_bug_link' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'report_bug_link' ) );
 
 print_recently_visited();
 
@@ -233,8 +218,8 @@ if( $t_show_attachments ) {
 <div id="report-bug-div" class="form-container">
 	<form id="report-bug-form" method="post" <?php echo $t_form_encoding; ?> action="bug_report.php?posted=1">
 		<fieldset class="has-required">
-			<legend><span><?php echo lang_get( 'enter_report_details_title' ) ?></span></legend>
-			<?php echo form_security_field( 'bug_report' ) ?>
+			<legend><span><?php echo \Flickerbox\Lang::get( 'enter_report_details_title' ) ?></span></legend>
+			<?php echo \Flickerbox\Form::security_field( 'bug_report' ) ?>
 			<input type="hidden" name="m_id" value="<?php echo $f_master_bug_id ?>" />
 			<input type="hidden" name="project_id" value="<?php echo $t_project_id ?>" />
 
@@ -321,7 +306,7 @@ if( $t_show_attachments ) {
 	if( $t_show_due_date ) {
 		$t_date_to_display = '';
 
-		if( !date_is_null( $f_due_date ) ) {
+		if( !\Flickerbox\Date::is_null( $f_due_date ) ) {
 			$t_date_to_display = date( config_get( 'calendar_date_format' ), $f_due_date );
 		}
 ?>
@@ -335,23 +320,23 @@ if( $t_show_attachments ) {
 		<?php } ?>
 		<?php if( $t_show_platform || $t_show_os || $t_show_os_version ) { ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'select_profile' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'select_profile' ) ?></span></label>
 				<span class="select">
-					<?php if( count( profile_get_all_for_user( auth_get_current_user_id() ) ) > 0 ) { ?>
+					<?php if( count( \Flickerbox\Profile::get_all_for_user( \Flickerbox\Auth::get_current_user_id() ) ) > 0 ) { ?>
 						<select <?php echo helper_get_tab_index() ?> id="profile_id" name="profile_id">
-							<?php print_profile_option_list( auth_get_current_user_id(), $f_profile_id ) ?>
+							<?php print_profile_option_list( \Flickerbox\Auth::get_current_user_id(), $f_profile_id ) ?>
 						</select>
 					<?php } ?>
 
-					<?php collapse_icon( 'profile' ); ?>
-					<?php echo lang_get( 'or_fill_in' ); ?>
+					<?php \Flickerbox\Collapse::icon( 'profile' ); ?>
+					<?php echo \Flickerbox\Lang::get( 'or_fill_in' ); ?>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
-			<?php collapse_open( 'profile' ); ?>
+			<?php \Flickerbox\Collapse::open( 'profile' ); ?>
 				<div class="field-container">
-					<label><span><?php echo lang_get( 'platform' ) ?></span></label>
+					<label><span><?php echo \Flickerbox\Lang::get( 'platform' ) ?></span></label>
 					<span class="input">
 						<?php if( config_get( 'allow_freetext_in_profile_fields' ) == OFF ) { ?>
 						<select id="platform" name="platform">
@@ -360,14 +345,14 @@ if( $t_show_attachments ) {
 						</select>
 						<?php
 							} else {
-								echo '<input type="text" id="platform" name="platform" class="autocomplete" size="32" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . string_attribute( $f_platform ) . '" />';
+								echo '<input type="text" id="platform" name="platform" class="autocomplete" size="32" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_platform ) . '" />';
 							}
 						?>
 					</span>
 					<span class="label-style"></span>
 				</div>
 				<div class="field-container">
-					<label><span><?php echo lang_get( 'os' ) ?></span></label>
+					<label><span><?php echo \Flickerbox\Lang::get( 'os' ) ?></span></label>
 					<span class="input">
 						<?php if( config_get( 'allow_freetext_in_profile_fields' ) == OFF ) { ?>
 						<select id="os" name="os">
@@ -376,14 +361,14 @@ if( $t_show_attachments ) {
 						</select>
 						<?php
 							} else {
-								echo '<input type="text" id="os" name="os" class="autocomplete" size="32" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . string_attribute( $f_os ) . '" />';
+								echo '<input type="text" id="os" name="os" class="autocomplete" size="32" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_os ) . '" />';
 							}
 						?>
 					</span>
 					<span class="label-style"></span>
 				</div>
 				<div class="field-container">
-					<label><span><?php echo lang_get( 'os_version' ) ?></span></label>
+					<label><span><?php echo \Flickerbox\Lang::get( 'os_version' ) ?></span></label>
 					<span class="input">
 						<?php
 						if( config_get( 'allow_freetext_in_profile_fields' ) == OFF ) {
@@ -394,25 +379,25 @@ if( $t_show_attachments ) {
 						</select>
 					<?php
 						} else {
-							echo '<input type="text" id="os_build" name="os_build" class="autocomplete" size="16" maxlength="16" tabindex="' . helper_get_tab_index_value() . '" value="' . string_attribute( $f_os_build ) . '" />';
+							echo '<input type="text" id="os_build" name="os_build" class="autocomplete" size="16" maxlength="16" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_os_build ) . '" />';
 						}
 					?>
 					</span>
 					<span class="label-style"></span>
 				</div>
-			<?php collapse_closed( 'profile' );?>
-			<?php collapse_end( 'profile' ); ?>
+			<?php \Flickerbox\Collapse::closed( 'profile' );?>
+			<?php \Flickerbox\Collapse::end( 'profile' ); ?>
 <?php } ?>
 <?php
 	if( $t_show_product_version ) {
 		$t_product_version_released_mask = VERSION_RELEASED;
 
-		if( access_has_project_level( config_get( 'report_issues_for_unreleased_versions_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_project_level( config_get( 'report_issues_for_unreleased_versions_threshold' ) ) ) {
 			$t_product_version_released_mask = VERSION_ALL;
 		}
 ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'product_version' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'product_version' ) ?></span></label>
 				<span class="select">
 					<select <?php echo helper_get_tab_index() ?> id="product_version" name="product_version">
 						<?php print_version_option_list( $f_product_version, $t_project_id, $t_product_version_released_mask ) ?>
@@ -425,9 +410,9 @@ if( $t_show_attachments ) {
 ?>
 <?php if( $t_show_product_build ) { ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'product_build' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'product_build' ) ?></span></label>
 				<span class="input">
-					<input <?php echo helper_get_tab_index() ?> type="text" id="build" name="build" size="32" maxlength="32" value="<?php echo string_attribute( $f_build ) ?>" />
+					<input <?php echo helper_get_tab_index() ?> type="text" id="build" name="build" size="32" maxlength="32" value="<?php echo \Flickerbox\String::attribute( $f_build ) ?>" />
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -435,7 +420,7 @@ if( $t_show_attachments ) {
 
 <?php if( $t_show_handler ) { ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'assign_to' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'assign_to' ) ?></span></label>
 				<span class="select">
 					<select <?php echo helper_get_tab_index() ?> id="handler_id" name="handler_id">
 						<option value="0" selected="selected"></option>
@@ -448,12 +433,12 @@ if( $t_show_attachments ) {
 
 <?php if( $t_show_status ) { ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'status' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'status' ) ?></span></label>
 				<span class="select">
 					<select <?php echo helper_get_tab_index() ?> name="status">
 					<?php
 					$t_resolution_options = get_status_option_list(
-						access_get_project_level( $t_project_id ),
+						\Flickerbox\Access::get_project_level( $t_project_id ),
 						config_get( 'bug_submit_status' ),
 						true,
 						ON == config_get( 'allow_reporter_close' ),
@@ -472,7 +457,7 @@ if( $t_show_attachments ) {
 
 <?php if( $t_show_resolution ) { ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'resolution' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'resolution' ) ?></span></label>
 				<span class="select">
 					<select <?php echo helper_get_tab_index() ?> name="resolution">
 						<?php
@@ -487,7 +472,7 @@ if( $t_show_attachments ) {
 <?php # Target Version (if permissions allow)
 	if( $t_show_target_version ) { ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'target_version' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'target_version' ) ?></span></label>
 				<span class="select">
 					<select <?php echo helper_get_tab_index() ?> id="target_version" name="target_version">
 						<?php print_version_option_list( '', null, VERSION_FUTURE ) ?>
@@ -501,7 +486,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span class="required">*</span><span><?php print_documentation_link( 'summary' ) ?></span></label>
 				<span class="input">
-					<input <?php echo helper_get_tab_index() ?> type="text" id="summary" name="summary" size="105" maxlength="128" value="<?php echo string_attribute( $f_summary ) ?>" />
+					<input <?php echo helper_get_tab_index() ?> type="text" id="summary" name="summary" size="105" maxlength="128" value="<?php echo \Flickerbox\String::attribute( $f_summary ) ?>" />
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -509,7 +494,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><span class="required">*</span><?php print_documentation_link( 'description' ) ?></span></label>
 				<span class="textarea">
-					<textarea <?php echo helper_get_tab_index() ?> id="description" name="description" cols="80" rows="10"><?php echo string_textarea( $f_description ) ?></textarea>
+					<textarea <?php echo helper_get_tab_index() ?> id="description" name="description" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_description ) ?></textarea>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -518,7 +503,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'steps_to_reproduce' ) ?></span></label>
 				<span class="textarea">
-					<textarea <?php echo helper_get_tab_index() ?> id="steps_to_reproduce" name="steps_to_reproduce" cols="80" rows="10"><?php echo string_textarea( $f_steps_to_reproduce ) ?></textarea>
+					<textarea <?php echo helper_get_tab_index() ?> id="steps_to_reproduce" name="steps_to_reproduce" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_steps_to_reproduce ) ?></textarea>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -528,7 +513,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'additional_information' ) ?></span></label>
 				<span class="textarea">
-					<textarea <?php echo helper_get_tab_index() ?> id="additional_info" name="additional_info" cols="80" rows="10"><?php echo string_textarea( $f_additional_info ) ?></textarea>
+					<textarea <?php echo helper_get_tab_index() ?> id="additional_info" name="additional_info" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_additional_info ) ?></textarea>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -550,9 +535,9 @@ if( $t_show_attachments ) {
 						<span class="required">*</span>
 						<?php } ?>
 						<?php if( $t_def['type'] != CUSTOM_FIELD_TYPE_RADIO && $t_def['type'] != CUSTOM_FIELD_TYPE_CHECKBOX ) { ?>
-							<label for="custom_field_<?php echo string_attribute( $t_def['id'] ) ?>"><?php echo string_display( lang_get_defaulted( $t_def['name'] ) ) ?></label>
+							<label for="custom_field_<?php echo \Flickerbox\String::attribute( $t_def['id'] ) ?>"><?php echo \Flickerbox\String::display( \Flickerbox\Lang::get_defaulted( $t_def['name'] ) ) ?></label>
 						<?php } else {
-							echo string_display( lang_get_defaulted( $t_def['name'] ) );
+							echo \Flickerbox\String::display( \Flickerbox\Lang::get_defaulted( $t_def['name'] ) );
 						} ?>
 					</span>
 				</label>
@@ -568,12 +553,12 @@ if( $t_show_attachments ) {
 <?php
 	# File Upload (if enabled)
 	if( $t_show_attachments ) {
-		$t_max_file_size = (int)min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+		$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 		$t_file_upload_max_num = max( 1, config_get( 'file_upload_max_num' ) );
 ?>
 			<div class="field-container">
 				<label>
-					<span><?php echo lang_get( $t_file_upload_max_num == 1 ? 'upload_file' : 'upload_files' ) ?></span>
+					<span><?php echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'upload_file' : 'upload_files' ) ?></span>
 					<br />
 					<?php echo print_max_filesize( $t_max_file_size ); ?>
 				</label>
@@ -598,10 +583,10 @@ if( $t_show_attachments ) {
 	if( $t_show_view_state ) {
 ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'view_status' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
 				<span class="input">
-					<label><input <?php echo helper_get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PUBLIC ?>" <?php check_checked( $f_view_state, VS_PUBLIC ) ?> /> <?php echo lang_get( 'public' ) ?></label>
-					<label><input <?php echo helper_get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PRIVATE ?>" <?php check_checked( $f_view_state, VS_PRIVATE ) ?> /> <?php echo lang_get( 'private' ) ?></label>
+					<label><input <?php echo helper_get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PUBLIC ?>" <?php check_checked( $f_view_state, VS_PUBLIC ) ?> /> <?php echo \Flickerbox\Lang::get( 'public' ) ?></label>
+					<label><input <?php echo helper_get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PRIVATE ?>" <?php check_checked( $f_view_state, VS_PRIVATE ) ?> /> <?php echo \Flickerbox\Lang::get( 'private' ) ?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -612,19 +597,19 @@ if( $t_show_attachments ) {
 	if( $f_master_bug_id > 0 ) {
 ?>
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'relationship_with_parent' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'relationship_with_parent' ) ?></span></label>
 				<span class="input">
 					<?php relationship_list_box( config_get( 'default_bug_relationship_clone' ), 'rel_type', false, true ) ?>
-					<?php echo '<strong>' . lang_get( 'bug' ) . ' ' . bug_format_id( $f_master_bug_id ) . '</strong>' ?>
+					<?php echo '<strong>' . \Flickerbox\Lang::get( 'bug' ) . ' ' . bug_format_id( $f_master_bug_id ) . '</strong>' ?>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'copy_from_parent' ) ?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'copy_from_parent' ) ?></span></label>
 				<span class="input">
-					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="copy_notes_from_parent" name="copy_notes_from_parent" <?php check_checked( $f_copy_notes_from_parent ) ?> /> <?php echo lang_get( 'copy_notes_from_parent' ) ?></label>
-					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="copy_attachments_from_parent" name="copy_attachments_from_parent" <?php check_checked( $f_copy_attachments_from_parent ) ?> /> <?php echo lang_get( 'copy_attachments_from_parent' ) ?></label>
+					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="copy_notes_from_parent" name="copy_notes_from_parent" <?php check_checked( $f_copy_notes_from_parent ) ?> /> <?php echo \Flickerbox\Lang::get( 'copy_notes_from_parent' ) ?></label>
+					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="copy_attachments_from_parent" name="copy_attachments_from_parent" <?php check_checked( $f_copy_attachments_from_parent ) ?> /> <?php echo \Flickerbox\Lang::get( 'copy_attachments_from_parent' ) ?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -634,16 +619,16 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'report_stay' ) ?></span></label>
 				<span class="input">
-					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="report_stay" name="report_stay" <?php check_checked( $f_report_stay ) ?> /> <?php echo lang_get( 'check_report_more_bugs' ) ?></label>
+					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="report_stay" name="report_stay" <?php check_checked( $f_report_stay ) ?> /> <?php echo \Flickerbox\Lang::get( 'check_report_more_bugs' ) ?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<span class="submit-button">
-				<input <?php echo helper_get_tab_index() ?> type="submit" class="button" value="<?php echo lang_get( 'submit_report_button' ) ?>" />
+				<input <?php echo helper_get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'submit_report_button' ) ?>" />
 			</span>
 		</fieldset>
 	</form>
 </div>
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

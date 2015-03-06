@@ -45,45 +45,36 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'filter_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'project_api.php' );
-require_api( 'rss_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
-$f_project_id = gpc_get_int( 'project_id', ALL_PROJECTS );
-$f_filter_id = gpc_get_int( 'filter_id', 0 );
-$f_sort = gpc_get_string( 'sort', 'submit' );
-$f_username = gpc_get_string( 'username', null );
-$f_key = gpc_get_string( 'key', null );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
+$f_filter_id = \Flickerbox\GPC::get_int( 'filter_id', 0 );
+$f_sort = \Flickerbox\GPC::get_string( 'sort', 'submit' );
+$f_username = \Flickerbox\GPC::get_string( 'username', null );
+$f_key = \Flickerbox\GPC::get_string( 'key', null );
 
 # make sure RSS syndication is enabled.
 if( OFF == config_get( 'rss_enabled' ) ) {
-	access_denied();
+	\Flickerbox\Access::denied();
 }
 
 # authenticate the user
 if( $f_username !== null ) {
-	if( !rss_login( $f_username, $f_key ) ) {
-		access_denied();
+	if( !\Flickerbox\RSS::login( $f_username, $f_key ) ) {
+		\Flickerbox\Access::denied();
 	}
 } else {
 	if( OFF == config_get( 'allow_anonymous_login' ) ) {
-		access_denied();
+		\Flickerbox\Access::denied();
 	}
 }
 
 # Make sure that the current user has access to the selected project (if not ALL PROJECTS).
 if( $f_project_id != ALL_PROJECTS ) {
-	access_ensure_project_level( config_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
+	\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
 }
 
 if( $f_sort === 'update' ) {
@@ -107,14 +98,14 @@ if( $f_project_id !== 0 ) {
 	$t_title .= ' - ' . $t_category;
 }
 
-$t_title .= ' - ' . lang_get( 'issues' );
+$t_title .= ' - ' . \Flickerbox\Lang::get( 'issues' );
 
 if( $f_username !== null ) {
 	$t_title .= ' - (' . $f_username . ')';
 }
 
 if( $f_filter_id !== 0 ) {
-	$t_title .= ' (' . filter_get_field( $f_filter_id, 'name' ) . ')';
+	$t_title .= ' (' . \Flickerbox\Filter::get_field( $f_filter_id, 'name' ) . ')';
 }
 
 $t_description = $t_title;
@@ -131,7 +122,7 @@ $t_publisher = '';
 $t_creator = '';
 
 $t_date = date( 'r' );
-$t_language = lang_get( 'phpmailer_language' );
+$t_language = \Flickerbox\Lang::get( 'phpmailer_language' );
 $t_rights = '';
 
 # spatial location , temporal period or jurisdiction
@@ -170,19 +161,19 @@ if( $f_username !== null ) {
 $t_show_sticky = null;
 
 if( $f_filter_id == 0 ) {
-	$t_custom_filter = filter_get_default();
+	$t_custom_filter = \Flickerbox\Filter::get_default();
 	$t_custom_filter['sort'] = $c_sort_field;
 } else {
 	# null will be returned if the user doesn't have access right to access the filter.
-	$t_custom_filter = filter_db_get_filter( $f_filter_id, $t_user_id );
+	$t_custom_filter = \Flickerbox\Filter::db_get_filter( $f_filter_id, $t_user_id );
 	if( null === $t_custom_filter ) {
-		access_denied();
+		\Flickerbox\Access::denied();
 	}
 
-	$t_custom_filter = filter_deserialize( $t_custom_filter );
+	$t_custom_filter = \Flickerbox\Filter::deserialize( $t_custom_filter );
 }
 
-$t_issues = filter_get_bug_rows( $t_page_number, $t_issues_per_page, $t_page_count, $t_issues_count,
+$t_issues = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_issues_per_page, $t_page_count, $t_issues_count,
 								 $t_custom_filter, $t_project_id, $t_user_id, $t_show_sticky );
 $t_issues_count = count( $t_issues );
 
@@ -194,25 +185,25 @@ for( $i = 0; $i < $t_issues_count; $i++ ) {
 	$t_title = bug_format_id( $t_bug->id ) . ': ' . $t_bug->summary;
 
 	if( $t_bug->view_state == VS_PRIVATE ) {
-		$t_title .= ' [' . lang_get( 'private' ) . ']';
+		$t_title .= ' [' . \Flickerbox\Lang::get( 'private' ) . ']';
 	}
 
 	$t_description = string_rss_links( $t_bug->description );
 
 	# subject is category.
-	$t_subject = category_full_name( $t_bug->category_id, false );
+	$t_subject = \Flickerbox\Category::full_name( $t_bug->category_id, false );
 
 	# optional DC value
 	$t_date = $t_bug->last_updated;
 
 	# author of item
 	$t_author = '';
-	if( access_has_global_level( config_get( 'show_user_email_threshold' ) ) ) {
+	if( \Flickerbox\Access::has_global_level( config_get( 'show_user_email_threshold' ) ) ) {
 		$t_author_name = user_get_name( $t_bug->reporter_id );
 		$t_author_email = user_get_field( $t_bug->reporter_id, 'email' );
 
-		if( !is_blank( $t_author_email ) ) {
-			if( !is_blank( $t_author_name ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_author_email ) ) {
+			if( !\Flickerbox\Utility::is_blank( $t_author_name ) ) {
 				$t_author = $t_author_name . ' <' . $t_author_email . '>';
 			} else {
 				$t_author = $t_author_email;

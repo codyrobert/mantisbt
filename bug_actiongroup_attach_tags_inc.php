@@ -36,14 +36,9 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'tag_api.php' );
 
 /**
  * Prints the title for the custom action page.
@@ -52,7 +47,7 @@ require_api( 'tag_api.php' );
 function action_attach_tags_print_title() {
 	echo '<tr>';
 	echo '<td class="form-title" colspan="2">';
-	echo lang_get( 'tag_attach_long' );
+	echo \Flickerbox\Lang::get( 'tag_attach_long' );
 	echo '</td></tr>';
 }
 
@@ -61,9 +56,9 @@ function action_attach_tags_print_title() {
  * @return void
  */
 function action_attach_tags_print_fields() {
-	echo '<tr><th class="category">', lang_get( 'tag_attach_long' ), '</th><td>';
+	echo '<tr><th class="category">', \Flickerbox\Lang::get( 'tag_attach_long' ), '</th><td>';
 	print_tag_input();
-	echo '<input type="submit" class="button" value="' . lang_get( 'tag_attach' ) . ' " /></td></tr>';
+	echo '<input type="submit" class="button" value="' . \Flickerbox\Lang::get( 'tag_attach' ) . ' " /></td></tr>';
 }
 
 /**
@@ -77,9 +72,9 @@ function action_attach_tags_validate( $p_bug_id ) {
 	global $g_action_attach_tags_attach;
 	global $g_action_attach_tags_create;
 
-	$t_can_attach = access_has_bug_level( config_get( 'tag_attach_threshold' ), $p_bug_id );
+	$t_can_attach = \Flickerbox\Access::has_bug_level( config_get( 'tag_attach_threshold' ), $p_bug_id );
 	if( !$t_can_attach ) {
-		return lang_get( 'tag_attach_denied' );
+		return \Flickerbox\Lang::get( 'tag_attach_denied' );
 	}
 
 	if( !isset( $g_action_attach_tags_tags ) ) {
@@ -87,7 +82,7 @@ function action_attach_tags_validate( $p_bug_id ) {
 			$g_action_attach_tags_attach = array();
 			$g_action_attach_tags_create = array();
 		}
-		$g_action_attach_tags_tags = tag_parse_string( gpc_get_string( 'tag_string' ) );
+		$g_action_attach_tags_tags = \Flickerbox\Tag::parse_string( \Flickerbox\GPC::get_string( 'tag_string' ) );
 		foreach ( $g_action_attach_tags_tags as $t_tag_row ) {
 			if( $t_tag_row['id'] == -1 ) {
 				$g_action_attach_tags_create[$t_tag_row['name']] = $t_tag_row;
@@ -97,14 +92,14 @@ function action_attach_tags_validate( $p_bug_id ) {
 		}
 	}
 
-	$t_can_create = access_has_bug_level( config_get( 'tag_create_threshold' ), $p_bug_id );
+	$t_can_create = \Flickerbox\Access::has_bug_level( config_get( 'tag_create_threshold' ), $p_bug_id );
 	if( count( $g_action_attach_tags_create ) > 0 && !$t_can_create ) {
-		return lang_get( 'tag_create_denied' );
+		return \Flickerbox\Lang::get( 'tag_create_denied' );
 	}
 
 	if( count( $g_action_attach_tags_create ) == 0 &&
 		count( $g_action_attach_tags_attach ) == 0 ) {
-		return lang_get( 'tag_none_attached' );
+		return \Flickerbox\Lang::get( 'tag_none_attached' );
 	}
 
 	return null;
@@ -118,17 +113,17 @@ function action_attach_tags_validate( $p_bug_id ) {
 function action_attach_tags_process( $p_bug_id ) {
 	global $g_action_attach_tags_attach, $g_action_attach_tags_create;
 
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 	foreach( $g_action_attach_tags_create as $t_tag_row ) {
-		$t_tag_row['id'] = tag_create( $t_tag_row['name'], $t_user_id );
+		$t_tag_row['id'] = \Flickerbox\Tag::create( $t_tag_row['name'], $t_user_id );
 		$g_action_attach_tags_attach[] = $t_tag_row;
 	}
 	$g_action_attach_tags_create = array();
 
 	foreach( $g_action_attach_tags_attach as $t_tag_row ) {
-		if( !tag_bug_is_attached( $t_tag_row['id'], $p_bug_id ) ) {
-			tag_bug_attach( $t_tag_row['id'], $p_bug_id, $t_user_id );
+		if( !\Flickerbox\Tag::bug_is_attached( $t_tag_row['id'], $p_bug_id ) ) {
+			\Flickerbox\Tag::bug_attach( $t_tag_row['id'], $p_bug_id, $t_user_id );
 		}
 	}
 

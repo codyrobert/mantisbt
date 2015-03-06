@@ -39,27 +39,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'database_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
-require_css( 'login.css' );
+\Flickerbox\HTML::require_css( 'login.css' );
 
-$f_error                 = gpc_get_bool( 'error' );
-$f_cookie_error          = gpc_get_bool( 'cookie_error' );
-$f_return                = string_sanitize_url( gpc_get_string( 'return', '' ) );
-$f_username              = gpc_get_string( 'username', '' );
-$f_perm_login            = gpc_get_bool( 'perm_login', false );
-$f_secure_session        = gpc_get_bool( 'secure_session', false );
-$f_secure_session_cookie = gpc_get_cookie( config_get_global( 'cookie_prefix' ) . '_secure_session', null );
+$f_error                 = \Flickerbox\GPC::get_bool( 'error' );
+$f_cookie_error          = \Flickerbox\GPC::get_bool( 'cookie_error' );
+$f_return                = \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'return', '' ) );
+$f_username              = \Flickerbox\GPC::get_string( 'username', '' );
+$f_perm_login            = \Flickerbox\GPC::get_bool( 'perm_login', false );
+$f_secure_session        = \Flickerbox\GPC::get_bool( 'secure_session', false );
+$f_secure_session_cookie = \Flickerbox\GPC::get_cookie( config_get_global( 'cookie_prefix' ) . '_secure_session', null );
 
 # Set username to blank if invalid to prevent possible XSS exploits
 if( !user_is_name_valid( $f_username ) ) {
@@ -69,9 +61,9 @@ if( !user_is_name_valid( $f_username ) ) {
 $t_session_validation = ( ON == config_get_global( 'session_validation' ) );
 
 # If user is already authenticated and not anonymous
-if( auth_is_user_authenticated() && !current_user_is_anonymous() ) {
+if( auth_is_user_authenticated() && !\Flickerbox\Current_User::is_anonymous() ) {
 	# If return URL is specified redirect to it; otherwise use default page
-	if( !is_blank( $f_return ) ) {
+	if( !\Flickerbox\Utility::is_blank( $f_return ) ) {
 		print_header_redirect( $f_return, false, false, true );
 	} else {
 		print_header_redirect( config_get( 'default_home_page' ) );
@@ -86,8 +78,8 @@ if( auth_automatic_logon_bypass_form() ) {
 		$t_uri = 'login_anon.php';
 	}
 
-	if( !is_blank( $f_return ) ) {
-		$t_uri .= '?return=' . string_url( $f_return );
+	if( !\Flickerbox\Utility::is_blank( $f_return ) ) {
+		$t_uri .= '?return=' . \Flickerbox\String::url( $f_return );
 	}
 
 	print_header_redirect( $t_uri );
@@ -115,24 +107,24 @@ if( $f_username ) {
 }
 
 # Login page shouldn't be indexed by search engines
-html_robots_noindex();
+\Flickerbox\HTML::robots_noindex();
 
-html_page_top1();
-html_page_top2a();
+\Flickerbox\HTML::page_top1();
+\Flickerbox\HTML::page_top2a();
 
 if( $f_error || $f_cookie_error ) {
 	echo '<div class="important-msg">';
 	echo '<ul>';
 
 	# Display short greeting message
-	# echo lang_get( 'login_page_info' ) . '<br />';
+	# echo \Flickerbox\Lang::get( 'login_page_info' ) . '<br />';
 
 	# Only echo error message if error variable is set
 	if( $f_error ) {
-		echo '<li>' . lang_get( 'login_error' ) . '</li>';
+		echo '<li>' . \Flickerbox\Lang::get( 'login_error' ) . '</li>';
 	}
 	if( $f_cookie_error ) {
-		echo '<li>' . lang_get( 'login_cookies_disabled' ) . '</li>';
+		echo '<li>' . \Flickerbox\Lang::get( 'login_cookies_disabled' ) . '</li>';
 	}
 	echo '</ul>';
 	echo '</div>';
@@ -145,7 +137,7 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 	$t_admin_user_id = user_get_id_by_name( 'administrator' );
 	if( $t_admin_user_id !== false ) {
 		if( user_is_enabled( $t_admin_user_id ) && auth_does_password_match( $t_admin_user_id, 'root' ) ) {
-			$t_warnings[] = lang_get( 'warning_default_administrator_account_present' );
+			$t_warnings[] = \Flickerbox\Lang::get( 'warning_default_administrator_account_present' );
 		}
 	}
 
@@ -157,9 +149,9 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 	 * @return string
 	 */
 	function debug_setting_message ( $p_type, $p_setting, $p_value ) {
-		return sprintf( lang_get( 'warning_change_setting' ), $p_setting, $p_value )
-			. sprintf( lang_get( 'word_separator' ) )
-			. sprintf( lang_get( "warning_${p_type}_hazard" ) );
+		return sprintf( \Flickerbox\Lang::get( 'warning_change_setting' ), $p_setting, $p_value )
+			. sprintf( \Flickerbox\Lang::get( 'word_separator' ) )
+			. sprintf( \Flickerbox\Lang::get( "warning_${p_type}_hazard" ) );
 	}
 
 	$t_config = 'show_detailed_errors';
@@ -179,7 +171,7 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 	# if db version is 0, we do not have a valid database.
 	$t_db_version = config_get( 'database_version', 0 );
 	if( $t_db_version == 0 ) {
-		$t_warnings[] = lang_get( 'error_database_no_schema_version' );
+		$t_warnings[] = \Flickerbox\Lang::get( 'error_database_no_schema_version' );
 	}
 
 	# Check for db upgrade for versions > 1.0.0 using new installer and schema
@@ -192,10 +184,10 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 			( $t_db_version != $t_upgrades_reqd ) ) {
 
 		if( $t_db_version < $t_upgrades_reqd ) {
-			$t_warnings[] = lang_get( 'error_database_version_out_of_date_2' );
+			$t_warnings[] = \Flickerbox\Lang::get( 'error_database_version_out_of_date_2' );
 			$t_upgrade_required = true;
 		} else {
-			$t_warnings[] = lang_get( 'error_code_version_out_of_date' );
+			$t_warnings[] = \Flickerbox\Lang::get( 'error_code_version_out_of_date' );
 		}
 	}
 }
@@ -205,10 +197,10 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 <div id="login-div" class="form-container">
 	<form id="login-form" method="post" action="login.php">
 		<fieldset>
-			<legend><span><?php echo lang_get( 'login_title' ) ?></span></legend>
+			<legend><span><?php echo \Flickerbox\Lang::get( 'login_title' ) ?></span></legend>
 			<?php
-			if( !is_blank( $f_return ) ) {
-				echo '<input type="hidden" name="return" value="', string_html_specialchars( $f_return ), '" />';
+			if( !\Flickerbox\Utility::is_blank( $f_return ) ) {
+				echo '<input type="hidden" name="return" value="', \Flickerbox\String::html_specialchars( $f_return ), '" />';
 			}
 
 			if( $t_upgrade_required ) {
@@ -219,52 +211,52 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 			echo '<ul id="login-links">';
 
 			if( ON == config_get( 'allow_anonymous_login' ) ) {
-				echo '<li><a href="login_anon.php?return=' . string_url( $f_return ) . '">' . lang_get( 'login_anonymously' ) . '</a></li>';
+				echo '<li><a href="login_anon.php?return=' . \Flickerbox\String::url( $f_return ) . '">' . \Flickerbox\Lang::get( 'login_anonymously' ) . '</a></li>';
 			}
 
 			if( ( ON == config_get_global( 'allow_signup' ) ) &&
 				( LDAP != config_get_global( 'login_method' ) ) &&
 				( ON == config_get( 'enable_email_notification' ) )
 			) {
-				echo '<li><a href="signup_page.php">', lang_get( 'signup_link' ), '</a></li>';
+				echo '<li><a href="signup_page.php">', \Flickerbox\Lang::get( 'signup_link' ), '</a></li>';
 			}
 			# lost password feature disabled or reset password via email disabled -> stop here!
 			if( ( LDAP != config_get_global( 'login_method' ) ) &&
 				( ON == config_get( 'lost_password_feature' ) ) &&
 				( ON == config_get( 'send_reset_password' ) ) &&
 				( ON == config_get( 'enable_email_notification' ) ) ) {
-				echo '<li><a href="lost_pwd_page.php">', lang_get( 'lost_password_link' ), '</a></li>';
+				echo '<li><a href="lost_pwd_page.php">', \Flickerbox\Lang::get( 'lost_password_link' ), '</a></li>';
 			}
 			?>
 			</ul>
 			<div class="field-container">
-				<label for="username"><span><?php echo lang_get( 'username' ) ?></span></label>
-				<span class="input"><input id="username" type="text" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" value="<?php echo string_attribute( $f_username ); ?>" class="<?php echo $t_username_field_autofocus ?>" /></span>
+				<label for="username"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></label>
+				<span class="input"><input id="username" type="text" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" value="<?php echo \Flickerbox\String::attribute( $f_username ); ?>" class="<?php echo $t_username_field_autofocus ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="password"><span><?php echo lang_get( 'password' ) ?></span></label>
+				<label for="password"><span><?php echo \Flickerbox\Lang::get( 'password' ) ?></span></label>
 				<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" class="<?php echo $t_password_field_autofocus ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<?php if( ON == config_get( 'allow_permanent_cookie' ) ) { ?>
 			<div class="field-container">
-				<label for="remember-login"><span><?php echo lang_get( 'save_login' ) ?></span></label>
+				<label for="remember-login"><span><?php echo \Flickerbox\Lang::get( 'save_login' ) ?></span></label>
 				<span class="input"><input id="remember-login" type="checkbox" name="perm_login" <?php echo ( $f_perm_login ? 'checked="checked" ' : '' ) ?>/></span>
 				<span class="label-style"></span>
 			</div>
 			<?php } ?>
 			<?php if( $t_session_validation ) { ?>
 			<div class="field-container">
-				<label id="secure-session-label" for="secure-session"><span><?php echo lang_get( 'secure_session' ) ?></span></label>
+				<label id="secure-session-label" for="secure-session"><span><?php echo \Flickerbox\Lang::get( 'secure_session' ) ?></span></label>
 				<span class="input">
 					<input id="secure-session" type="checkbox" name="secure_session" <?php echo ( $t_default_secure_session ? 'checked="checked" ' : '' ) ?>/>
-					<span id="session-msg"><?php echo lang_get( 'secure_session_long' ); ?></span>
+					<span id="session-msg"><?php echo \Flickerbox\Lang::get( 'secure_session_long' ); ?></span>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<?php } ?>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'login_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'login_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -284,4 +276,4 @@ if( count( $t_warnings ) > 0 ) {
 	echo '</div>';
 }
 
-html_page_bottom1a( __FILE__ );
+\Flickerbox\HTML::page_bottom1a( __FILE__ );

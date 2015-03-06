@@ -40,21 +40,14 @@ if( !defined( 'VIEW_ALL_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'category_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'event_api.php' );
-require_api( 'filter_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-$t_filter = current_user_get_bug_filter();
-filter_init( $t_filter );
+$t_filter = \Flickerbox\Current_User::get_bug_filter();
+\Flickerbox\Filter::init( $t_filter );
 
 list( $t_sort, ) = explode( ',', $g_filter['sort'] );
 list( $t_dir, ) = explode( ',', $g_filter['dir'] );
@@ -65,13 +58,13 @@ $t_icon_path = config_get( 'icon_path' );
 
 # Improve performance by caching category data in one pass
 if( helper_get_current_project() > 0 ) {
-	category_get_all_rows( helper_get_current_project() );
+	\Flickerbox\Category::get_all_rows( helper_get_current_project() );
 } else {
 	$t_categories = array();
 	foreach ( $t_rows as $t_row ) {
 		$t_categories[] = $t_row->category_id;
 	}
-	category_cache_array_rows( array_unique( $t_categories ) );
+	\Flickerbox\Category::cache_array_rows( array_unique( $t_categories ) );
 }
 $g_columns = helper_get_columns_to_view( COLUMNS_TARGET_VIEW_PAGE );
 
@@ -81,7 +74,7 @@ $t_filter_position = config_get( 'filter_position' );
 
 # -- ====================== FILTER FORM ========================= --
 if( ( $t_filter_position & FILTER_POSITION_TOP ) == FILTER_POSITION_TOP ) {
-	filter_draw_selection_area( $f_page_number );
+	\Flickerbox\Filter::draw_selection_area( $f_page_number );
 }
 # -- ====================== end of FILTER FORM ================== --
 
@@ -91,7 +84,7 @@ if( ( $t_filter_position & FILTER_POSITION_TOP ) == FILTER_POSITION_TOP ) {
 $t_status_legend_position = config_get( 'status_legend_position' );
 
 if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_position == STATUS_LEGEND_POSITION_BOTH ) {
-	html_status_legend();
+	\Flickerbox\HTML::status_legend();
 }
 ?>
 <br />
@@ -112,7 +105,7 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 				$v_end = $v_start + count( $t_rows ) - 1;
 			}
 
-			echo lang_get( 'viewing_bugs_title' );
+			echo \Flickerbox\Lang::get( 'viewing_bugs_title' );
 			echo ' (' . $v_start . ' - ' . $v_end . ' / ' . $t_bug_count . ')';
 		?> </span>
 
@@ -120,11 +113,11 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 		<?php
 			# -- Print and Export links --
 			echo '&#160;';
-			print_bracket_link( 'print_all_bug_page.php', lang_get( 'print_all_bug_page_link' ) );
+			print_bracket_link( 'print_all_bug_page.php', \Flickerbox\Lang::get( 'print_all_bug_page_link' ) );
 			echo '&#160;';
-			print_bracket_link( 'csv_export.php', lang_get( 'csv_export' ) );
+			print_bracket_link( 'csv_export.php', \Flickerbox\Lang::get( 'csv_export' ) );
 			echo '&#160;';
-			print_bracket_link( 'excel_xml_export.php', lang_get( 'excel_export' ) );
+			print_bracket_link( 'excel_xml_export.php', \Flickerbox\Lang::get( 'excel_export' ) );
 
 			$t_event_menu_options = $t_links = event_signal( 'EVENT_MENU_FILTER' );
 
@@ -145,7 +138,7 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 
 		<span class="floatright small"><?php
 			# -- Page number links --
-			$f_filter	= gpc_get_int( 'filter', 0 );
+			$f_filter	= \Flickerbox\GPC::get_int( 'filter', 0 );
 			print_page_links( 'view_all_bug_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter );
 		?> </span>
 	</td>
@@ -200,7 +193,7 @@ function write_bug_rows( array $p_rows ) {
 		}
 
 		# choose color based on status
-		$t_status_label = html_get_status_css_class( $t_row->status, auth_get_current_user_id(), $t_row->project_id );
+		$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_row->status, \Flickerbox\Auth::get_current_user_id(), $t_row->project_id );
 
 		echo '<tr class="' . $t_status_label . '">';
 
@@ -226,7 +219,7 @@ write_bug_rows( $t_rows );
 <?php
 		if( $g_checkboxes_exist ) {
 			echo '<input type="checkbox" id="bug_arr_all" name="bug_arr_all" value="all" class="check_all" />';
-			echo '<label for="bug_arr_all">' . lang_get( 'select_all' ) . '</label>';
+			echo '<label for="bug_arr_all">' . \Flickerbox\Lang::get( 'select_all' ) . '</label>';
 		}
 
 		if( $g_checkboxes_exist ) {
@@ -234,7 +227,7 @@ write_bug_rows( $t_rows );
 			<select name="action">
 				<?php print_all_bug_action_option_list( $t_unique_project_ids ) ?>
 			</select>
-			<input type="submit" class="button" value="<?php echo lang_get( 'ok' ); ?>" />
+			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'ok' ); ?>" />
 <?php
 		} else {
 			echo '&#160;';
@@ -242,7 +235,7 @@ write_bug_rows( $t_rows );
 ?>			</span>
 			<span class="floatright small">
 				<?php
-					$f_filter	= gpc_get_int( 'filter', 0 );
+					$f_filter	= \Flickerbox\GPC::get_int( 'filter', 0 );
 					print_page_links( 'view_all_bug_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter );
 				?>
 			</span>
@@ -256,11 +249,11 @@ write_bug_rows( $t_rows );
 <?php
 
 if( $t_status_legend_position == STATUS_LEGEND_POSITION_BOTTOM || $t_status_legend_position == STATUS_LEGEND_POSITION_BOTH ) {
-	html_status_legend();
+	\Flickerbox\HTML::status_legend();
 }
 
 # -- ====================== FILTER FORM ========================= --
 if( ( $t_filter_position & FILTER_POSITION_BOTTOM ) == FILTER_POSITION_BOTTOM ) {
-	filter_draw_selection_area( $f_page_number );
+	\Flickerbox\Filter::draw_selection_area( $f_page_number );
 }
 # -- ====================== end of FILTER FORM ================== --

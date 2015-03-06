@@ -38,39 +38,32 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-form_security_validate( 'bugnote_update' );
+\Flickerbox\Form::security_validate( 'bugnote_update' );
 
-$f_bugnote_id	 = gpc_get_int( 'bugnote_id' );
-$f_bugnote_text	 = gpc_get_string( 'bugnote_text', '' );
-$f_time_tracking = gpc_get_string( 'time_tracking', '0:00' );
+$f_bugnote_id	 = \Flickerbox\GPC::get_int( 'bugnote_id' );
+$f_bugnote_text	 = \Flickerbox\GPC::get_string( 'bugnote_text', '' );
+$f_time_tracking = \Flickerbox\GPC::get_string( 'time_tracking', '0:00' );
 
 # Check if the current user is allowed to edit the bugnote
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 $t_reporter_id = bugnote_get_field( $f_bugnote_id, 'reporter_id' );
 
 if( $t_user_id == $t_reporter_id ) {
-	access_ensure_bugnote_level( config_get( 'bugnote_user_edit_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( config_get( 'bugnote_user_edit_threshold' ), $f_bugnote_id );
 } else {
-	access_ensure_bugnote_level( config_get( 'update_bugnote_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( config_get( 'update_bugnote_threshold' ), $f_bugnote_id );
 }
 
 # Check if the bug is readonly
 $t_bug_id = bugnote_get_field( $f_bugnote_id, 'bug_id' );
 if( bug_is_readonly( $t_bug_id ) ) {
-	error_parameters( $t_bug_id );
+	\Flickerbox\Error::parameters( $t_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
@@ -82,6 +75,6 @@ bugnote_set_time_tracking( $f_bugnote_id, $f_time_tracking );
 # Plugin integration
 event_signal( 'EVENT_BUGNOTE_EDIT', array( $t_bug_id, $f_bugnote_id ) );
 
-form_security_purge( 'bugnote_update' );
+\Flickerbox\Form::security_purge( 'bugnote_update' );
 
-print_successful_redirect( string_get_bug_view_url( $t_bug_id ) . '#bugnotes' );
+print_successful_redirect( \Flickerbox\String::get_bug_view_url( $t_bug_id ) . '#bugnotes' );

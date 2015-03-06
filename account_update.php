@@ -41,40 +41,31 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'email_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'account_update' );
+\Flickerbox\Form::security_validate( 'account_update' );
 
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 # If token is set, it's a password reset request from verify.php, and if
 # not we need to reauthenticate the user
-$t_account_verification = token_get_value( TOKEN_ACCOUNT_VERIFY, $t_user_id );
+$t_account_verification = \Flickerbox\Token::get_value( TOKEN_ACCOUNT_VERIFY, $t_user_id );
 if( !$t_account_verification ) {
 	auth_reauthenticate();
 }
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-current_user_ensure_unprotected();
+\Flickerbox\Current_User::ensure_unprotected();
 
-$f_email           	= gpc_get_string( 'email', '' );
-$f_realname        	= gpc_get_string( 'realname', '' );
-$f_password_current = gpc_get_string( 'password_current', '' );
-$f_password        	= gpc_get_string( 'password', '' );
-$f_password_confirm	= gpc_get_string( 'password_confirm', '' );
+$f_email           	= \Flickerbox\GPC::get_string( 'email', '' );
+$f_realname        	= \Flickerbox\GPC::get_string( 'realname', '' );
+$f_password_current = \Flickerbox\GPC::get_string( 'password_current', '' );
+$f_password        	= \Flickerbox\GPC::get_string( 'password', '' );
+$f_password_confirm	= \Flickerbox\GPC::get_string( 'password_confirm', '' );
 
 $t_redirect_url = 'index.php';
 
@@ -110,7 +101,7 @@ if( !( $t_ldap && config_get( 'use_ldap_realname' ) ) ) {
 }
 
 # Update password if the two match and are not empty
-if( !is_blank( $f_password ) ) {
+if( !\Flickerbox\Utility::is_blank( $f_password ) ) {
 	if( $f_password != $f_password_confirm ) {
 		trigger_error( ERROR_USER_CREATE_PASSWORD_MISMATCH, ERROR );
 	} else {
@@ -125,31 +116,31 @@ if( !is_blank( $f_password ) ) {
 	}
 }
 
-form_security_purge( 'account_update' );
+\Flickerbox\Form::security_purge( 'account_update' );
 
 # Clear the verification token
 if( $t_account_verification ) {
-	token_delete( TOKEN_ACCOUNT_VERIFY, $t_user_id );
+	\Flickerbox\Token::delete( TOKEN_ACCOUNT_VERIFY, $t_user_id );
 }
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
 $t_message = '';
 
 if( $t_email_updated ) {
-	$t_message .= lang_get( 'email_updated' );
+	$t_message .= \Flickerbox\Lang::get( 'email_updated' );
 }
 
 if( $t_password_updated ) {
-	$t_message = is_blank( $t_message ) ? '' : $t_message . '<br />';
-	$t_message .= lang_get( 'password_updated' );
+	$t_message = \Flickerbox\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
+	$t_message .= \Flickerbox\Lang::get( 'password_updated' );
 }
 
 if( $t_realname_updated ) {
-	$t_message = is_blank( $t_message ) ? '' : $t_message . '<br />';
-	$t_message .= lang_get( 'realname_updated' );
+	$t_message = \Flickerbox\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
+	$t_message .= \Flickerbox\Lang::get( 'realname_updated' );
 }
 
-html_operation_successful( $t_redirect_url, $t_message );
+\Flickerbox\HTML::operation_successful( $t_redirect_url, $t_message );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

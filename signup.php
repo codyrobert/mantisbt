@@ -37,24 +37,17 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'crypto_api.php' );
 require_api( 'email_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'signup' );
+\Flickerbox\Form::security_validate( 'signup' );
 
-$f_username		= strip_tags( gpc_get_string( 'username' ) );
-$f_email		= strip_tags( gpc_get_string( 'email' ) );
-$f_captcha		= gpc_get_string( 'captcha', '' );
+$f_username		= strip_tags( \Flickerbox\GPC::get_string( 'username' ) );
+$f_email		= strip_tags( \Flickerbox\GPC::get_string( 'email' ) );
+$f_captcha		= \Flickerbox\GPC::get_string( 'captcha', '' );
 
 $f_username = trim( $f_username );
 $f_email = trim( $f_email );
@@ -71,7 +64,7 @@ if( OFF == config_get_global( 'allow_signup' ) ) {
 	exit;
 }
 
-if( ON == config_get( 'signup_use_captcha' ) && get_gd_version() > 0 	&&
+if( ON == config_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 	&&
 			helper_call_custom_function( 'auth_can_change_password', array() ) ) {
 	# captcha image requires GD library and related option to ON
 	require_lib( 'securimage/securimage.php' );
@@ -89,33 +82,33 @@ if( user_signup( $f_username, $f_email ) ) {
 	email_notify_new_account( $f_username, $f_email );
 }
 
-form_security_purge( 'signup' );
+\Flickerbox\Form::security_purge( 'signup' );
 
-html_page_top1();
-html_page_top2a();
+\Flickerbox\HTML::page_top1();
+\Flickerbox\HTML::page_top2a();
 ?>
 
 <br />
 
 <div id="error-msg">
 	<div class="center">
-		<strong><?php echo lang_get( 'signup_done_title' ) ?></strong><br/>
+		<strong><?php echo \Flickerbox\Lang::get( 'signup_done_title' ) ?></strong><br/>
 		<?php echo '[' . $f_username . ' - ' . $f_email . '] ' ?>
 	</div>
 
 	<div>
 		<br />
-		<?php echo lang_get( 'password_emailed_msg' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'password_emailed_msg' ) ?>
 		<br /><br />
-		<?php echo lang_get( 'no_reponse_msg' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'no_reponse_msg' ) ?>
 		<br /><br/>
 	</div>
 </div>
 
 <br />
 <div class="center">
-	<?php print_bracket_link( 'login_page.php', lang_get( 'proceed' ) ); ?>
+	<?php print_bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'proceed' ) ); ?>
 </div>
 
 <?php
-html_page_bottom1a( __FILE__ );
+\Flickerbox\HTML::page_bottom1a( __FILE__ );

@@ -22,14 +22,14 @@
  * @link http://www.mantisbt.org
  */
 
-form_security_validate( 'plugin_format_config_edit' );
+\Flickerbox\Form::security_validate( 'plugin_format_config_edit' );
 
 auth_reauthenticate( );
-access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-$f_process_text = gpc_get_int( 'process_text', ON );
-$f_process_urls = gpc_get_int( 'process_urls', ON );
-$f_process_buglinks = gpc_get_int( 'process_buglinks', ON );
+$f_process_text = \Flickerbox\GPC::get_int( 'process_text', ON );
+$f_process_urls = \Flickerbox\GPC::get_int( 'process_urls', ON );
+$f_process_buglinks = \Flickerbox\GPC::get_int( 'process_buglinks', ON );
 
 if( plugin_config_get( 'process_text' ) != $f_process_text ) {
 	plugin_config_set( 'process_text', $f_process_text );
@@ -43,6 +43,6 @@ if( plugin_config_get( 'process_buglinks' ) != $f_process_buglinks ) {
 	plugin_config_set( 'process_buglinks', $f_process_buglinks );
 }
 
-form_security_purge( 'plugin_format_config_edit' );
+\Flickerbox\Form::security_purge( 'plugin_format_config_edit' );
 
 print_successful_redirect( plugin_page( 'config', true ) );

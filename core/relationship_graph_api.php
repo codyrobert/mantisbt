@@ -47,15 +47,11 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'graphviz_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'relationship_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * Generate a pretty bug ID string that is safe to use in the DOT language
@@ -110,7 +106,7 @@ function relgraph_generate_rel_graph( $p_bug_id ) {
 
 		$t_bug = bug_get( $t_id, false );
 
-		if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $t_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $t_id ) ) {
 			continue;
 		}
 
@@ -155,7 +151,7 @@ function relgraph_generate_rel_graph( $p_bug_id ) {
 	$t_id_string = relgraph_bug_format_id( $p_bug_id );
 	$t_graph_fontname = config_get( 'relationship_graph_fontname' );
 	$t_graph_fontsize = config_get( 'relationship_graph_fontsize' );
-	$t_graph_fontpath = get_font_path();
+	$t_graph_fontpath = \Flickerbox\Utility::get_font_path();
 	$t_view_on_click = config_get( 'relationship_graph_view_on_click' );
 	$t_neato_tool = config_get( 'neato_tool' );
 
@@ -188,7 +184,7 @@ function relgraph_generate_rel_graph( $p_bug_id ) {
 		$t_id_string = relgraph_bug_format_id( $t_id );
 
 		if( $t_view_on_click ) {
-			$t_url = string_get_bug_view_url( $t_id );
+			$t_url = \Flickerbox\String::get_bug_view_url( $t_id );
 		} else {
 			$t_url = 'bug_relationship_graph.php?bug_id=' . $t_id . '&graph=relation';
 		}
@@ -279,7 +275,7 @@ function relgraph_generate_dep_graph( $p_bug_id, $p_horizontal = false ) {
 	$t_id_string = relgraph_bug_format_id( $p_bug_id );
 	$t_graph_fontname = config_get( 'relationship_graph_fontname' );
 	$t_graph_fontsize = config_get( 'relationship_graph_fontsize' );
-	$t_graph_fontpath = get_font_path();
+	$t_graph_fontpath = \Flickerbox\Utility::get_font_path();
 	$t_view_on_click = config_get( 'relationship_graph_view_on_click' );
 	$t_dot_tool = config_get( 'dot_tool' );
 
@@ -318,7 +314,7 @@ function relgraph_generate_dep_graph( $p_bug_id, $p_horizontal = false ) {
 		$t_id_string = relgraph_bug_format_id( $t_related_bug_id );
 
 		if( $t_view_on_click ) {
-			$t_url = string_get_bug_view_url( $t_related_bug_id );
+			$t_url = \Flickerbox\String::get_bug_view_url( $t_related_bug_id );
 		} else {
 			$t_url = 'bug_relationship_graph.php?bug_id=' . $t_related_bug_id . '&graph=dependency&orientation=' . $t_graph_orientation;
 		}
@@ -361,7 +357,7 @@ function relgraph_add_parent( array &$p_bug_list, $p_bug_id ) {
 
 	$t_bug = bug_get( $p_bug_id, false );
 
-	if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
 		return false;
 	}
 
@@ -434,7 +430,7 @@ function relgraph_add_child( array &$p_bug_list, $p_bug_id ) {
 
 		$t_bug = bug_get( $p_bug_id, false );
 
-		if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
 			return false;
 		}
 
@@ -523,7 +519,7 @@ function relgraph_add_bug_to_graph( Graph &$p_graph, $p_bug_id, BugData $p_bug, 
 		$t_node_attributes['URL'] = $p_url;
 	}
 
-	$t_summary = string_display_line_links( $p_bug->summary );
+	$t_summary = \Flickerbox\String::display_line_links( $p_bug->summary );
 	$t_status = get_enum_element( 'status', $p_bug->status );
 	$t_node_attributes['tooltip'] = '[' . $t_status . '] ' . $t_summary;
 

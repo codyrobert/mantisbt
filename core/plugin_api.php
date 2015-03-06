@@ -37,15 +37,11 @@
  * @uses lang_api.php
  */
 
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
-require_api( 'lang_api.php' );
 
 # Cache variables #####
 
@@ -113,7 +109,7 @@ function plugin_get( $p_basename = null ) {
 	}
 
 	if( !plugin_is_registered( $t_current ) ) {
-		error_parameters( $t_current );
+		\Flickerbox\Error::parameters( $t_current );
 		trigger_error( ERROR_PLUGIN_NOT_REGISTERED, ERROR );
 	}
 
@@ -191,12 +187,12 @@ function plugin_file_include( $p_filename, $p_basename = null ) {
 
 	$t_file_path = plugin_file_path( $p_filename, $t_current );
 	if( false === $t_file_path ) {
-		error_parameters( $t_current, $p_filename );
+		\Flickerbox\Error::parameters( $t_current, $p_filename );
 		trigger_error( ERROR_PLUGIN_FILE_NOT_FOUND, ERROR );
 	}
 
 	$t_content_type = '';
-	$t_finfo = finfo_get_if_available();
+	$t_finfo = \Flickerbox\Utility::finfo_get_if_available();
 
 	if( $t_finfo ) {
 		$t_file_info_type = $t_finfo->file( $t_file_path );
@@ -325,14 +321,14 @@ function plugin_config_defaults( array $p_options ) {
  * @param string $p_basename Plugin basename.
  * @return string Language string
  */
-function plugin_lang_get( $p_name, $p_basename = null ) {
+function plugin_langget( $p_name, $p_basename = null ) {
 	if( !is_null( $p_basename ) ) {
 		plugin_push_current( $p_basename );
 	}
 
 	$t_basename = plugin_get_current();
 	$t_name = 'plugin_' . $t_basename . '_' . $p_name;
-	$t_string = lang_get( $t_name );
+	$t_string = \Flickerbox\Lang::get( $t_name );
 
 	if( !is_null( $p_basename ) ) {
 		plugin_pop_current();
@@ -670,10 +666,10 @@ function plugin_is_installed( $p_basename ) {
  * @return null
  */
 function plugin_install( MantisPlugin $p_plugin ) {
-	access_ensure_global_level( config_get_global( 'manage_plugin_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( config_get_global( 'manage_plugin_threshold' ) );
 
 	if( plugin_is_installed( $p_plugin->basename ) ) {
-		error_parameters( $p_plugin->basename );
+		\Flickerbox\Error::parameters( $p_plugin->basename );
 		trigger_error( ERROR_PLUGIN_ALREADY_INSTALLED, WARNING );
 		return null;
 	}
@@ -723,7 +719,7 @@ function plugin_needs_upgrade( MantisPlugin $p_plugin ) {
  * @return boolean|null True if upgrade completed, null if problem
  */
 function plugin_upgrade( MantisPlugin $p_plugin ) {
-	access_ensure_global_level( config_get_global( 'manage_plugin_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( config_get_global( 'manage_plugin_threshold' ) );
 
 	if( !plugin_is_installed( $p_plugin->basename ) ) {
 		return null;
@@ -775,7 +771,7 @@ function plugin_upgrade( MantisPlugin $p_plugin ) {
 		if( 2 == $t_status ) {
 			plugin_config_set( 'schema', $i );
 		} else {
-			error_parameters( $i );
+			\Flickerbox\Error::parameters( $i );
 			trigger_error( ERROR_PLUGIN_UPGRADE_FAILED, ERROR );
 			return null;
 		}
@@ -794,7 +790,7 @@ function plugin_upgrade( MantisPlugin $p_plugin ) {
  * @return void
  */
 function plugin_uninstall( MantisPlugin $p_plugin ) {
-	access_ensure_global_level( config_get_global( 'manage_plugin_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( config_get_global( 'manage_plugin_threshold' ) );
 
 	if( !plugin_is_installed( $p_plugin->basename ) || plugin_protected( $p_plugin->basename ) ) {
 		return;
@@ -1051,7 +1047,7 @@ function plugin_init( $p_basename ) {
 
 		# load plugin error strings
 		global $g_lang_strings;
-		$t_lang = lang_get_current();
+		$t_lang = \Flickerbox\Lang::get_current();
 		$t_plugin_errors = $t_plugin->errors();
 
 		foreach( $t_plugin_errors as $t_error_name => $t_error_string ) {

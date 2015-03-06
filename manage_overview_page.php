@@ -34,34 +34,28 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'event_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 
 auth_reauthenticate();
-access_ensure_global_level( config_get( 'manage_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_site_threshold' ) );
 
 $t_version_suffix = config_get_global( 'version_suffix' );
 
-html_page_top( lang_get( 'manage_link' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_link' ) );
 
-print_manage_menu();
+\Flickerbox\HTML::print_manage_menu();
 ?>
 <div id="manage-overview-div" class="table-container">
-	<h2><?php echo lang_get( 'site_information' ) ?></h2>
+	<h2><?php echo \Flickerbox\Lang::get( 'site_information' ) ?></h2>
 	<table id="manage-overview-table" cellspacing="1" cellpadding="5" border="1">
 		<tr>
-			<th class="category"><?php echo lang_get( 'mantis_version' ) ?></th>
+			<th class="category"><?php echo \Flickerbox\Lang::get( 'mantis_version' ) ?></th>
 			<td><?php echo MANTIS_VERSION, ( $t_version_suffix ? ' ' . $t_version_suffix : '' ) ?></td>
 		</tr>
 		<tr>
-			<th class="category"><?php echo lang_get( 'schema_version' ) ?></th>
+			<th class="category"><?php echo \Flickerbox\Lang::get( 'schema_version' ) ?></th>
 			<td><?php echo config_get( 'database_version' ) ?></td>
 		</tr>
 		<tr class="spacer">
@@ -69,19 +63,19 @@ print_manage_menu();
 		</tr>
 		<tr class="hidden"></tr>
 	<?php
-	$t_is_admin = current_user_is_administrator();
+	$t_is_admin = \Flickerbox\Current_User::is_administrator();
 	if( $t_is_admin ) {
 	?>
 		<tr>
-			<th class="category"><?php echo lang_get( 'site_path' ) ?></th>
+			<th class="category"><?php echo \Flickerbox\Lang::get( 'site_path' ) ?></th>
 			<td><?php echo config_get( 'absolute_path' ) ?></td>
 		</tr>
 		<tr>
-			<th class="category"><?php echo lang_get( 'core_path' ) ?></th>
+			<th class="category"><?php echo \Flickerbox\Lang::get( 'core_path' ) ?></th>
 			<td><?php echo config_get( 'core_path' ) ?></td>
 		</tr>
 		<tr>
-			<th class="category"><?php echo lang_get( 'plugin_path' ) ?></th>
+			<th class="category"><?php echo \Flickerbox\Lang::get( 'plugin_path' ) ?></th>
 			<td><?php echo config_get( 'plugin_path' ) ?></td>
 		</tr>
 		<tr class="spacer">
@@ -95,5 +89,5 @@ print_manage_menu();
 	</table>
 </div>
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();
 

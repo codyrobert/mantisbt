@@ -27,7 +27,6 @@
  */
 
 @require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
-require_api( 'lang_api.php' );
 require_api( 'config_api.php' );
 
 /**
@@ -56,6 +55,6 @@ div.form-container fieldset.has-required:after {
 	position: absolute;
 	margin: -1.75em 0em 0em .5em;
 	font-size: 8pt;
-	content: '* <?php echo lang_get( 'required' ); ?>';
+	content: '* <?php echo \Flickerbox\Lang::get( 'required' ); ?>';
 	color: red;
 }

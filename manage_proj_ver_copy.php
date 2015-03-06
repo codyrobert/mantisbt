@@ -36,31 +36,25 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'version_api.php' );
 
-form_security_validate( 'manage_proj_ver_copy' );
+\Flickerbox\Form::security_validate( 'manage_proj_ver_copy' );
 
 auth_reauthenticate();
 
-$f_project_id		= gpc_get_int( 'project_id' );
-$f_other_project_id	= gpc_get_int( 'other_project_id' );
-$f_copy_from		= gpc_get_bool( 'copy_from' );
-$f_copy_to			= gpc_get_bool( 'copy_to' );
+$f_project_id		= \Flickerbox\GPC::get_int( 'project_id' );
+$f_other_project_id	= \Flickerbox\GPC::get_int( 'other_project_id' );
+$f_copy_from		= \Flickerbox\GPC::get_bool( 'copy_from' );
+$f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
 
 project_ensure_exists( $f_project_id );
 project_ensure_exists( $f_other_project_id );
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_other_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_other_project_id );
 
 if( $f_copy_from ) {
 	$t_src_project_id = $f_other_project_id;
@@ -72,14 +66,14 @@ if( $f_copy_from ) {
 	trigger_error( ERROR_VERSION_NO_ACTION, ERROR );
 }
 
-$t_rows = version_get_all_rows( $t_src_project_id );
+$t_rows = \Flickerbox\Version::get_all_rows( $t_src_project_id );
 
 foreach ( $t_rows as $t_row ) {
-	if( version_is_unique( $t_row['version'], $t_dst_project_id ) ) {
-		$t_version_id = version_add( $t_dst_project_id, $t_row['version'], $t_row['released'], $t_row['description'], $t_row['date_order'] );
+	if( \Flickerbox\Version::is_unique( $t_row['version'], $t_dst_project_id ) ) {
+		$t_version_id = \Flickerbox\Version::add( $t_dst_project_id, $t_row['version'], $t_row['released'], $t_row['description'], $t_row['date_order'] );
 	}
 }
 
-form_security_purge( 'manage_proj_ver_copy' );
+\Flickerbox\Form::security_purge( 'manage_proj_ver_copy' );
 
 print_header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

@@ -24,7 +24,7 @@
 
 require_once( 'core.php' );
 
-access_ensure_project_level( plugin_config_get( 'export_threshold' ) );
+\Flickerbox\Access::ensure_project_level( plugin_config_get( 'export_threshold' ) );
 
 auth_ensure_user_authenticated( );
 helper_begin_long_process( );
@@ -37,7 +37,7 @@ $t_page_count = null;
 $t_nl = "\n";
 
 # Get bug rows according to the current filter
-$t_result = filter_get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_result = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 if( $t_result === false ) {
 	$t_result = array( );
 }
@@ -80,7 +80,7 @@ $t_ignore = array(
 );
 
 # properties that we want to export are 'protected'
-$t_columns = array_keys( getClassProperties( 'BugData', 'protected' ) );
+$t_columns = array_keys( \Flickerbox\Utility::getClassProperties( 'BugData', 'protected' ) );
 
 # export the rows
 foreach( $t_result as $t_row ) {
@@ -113,7 +113,7 @@ foreach( $t_result as $t_row ) {
 
 				# id for categories were introduced in 1.2
 				$t_element_name = 'category';
-				$t_element_data = category_get_name( $t_value );
+				$t_element_data = \Flickerbox\Category::get_field( $t_value );
 
 				$t_writer->startElement( $t_element_name );
 				$t_writer->writeAttribute( 'id', $t_value );
@@ -230,7 +230,7 @@ foreach( $t_result as $t_row ) {
 			# last added
 			$t_writer->writeElement( 'date_added', $t_attachment['date_added'] );
 			# content
-			$t_content = file_get_content( $t_attachment['id'] );
+			$t_content = \Flickerbox\File::get_content( $t_attachment['id'] );
 
 			$t_writer->writeElement( 'content', base64_encode( $t_content['content'] ) );
 

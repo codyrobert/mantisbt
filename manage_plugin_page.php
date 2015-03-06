@@ -36,24 +36,17 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'plugin_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
 
 auth_reauthenticate();
-access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-html_page_top( lang_get( 'manage_plugin_link' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_plugin_link' ) );
 
-print_manage_menu( 'manage_plugin_page.php' );
+\Flickerbox\HTML::print_manage_menu( 'manage_plugin_page.php' );
 
 $t_plugins = plugin_find_all();
 uasort( $t_plugins,
@@ -80,7 +73,7 @@ if( 0 < count( $t_plugins_installed ) ) {
 
 	<form action="manage_plugin_update.php" method="post">
 		<fieldset>
-		<?php echo form_security_field( 'manage_plugin_update' ) ?>
+		<?php echo \Flickerbox\Form::security_field( 'manage_plugin_update' ) ?>
 		</fieldset>
 		<table>
 			<colgroup>
@@ -95,25 +88,25 @@ if( 0 < count( $t_plugins_installed ) ) {
 				<!-- Title -->
 				<tr>
 					<td class="form-title" colspan="7">
-						<?php echo lang_get( 'plugins_installed' ) ?>
+						<?php echo \Flickerbox\Lang::get( 'plugins_installed' ) ?>
 					</td>
 				</tr>
 
 				<!-- Info -->
 				<tr class="row-category">
-					<th><?php echo lang_get( 'plugin' ) ?></th>
-					<th><?php echo lang_get( 'plugin_description' ) ?></th>
-					<th><?php echo lang_get( 'plugin_depends' ) ?></th>
-					<th><?php echo lang_get( 'plugin_priority' ) ?></th>
-					<th><?php echo lang_get( 'plugin_protected' ) ?></th>
-					<th><?php echo lang_get( 'plugin_actions' ) ?></th>
+					<th><?php echo \Flickerbox\Lang::get( 'plugin' ) ?></th>
+					<th><?php echo \Flickerbox\Lang::get( 'plugin_description' ) ?></th>
+					<th><?php echo \Flickerbox\Lang::get( 'plugin_depends' ) ?></th>
+					<th><?php echo \Flickerbox\Lang::get( 'plugin_priority' ) ?></th>
+					<th><?php echo \Flickerbox\Lang::get( 'plugin_protected' ) ?></th>
+					<th><?php echo \Flickerbox\Lang::get( 'plugin_actions' ) ?></th>
 				</tr>
 			</thead>
 
 			<tbody>
 <?php
 foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
-	$t_description = string_display_line_links( $t_plugin->description );
+	$t_description = \Flickerbox\String::display_line_links( $t_plugin->description );
 	$t_author = $t_plugin->author;
 	$t_contact = $t_plugin->contact;
 	$t_page = $t_plugin->page;
@@ -123,25 +116,25 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 	$t_priority = plugin_priority( $t_basename );
 	$t_protected = plugin_protected( $t_basename );
 
-	$t_name = string_display_line( $t_plugin->name.' '.$t_plugin->version );
-	if( !is_blank( $t_page ) ) {
-		$t_name = '<a href="' . string_attribute( plugin_page( $t_page, false, $t_basename ) ) . '">' . $t_name . '</a>';
+	$t_name = \Flickerbox\String::display_line( $t_plugin->name.' '.$t_plugin->version );
+	if( !\Flickerbox\Utility::is_blank( $t_page ) ) {
+		$t_name = '<a href="' . \Flickerbox\String::attribute( plugin_page( $t_page, false, $t_basename ) ) . '">' . $t_name . '</a>';
 	}
 
-	if( !is_blank( $t_author ) ) {
+	if( !\Flickerbox\Utility::is_blank( $t_author ) ) {
 		if( is_array( $t_author ) ) {
 			$t_author = implode( $t_author, ', ' );
 		}
-		if( !is_blank( $t_contact ) ) {
-			$t_author = '<br/>' . sprintf( lang_get( 'plugin_author' ),
-				'<a href="mailto:' . string_attribute( $t_contact ) . '">' . string_display_line( $t_author ) . '</a>' );
+		if( !\Flickerbox\Utility::is_blank( $t_contact ) ) {
+			$t_author = '<br/>' . sprintf( \Flickerbox\Lang::get( 'plugin_author' ),
+				'<a href="mailto:' . \Flickerbox\String::attribute( $t_contact ) . '">' . \Flickerbox\String::display_line( $t_author ) . '</a>' );
 		} else {
-			$t_author = '<br/>' . string_display_line( sprintf( lang_get( 'plugin_author' ), $t_author ) );
+			$t_author = '<br/>' . \Flickerbox\String::display_line( sprintf( \Flickerbox\Lang::get( 'plugin_author' ), $t_author ) );
 		}
 	}
 
-	if( !is_blank( $t_url ) ) {
-		$t_url = '<br/>' . lang_get( 'plugin_url' ) . lang_get( 'word_separator' ) . '<a href="' . $t_url . '">' . $t_url . '</a>';
+	if( !\Flickerbox\Utility::is_blank( $t_url ) ) {
+		$t_url = '<br/>' . \Flickerbox\Lang::get( 'plugin_url' ) . \Flickerbox\Lang::get( 'word_separator' ) . '<a href="' . $t_url . '">' . $t_url . '</a>';
 	}
 
 	$t_upgrade = plugin_needs_upgrade( $t_plugin );
@@ -150,15 +143,15 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 		foreach( $t_requires as $t_plugin => $t_version ) {
 			$t_dependency = plugin_dependency( $t_plugin, $t_version );
 			if( 1 == $t_dependency ) {
-				if( is_blank( $t_upgrade ) ) {
-					$t_depends[] = '<span class="small dependency_met">'.string_display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
+				if( \Flickerbox\Utility::is_blank( $t_upgrade ) ) {
+					$t_depends[] = '<span class="small dependency_met">'.\Flickerbox\String::display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
 				} else {
-					$t_depends[] = '<span class="small dependency_upgrade">'.string_display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
+					$t_depends[] = '<span class="small dependency_upgrade">'.\Flickerbox\String::display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
 				}
 			} else if( -1 == $t_dependency ) {
-				$t_depends[] = '<span class="small dependency_dated">'.string_display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
+				$t_depends[] = '<span class="small dependency_dated">'.\Flickerbox\String::display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
 			} else {
-				$t_depends[] = '<span class="small dependency_unmet">'.string_display_line( $t_plugin.' '.$t_version ).'</span>';
+				$t_depends[] = '<span class="small dependency_unmet">'.\Flickerbox\String::display_line( $t_plugin.' '.$t_version ).'</span>';
 			}
 		}
 	}
@@ -166,7 +159,7 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 	if( 0 < count( $t_depends ) ) {
 		$t_depends = implode( $t_depends, '<br/>' );
 	} else {
-		$t_depends = '<span class="small dependency_met">' . lang_get( 'plugin_no_depends' ) . '</span>';
+		$t_depends = '<span class="small dependency_met">' . \Flickerbox\Lang::get( 'plugin_no_depends' ) . '</span>';
 	}
 
 	echo '<tr>';
@@ -189,13 +182,13 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 	echo '<td class="center">';
 	if( $t_upgrade ) {
 		print_bracket_link(
-			'manage_plugin_upgrade.php?name=' . $t_basename . form_security_param( 'manage_plugin_upgrade' ),
-			lang_get( 'plugin_upgrade' ) );
+			'manage_plugin_upgrade.php?name=' . $t_basename . \Flickerbox\Form::security_param( 'manage_plugin_upgrade' ),
+			\Flickerbox\Lang::get( 'plugin_upgrade' ) );
 	}
 	if( !$t_protected ) {
 		print_bracket_link(
-			'manage_plugin_uninstall.php?name=' . $t_basename . form_security_param( 'manage_plugin_uninstall' ),
-			lang_get( 'plugin_uninstall' ) );
+			'manage_plugin_uninstall.php?name=' . $t_basename . \Flickerbox\Form::security_param( 'manage_plugin_uninstall' ),
+			\Flickerbox\Lang::get( 'plugin_uninstall' ) );
 	}
 	echo '</td></tr>';
 } ?>
@@ -205,7 +198,7 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 				<tr>
 					<td colspan="3"></td>
 					<td colspan="2" class="center">
-						<input type="submit" class="button" value="<?php echo lang_get( 'plugin_update' ) ?>"/>
+						<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'plugin_update' ) ?>"/>
 					</td>
 					<td></td>
 				</tr>
@@ -232,45 +225,45 @@ if( 0 < count( $t_plugins_available ) ) {
 			<!-- Title -->
 			<tr>
 				<td class="form-title" colspan="7">
-					<?php echo lang_get( 'plugins_available' ) ?>
+					<?php echo \Flickerbox\Lang::get( 'plugins_available' ) ?>
 				</td>
 			</tr>
 
 			<!-- Info -->
 			<tr class="row-category">
-				<td><?php echo lang_get( 'plugin' ) ?></td>
-				<td><?php echo lang_get( 'plugin_description' ) ?></td>
-				<td><?php echo lang_get( 'plugin_depends' ) ?></td>
-				<td><?php echo lang_get( 'plugin_actions' ) ?></td>
+				<td><?php echo \Flickerbox\Lang::get( 'plugin' ) ?></td>
+				<td><?php echo \Flickerbox\Lang::get( 'plugin_description' ) ?></td>
+				<td><?php echo \Flickerbox\Lang::get( 'plugin_depends' ) ?></td>
+				<td><?php echo \Flickerbox\Lang::get( 'plugin_actions' ) ?></td>
 			</tr>
 		</thead>
 
 		<tbody>
 <?php
 	foreach ( $t_plugins_available as $t_basename => $t_plugin ) {
-		$t_description = string_display_line_links( $t_plugin->description );
+		$t_description = \Flickerbox\String::display_line_links( $t_plugin->description );
 		$t_author = $t_plugin->author;
 		$t_contact = $t_plugin->contact;
 		$t_url = $t_plugin->url ;
 		$t_requires = $t_plugin->requires;
 		$t_depends = array();
 
-		$t_name = string_display_line( $t_plugin->name.' '.$t_plugin->version );
+		$t_name = \Flickerbox\String::display_line( $t_plugin->name.' '.$t_plugin->version );
 
-		if( !is_blank( $t_author ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_author ) ) {
 			if( is_array( $t_author ) ) {
 				$t_author = implode( $t_author, ', ' );
 			}
-			if( !is_blank( $t_contact ) ) {
-				$t_author = '<br/>' . sprintf( lang_get( 'plugin_author' ),
-					'<a href="mailto:' . string_display_line( $t_contact ) . '">' . string_display_line( $t_author ) . '</a>' );
+			if( !\Flickerbox\Utility::is_blank( $t_contact ) ) {
+				$t_author = '<br/>' . sprintf( \Flickerbox\Lang::get( 'plugin_author' ),
+					'<a href="mailto:' . \Flickerbox\String::display_line( $t_contact ) . '">' . \Flickerbox\String::display_line( $t_author ) . '</a>' );
 			} else {
-				$t_author = '<br/>' . string_display_line( sprintf( lang_get( 'plugin_author' ), $t_author ) );
+				$t_author = '<br/>' . \Flickerbox\String::display_line( sprintf( \Flickerbox\Lang::get( 'plugin_author' ), $t_author ) );
 			}
 		}
 
-		if( !is_blank( $t_url ) ) {
-			$t_url = '<br/>' . lang_get( 'plugin_url' ) . lang_get( 'word_separator' ) . '<a href="' . $t_url . '">' . $t_url . '</a>';
+		if( !\Flickerbox\Utility::is_blank( $t_url ) ) {
+			$t_url = '<br/>' . \Flickerbox\Lang::get( 'plugin_url' ) . \Flickerbox\Lang::get( 'word_separator' ) . '<a href="' . $t_url . '">' . $t_url . '</a>';
 		}
 
 		$t_ready = true;
@@ -278,13 +271,13 @@ if( 0 < count( $t_plugins_available ) ) {
 			foreach( $t_requires as $t_plugin => $t_version ) {
 				$t_dependency = plugin_dependency( $t_plugin, $t_version );
 				if( 1 == $t_dependency ) {
-					$t_depends[] = '<span class="small dependency_met">'.string_display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
+					$t_depends[] = '<span class="small dependency_met">'.\Flickerbox\String::display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
 				} else if( -1 == $t_dependency ) {
 					$t_ready = false;
-					$t_depends[] = '<span class="small dependency_dated">'.string_display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
+					$t_depends[] = '<span class="small dependency_dated">'.\Flickerbox\String::display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
 				} else {
 					$t_ready = false;
-					$t_depends[] = '<span class="small dependency_unmet">'.string_display_line( $t_plugin.' '.$t_version ).'</span>';
+					$t_depends[] = '<span class="small dependency_unmet">'.\Flickerbox\String::display_line( $t_plugin.' '.$t_version ).'</span>';
 				}
 			}
 		}
@@ -292,7 +285,7 @@ if( 0 < count( $t_plugins_available ) ) {
 		if( 0 < count( $t_depends ) ) {
 			$t_depends = implode( $t_depends, '<br/>' );
 		} else {
-			$t_depends = '<span class="small dependency_met">' . lang_get( 'plugin_no_depends' ) . '</span>';
+			$t_depends = '<span class="small dependency_met">' . \Flickerbox\Lang::get( 'plugin_no_depends' ) . '</span>';
 		}
 
 		echo '<tr>';
@@ -302,8 +295,8 @@ if( 0 < count( $t_plugins_available ) ) {
 		echo '<td class="center">';
 		if( $t_ready ) {
 			print_bracket_link(
-				'manage_plugin_install.php?name=' . $t_basename . form_security_param( 'manage_plugin_install' ),
-				lang_get( 'plugin_install' ) );
+				'manage_plugin_install.php?name=' . $t_basename . \Flickerbox\Form::security_param( 'manage_plugin_install' ),
+				\Flickerbox\Lang::get( 'plugin_install' ) );
 		}
 		echo '</td></tr>';
 	}
@@ -316,12 +309,12 @@ if( 0 < count( $t_plugins_available ) ) {
 } # available plugins
 ?>
 <div class="center">
-	<br/><?php echo lang_get( 'plugin_key_label' ) ?>
-	<span class='dependency_met'><?php echo lang_get( 'plugin_key_met' ) ?></span>,
-	<span class='dependency_unmet'><?php echo lang_get( 'plugin_key_unmet' ) ?></span>,
-	<span class='dependency_dated'><?php echo lang_get( 'plugin_key_dated' ) ?></span>,
-	<span class='dependency_upgrade'><?php echo lang_get( 'plugin_key_upgrade' ) ?></span>.
+	<br/><?php echo \Flickerbox\Lang::get( 'plugin_key_label' ) ?>
+	<span class='dependency_met'><?php echo \Flickerbox\Lang::get( 'plugin_key_met' ) ?></span>,
+	<span class='dependency_unmet'><?php echo \Flickerbox\Lang::get( 'plugin_key_unmet' ) ?></span>,
+	<span class='dependency_dated'><?php echo \Flickerbox\Lang::get( 'plugin_key_dated' ) ?></span>,
+	<span class='dependency_upgrade'><?php echo \Flickerbox\Lang::get( 'plugin_key_upgrade' ) ?></span>.
 </div>
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();
 

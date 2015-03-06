@@ -38,34 +38,28 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 
 auth_reauthenticate();
 
 if( !config_get( 'relationship_graph_enable' ) ) {
-	access_denied();
+	\Flickerbox\Access::denied();
 }
 
-html_page_top( lang_get( 'manage_workflow_graph' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_workflow_graph' ) );
 
-print_manage_menu( 'adm_permissions_report.php' );
-print_manage_config_menu( 'manage_config_workflow_graph_page.php' );
+\Flickerbox\HTML::print_manage_menu( 'adm_permissions_report.php' );
+\Flickerbox\HTML::print_manage_config_menu( 'manage_config_workflow_graph_page.php' );
 
 $t_project = helper_get_current_project();
 
 if( $t_project == ALL_PROJECTS ) {
-	$t_project_title = lang_get( 'config_all_projects' );
+	$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
 } else {
-	$t_project_title = sprintf( lang_get( 'config_project' ), string_display( project_get_name( $t_project ) ) );
+	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( project_get_name( $t_project ) ) );
 }
 ?>
 	<br />
@@ -76,4 +70,4 @@ if( $t_project == ALL_PROJECTS ) {
 		<img src="workflow_graph_img.php" />
 	</div>
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

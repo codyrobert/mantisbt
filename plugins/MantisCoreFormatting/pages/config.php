@@ -23,68 +23,68 @@
  */
 
 auth_reauthenticate( );
-access_ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
 
-html_page_top( lang_get( 'plugin_format_title' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'plugin_format_title' ) );
 
-print_manage_menu( );
+\Flickerbox\HTML::print_manage_menu( );
 
 ?>
 
 <div id="formatting-config-div" class="form-container">
 	<form id="formatting-config-form" action="<?php echo plugin_page( 'config_edit' )?>" method="post">
 		<fieldset>
-			<legend><span><?php echo lang_get( 'plugin_format_title' ) . ': ' . lang_get( 'plugin_format_config' )?></span></legend>
-			<?php echo form_security_field( 'plugin_format_config_edit' ) ?>
+			<legend><span><?php echo \Flickerbox\Lang::get( 'plugin_format_title' ) . ': ' . \Flickerbox\Lang::get( 'plugin_format_config' )?></span></legend>
+			<?php echo \Flickerbox\Form::security_field( 'plugin_format_config_edit' ) ?>
 
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'plugin_format_process_text' )?>
-				<br /><span class="small"><?php echo lang_get( 'plugin_format_process_text_warning_notice' )?></span>
+				<label><span><?php echo \Flickerbox\Lang::get( 'plugin_format_process_text' )?>
+				<br /><span class="small"><?php echo \Flickerbox\Lang::get( 'plugin_format_process_text_warning_notice' )?></span>
 				</span></label>
 				<span class="radio">
 					<label><input type="radio" name="process_text" value="1" <?php echo( ON == plugin_config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo lang_get( 'plugin_format_enabled' )?></label>
+					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
 					<label><input type="radio" name="process_text" value="0" <?php echo( OFF == plugin_config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo lang_get( 'plugin_format_disabled' )?></label>
+					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<div class="field-container">
-				<label><span><?php echo lang_get( 'plugin_format_process_urls' )?></span></label>
+				<label><span><?php echo \Flickerbox\Lang::get( 'plugin_format_process_urls' )?></span></label>
 				<span class="radio">
 					<label><input type="radio" name="process_urls" value="1" <?php echo( ON == plugin_config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo lang_get( 'plugin_format_enabled' )?></label>
+					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
 					<label><input type="radio" name="process_urls" value="0" <?php echo( OFF == plugin_config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo lang_get( 'plugin_format_disabled' )?></label>
+					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<div class="field-container">
 				<label><span>
-				<?php echo lang_get( 'plugin_format_process_buglinks' )?>
+				<?php echo \Flickerbox\Lang::get( 'plugin_format_process_buglinks' )?>
 				<br />
 				<span class="small"><?php
-					printf( lang_get( 'plugin_format_process_buglinks_info' ),
+					printf( \Flickerbox\Lang::get( 'plugin_format_process_buglinks_info' ),
 						config_get( 'bug_link_tag' ), config_get( 'bugnote_link_tag' ) );
 				?></span>
 				</span></label>
 				<span class="radio">
 					<label><input type="radio" name="process_buglinks" value="1" <?php echo( ON == plugin_config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo lang_get( 'plugin_format_enabled' )?></label>
+					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
 					<label><input type="radio" name="process_buglinks" value="0" <?php echo( OFF == plugin_config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo lang_get( 'plugin_format_disabled' )?></label>
+					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<span class="submit-button">
-				<input type="submit" class="button" value="<?php echo lang_get( 'change_configuration' )?>" />
+				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'change_configuration' )?>" />
 			</span>
 		</fieldset>
 	</form>
 </div>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

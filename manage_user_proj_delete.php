@@ -36,46 +36,40 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
 
-form_security_validate( 'manage_user_proj_delete' );
+\Flickerbox\Form::security_validate( 'manage_user_proj_delete' );
 
 auth_reauthenticate();
 
-$f_project_id = gpc_get_int( 'project_id' );
-$f_user_id = gpc_get_int( 'user_id' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+$f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
 
 user_ensure_exists( $f_user_id );
 
 $t_user = user_get_row( $f_user_id );
 
-access_ensure_project_level( config_get( 'project_user_threshold' ), $f_project_id );
-access_ensure_project_level( $t_user['access_level'], $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'project_user_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( $t_user['access_level'], $f_project_id );
 
 $t_project_name = project_get_name( $f_project_id );
 
 # Confirm with the user
-helper_ensure_confirmed( lang_get( 'remove_user_sure_msg' ) .
-	'<br/>' . lang_get( 'project_name_label' ) . lang_get( 'word_separator' ) . $t_project_name,
-	lang_get( 'remove_user_button' ) );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'remove_user_sure_msg' ) .
+	'<br/>' . \Flickerbox\Lang::get( 'project_name_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_project_name,
+	\Flickerbox\Lang::get( 'remove_user_button' ) );
 
 project_remove_user( $f_project_id, $f_user_id );
 
-form_security_purge( 'manage_user_proj_delete' );
+\Flickerbox\Form::security_purge( 'manage_user_proj_delete' );
 
 $t_redirect_url = 'manage_user_edit_page.php?user_id=' .$f_user_id;
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

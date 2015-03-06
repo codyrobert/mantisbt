@@ -40,28 +40,22 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'email_api.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'relationship_api.php' );
 
-form_security_validate( 'bug_relationship_add' );
+\Flickerbox\Form::security_validate( 'bug_relationship_add' );
 
-$f_rel_type = gpc_get_int( 'rel_type' );
-$f_src_bug_id = gpc_get_int( 'src_bug_id' );
-$f_dest_bug_id_string = gpc_get_string( 'dest_bug_id' );
+$f_rel_type = \Flickerbox\GPC::get_int( 'rel_type' );
+$f_src_bug_id = \Flickerbox\GPC::get_int( 'src_bug_id' );
+$f_dest_bug_id_string = \Flickerbox\GPC::get_string( 'dest_bug_id' );
 
 # user has access to update the bug...
-access_ensure_bug_level( config_get( 'update_bug_threshold' ), $f_src_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_threshold' ), $f_src_bug_id );
 
 $f_dest_bug_id_string = str_replace( ',', '|', $f_dest_bug_id_string );
 
@@ -81,13 +75,13 @@ foreach( $f_dest_bug_id_array as $f_dest_bug_id ) {
 
 	# bug is not read-only...
 	if( bug_is_readonly( $f_src_bug_id ) ) {
-		error_parameters( $f_src_bug_id );
+		\Flickerbox\Error::parameters( $f_src_bug_id );
 		trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 	}
 
 	# user can access to the related bug at least as viewer...
-	if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_dest_bug->project_id ), $f_dest_bug_id ) ) {
-		error_parameters( $f_dest_bug_id );
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_dest_bug->project_id ), $f_dest_bug_id ) ) {
+		\Flickerbox\Error::parameters( $f_dest_bug_id );
 		trigger_error( ERROR_RELATIONSHIP_ACCESS_LEVEL_TO_DEST_BUG_TOO_LOW, ERROR );
 	}
 
@@ -106,7 +100,7 @@ foreach( $f_dest_bug_id_array as $f_dest_bug_id ) {
 		trigger_error( ERROR_RELATIONSHIP_ALREADY_EXISTS, ERROR );
 	} else if( $t_old_id_relationship > 0 ) {
 		# there is already a relationship between them -> we have to update it and not to add a new one
-		helper_ensure_confirmed( lang_get( 'replace_relationship_sure_msg' ), lang_get( 'replace_relationship_button' ) );
+		helper_ensure_confirmed( \Flickerbox\Lang::get( 'replace_relationship_sure_msg' ), \Flickerbox\Lang::get( 'replace_relationship_button' ) );
 
 		# Update the relationship
 		relationship_update( $t_old_id_relationship, $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
@@ -132,6 +126,6 @@ foreach( $f_dest_bug_id_array as $f_dest_bug_id ) {
 	email_relationship_added( $f_dest_bug_id, $f_src_bug_id, relationship_get_complementary_type( $f_rel_type ) );
 }
 
-form_security_purge( 'bug_relationship_add' );
+\Flickerbox\Form::security_purge( 'bug_relationship_add' );
 
 print_header_redirect_view( $f_src_bug_id );

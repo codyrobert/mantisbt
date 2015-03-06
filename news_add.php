@@ -36,38 +36,31 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'news_api.php' );
 require_api( 'print_api.php' );
 
-news_ensure_enabled();
+\Flickerbox\News::ensure_enabled();
 
-form_security_validate( 'news_add' );
+\Flickerbox\Form::security_validate( 'news_add' );
 
-access_ensure_project_level( config_get( 'manage_news_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ) );
 
-$f_view_state	= gpc_get_int( 'view_state' );
-$f_headline		= gpc_get_string( 'headline' );
-$f_announcement	= gpc_get_bool( 'announcement' );
-$f_body			= gpc_get_string( 'body' );
+$f_view_state	= \Flickerbox\GPC::get_int( 'view_state' );
+$f_headline		= \Flickerbox\GPC::get_string( 'headline' );
+$f_announcement	= \Flickerbox\GPC::get_bool( 'announcement' );
+$f_body			= \Flickerbox\GPC::get_string( 'body' );
 
-$t_news_id = news_create( helper_get_current_project(), auth_get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
+$t_news_id = \Flickerbox\News::create( helper_get_current_project(), auth_get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
 
-form_security_purge( 'news_add' );
+\Flickerbox\Form::security_purge( 'news_add' );
 
-$t_news_row = news_get_row( $t_news_id );
+$t_news_row = \Flickerbox\News::get_row( $t_news_id );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 
-html_operation_successful( 'news_menu_page.php' );
+\Flickerbox\HTML::operation_successful( 'news_menu_page.php' );
 
 print_news_entry_from_row( $t_news_row );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

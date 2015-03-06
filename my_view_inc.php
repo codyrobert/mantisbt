@@ -38,29 +38,15 @@
  * @uses string_api.php
  */
 
-if( !defined( 'MY_VIEW_INC_ALLOW' ) ) {
-	return;
-}
-
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'file_api.php' );
-require_api( 'filter_api.php' );
-require_api( 'filter_constants_inc.php' );
 require_api( 'helper_api.php' );
-require_api( 'icon_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 
-$t_filter = current_user_get_bug_filter();
+$t_filter = \Flickerbox\Current_User::get_bug_filter();
 if( $t_filter === false ) {
-	$t_filter = filter_get_default();
+	$t_filter = \Flickerbox\Filter::get_default();
 }
 
 $t_sort = $t_filter['sort'];
@@ -72,7 +58,7 @@ $t_bug_resolved_status_threshold = config_get( 'bug_resolved_status_threshold' )
 $t_hide_status_default = config_get( 'hide_status_default' );
 $t_default_show_changed = config_get( 'default_show_changed' );
 
-$c_filter['assigned'] = filter_create_assigned_to_unresolved( helper_get_current_project(), $t_current_user_id );
+$c_filter['assigned'] = \Flickerbox\Filter::create_assigned_to_unresolved( helper_get_current_project(), $t_current_user_id );
 $t_url_link_parameters['assigned'] = FILTER_PROPERTY_HANDLER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
 
 $c_filter['recent_mod'] = array(
@@ -110,7 +96,7 @@ $c_filter['recent_mod'] = array(
 );
 $t_url_link_parameters['recent_mod'] = FILTER_PROPERTY_HIDE_STATUS . '=none';
 
-$c_filter['reported'] = filter_create_reported_by( helper_get_current_project(), $t_current_user_id );
+$c_filter['reported'] = \Flickerbox\Filter::create_reported_by( helper_get_current_project(), $t_current_user_id );
 $t_url_link_parameters['reported'] = FILTER_PROPERTY_REPORTER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
 $c_filter['resolved'] = array(
@@ -149,12 +135,12 @@ $c_filter['resolved'] = array(
 $t_url_link_parameters['resolved'] = FILTER_PROPERTY_STATUS . '=' . $t_bug_resolved_status_threshold . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
 
 
-$c_filter['unassigned'] = filter_create_assigned_to_unresolved( helper_get_current_project(), 0 );
+$c_filter['unassigned'] = \Flickerbox\Filter::create_assigned_to_unresolved( helper_get_current_project(), 0 );
 $t_url_link_parameters['unassigned'] = FILTER_PROPERTY_HANDLER_ID . '=[none]' . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
 # TODO: check. handler value looks wrong
 
-$c_filter['monitored'] = filter_create_monitored_by( helper_get_current_project(), $t_current_user_id );
+$c_filter['monitored'] = \Flickerbox\Filter::create_monitored_by( helper_get_current_project(), $t_current_user_id );
 $t_url_link_parameters['monitored'] = FILTER_PROPERTY_MONITOR_USER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
 $c_filter['feedback'] = array(
@@ -265,7 +251,7 @@ $c_filter['my_comments'] = array(
 );
 
 $t_url_link_parameters['my_comments'] = FILTER_PROPERTY_NOTE_USER_ID. '=' . META_FILTER_MYSELF . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
-$t_rows = filter_get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $c_filter[$t_box_title] );
+$t_rows = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $c_filter[$t_box_title] );
 
 # Improve performance by caching category data in one pass
 if( helper_get_current_project() == 0 ) {
@@ -274,12 +260,12 @@ if( helper_get_current_project() == 0 ) {
 		$t_categories[] = $t_row->category_id;
 	}
 
-	category_cache_array_rows( array_unique( $t_categories ) );
+	\Flickerbox\Category::cache_array_rows( array_unique( $t_categories ) );
 }
 
 $t_filter = array_merge( $c_filter[$t_box_title], $t_filter );
 
-$t_box_title_label = lang_get( 'my_view_title_' . $t_box_title );
+$t_box_title_label = \Flickerbox\Lang::get( 'my_view_title_' . $t_box_title );
 
 # -- ====================== BUG LIST ========================= --
 ?>
@@ -317,18 +303,18 @@ if( $t_count == 0 ) {
 for( $i = 0;$i < $t_count; $i++ ) {
 	$t_bug = $t_rows[$i];
 
-	$t_summary = string_display_line_links( $t_bug->summary );
+	$t_summary = \Flickerbox\String::display_line_links( $t_bug->summary );
 	$t_last_updated = date( config_get( 'normal_date_format' ), $t_bug->last_updated );
 
 	# choose color based on status
-	$t_status_label = html_get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+	$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status, \Flickerbox\Auth::get_current_user_id(), $t_bug->project_id );
 
 	# Check for attachments
 	$t_attachment_count = 0;
 	# TODO: factor in the allow_view_own_attachments configuration option
 	# instead of just using a global check.
-	if( ( file_can_view_bug_attachments( $t_bug->id, null ) ) ) {
-		$t_attachment_count = file_bug_attachment_count( $t_bug->id );
+	if( ( \Flickerbox\File::can_view_bug_attachments( $t_bug->id, null ) ) ) {
+		$t_attachment_count = \Flickerbox\File::bug_attachment_count( $t_bug->id );
 	}
 
 	# grab the project name
@@ -351,25 +337,25 @@ for( $i = 0;$i < $t_count; $i++ ) {
 
 			echo '<br />';
 
-			if( !bug_is_readonly( $t_bug->id ) && access_has_bug_level( $t_update_bug_threshold, $t_bug->id ) ) {
-				echo '<a class="edit" href="' . string_get_bug_update_url( $t_bug->id ) . '"><img src="' . $t_icon_path . 'update.png' . '" alt="' . lang_get( 'update_bug_button' ) . '" /></a>';
+			if( !bug_is_readonly( $t_bug->id ) && \Flickerbox\Access::has_bug_level( $t_update_bug_threshold, $t_bug->id ) ) {
+				echo '<a class="edit" href="' . \Flickerbox\String::get_bug_update_url( $t_bug->id ) . '"><img src="' . $t_icon_path . 'update.png' . '" alt="' . \Flickerbox\Lang::get( 'update_bug_button' ) . '" /></a>';
 			}
 
 			if( ON == config_get( 'show_priority_text' ) ) {
 				print_formatted_priority_string( $t_bug );
 			} else {
-				print_status_icon( $t_bug->priority );
+				\Flickerbox\Icon::print_status_icon( $t_bug->priority );
 			}
 
 			if( $t_attachment_count > 0 ) {
-				$t_href = string_get_bug_view_url( $t_bug->id ) . '#attachments';
-				$t_href_title = sprintf( lang_get( 'view_attachments_for_issue' ), $t_attachment_count, $t_bug->id );
-				$t_alt_text = $t_attachment_count . lang_get( 'word_separator' ) . lang_get( 'attachments' );
+				$t_href = \Flickerbox\String::get_bug_view_url( $t_bug->id ) . '#attachments';
+				$t_href_title = sprintf( \Flickerbox\Lang::get( 'view_attachments_for_issue' ), $t_attachment_count, $t_bug->id );
+				$t_alt_text = $t_attachment_count . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'attachments' );
 				echo '<a class="attachments" href="' . $t_href . '" title="' . $t_href_title . '"><img src="' . $t_icon_path . 'attachment.png" alt="' . $t_alt_text . '" title="' . $t_alt_text . '" /></a>';
 			}
 
 			if( VS_PRIVATE == $t_bug->view_state ) {
-				echo '<img src="' . $t_icon_path . 'protected.gif" width="8" height="15" alt="' . lang_get( 'private' ) . '" />';
+				echo '<img src="' . $t_icon_path . 'protected.gif" width="8" height="15" alt="' . \Flickerbox\Lang::get( 'private' ) . '" />';
 			}
 			?>
 		</span>
@@ -380,13 +366,13 @@ for( $i = 0;$i < $t_count; $i++ ) {
 	<td class="left my-buglist-description">
 		<?php
 		 	if( ON == config_get( 'show_bug_project_links' ) && helper_get_current_project() != $t_bug->project_id ) {
-				echo '<span class="small project">[', string_display_line( project_get_name( $t_bug->project_id ) ), '] </span>';
+				echo '<span class="small project">[', \Flickerbox\String::display_line( project_get_name( $t_bug->project_id ) ), '] </span>';
 			}
 			echo '<span class="small summary">' . $t_summary . '</span><br />';
 	?>
 		<?php
 	# type project name if viewing 'all projects' or bug is in subproject
-	echo '<span class="small category">', string_display_line( category_full_name( $t_bug->category_id, true, $t_bug->project_id ) ), '</span>';
+	echo '<span class="small category">', \Flickerbox\String::display_line( \Flickerbox\Category::full_name( $t_bug->category_id, true, $t_bug->project_id ) ), '</span>';
 
 	echo '<span class="small last-modified"> - ';
 	if( $t_bug->last_updated > strtotime( '-' . $t_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] . ' hours' ) ) {

@@ -43,27 +43,18 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'filter_api.php' );
-require_api( 'filter_constants_inc.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-$f_search		= gpc_get_string( FILTER_PROPERTY_SEARCH, false ); # @todo need a better default
-$f_offset		= gpc_get_int( 'offset', 0 );
+$f_search		= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SEARCH, false ); # @todo need a better default
+$f_offset		= \Flickerbox\GPC::get_int( 'offset', 0 );
 
-$t_cookie_value_id = gpc_get_cookie( config_get( 'view_all_cookie' ), '' );
-$t_cookie_value = filter_db_get_filter( $t_cookie_value_id );
+$t_cookie_value_id = \Flickerbox\GPC::get_cookie( config_get( 'view_all_cookie' ), '' );
+$t_cookie_value = \Flickerbox\Filter::db_get_filter( $t_cookie_value_id );
 
 $f_highlight_changed 	= 0;
 $f_sort 				= null;
@@ -74,10 +65,10 @@ $t_columns = helper_get_columns_to_view( COLUMNS_TARGET_PRINT_PAGE );
 $t_num_of_columns = count( $t_columns );
 
 # check to see if the cookie exists
-if( !is_blank( $t_cookie_value ) ) {
+if( !\Flickerbox\Utility::is_blank( $t_cookie_value ) ) {
 
 	# check to see if new cookie is needed
-	if( !filter_is_cookie_valid() ) {
+	if( !\Flickerbox\Filter::is_cookie_valid() ) {
 		print_header_redirect( 'view_all_set.php?type=0&print=1' );
 	}
 
@@ -91,26 +82,26 @@ if( !is_blank( $t_cookie_value ) ) {
 }
 
 # This replaces the actual search that used to be here
-$f_page_number = gpc_get_int( 'page_number', 1 );
+$f_page_number = \Flickerbox\GPC::get_int( 'page_number', 1 );
 $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = null;
 
-$t_result = filter_get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_result = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count );
 $t_row_count = count( $t_result );
 
 # pre-cache custom column data
 columns_plugin_cache_issue_data( $t_result );
 
 # for export
-$t_show_flag = gpc_get_int( 'show_flag', 0 );
+$t_show_flag = \Flickerbox\GPC::get_int( 'show_flag', 0 );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 ?>
 
 <table class="width100"><tr><td class="form-title">
 	<div class="center">
-		<?php echo string_display( config_get( 'window_title' ) ) . ' - ' . string_display( project_get_name( $t_project_id ) ); ?>
+		<?php echo \Flickerbox\String::display( config_get( 'window_title' ) ) . ' - ' . \Flickerbox\String::display( project_get_name( $t_project_id ) ); ?>
 	</div>
 </td></tr></table>
 
@@ -132,7 +123,7 @@ html_page_top();
 #$t_bug_arr_sort is used for displaying
 #$f_export is a string for the word and excel pages
 
-$f_bug_arr = gpc_get_int_array( 'bug_arr', array() );
+$f_bug_arr = \Flickerbox\GPC::get_int_array( 'bug_arr', array() );
 $f_bug_arr[$t_row_count]=-1;
 
 for( $i=0; $i < $t_row_count; $i++ ) {
@@ -187,7 +178,7 @@ $t_icon_path = config_get( 'icon_path' );
 <tr>
 	<td class="form-title" colspan="<?php echo $t_num_of_columns / 2 + $t_num_of_columns % 2; ?>">
 		<?php
-			echo lang_get( 'viewing_bugs_title' );
+			echo \Flickerbox\Lang::get( 'viewing_bugs_title' );
 
 			if( $t_row_count > 0 ) {
 				$v_start = $f_offset+1;
@@ -201,9 +192,9 @@ $t_icon_path = config_get( 'icon_path' );
 	</td>
 	<td class="right" colspan="<?php echo $t_num_of_columns / 2 ?>">
 		<?php
-			# print_bracket_link( 'print_all_bug_options_page.php', lang_get( 'printing_options_link' ) );
-			# print_bracket_link( 'view_all_bug_page.php', lang_get( 'view_bugs_link' ) );
-			# print_bracket_link( 'summary_page.php', lang_get( 'summary' ) );
+			# print_bracket_link( 'print_all_bug_options_page.php', \Flickerbox\Lang::get( 'printing_options_link' ) );
+			# print_bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'view_bugs_link' ) );
+			# print_bracket_link( 'summary_page.php', \Flickerbox\Lang::get( 'summary' ) );
 		?>
 	</td>
 </tr>
@@ -247,9 +238,9 @@ $t_icon_path = config_get( 'icon_path' );
 	<input type="hidden" name="show_flag" value="1" />
 </fieldset>
 <p>
-	<input type="submit" class="button" value="<?php echo lang_get( 'hide_button' ) ?>" />
+	<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'hide_button' ) ?>" />
 </p>
 </form>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

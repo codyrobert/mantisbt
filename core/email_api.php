@@ -50,29 +50,18 @@
  * @uses class.phpmailer.php PHPMailer library
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'database_api.php' );
-require_api( 'email_queue_api.php' );
 require_api( 'event_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'logging_api.php' );
 require_api( 'project_api.php' );
 require_api( 'relationship_api.php' );
-require_api( 'sponsorship_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
 require_api( 'user_pref_api.php' );
-require_api( 'utility_api.php' );
 
 require_lib( 'phpmailer' . DIRECTORY_SEPARATOR . 'class.phpmailer.php' );
 
@@ -113,7 +102,7 @@ function email_is_valid( $p_email ) {
 	# if we don't validate then just accept
 	if( OFF == config_get( 'validate_email' ) ||
 		ON == config_get( 'use_ldap_email' ) ||
-		( is_blank( $p_email ) && ON == config_get( 'allow_blank_email' ) )
+		( \Flickerbox\Utility::is_blank( $p_email ) && ON == config_get( 'allow_blank_email' ) )
 	) {
 		return true;
 	}
@@ -232,7 +221,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 	if( ON == email_notify_flag( $p_notify_type, 'explicit' ) ) {
 		foreach ( $p_extra_user_ids_to_email as $t_user_id ) {
 			$t_recipients[$t_user_id] = true;
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add explicitly specified user = @U%d', $p_bug_id, $t_user_id );
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add explicitly specified user = @U%d', $p_bug_id, $t_user_id );
 		}
 	}
 
@@ -240,7 +229,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 	if( ON == email_notify_flag( $p_notify_type, 'reporter' ) ) {
 		$t_reporter_id = bug_get_field( $p_bug_id, 'reporter_id' );
 		$t_recipients[$t_reporter_id] = true;
-		log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Reporter = @U%d', $p_bug_id, $t_reporter_id );
+		\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Reporter = @U%d', $p_bug_id, $t_reporter_id );
 	}
 
 	# add Handler
@@ -249,7 +238,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 
 		if( $t_handler_id > 0 ) {
 			$t_recipients[$t_handler_id] = true;
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Handler = @U%d', $p_bug_id, $t_handler_id );
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Handler = @U%d', $p_bug_id, $t_handler_id );
 		}
 	}
 
@@ -263,7 +252,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 		while( $t_row = db_fetch_array( $t_result ) ) {
 			$t_user_id = $t_row['user_id'];
 			$t_recipients[$t_user_id] = true;
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Monitor = @U%d', $p_bug_id, $t_user_id );
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Monitor = @U%d', $p_bug_id, $t_user_id );
 		}
 	}
 
@@ -280,7 +269,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 		while( $t_row = db_fetch_array( $t_result ) ) {
 			$t_user_id = $t_row['reporter_id'];
 			$t_recipients[$t_user_id] = true;
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Note Author = @U%d', $p_bug_id, $t_user_id );
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Note Author = @U%d', $p_bug_id, $t_user_id );
 		}
 	}
 
@@ -291,9 +280,9 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 	$t_threshold_users = project_get_all_user_rows( $t_project_id, $t_threshold_min );
 	foreach( $t_threshold_users as $t_user ) {
 		if( $t_user['access_level'] <= $t_threshold_max ) {
-			if( !$t_bug_is_private || access_compare_level( $t_user['access_level'], config_get( 'private_bug_threshold' ) ) ) {
+			if( !$t_bug_is_private || \Flickerbox\Access::compare_level( $t_user['access_level'], config_get( 'private_bug_threshold' ) ) ) {
 				$t_recipients[$t_user['id']] = true;
-				log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Project User = @U%d', $p_bug_id, $t_user['id'] );
+				\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, add Project User = @U%d', $p_bug_id, $t_user['id'] );
 			}
 		}
 	}
@@ -306,7 +295,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 			if( is_array( $t_recipients_included ) ) {
 				foreach( $t_recipients_included as $t_user_id ) {
 					$t_recipients[$t_user_id] = true;
-					log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, %s plugin added user @U%d', $p_bug_id, $t_plugin, $t_user_id );
+					\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, %s plugin added user @U%d', $p_bug_id, $t_plugin, $t_user_id );
 				}
 			}
 		}
@@ -363,13 +352,13 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 	foreach( $t_recipients as $t_id => $t_ignore ) {
 		# Possibly eliminate the current user
 		if( ( auth_get_current_user_id() == $t_id ) && ( OFF == config_get( 'email_receive_own' ) ) ) {
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (own)', $p_bug_id, $t_id );
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (own)', $p_bug_id, $t_id );
 			continue;
 		}
 
 		# Eliminate users who don't exist anymore or who are disabled
 		if( !user_exists( $t_id ) || !user_is_enabled( $t_id ) ) {
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (disabled)', $p_bug_id, $t_id );
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (disabled)', $p_bug_id, $t_id );
 			continue;
 		}
 
@@ -377,7 +366,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 		if( $t_pref_field ) {
 			$t_notify = user_pref_get_pref( $t_id, $t_pref_field );
 			if( OFF == $t_notify ) {
-				log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (pref %s off)', $p_bug_id, $t_id, $t_pref_field );
+				\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (pref %s off)', $p_bug_id, $t_id, $t_pref_field );
 				continue;
 			} else {
 				# Users can define the severity of an issue before they are emailed for
@@ -387,7 +376,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 				$t_bug_severity = bug_get_field( $p_bug_id, 'severity' );
 
 				if( $t_bug_severity < $t_min_sev_notify ) {
-					log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (pref threshold)', $p_bug_id, $t_id );
+					\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (pref threshold)', $p_bug_id, $t_id );
 					continue;
 				}
 			}
@@ -395,10 +384,10 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 
 		# exclude users who don't have at least viewer access to the bug,
 		# or who can't see bugnotes if the last update included a bugnote
-		if( !access_has_bug_level( config_get( 'view_bug_threshold', null, $t_id, $t_bug->project_id ), $p_bug_id, $t_id )
-		 || $t_bug_date == $t_bugnote_date && !access_has_bugnote_level( config_get( 'view_bug_threshold', null, $t_id, $t_bug->project_id ), $t_bugnote_id, $t_id )
+		if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, $t_id, $t_bug->project_id ), $p_bug_id, $t_id )
+		 || $t_bug_date == $t_bugnote_date && !\Flickerbox\Access::has_bugnote_level( config_get( 'view_bug_threshold', null, $t_id, $t_bug->project_id ), $t_bugnote_id, $t_id )
 		) {
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (access level)', $p_bug_id, $t_id );
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (access level)', $p_bug_id, $t_id );
 			continue;
 		}
 
@@ -410,7 +399,7 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 				# exclude if any plugin returns true (excludes the user)
 				if( $t_recipient_excluded ) {
 					$t_exclude = true;
-					log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, %s plugin dropped user @U%d', $p_bug_id, $t_plugin, $t_id );
+					\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, %s plugin dropped user @U%d', $p_bug_id, $t_plugin, $t_id );
 				}
 			}
 		}
@@ -422,8 +411,8 @@ function email_collect_recipients( $p_bug_id, $p_notify_type, array $p_extra_use
 
 		# Finally, let's get their emails, if they've set one
 		$t_email = user_get_email( $t_id );
-		if( is_blank( $t_email ) ) {
-			log_event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (no email)', $p_bug_id, $t_id );
+		if( \Flickerbox\Utility::is_blank( $t_email ) ) {
+			\Flickerbox\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (no email)', $p_bug_id, $t_id );
 		} else {
 			# @@@ we could check the emails for validity again but I think
 			#   it would be too slow
@@ -449,30 +438,30 @@ function email_signup( $p_user_id, $p_password, $p_confirm_hash, $p_admin_name =
 
 	#	@@@ thraxisp - removed to address #6084 - user won't have any settings yet,
 	#  use same language as display for the email
-	#  lang_push( user_pref_get_language( $p_user_id ) );
+	#  \Flickerbox\Lang::push( user_pref_get_language( $p_user_id ) );
 	# retrieve the username and email
 	$t_username = user_get_field( $p_user_id, 'username' );
 	$t_email = user_get_email( $p_user_id );
 
 	# Build Welcome Message
-	$t_subject = '[' . config_get( 'window_title' ) . '] ' . lang_get( 'new_account_subject' );
+	$t_subject = '[' . config_get( 'window_title' ) . '] ' . \Flickerbox\Lang::get( 'new_account_subject' );
 
 	if( !empty( $p_admin_name ) ) {
-		$t_intro_text = sprintf( lang_get( 'new_account_greeting_admincreated' ), $p_admin_name, $t_username );
+		$t_intro_text = sprintf( \Flickerbox\Lang::get( 'new_account_greeting_admincreated' ), $p_admin_name, $t_username );
 	} else {
-		$t_intro_text = sprintf( lang_get( 'new_account_greeting' ), $t_username );
+		$t_intro_text = sprintf( \Flickerbox\Lang::get( 'new_account_greeting' ), $t_username );
 	}
 
-	$t_message = $t_intro_text . "\n\n" . string_get_confirm_hash_url( $p_user_id, $p_confirm_hash ) . "\n\n" . lang_get( 'new_account_message' ) . "\n\n" . lang_get( 'new_account_do_not_reply' );
+	$t_message = $t_intro_text . "\n\n" . \Flickerbox\String::get_confirm_hash_url( $p_user_id, $p_confirm_hash ) . "\n\n" . \Flickerbox\Lang::get( 'new_account_message' ) . "\n\n" . \Flickerbox\Lang::get( 'new_account_do_not_reply' );
 
 	# Send signup email regardless of mail notification pref
 	# or else users won't be able to sign up
-	if( !is_blank( $t_email ) ) {
+	if( !\Flickerbox\Utility::is_blank( $t_email ) ) {
 		email_store( $t_email, $t_subject, $t_message );
-		log_event( LOG_EMAIL, 'Signup Email = %s, Hash = %s, User = @U%d', $t_email, $p_confirm_hash, $p_user_id );
+		\Flickerbox\Log::event( LOG_EMAIL, 'Signup Email = %s, Hash = %s, User = @U%d', $t_email, $p_confirm_hash, $p_user_id );
 	}
 
-	# lang_pop(); # see above
+	# \Flickerbox\Lang::pop(); # see above
 }
 
 /**
@@ -487,24 +476,24 @@ function email_send_confirm_hash_url( $p_user_id, $p_confirm_hash ) {
 		return;
 	}
 
-	lang_push( user_pref_get_language( $p_user_id ) );
+	\Flickerbox\Lang::push( user_pref_get_language( $p_user_id ) );
 
 	# retrieve the username and email
 	$t_username = user_get_field( $p_user_id, 'username' );
 	$t_email = user_get_email( $p_user_id );
 
-	$t_subject = '[' . config_get( 'window_title' ) . '] ' . lang_get( 'lost_password_subject' );
+	$t_subject = '[' . config_get( 'window_title' ) . '] ' . \Flickerbox\Lang::get( 'lost_password_subject' );
 
-	$t_message = lang_get( 'reset_request_msg' ) . " \n\n" . string_get_confirm_hash_url( $p_user_id, $p_confirm_hash ) . " \n\n" . lang_get( 'new_account_username' ) . ' ' . $t_username . " \n" . lang_get( 'new_account_IP' ) . ' ' . $_SERVER['REMOTE_ADDR'] . " \n\n" . lang_get( 'new_account_do_not_reply' );
+	$t_message = \Flickerbox\Lang::get( 'reset_request_msg' ) . " \n\n" . \Flickerbox\String::get_confirm_hash_url( $p_user_id, $p_confirm_hash ) . " \n\n" . \Flickerbox\Lang::get( 'new_account_username' ) . ' ' . $t_username . " \n" . \Flickerbox\Lang::get( 'new_account_IP' ) . ' ' . $_SERVER['REMOTE_ADDR'] . " \n\n" . \Flickerbox\Lang::get( 'new_account_do_not_reply' );
 
 	# Send password reset regardless of mail notification preferences
 	# or else users won't be able to receive their reset passwords
-	if( !is_blank( $t_email ) ) {
+	if( !\Flickerbox\Utility::is_blank( $t_email ) ) {
 		email_store( $t_email, $t_subject, $t_message );
-		log_event( LOG_EMAIL, 'Password reset for user @U%d sent to %s', $p_user_id, $t_email );
+		\Flickerbox\Log::event( LOG_EMAIL, 'Password reset for user @U%d sent to %s', $p_user_id, $t_email );
 	}
 
-	lang_pop();
+	\Flickerbox\Lang::pop();
 }
 
 /**
@@ -518,19 +507,19 @@ function email_notify_new_account( $p_username, $p_email ) {
 	$t_threshold_users = project_get_all_user_rows( ALL_PROJECTS, $t_threshold_min );
 
 	foreach( $t_threshold_users as $t_user ) {
-		lang_push( user_pref_get_language( $t_user['id'] ) );
+		\Flickerbox\Lang::push( user_pref_get_language( $t_user['id'] ) );
 
 		$t_recipient_email = user_get_email( $t_user['id'] );
-		$t_subject = '[' . config_get( 'window_title' ) . '] ' . lang_get( 'new_account_subject' );
+		$t_subject = '[' . config_get( 'window_title' ) . '] ' . \Flickerbox\Lang::get( 'new_account_subject' );
 
-		$t_message = lang_get( 'new_account_signup_msg' ) . "\n\n" . lang_get( 'new_account_username' ) . ' ' . $p_username . "\n" . lang_get( 'new_account_email' ) . ' ' . $p_email . "\n" . lang_get( 'new_account_IP' ) . ' ' . $_SERVER['REMOTE_ADDR'] . "\n" . config_get_global( 'path' ) . "\n\n" . lang_get( 'new_account_do_not_reply' );
+		$t_message = \Flickerbox\Lang::get( 'new_account_signup_msg' ) . "\n\n" . \Flickerbox\Lang::get( 'new_account_username' ) . ' ' . $p_username . "\n" . \Flickerbox\Lang::get( 'new_account_email' ) . ' ' . $p_email . "\n" . \Flickerbox\Lang::get( 'new_account_IP' ) . ' ' . $_SERVER['REMOTE_ADDR'] . "\n" . config_get_global( 'path' ) . "\n\n" . \Flickerbox\Lang::get( 'new_account_do_not_reply' );
 
-		if( !is_blank( $t_recipient_email ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_recipient_email ) ) {
 			email_store( $t_recipient_email, $t_subject, $t_message );
-			log_event( LOG_EMAIL, 'New Account Notify for email = \'%s\'', $t_recipient_email );
+			\Flickerbox\Log::event( LOG_EMAIL, 'New Account Notify for email = \'%s\'', $t_recipient_email );
 		}
 
-		lang_pop();
+		\Flickerbox\Lang::pop();
 	}
 }
 
@@ -578,15 +567,15 @@ function email_generic_to_recipients( $p_bug_id, $p_notify_type, array $p_recipi
 	if( is_array( $p_recipients ) ) {
 		# send email to every recipient
 		foreach( $p_recipients as $t_user_id => $t_user_email ) {
-			log_event( LOG_EMAIL, 'Issue = #%d, Type = %s, Msg = \'%s\', User = @U%d, Email = \'%s\'.', $p_bug_id, $p_notify_type, $p_message_id, $t_user_id, $t_user_email );
+			\Flickerbox\Log::event( LOG_EMAIL, 'Issue = #%d, Type = %s, Msg = \'%s\', User = @U%d, Email = \'%s\'.', $p_bug_id, $p_notify_type, $p_message_id, $t_user_id, $t_user_email );
 
 			# load (push) user language here as build_visible_bug_data assumes current language
-			lang_push( user_pref_get_language( $t_user_id, $t_project_id ) );
+			\Flickerbox\Lang::push( user_pref_get_language( $t_user_id, $t_project_id ) );
 
 			$t_visible_bug_data = email_build_visible_bug_data( $t_user_id, $p_bug_id, $p_message_id );
 			email_bug_info_to_one_user( $t_visible_bug_data, $p_message_id, $t_project_id, $t_user_id, $p_header_optional_params );
 
-			lang_pop();
+			\Flickerbox\Lang::pop();
 		}
 	}
 }
@@ -599,7 +588,7 @@ function email_generic_to_recipients( $p_bug_id, $p_notify_type, array $p_recipi
  * @return void
  */
 function email_monitor_added( $p_bug_id, $p_user_id ) {
-	log_event( LOG_EMAIL, 'Issue #%d monitored by user @U%d', $p_bug_id, $p_user_id );
+	\Flickerbox\Log::event( LOG_EMAIL, 'Issue #%d monitored by user @U%d', $p_bug_id, $p_user_id );
 
 	$t_opt = array();
 	$t_opt[] = bug_format_id( $p_bug_id );
@@ -616,7 +605,7 @@ function email_monitor_added( $p_bug_id, $p_user_id ) {
  * @return void
  */
 function email_relationship_added( $p_bug_id, $p_related_bug_id, $p_rel_type ) {
-	log_event( LOG_EMAIL, 'Relationship added: Issue #%d, related issue %d, relationship type %s.', $p_bug_id, $p_related_bug_id, $p_rel_type );
+	\Flickerbox\Log::event( LOG_EMAIL, 'Relationship added: Issue #%d, related issue %d, relationship type %s.', $p_bug_id, $p_related_bug_id, $p_rel_type );
 
 	$t_opt = array();
 	$t_opt[] = bug_format_id( $p_related_bug_id );
@@ -648,7 +637,7 @@ function email_filter_recipients_for_bug( $p_bug_id, array $p_recipients ) {
     $t_authorized_recipients = array();
 
     foreach( $p_recipients as $t_recipient_id => $t_recipient_email ) {
-        if( access_has_bug_level( $t_view_bug_threshold, $p_bug_id, $t_recipient_id ) ) {
+        if( \Flickerbox\Access::has_bug_level( $t_view_bug_threshold, $p_bug_id, $t_recipient_id ) ) {
             $t_authorized_recipients[$t_recipient_id] = $t_recipient_email;
         }
     }
@@ -664,7 +653,7 @@ function email_filter_recipients_for_bug( $p_bug_id, array $p_recipients ) {
  * @return void
  */
 function email_relationship_deleted( $p_bug_id, $p_related_bug_id, $p_rel_type ) {
-	log_event( LOG_EMAIL, 'Relationship deleted: Issue #%d, related issue %d, relationship type %s.', $p_bug_id, $p_related_bug_id, $p_rel_type );
+	\Flickerbox\Log::event( LOG_EMAIL, 'Relationship deleted: Issue #%d, related issue %d, relationship type %s.', $p_bug_id, $p_related_bug_id, $p_rel_type );
 
 	$t_opt = array();
 	$t_opt[] = bug_format_id( $p_related_bug_id );
@@ -744,16 +733,16 @@ function email_store( $p_recipient, $p_subject, $p_message, array $p_headers = n
 	global $g_email_stored;
 
 	$t_recipient = trim( $p_recipient );
-	$t_subject = string_email( trim( $p_subject ) );
-	$t_message = string_email_links( trim( $p_message ) );
+	$t_subject = \Flickerbox\String::email( trim( $p_subject ) );
+	$t_message = \Flickerbox\String::email_links( trim( $p_message ) );
 
 	# short-circuit if no recipient is defined, or email disabled
 	# note that this may cause signup messages not to be sent
-	if( is_blank( $p_recipient ) || ( OFF == config_get( 'enable_email_notification' ) ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_recipient ) || ( OFF == config_get( 'enable_email_notification' ) ) ) {
 		return null;
 	}
 
-	$t_email_data = new EmailData;
+	$t_email_data = new \Flickerbox\Email\Data;
 
 	$t_email_data->email = $t_recipient;
 	$t_email_data->subject = $t_subject;
@@ -776,7 +765,7 @@ function email_store( $p_recipient, $p_subject, $p_message, array $p_headers = n
 	}
 	$t_email_data->metadata['hostname'] = $t_hostname;
 
-	$t_email_id = email_queue_add( $t_email_data );
+	$t_email_id = \Flickerbox\Email\Queue::add( $t_email_data );
 
 	$g_email_stored = true;
 
@@ -796,7 +785,7 @@ function email_store( $p_recipient, $p_subject, $p_message, array $p_headers = n
 function email_send_all( $p_delete_on_failure = false ) {
 	$t_ids = email_queue_get_ids();
 
-	log_event( LOG_EMAIL, 'Processing e-mail queue (' . count( $t_ids ) . ' messages)' );
+	\Flickerbox\Log::event( LOG_EMAIL, 'Processing e-mail queue (' . count( $t_ids ) . ' messages)' );
 
 	foreach( $t_ids as $t_id ) {
 		$t_email_data = email_queue_get( $t_id );
@@ -805,9 +794,9 @@ function email_send_all( $p_delete_on_failure = false ) {
 		# check if email was not found.  This can happen if another request picks up the email first and sends it.
 		if( $t_email_data === false ) {
 			$t_email_sent = true;
-			log_event( LOG_EMAIL, 'Message #$t_id has already been sent' );
+			\Flickerbox\Log::event( LOG_EMAIL, 'Message #$t_id has already been sent' );
 		} else {
-			log_event( LOG_EMAIL, 'Sending message #' . $t_id );
+			\Flickerbox\Log::event( LOG_EMAIL, 'Sending message #' . $t_id );
 			$t_email_sent = email_send( $t_email_data );
 		}
 
@@ -821,7 +810,7 @@ function email_send_all( $p_delete_on_failure = false ) {
 			# connection is down, hence no point to continue trying with the
 			# rest of the emails.
 			if( microtime( true ) - $t_start > 5 ) {
-				log_event( LOG_EMAIL, 'Server not responding for 5 seconds, aborting' );
+				\Flickerbox\Log::event( LOG_EMAIL, 'Server not responding for 5 seconds, aborting' );
 				break;
 			}
 		}
@@ -834,14 +823,14 @@ function email_send_all( $p_delete_on_failure = false ) {
  * @param EmailData $p_email_data Email Data object representing the email to send.
  * @return boolean
  */
-function email_send( EmailData $p_email_data ) {
+function email_send( \Flickerbox\Email\Data $p_email_data ) {
 	global $g_phpMailer;
 
 	$t_email_data = $p_email_data;
 
 	$t_recipient = trim( $t_email_data->email );
-	$t_subject = string_email( trim( $t_email_data->subject ) );
-	$t_message = string_email_links( trim( $t_email_data->body ) );
+	$t_subject = \Flickerbox\String::email( trim( $t_email_data->subject ) );
+	$t_message = \Flickerbox\String::email_links( trim( $t_email_data->body ) );
 
 	$t_debug_email = config_get_global( 'debug_email' );
 	$t_mailer_method = config_get( 'phpMailer_method' );
@@ -866,7 +855,7 @@ function email_send( EmailData $p_email_data ) {
 	if( 'auto' == $t_lang ) {
 		$t_lang = config_get( 'fallback_language' );
 	}
-	$t_mail->SetLanguage( lang_get( 'phpmailer_language', $t_lang ) );
+	$t_mail->SetLanguage( \Flickerbox\Lang::get( 'phpmailer_language', $t_lang ) );
 
 	# Select the method to send mail
 	switch( config_get( 'phpMailer_method' ) ) {
@@ -884,14 +873,14 @@ function email_send( EmailData $p_email_data ) {
 			# SMTP collection is always kept alive
 			$t_mail->SMTPKeepAlive = true;
 
-			if( !is_blank( config_get( 'smtp_username' ) ) ) {
+			if( !\Flickerbox\Utility::is_blank( config_get( 'smtp_username' ) ) ) {
 				# Use SMTP Authentication
 				$t_mail->SMTPAuth = true;
 				$t_mail->Username = config_get( 'smtp_username' );
 				$t_mail->Password = config_get( 'smtp_password' );
 			}
 
-			if( !is_blank( config_get( 'smtp_connection_mode' ) ) ) {
+			if( !\Flickerbox\Utility::is_blank( config_get( 'smtp_connection_mode' ) ) ) {
 				$t_mail->SMTPSecure = config_get( 'smtp_connection_mode' );
 			}
 
@@ -924,7 +913,7 @@ function email_send( EmailData $p_email_data ) {
 		$t_mail->AddAddress( $t_recipient, '' );
 	}
 	catch ( phpmailerException $e ) {
-		log_event( LOG_EMAIL, $t_log_msg . $t_mail->ErrorInfo );
+		\Flickerbox\Log::event( LOG_EMAIL, $t_log_msg . $t_mail->ErrorInfo );
 		$t_success = false;
 		$t_mail->ClearAllRecipients();
 		$t_mail->ClearAttachments();
@@ -942,7 +931,7 @@ function email_send( EmailData $p_email_data ) {
 				case 'Message-ID':
 					# Note: hostname can never be blank here as we set metadata['hostname']
 					# in email_store() where mail gets queued.
-					if( !strchr( $t_value, '@' ) && !is_blank( $t_mail->Hostname ) ) {
+					if( !strchr( $t_value, '@' ) && !\Flickerbox\Utility::is_blank( $t_mail->Hostname ) ) {
 						$t_value = $t_value . '@' . $t_mail->Hostname;
 					}
 					$t_mail->set( 'MessageID', '<' . $t_value . '>' );
@@ -967,12 +956,12 @@ function email_send( EmailData $p_email_data ) {
 			}
 		} else {
 			# We should never get here, as an exception is thrown after failures
-			log_event( LOG_EMAIL, $t_log_msg . $t_mail->ErrorInfo );
+			\Flickerbox\Log::event( LOG_EMAIL, $t_log_msg . $t_mail->ErrorInfo );
 			$t_success = false;
 		}
 	}
 	catch ( phpmailerException $e ) {
-		log_event( LOG_EMAIL, $t_log_msg . $t_mail->ErrorInfo );
+		\Flickerbox\Log::event( LOG_EMAIL, $t_log_msg . $t_mail->ErrorInfo );
 		$t_success = false;
 	}
 
@@ -1058,7 +1047,7 @@ function email_bug_reminder( $p_recipients, $p_bug_id, $p_message ) {
 	}
 
 	$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
-	$t_sender_id = auth_get_current_user_id();
+	$t_sender_id = \Flickerbox\Auth::get_current_user_id();
 	$t_sender = user_get_name( $t_sender_id );
 
 	$t_subject = email_build_subject( $p_bug_id );
@@ -1066,25 +1055,25 @@ function email_bug_reminder( $p_recipients, $p_bug_id, $p_message ) {
 
 	$t_result = array();
 	foreach( $p_recipients as $t_recipient ) {
-		lang_push( user_pref_get_language( $t_recipient, $t_project_id ) );
+		\Flickerbox\Lang::push( user_pref_get_language( $t_recipient, $t_project_id ) );
 
 		$t_email = user_get_email( $t_recipient );
 
-		if( access_has_project_level( config_get( 'show_user_email_threshold' ), $t_project_id, $t_recipient ) ) {
+		if( \Flickerbox\Access::has_project_level( config_get( 'show_user_email_threshold' ), $t_project_id, $t_recipient ) ) {
 			$t_sender_email = ' <' . user_get_email( $t_sender_id ) . '>';
 		} else {
 			$t_sender_email = '';
 		}
-		$t_header = "\n" . lang_get( 'on_date' ) . ' ' . $t_date . ', ' . $t_sender . ' ' . $t_sender_email . lang_get( 'sent_you_this_reminder_about' ) . ': ' . "\n\n";
-		$t_contents = $t_header . string_get_bug_view_url_with_fqdn( $p_bug_id, $t_recipient ) . " \n\n" . $p_message;
+		$t_header = "\n" . \Flickerbox\Lang::get( 'on_date' ) . ' ' . $t_date . ', ' . $t_sender . ' ' . $t_sender_email . \Flickerbox\Lang::get( 'sent_you_this_reminder_about' ) . ': ' . "\n\n";
+		$t_contents = $t_header . \Flickerbox\String::get_bug_view_url_with_fqdn( $p_bug_id, $t_recipient ) . " \n\n" . $p_message;
 
 		$t_id = email_store( $t_email, $t_subject, $t_contents );
 		if( $t_id !== null ) {
 			$t_result[] = $t_recipient;
 		}
-		log_event( LOG_EMAIL, 'queued reminder email #' . $t_id . ' for U' . $t_recipient );
+		\Flickerbox\Log::event( LOG_EMAIL, 'queued reminder email #' . $t_id . ' for U' . $t_recipient );
 
-		lang_pop();
+		\Flickerbox\Lang::pop();
 	}
 
 	return $t_result;
@@ -1105,7 +1094,7 @@ function email_bug_info_to_one_user( array $p_visible_bug_data, $p_message_id, $
 
 	# check whether email should be sent
 	# @@@ can be email field empty? if yes - then it should be handled here
-	if( ON !== config_get( 'enable_email_notification' ) || is_blank( $t_user_email ) ) {
+	if( ON !== config_get( 'enable_email_notification' ) || \Flickerbox\Utility::is_blank( $t_user_email ) ) {
 		return;
 	}
 
@@ -1114,13 +1103,13 @@ function email_bug_info_to_one_user( array $p_visible_bug_data, $p_message_id, $
 
 	# build message
 
-	$t_message = lang_get_defaulted( $p_message_id, null );
+	$t_message = \Flickerbox\Lang::get_defaulted( $p_message_id, null );
 
 	if( is_array( $p_header_optional_params ) ) {
 		$t_message = vsprintf( $t_message, $p_header_optional_params );
 	}
 
-	if( ( $t_message !== null ) && ( !is_blank( $t_message ) ) ) {
+	if( ( $t_message !== null ) && ( !\Flickerbox\Utility::is_blank( $t_message ) ) ) {
 		$t_message .= " \n";
 	}
 
@@ -1188,7 +1177,7 @@ function email_format_bug_message( array $p_visible_bug_data ) {
 
 	# custom fields formatting
 	foreach( $p_visible_bug_data['custom_fields'] as $t_custom_field_name => $t_custom_field_data ) {
-		$t_message .= utf8_str_pad( lang_get_defaulted( $t_custom_field_name, null ) . ': ', $t_email_padding_length, ' ', STR_PAD_RIGHT );
+		$t_message .= utf8_str_pad( \Flickerbox\Lang::get_defaulted( $t_custom_field_name, null ) . ': ', $t_email_padding_length, ' ', STR_PAD_RIGHT );
 		$t_message .= string_custom_field_value_for_email( $t_custom_field_data['value'], $t_custom_field_data['type'] );
 		$t_message .= " \n";
 	}
@@ -1208,26 +1197,26 @@ function email_format_bug_message( array $p_visible_bug_data ) {
 
 	$t_message .= email_format_attribute( $p_visible_bug_data, 'email_summary' );
 
-	$t_message .= lang_get( 'email_description' ) . ": \n" . $p_visible_bug_data['email_description'] . "\n";
+	$t_message .= \Flickerbox\Lang::get( 'email_description' ) . ": \n" . $p_visible_bug_data['email_description'] . "\n";
 
-	if( !is_blank( $p_visible_bug_data['email_steps_to_reproduce'] ) ) {
-		$t_message .= "\n" . lang_get( 'email_steps_to_reproduce' ) . ": \n" . $p_visible_bug_data['email_steps_to_reproduce'] . "\n";
+	if( !\Flickerbox\Utility::is_blank( $p_visible_bug_data['email_steps_to_reproduce'] ) ) {
+		$t_message .= "\n" . \Flickerbox\Lang::get( 'email_steps_to_reproduce' ) . ": \n" . $p_visible_bug_data['email_steps_to_reproduce'] . "\n";
 	}
 
-	if( !is_blank( $p_visible_bug_data['email_additional_information'] ) ) {
-		$t_message .= "\n" . lang_get( 'email_additional_information' ) . ": \n" . $p_visible_bug_data['email_additional_information'] . "\n";
+	if( !\Flickerbox\Utility::is_blank( $p_visible_bug_data['email_additional_information'] ) ) {
+		$t_message .= "\n" . \Flickerbox\Lang::get( 'email_additional_information' ) . ": \n" . $p_visible_bug_data['email_additional_information'] . "\n";
 	}
 
 	if( isset( $p_visible_bug_data['relations'] ) ) {
 		if( $p_visible_bug_data['relations'] != '' ) {
-			$t_message .= $t_email_separator1 . "\n" . str_pad( lang_get( 'bug_relationships' ), 20 ) . str_pad( lang_get( 'id' ), 8 ) . lang_get( 'summary' ) . "\n" . $t_email_separator2 . "\n" . $p_visible_bug_data['relations'];
+			$t_message .= $t_email_separator1 . "\n" . str_pad( \Flickerbox\Lang::get( 'bug_relationships' ), 20 ) . str_pad( \Flickerbox\Lang::get( 'id' ), 8 ) . \Flickerbox\Lang::get( 'summary' ) . "\n" . $t_email_separator2 . "\n" . $p_visible_bug_data['relations'];
 		}
 	}
 
 	# Sponsorship
 	if( isset( $p_visible_bug_data['sponsorship_total'] ) && ( $p_visible_bug_data['sponsorship_total'] > 0 ) ) {
 		$t_message .= $t_email_separator1 . " \n";
-		$t_message .= sprintf( lang_get( 'total_sponsorship_amount' ), sponsorship_format_amount( $p_visible_bug_data['sponsorship_total'] ) ) . "\n\n";
+		$t_message .= sprintf( \Flickerbox\Lang::get( 'total_sponsorship_amount' ), \Flickerbox\Sponsorship::format_amount( $p_visible_bug_data['sponsorship_total'] ) ) . "\n\n";
 
 		if( isset( $p_visible_bug_data['sponsorships'] ) ) {
 			foreach( $p_visible_bug_data['sponsorships'] as $t_sponsorship ) {
@@ -1235,7 +1224,7 @@ function email_format_bug_message( array $p_visible_bug_data ) {
 
 				$t_message .= $t_date_added . ': ';
 				$t_message .= user_get_name( $t_sponsorship->user_id );
-				$t_message .= ' (' . sponsorship_format_amount( $t_sponsorship->amount ) . ')' . " \n";
+				$t_message .= ' (' . \Flickerbox\Sponsorship::format_amount( $t_sponsorship->amount ) . ')' . " \n";
 			}
 		}
 	}
@@ -1247,16 +1236,16 @@ function email_format_bug_message( array $p_visible_bug_data ) {
 		$t_last_modified = date( $t_normal_date_format, $t_bugnote->last_modified );
 
 		$t_formatted_bugnote_id = bugnote_format_id( $t_bugnote->id );
-		$t_bugnote_link = string_process_bugnote_link( config_get( 'bugnote_link_tag' ) . $t_bugnote->id, false, false, true );
+		$t_bugnote_link = \Flickerbox\String::process_bugnote_link( config_get( 'bugnote_link_tag' ) . $t_bugnote->id, false, false, true );
 
 		if( $t_bugnote->time_tracking > 0 ) {
-			$t_time_tracking = ' ' . lang_get( 'time_tracking' ) . ' ' . db_minutes_to_hhmm( $t_bugnote->time_tracking ) . "\n";
+			$t_time_tracking = ' ' . \Flickerbox\Lang::get( 'time_tracking' ) . ' ' . db_minutes_to_hhmm( $t_bugnote->time_tracking ) . "\n";
 		} else {
 			$t_time_tracking = '';
 		}
 
 		if( user_exists( $t_bugnote->reporter_id ) ) {
-			$t_access_level = access_get_project_level( $p_visible_bug_data['email_project_id'], $t_bugnote->reporter_id );
+			$t_access_level = \Flickerbox\Access::get_project_level( $p_visible_bug_data['email_project_id'], $t_bugnote->reporter_id );
 			$t_access_level_string = ' (' . get_enum_element( 'access_levels', $t_access_level ) . ') - ';
 		} else {
 			$t_access_level_string = '';
@@ -1272,8 +1261,8 @@ function email_format_bug_message( array $p_visible_bug_data ) {
 
 	# format history
 	if( array_key_exists( 'history', $p_visible_bug_data ) ) {
-		$t_message .= lang_get( 'bug_history' ) . " \n";
-		$t_message .= utf8_str_pad( lang_get( 'date_modified' ), 17 ) . utf8_str_pad( lang_get( 'username' ), 15 ) . utf8_str_pad( lang_get( 'field' ), 25 ) . utf8_str_pad( lang_get( 'change' ), 20 ) . " \n";
+		$t_message .= \Flickerbox\Lang::get( 'bug_history' ) . " \n";
+		$t_message .= utf8_str_pad( \Flickerbox\Lang::get( 'date_modified' ), 17 ) . utf8_str_pad( \Flickerbox\Lang::get( 'username' ), 15 ) . utf8_str_pad( \Flickerbox\Lang::get( 'field' ), 25 ) . utf8_str_pad( \Flickerbox\Lang::get( 'change' ), 20 ) . " \n";
 
 		$t_message .= $t_email_separator1 . " \n";
 
@@ -1298,7 +1287,7 @@ function email_format_bug_message( array $p_visible_bug_data ) {
  */
 function email_format_attribute( array $p_visible_bug_data, $p_attribute_id ) {
 	if( array_key_exists( $p_attribute_id, $p_visible_bug_data ) ) {
-		return utf8_str_pad( lang_get( $p_attribute_id ) . ': ', config_get( 'email_padding_length' ), ' ', STR_PAD_RIGHT ) . $p_visible_bug_data[$p_attribute_id] . "\n";
+		return utf8_str_pad( \Flickerbox\Lang::get( $p_attribute_id ) . ': ', config_get( 'email_padding_length' ), ' ', STR_PAD_RIGHT ) . $p_visible_bug_data[$p_attribute_id] . "\n";
 	}
 	return '';
 }
@@ -1315,7 +1304,7 @@ function email_format_attribute( array $p_visible_bug_data, $p_attribute_id ) {
 function email_build_visible_bug_data( $p_user_id, $p_bug_id, $p_message_id ) {
 	# Override current user with user to construct bug data for.
 	# This is to make sure that APIs that check against current user (e.g. relationship) work correctly.
-	$t_current_user_id = current_user_set( $p_user_id );
+	$t_current_user_id = \Flickerbox\Current_User::set( $p_user_id );
 
 	$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
 	$t_user_access_level = user_get_access_level( $p_user_id, $t_project_id );
@@ -1328,10 +1317,10 @@ function email_build_visible_bug_data( $p_user_id, $p_bug_id, $p_message_id ) {
 	$t_bug_data['email_bug'] = $p_bug_id;
 
 	if( $p_message_id !== 'email_notification_title_for_action_bug_deleted' ) {
-		$t_bug_data['email_bug_view_url'] = string_get_bug_view_url_with_fqdn( $p_bug_id );
+		$t_bug_data['email_bug_view_url'] = \Flickerbox\String::get_bug_view_url_with_fqdn( $p_bug_id );
 	}
 
-	if( access_compare_level( $t_user_access_level, config_get( 'view_handler_threshold' ) ) ) {
+	if( \Flickerbox\Access::compare_level( $t_user_access_level, config_get( 'view_handler_threshold' ) ) ) {
 		if( 0 != $t_row['handler_id'] ) {
 			$t_bug_data['email_handler'] = user_get_name( $t_row['handler_id'] );
 		} else {
@@ -1343,7 +1332,7 @@ function email_build_visible_bug_data( $p_user_id, $p_bug_id, $p_message_id ) {
 	$t_bug_data['email_project_id'] = $t_row['project_id'];
 	$t_bug_data['email_project'] = project_get_field( $t_row['project_id'], 'name' );
 
-	$t_category_name = category_full_name( $t_row['category_id'], false );
+	$t_category_name = \Flickerbox\Category::full_name( $t_row['category_id'], false );
 	$t_bug_data['email_category'] = $t_category_name;
 
 	$t_bug_data['email_date_submitted'] = $t_row['date_submitted'];
@@ -1357,7 +1346,7 @@ function email_build_visible_bug_data( $p_user_id, $p_bug_id, $p_message_id ) {
 	$t_bug_data['email_resolution'] = $t_row['resolution'];
 	$t_bug_data['email_fixed_in_version'] = $t_row['fixed_in_version'];
 
-	if( !is_blank( $t_row['target_version'] ) && access_compare_level( $t_user_access_level, config_get( 'roadmap_view_threshold' ) ) ) {
+	if( !\Flickerbox\Utility::is_blank( $t_row['target_version'] ) && \Flickerbox\Access::compare_level( $t_user_access_level, config_get( 'roadmap_view_threshold' ) ) ) {
 		$t_bug_data['email_target_version'] = $t_row['target_version'];
 	}
 
@@ -1372,26 +1361,26 @@ function email_build_visible_bug_data( $p_user_id, $p_bug_id, $p_message_id ) {
 	$t_bug_data['bugnotes'] = bugnote_get_all_visible_bugnotes( $p_bug_id, $t_user_bugnote_order, $t_user_bugnote_limit, $p_user_id );
 
 	# put history data
-	if( ( ON == config_get( 'history_default_visible' ) ) && access_compare_level( $t_user_access_level, config_get( 'view_history_threshold' ) ) ) {
+	if( ( ON == config_get( 'history_default_visible' ) ) && \Flickerbox\Access::compare_level( $t_user_access_level, config_get( 'view_history_threshold' ) ) ) {
 		$t_bug_data['history'] = history_get_raw_events_array( $p_bug_id, $p_user_id );
 	}
 
 	# Sponsorship Information
-	if( ( config_get( 'enable_sponsorship' ) == ON ) && ( access_has_bug_level( config_get( 'view_sponsorship_total_threshold' ), $p_bug_id, $p_user_id ) ) ) {
-		$t_sponsorship_ids = sponsorship_get_all_ids( $p_bug_id );
-		$t_bug_data['sponsorship_total'] = sponsorship_get_amount( $t_sponsorship_ids );
+	if( ( config_get( 'enable_sponsorship' ) == ON ) && ( \Flickerbox\Access::has_bug_level( config_get( 'view_sponsorship_total_threshold' ), $p_bug_id, $p_user_id ) ) ) {
+		$t_sponsorship_ids = \Flickerbox\Sponsorship::get_all_ids( $p_bug_id );
+		$t_bug_data['sponsorship_total'] = \Flickerbox\Sponsorship::get_amount( $t_sponsorship_ids );
 
-		if( access_has_bug_level( config_get( 'view_sponsorship_details_threshold' ), $p_bug_id, $p_user_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'view_sponsorship_details_threshold' ), $p_bug_id, $p_user_id ) ) {
 			$t_bug_data['sponsorships'] = array();
 			foreach( $t_sponsorship_ids as $t_id ) {
-				$t_bug_data['sponsorships'][] = sponsorship_get( $t_id );
+				$t_bug_data['sponsorships'][] = \Flickerbox\Sponsorship::get( $t_id );
 			}
 		}
 	}
 
 	$t_bug_data['relations'] = relationship_get_summary_text( $p_bug_id );
 
-	current_user_set( $t_current_user_id );
+	\Flickerbox\Current_User::set( $t_current_user_id );
 
 	return $t_bug_data;
 }

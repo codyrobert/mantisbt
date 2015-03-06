@@ -41,35 +41,28 @@ if( !defined( 'PRINT_BUGNOTE_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'database_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
 # grab the user id currently logged in
-$t_user_id	= auth_get_current_user_id();
+$t_user_id	= \Flickerbox\Auth::get_current_user_id();
 $c_bug_id		= (integer)$f_bug_id;
 
-if( !access_has_bug_level( config_get( 'private_bugnote_threshold' ), $f_bug_id ) ) {
+if( !\Flickerbox\Access::has_bug_level( config_get( 'private_bugnote_threshold' ), $f_bug_id ) ) {
 	$t_restriction = 'AND view_state=' . VS_PUBLIC;
 } else {
 	$t_restriction = '';
 }
 
 # get the bugnote data
-$t_bugnote_order = current_user_get_pref( 'bugnote_order' );
+$t_bugnote_order = \Flickerbox\Current_User::get_pref( 'bugnote_order' );
 $t_bugnotes = bugnote_get_all_visible_bugnotes( $f_bug_id, $t_bugnote_order, 0, $t_user_id );
-$t_show_time_tracking = access_has_bug_level( config_get( 'time_tracking_view_threshold' ), $f_bug_id );
+$t_show_time_tracking = \Flickerbox\Access::has_bug_level( config_get( 'time_tracking_view_threshold' ), $f_bug_id );
 $t_total_time = 0;
 ?>
 
@@ -80,13 +73,13 @@ $t_total_time = 0;
 	?>
 	<tr>
 		<td class="print" colspan="2">
-			<?php echo lang_get( 'no_bugnotes_msg' ) ?>
+			<?php echo \Flickerbox\Lang::get( 'no_bugnotes_msg' ) ?>
 		</td>
 	</tr>
 	<?php } else { # print bugnotes ?>
 	<tr>
 		<td class="form-title" colspan="2">
-			<?php echo lang_get( 'bug_notes_title' ) ?>
+			<?php echo \Flickerbox\Lang::get( 'bug_notes_title' ) ?>
 		</td>
 	</tr>
 	<?php
@@ -94,7 +87,7 @@ $t_total_time = 0;
 			$t_date_submitted = date( config_get( 'normal_date_format' ), $t_row->date_submitted );
 			$t_last_modified = date( config_get( 'normal_date_format' ), $t_row->last_modified );
 
-			$t_note = string_display_links( $t_row->note );
+			$t_note = \Flickerbox\String::display_links( $t_row->note );
 
 			if( $t_row->note_type == TIME_TRACKING ) {
 				$t_time = db_minutes_to_hhmm( $t_row->time_tracking );
@@ -127,7 +120,7 @@ $t_total_time = 0;
 					<td class="print">
 						<?php echo $t_date_submitted ?>&#160;&#160;&#160;
 						<?php if( $t_date_submitted != $t_last_modified ) {
-							echo '<br />(' . lang_get( 'last_edited' ) . lang_get( 'word_separator' ) . $t_last_modified . ')';
+							echo '<br />(' . \Flickerbox\Lang::get( 'last_edited' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_last_modified . ')';
 						} ?>
 					</td>
 				</tr>
@@ -140,18 +133,18 @@ $t_total_time = 0;
 					<?php
 						switch( $t_row->note_type ) {
 							case REMINDER:
-								echo '<p><strong>' . lang_get( 'reminder_sent_to' ) . ': ';
+								echo '<p><strong>' . \Flickerbox\Lang::get( 'reminder_sent_to' ) . ': ';
 								$t_note_attr = utf8_substr( $t_row->note_attr, 1, utf8_strlen( $t_row->note_attr ) - 2 );
 								$t_to = array();
 								foreach ( explode( '|', $t_note_attr ) as $t_recipient ) {
-									$t_to[] = string_display_line( user_get_name( $t_recipient ) );
+									$t_to[] = \Flickerbox\String::display_line( user_get_name( $t_recipient ) );
 								}
 								echo implode( ', ', $t_to ) . '</strong></p>';
 								echo $t_note;
 								break;
 							case TIME_TRACKING:
 								if( $t_show_time_tracking ) {
-									echo '<p><strong>', lang_get( 'time_tracking_time_spent' ) . ' ' . $t_time, '</strong></p>';
+									echo '<p><strong>', \Flickerbox\Lang::get( 'time_tracking_time_spent' ) . ' ' . $t_time, '</strong></p>';
 								}
 								echo $t_note;
 								break;
@@ -172,5 +165,5 @@ $t_total_time = 0;
 </table>
 <?php
 if( $t_total_time > 0 && $t_show_time_tracking ) {
-	echo '<p align="right">', sprintf( lang_get( 'total_time_for_issue' ), '<strong>' . db_minutes_to_hhmm( $t_total_time ) . '</strong>' ), '</p>';
+	echo '<p align="right">', sprintf( \Flickerbox\Lang::get( 'total_time_for_issue' ), '<strong>' . db_minutes_to_hhmm( $t_total_time ) . '</strong>' ), '</p>';
 }

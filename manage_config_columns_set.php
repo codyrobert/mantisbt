@@ -38,27 +38,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
 
-form_security_validate( 'manage_config_columns_set' );
+\Flickerbox\Form::security_validate( 'manage_config_columns_set' );
 
-$f_project_id = gpc_get_int( 'project_id' );
-$f_view_issues_columns = gpc_get_string( 'view_issues_columns' );
-$f_print_issues_columns = gpc_get_string( 'print_issues_columns' );
-$f_csv_columns = gpc_get_string( 'csv_columns' );
-$f_excel_columns = gpc_get_string( 'excel_columns' );
-$f_form_page = gpc_get_string( 'form_page' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+$f_view_issues_columns = \Flickerbox\GPC::get_string( 'view_issues_columns' );
+$f_print_issues_columns = \Flickerbox\GPC::get_string( 'print_issues_columns' );
+$f_csv_columns = \Flickerbox\GPC::get_string( 'csv_columns' );
+$f_excel_columns = \Flickerbox\GPC::get_string( 'excel_columns' );
+$f_form_page = \Flickerbox\GPC::get_string( 'form_page' );
 
 if( $f_project_id != ALL_PROJECTS ) {
 	project_ensure_exists( $f_project_id );
@@ -72,22 +64,22 @@ $t_account_page = $f_form_page === 'account';
 if( $f_project_id == ALL_PROJECTS ) {
 	if( !$t_account_page ) {
 		# From manage page, only admins can set global defaults for ALL_PROJECT
-		if( !current_user_is_administrator() ) {
-			access_denied();
+		if( !\Flickerbox\Current_User::is_administrator() ) {
+			\Flickerbox\Access::denied();
 		}
 	}
 } else {
 	if( $t_account_page ) {
-		access_ensure_project_level( config_get( 'view_bug_threshold' ), $f_project_id );
+		\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold' ), $f_project_id );
 	} else {
-		access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+		\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 	}
 }
 
 # For Account Column Customization, use current user.
 # For Manage Column Customization, use no user.
 if( $t_account_page ) {
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 } else {
 	$t_user_id = NO_USER;
 }
@@ -119,11 +111,11 @@ if( json_encode( config_get( 'excel_columns', '', $t_user_id, $t_project_id ) ) 
 	config_set( 'excel_columns', $t_excel_columns, $t_user_id, $t_project_id );
 }
 
-form_security_purge( 'manage_config_columns_set' );
+\Flickerbox\Form::security_purge( 'manage_config_columns_set' );
 
 $t_redirect_url = $t_account_page ? 'account_manage_columns_page.php' : 'manage_config_columns_page.php';
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

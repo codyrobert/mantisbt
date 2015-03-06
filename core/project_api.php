@@ -41,20 +41,12 @@
  */
 
 require_api( 'bug_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'database_api.php' );
-require_api( 'error_api.php' );
-require_api( 'file_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'news_api.php' );
 require_api( 'project_hierarchy_api.php' );
 require_api( 'user_api.php' );
 require_api( 'user_pref_api.php' );
-require_api( 'utility_api.php' );
-require_api( 'version_api.php' );
 
 $g_cache_project = array();
 $g_cache_project_missing = array();
@@ -109,7 +101,7 @@ function project_cache_row( $p_project_id, $p_trigger_errors = true ) {
 		$g_cache_project_missing[(int)$p_project_id] = true;
 
 		if( $p_trigger_errors ) {
-			error_parameters( $p_project_id );
+			\Flickerbox\Error::parameters( $p_project_id );
 			trigger_error( ERROR_PROJECT_NOT_FOUND, ERROR );
 		} else {
 			return false;
@@ -224,7 +216,7 @@ function project_exists( $p_project_id ) {
  */
 function project_ensure_exists( $p_project_id ) {
 	if( !project_exists( $p_project_id ) ) {
-		error_parameters( $p_project_id );
+		\Flickerbox\Error::parameters( $p_project_id );
 		trigger_error( ERROR_PROJECT_NOT_FOUND, ERROR );
 	}
 }
@@ -286,9 +278,9 @@ function project_includes_user( $p_project_id, $p_user_id ) {
  * @access public
  */
 function validate_project_file_path( $p_file_path ) {
-	if( !is_blank( $p_file_path ) ) {
+	if( !\Flickerbox\Utility::is_blank( $p_file_path ) ) {
 		# Make sure file path has trailing slash
-		$p_file_path = terminate_directory_path( $p_file_path );
+		$p_file_path = \Flickerbox\Utility::terminate_directory_path( $p_file_path );
 
 		# If the provided path is the same as the default, make the path blank.
 		# This means that if the default upload path is changed, you don't have
@@ -296,7 +288,7 @@ function validate_project_file_path( $p_file_path ) {
 		if( !strcmp( $p_file_path, config_get( 'absolute_path_default_upload_folder' ) ) ) {
 			$p_file_path = '';
 		} else {
-			file_ensure_valid_upload_path( $p_file_path );
+			\Flickerbox\File::ensure_valid_upload_path( $p_file_path );
 		}
 	}
 
@@ -319,7 +311,7 @@ function validate_project_file_path( $p_file_path ) {
 function project_create( $p_name, $p_description, $p_status, $p_view_state = VS_PUBLIC, $p_file_path = '', $p_enabled = true, $p_inherit_global = true ) {
 	$c_enabled = (bool)$p_enabled;
 
-	if( is_blank( $p_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_name ) ) {
 		trigger_error( ERROR_PROJECT_NAME_INVALID, ERROR );
 	}
 
@@ -361,10 +353,10 @@ function project_delete( $p_project_id ) {
 	custom_field_unlink_all( $p_project_id );
 
 	# Delete the project categories
-	category_remove_all( $p_project_id );
+	\Flickerbox\Category::remove_all( $p_project_id );
 
 	# Delete the project versions
-	version_remove_all( $p_project_id );
+	\Flickerbox\Version::remove_all( $p_project_id );
 
 	# Delete relations to other projects
 	project_hierarchy_remove_all( $p_project_id );
@@ -376,7 +368,7 @@ function project_delete( $p_project_id ) {
 	project_remove_all_users( $p_project_id );
 
 	# Delete all news entries associated with the project being deleted
-	news_delete_all( $p_project_id );
+	\Flickerbox\News::delete_all( $p_project_id );
 
 	# Delete project specific configurations
 	config_delete_project( $p_project_id );
@@ -411,7 +403,7 @@ function project_update( $p_project_id, $p_name, $p_description, $p_status, $p_v
 	$c_enabled = (bool)$p_enabled;
 	$c_inherit_global = (bool)$p_inherit_global;
 
-	if( is_blank( $p_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_name ) ) {
 		trigger_error( ERROR_PROJECT_NAME_INVALID, ERROR );
 	}
 
@@ -423,7 +415,7 @@ function project_update( $p_project_id, $p_name, $p_description, $p_status, $p_v
 	$t_old_view_state = project_get_field( $p_project_id, 'view_state' );
 	$t_is_becoming_private = VS_PRIVATE == $p_view_state && VS_PRIVATE != $t_old_view_state;
 	if( $t_is_becoming_private ) {
-		$t_user_id = auth_get_current_user_id();
+		$t_user_id = \Flickerbox\Auth::get_current_user_id();
 		$t_access_level = user_get_access_level( $t_user_id, $p_project_id );
 		$t_manage_project_threshold = config_get( 'manage_project_threshold' );
 	}
@@ -451,7 +443,7 @@ function project_update( $p_project_id, $p_name, $p_description, $p_status, $p_v
 
 	# User just locked themselves out of the project by making it private,
 	# so we add them to the project with their previous access level
-	if( $t_is_becoming_private && !access_has_project_level( $t_manage_project_threshold, $p_project_id ) ) {
+	if( $t_is_becoming_private && !\Flickerbox\Access::has_project_level( $t_manage_project_threshold, $p_project_id ) ) {
 		project_add_user( $p_project_id, $t_user_id, $t_access_level );
 	}
 }
@@ -521,7 +513,7 @@ function project_get_field( $p_project_id, $p_field_name, $p_trigger_errors = tr
 	if( isset( $t_row[$p_field_name] ) ) {
 		return $t_row[$p_field_name];
 	} else if( $p_trigger_errors ) {
-		error_parameters( $p_field_name );
+		\Flickerbox\Error::parameters( $p_field_name );
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 	}
 
@@ -537,7 +529,7 @@ function project_get_field( $p_project_id, $p_field_name, $p_trigger_errors = tr
  */
 function project_get_name( $p_project_id, $p_trigger_errors = true ) {
 	if( ALL_PROJECTS == $p_project_id ) {
-		return lang_get( 'all_projects' );
+		return \Flickerbox\Lang::get( 'all_projects' );
 	} else {
 		return project_get_field( $p_project_id, 'name', $p_trigger_errors );
 	}
@@ -725,7 +717,7 @@ function project_get_upload_path( $p_project_id ) {
 		$t_path = config_get( 'absolute_path_default_upload_folder', '', ALL_USERS, ALL_PROJECTS );
 	} else {
 		$t_path = project_get_field( $p_project_id, 'file_path' );
-		if( is_blank( $t_path ) ) {
+		if( \Flickerbox\Utility::is_blank( $t_path ) ) {
 			$t_path = config_get( 'absolute_path_default_upload_folder', '', ALL_USERS, $p_project_id );
 		}
 	}
@@ -863,7 +855,7 @@ function project_copy_users( $p_destination_id, $p_source_id, $p_access_level_li
  * @return void
  */
 function project_delete_all_files( $p_project_id ) {
-	file_delete_project_files( $p_project_id );
+	\Flickerbox\File::delete_project_files( $p_project_id );
 }
 
 /**

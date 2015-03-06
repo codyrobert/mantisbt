@@ -34,30 +34,23 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-$f_ref = string_sanitize_url( gpc_get_string( 'ref', '' ) );
+$f_ref = \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'ref', '' ) );
 
-if( count( current_user_get_accessible_projects() ) == 1 ) {
-	$t_project_ids = current_user_get_accessible_projects();
+if( count( \Flickerbox\Current_User::get_accessible_projects() ) == 1 ) {
+	$t_project_ids = \Flickerbox\Current_User::get_accessible_projects();
 	$t_project_id = (int)$t_project_ids[0];
-	if( count( current_user_get_accessible_subprojects( $t_project_id ) ) == 0 ) {
-		$t_ref_urlencoded = string_url( $f_ref );
+	if( count( \Flickerbox\Current_User::get_accessible_subprojects( $t_project_id ) ) == 0 ) {
+		$t_ref_urlencoded = \Flickerbox\String::url( $f_ref );
 		print_header_redirect( 'set_project.php?project_id=' . $t_project_id . '&ref=' . $t_ref_urlencoded, true );
 		# print_header_redirect terminates script execution
 	}
 }
 
-html_page_top( lang_get( 'select_project_button' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'select_project_button' ) );
 ?>
 
 <!-- Project Select Form BEGIN -->
@@ -65,10 +58,10 @@ html_page_top( lang_get( 'select_project_button' ) );
 	<form id="select-project-form" method="post" action="set_project.php">
 		<?php # CSRF protection not required here - form does not result in modifications ?>
 		<fieldset>
-			<legend><span><?php echo lang_get( 'choose_project' ) ?></span></legend>
-			<input type="hidden" name="ref" value="<?php echo string_html_specialchars( $f_ref ) ?>" />
+			<legend><span><?php echo \Flickerbox\Lang::get( 'choose_project' ) ?></span></legend>
+			<input type="hidden" name="ref" value="<?php echo \Flickerbox\String::html_specialchars( $f_ref ) ?>" />
 			<div class="field-container">
-				<label for="select-project-id"><span><?php echo lang_get( 'select_project_button' ) ?></span></label>
+				<label for="select-project-id"><span><?php echo \Flickerbox\Lang::get( 'select_project_button' ) ?></span></label>
 				<span class="select">
 					<select id="select-project-id" name="project_id">
 						<?php print_project_option_list( ALL_PROJECTS, false, null, true, true ) ?>
@@ -77,14 +70,14 @@ html_page_top( lang_get( 'select_project_button' ) );
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="set-default"><span><?php echo lang_get( 'make_default' ) ?></span></label>
+				<label for="set-default"><span><?php echo \Flickerbox\Lang::get( 'make_default' ) ?></span></label>
 				<span class="checkbox"><input id="set-default" type="checkbox" name="make_default" /></span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'select_project_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'select_project_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

@@ -25,9 +25,9 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-access_ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 
 /**
  * Output HTML Table Row
@@ -59,7 +59,7 @@ function helper_table_row_count( $p_table ) {
 }
 ?>
 <div class="table-container">
-	<h2><?php echo lang_get( 'mantisbt_database_statistics' ) ?></h2>
+	<h2><?php echo \Flickerbox\Lang::get( 'mantisbt_database_statistics' ) ?></h2>
 	<table cellspacing="1">
 		<thead>
 			<tr class="row-category">
@@ -80,4 +80,4 @@ foreach( db_get_table_list() as $t_table ) {
 </div>
 <?php
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

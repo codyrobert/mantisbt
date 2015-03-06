@@ -38,32 +38,23 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-form_security_validate( 'manage_proj_cat_delete' );
+\Flickerbox\Form::security_validate( 'manage_proj_cat_delete' );
 
 auth_reauthenticate();
 
-$f_category_id = gpc_get_int( 'id' );
-$f_project_id = gpc_get_int( 'project_id' );
+$f_category_id = \Flickerbox\GPC::get_int( 'id' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 
-$t_row = category_get_row( $f_category_id );
-$t_name = category_full_name( $f_category_id );
+$t_row = \Flickerbox\Category::get_row( $f_category_id );
+$t_name = \Flickerbox\Category::full_name( $f_category_id );
 $t_project_id = $t_row['project_id'];
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $t_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_project_id );
 
 # Protect the 'default category for moves' from deletion
 $t_default_cat = 'default_category_for_moves';
@@ -78,12 +69,12 @@ $t_query = 'SELECT COUNT(id) FROM {bug} WHERE category_id=' . db_param();
 $t_bug_count = db_result( db_query( $t_query, array( $f_category_id ) ) );
 
 # Confirm with the user
-helper_ensure_confirmed( sprintf( lang_get( 'category_delete_sure_msg' ), string_display_line( $t_name ), $t_bug_count ),
-	lang_get( 'delete_category_button' ) );
+helper_ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'category_delete_sure_msg' ), \Flickerbox\String::display_line( $t_name ), $t_bug_count ),
+	\Flickerbox\Lang::get( 'delete_category_button' ) );
 
-category_remove( $f_category_id );
+\Flickerbox\Category::remove( $f_category_id );
 
-form_security_purge( 'manage_proj_cat_delete' );
+\Flickerbox\Form::security_purge( 'manage_proj_cat_delete' );
 
 if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_page.php';
@@ -91,8 +82,8 @@ if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 }
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

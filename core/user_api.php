@@ -41,22 +41,13 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'error_api.php' );
-require_api( 'filter_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'ldap_api.php' );
 require_api( 'project_api.php' );
 require_api( 'project_hierarchy_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_pref_api.php' );
-require_api( 'utility_api.php' );
 
 $g_cache_user = array();
 $g_user_accessible_subprojects_cache = null;
@@ -85,7 +76,7 @@ function user_cache_row( $p_user_id, $p_trigger_errors = true ) {
 		$g_cache_user[$p_user_id] = false;
 
 		if( $p_trigger_errors ) {
-			error_parameters( (integer)$p_user_id );
+			\Flickerbox\Error::parameters( (integer)$p_user_id );
 			trigger_error( ERROR_USER_BY_ID_NOT_FOUND, ERROR );
 		}
 
@@ -225,7 +216,7 @@ function user_ensure_exists( $p_user_id ) {
 	$c_user_id = (integer)$p_user_id;
 
 	if( !user_exists( $c_user_id ) ) {
-		error_parameters( $c_user_id );
+		\Flickerbox\Error::parameters( $c_user_id );
 		trigger_error( ERROR_USER_BY_ID_NOT_FOUND, ERROR );
 	}
 }
@@ -262,7 +253,7 @@ function user_ensure_name_unique( $p_username ) {
  * @return integer
  */
 function user_is_realname_unique( $p_username, $p_realname ) {
-	if( is_blank( $p_realname ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_realname ) ) {
 		# don't bother checking if realname is blank
 		return 1;
 	}
@@ -330,7 +321,7 @@ function user_is_name_valid( $p_username ) {
 	}
 
 	# username must consist of at least one character
-	if( is_blank( $p_username ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_username ) ) {
 		return false;
 	}
 
@@ -517,7 +508,7 @@ function user_create( $p_username, $p_password, $p_email = '',
 		$p_access_level = config_get( 'default_new_account_access_level' );
 	}
 
-	$t_password = auth_process_plain_password( $p_password );
+	$t_password = \Flickerbox\Auth::process_plain_password( $p_password );
 
 	$c_enabled = (bool)$p_enabled;
 
@@ -526,7 +517,7 @@ function user_create( $p_username, $p_password, $p_email = '',
 	user_ensure_realname_unique( $p_username, $p_realname );
 	email_ensure_valid( $p_email );
 
-	$t_cookie_string = auth_generate_unique_cookie_string();
+	$t_cookie_string = \Flickerbox\Auth::generate_unique_cookie_string();
 
 	$t_query = 'INSERT INTO {user}
 				    ( username, email, password, date_created, last_visit,
@@ -546,8 +537,8 @@ function user_create( $p_username, $p_password, $p_email = '',
 	}
 
 	# Send notification email
-	if( !is_blank( $p_email ) ) {
-		$t_confirm_hash = auth_generate_confirm_hash( $t_user_id );
+	if( !\Flickerbox\Utility::is_blank( $p_email ) ) {
+		$t_confirm_hash = \Flickerbox\Auth::generate_confirm_hash( $t_user_id );
 		email_signup( $t_user_id, $p_password, $t_confirm_hash, $p_admin_name );
 	}
 
@@ -580,9 +571,9 @@ function user_signup( $p_username, $p_email = null ) {
 		#  account management and creation.
 		#			$t_email = '';
 		#			if( ON == config_get( 'use_ldap_email' ) ) {
-		#				$t_email = ldap_email_from_username( $p_username );
+		#				$t_email = \Flickerbox\LDAP::email_from_username( $p_username );
 		#			}
-		#			if( !is_blank( $t_email ) ) {
+		#			if( !\Flickerbox\Utility::is_blank( $t_email ) ) {
 		#				$p_email = $t_email;
 		#			}
 	}
@@ -590,7 +581,7 @@ function user_signup( $p_username, $p_email = null ) {
 	$p_email = trim( $p_email );
 
 	# Create random password
-	$t_password = auth_generate_random_password();
+	$t_password = \Flickerbox\Auth::generate_random_password();
 
 	return user_create( $p_username, $t_password, $p_email );
 }
@@ -793,7 +784,7 @@ function user_get_row( $p_user_id ) {
  */
 function user_get_field( $p_user_id, $p_field_name ) {
 	if( NO_USER == $p_user_id ) {
-		error_parameters( NO_USER );
+		\Flickerbox\Error::parameters( NO_USER );
 		trigger_error( ERROR_USER_BY_ID_NOT_FOUND, WARNING );
 		return '@null@';
 	}
@@ -808,7 +799,7 @@ function user_get_field( $p_user_id, $p_field_name ) {
 				return $t_row[$p_field_name];
 		}
 	} else {
-		error_parameters( $p_field_name );
+		\Flickerbox\Error::parameters( $p_field_name );
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 		return '';
 	}
@@ -823,9 +814,9 @@ function user_get_field( $p_user_id, $p_field_name ) {
 function user_get_email( $p_user_id ) {
 	$t_email = '';
 	if( LDAP == config_get( 'login_method' ) && ON == config_get( 'use_ldap_email' ) ) {
-		$t_email = ldap_email( $p_user_id );
+		$t_email = \Flickerbox\LDAP::email( $p_user_id );
 	}
-	if( is_blank( $t_email ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_email ) ) {
 		$t_email = user_get_field( $p_user_id, 'email' );
 	}
 	return $t_email;
@@ -841,10 +832,10 @@ function user_get_realname( $p_user_id ) {
 	$t_realname = '';
 
 	if( LDAP == config_get( 'login_method' ) && ON == config_get( 'use_ldap_realname' ) ) {
-		$t_realname = ldap_realname( $p_user_id );
+		$t_realname = \Flickerbox\LDAP::realname( $p_user_id );
 	}
 
-	if( is_blank( $t_realname ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_realname ) ) {
 		$t_realname = user_get_field( $p_user_id, 'realname' );
 	}
 
@@ -862,10 +853,10 @@ function user_get_name( $p_user_id ) {
 	$t_row = user_cache_row( $p_user_id, false );
 
 	if( false == $t_row ) {
-		return lang_get( 'prefix_for_deleted_users' ) . (int)$p_user_id;
+		return \Flickerbox\Lang::get( 'prefix_for_deleted_users' ) . (int)$p_user_id;
 	} else {
 		if( ON == config_get( 'show_realname' ) ) {
-			if( is_blank( $t_row['realname'] ) ) {
+			if( \Flickerbox\Utility::is_blank( $t_row['realname'] ) ) {
 				return $t_row['username'];
 			} else {
 				if( isset( $t_row['duplicate_realname'] ) && ( ON == $t_row['duplicate_realname'] ) ) {
@@ -914,7 +905,7 @@ function user_get_avatar( $p_user_id, $p_size = 80 ) {
 	}
 
 	# Build Gravatar URL
-	if( http_is_protocol_https() ) {
+	if( \Flickerbox\HTTP::is_protocol_https() ) {
 		$t_avatar_url = 'https://secure.gravatar.com/';
 	} else {
 		$t_avatar_url = 'http://www.gravatar.com/';
@@ -960,11 +951,11 @@ $g_user_accessible_projects_cache = null;
 function user_get_accessible_projects( $p_user_id, $p_show_disabled = false ) {
 	global $g_user_accessible_projects_cache;
 
-	if( null !== $g_user_accessible_projects_cache && auth_get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
+	if( null !== $g_user_accessible_projects_cache && \Flickerbox\Auth::get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
 		return $g_user_accessible_projects_cache;
 	}
 
-	if( access_has_global_level( config_get( 'private_project_threshold' ), $p_user_id ) ) {
+	if( \Flickerbox\Access::has_global_level( config_get( 'private_project_threshold' ), $p_user_id ) ) {
 		$t_projects = project_hierarchy_get_subprojects( ALL_PROJECTS, $p_show_disabled );
 	} else {
 		$t_public = VS_PUBLIC;
@@ -1004,7 +995,7 @@ function user_get_accessible_projects( $p_user_id, $p_show_disabled = false ) {
 		$t_projects = array_keys( $t_projects );
 	}
 
-	if( auth_get_current_user_id() == $p_user_id ) {
+	if( \Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
 		$g_user_accessible_projects_cache = $t_projects;
 	}
 
@@ -1021,7 +1012,7 @@ function user_get_accessible_projects( $p_user_id, $p_show_disabled = false ) {
 function user_get_accessible_subprojects( $p_user_id, $p_project_id, $p_show_disabled = false ) {
 	global $g_user_accessible_subprojects_cache;
 
-	if( null !== $g_user_accessible_subprojects_cache && auth_get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
+	if( null !== $g_user_accessible_subprojects_cache && \Flickerbox\Auth::get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
 		if( isset( $g_user_accessible_subprojects_cache[$p_project_id] ) ) {
 			return $g_user_accessible_subprojects_cache[$p_project_id];
 		} else {
@@ -1031,7 +1022,7 @@ function user_get_accessible_subprojects( $p_user_id, $p_project_id, $p_show_dis
 
 	db_param_push();
 
-	if( access_has_global_level( config_get( 'private_project_threshold' ), $p_user_id ) ) {
+	if( \Flickerbox\Access::has_global_level( config_get( 'private_project_threshold' ), $p_user_id ) ) {
 		$t_enabled_clause = $p_show_disabled ? '' : 'p.enabled = ' . db_param() . ' AND';
 		$t_query = 'SELECT DISTINCT p.id, p.name, ph.parent_id
 					  FROM {project} p
@@ -1074,7 +1065,7 @@ function user_get_accessible_subprojects( $p_user_id, $p_project_id, $p_show_dis
 		array_push( $t_projects[(int)$t_row['parent_id']], (int)$t_row['id'] );
 	}
 
-	if( auth_get_current_user_id() == $p_user_id ) {
+	if( \Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
 		$g_user_accessible_subprojects_cache = $t_projects;
 	}
 
@@ -1135,7 +1126,7 @@ function user_get_all_accessible_projects( $p_user_id, $p_project_id ) {
 			}
 		}
 	} else {
-		access_ensure_project_level( VIEWER, $p_project_id );
+		\Flickerbox\Access::ensure_project_level( VIEWER, $p_project_id );
 		$t_project_ids = user_get_all_accessible_subprojects( $p_user_id, $p_project_id );
 		array_unshift( $t_project_ids, $p_project_id );
 	}
@@ -1196,10 +1187,10 @@ function user_get_unassigned_by_project_id( $p_project_id = null ) {
 
 	while( $t_row = db_fetch_array( $t_result ) ) {
 		$t_users[] = $t_row['id'];
-		$t_user_name = string_attribute( $t_row['username'] );
+		$t_user_name = \Flickerbox\String::attribute( $t_row['username'] );
 		$t_sort_name = $t_user_name;
 		if( ( isset( $t_row['realname'] ) ) && ( $t_row['realname'] <> '' ) && $t_show_realname ) {
-			$t_user_name = string_attribute( $t_row['realname'] );
+			$t_user_name = \Flickerbox\String::attribute( $t_row['realname'] );
 			if( $t_sort_by_last_name ) {
 				$t_sort_name_bits = explode( ' ', utf8_strtolower( $t_user_name ), 2 );
 				$t_sort_name = ( isset( $t_sort_name_bits[1] ) ? $t_sort_name_bits[1] . ', ' : '' ) . $t_sort_name_bits[0];
@@ -1325,17 +1316,17 @@ function user_get_bug_filter( $p_user_id, $p_project_id = null ) {
 		$t_project_id = $p_project_id;
 	}
 
-	$t_view_all_cookie_id = filter_db_get_project_current( $t_project_id, $p_user_id );
-	$t_view_all_cookie = filter_db_get_filter( $t_view_all_cookie_id, $p_user_id );
+	$t_view_all_cookie_id = \Flickerbox\Filter::db_get_project_current( $t_project_id, $p_user_id );
+	$t_view_all_cookie = \Flickerbox\Filter::db_get_filter( $t_view_all_cookie_id, $p_user_id );
 	$t_cookie_detail = explode( '#', $t_view_all_cookie, 2 );
 
 	if( !isset( $t_cookie_detail[1] ) ) {
-		return filter_get_default();
+		return \Flickerbox\Filter::get_default();
 	}
 
 	$t_filter = json_decode( $t_cookie_detail[1], true );
 
-	$t_filter = filter_ensure_valid_filter( $t_filter );
+	$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
 
 	return $t_filter;
 }
@@ -1512,9 +1503,9 @@ function user_set_password( $p_user_id, $p_password, $p_allow_protected = false 
 
 	# When the password is changed, invalidate the cookie to expire sessions that
 	# may be active on all browsers.
-	$c_cookie_string = auth_generate_unique_cookie_string();
+	$c_cookie_string = \Flickerbox\Auth::generate_unique_cookie_string();
 
-	$c_password = auth_process_plain_password( $p_password );
+	$c_password = \Flickerbox\Auth::process_plain_password( $p_password );
 
 	$t_query = 'UPDATE {user}
 				  SET password=' . db_param() . ', cookie_string=' . db_param() . '
@@ -1587,24 +1578,24 @@ function user_reset_password( $p_user_id, $p_send_email = true ) {
 	#     and user_reset_password() )?
 	if( ( ON == config_get( 'send_reset_password' ) ) && ( ON == config_get( 'enable_email_notification' ) ) ) {
 		$t_email = user_get_field( $p_user_id, 'email' );
-		if( is_blank( $t_email ) ) {
+		if( \Flickerbox\Utility::is_blank( $t_email ) ) {
 			trigger_error( ERROR_LOST_PASSWORD_NO_EMAIL_SPECIFIED, ERROR );
 		}
 
 		# Create random password
-		$t_password = auth_generate_random_password();
-		$t_password2 = auth_process_plain_password( $t_password );
+		$t_password = \Flickerbox\Auth::generate_random_password();
+		$t_password2 = \Flickerbox\Auth::process_plain_password( $t_password );
 
 		user_set_field( $p_user_id, 'password', $t_password2 );
 
 		# Send notification email
 		if( $p_send_email ) {
-			$t_confirm_hash = auth_generate_confirm_hash( $p_user_id );
+			$t_confirm_hash = \Flickerbox\Auth::generate_confirm_hash( $p_user_id );
 			email_send_confirm_hash_url( $p_user_id, $t_confirm_hash );
 		}
 	} else {
 		# use blank password, no emailing
-		$t_password = auth_process_plain_password( '' );
+		$t_password = \Flickerbox\Auth::process_plain_password( '' );
 		user_set_field( $p_user_id, 'password', $t_password );
 
 		# reset the failed login count because in this mode there is no emailing

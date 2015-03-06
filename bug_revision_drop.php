@@ -34,25 +34,20 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'bug_revision_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'bug_revision_drop' );
+\Flickerbox\Form::security_validate( 'bug_revision_drop' );
 
-$f_revision_id = gpc_get_int( 'id' );
-$t_revision = bug_revision_get( $f_revision_id );
+$f_revision_id = \Flickerbox\GPC::get_int( 'id' );
+$t_revision = \Flickerbox\Bug\Revision::get( $f_revision_id );
 
-access_ensure_bug_level( config_get( 'bug_revision_drop_threshold' ), $t_revision['bug_id'] );
-helper_ensure_confirmed( lang_get( 'confirm_revision_drop' ), lang_get( 'revision_drop' ) );
+\Flickerbox\Access::ensure_bug_level( config_get( 'bug_revision_drop_threshold' ), $t_revision['bug_id'] );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_revision_drop' ), \Flickerbox\Lang::get( 'revision_drop' ) );
 
-bug_revision_drop( $f_revision_id );
-form_security_purge( 'bug_revision_drop' );
+\Flickerbox\Bug\Revision::drop( $f_revision_id );
+\Flickerbox\Form::security_purge( 'bug_revision_drop' );
 
 print_successful_redirect_to_bug( $t_revision['bug_id'] );
 

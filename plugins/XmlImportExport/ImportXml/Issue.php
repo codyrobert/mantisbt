@@ -114,7 +114,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 								# well as its parents (if any)
 								$t_projects_hierarchy = project_hierarchy_inheritance( $t_project_id );
 								foreach( $t_projects_hierarchy as $t_project ) {
-									$t_category_id = category_get_id_by_name( $t_reader->value, $t_project, false );
+									$t_category_id = \Flickerbox\Category::get_id_by_name( $t_reader->value, $t_project, false );
 									if( $t_category_id !== false ) {
 										$this->newbug_->category_id = $t_category_id;
 										break;
@@ -248,7 +248,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 				if( custom_field_ensure_exists( $t_custom_field_id ) && custom_field_is_linked( $t_custom_field_id, $t_project_id ) ) {
 					custom_field_set_value( $t_custom_field->id, $this->new_id_, $t_custom_field->value );
 				} else {
-					error_parameters( $t_custom_field->name, $t_custom_field_id );
+					\Flickerbox\Error::parameters( $t_custom_field->name, $t_custom_field_id );
 					trigger_error( ERROR_CUSTOM_FIELD_NOT_LINKED_TO_PROJECT, ERROR );
 				}
 			}
@@ -287,7 +287,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 				);
 				# unfortunately we have no clue who has added the attachment (this could only be fetched from history -> feel free to implement this)
 				# also I have no clue where description should come from...
-				file_add( $this->new_id_, $t_file_data, 'bug', $t_attachment->title, $p_desc = '', $p_user_id = null, $t_attachment->date_added, true );
+				\Flickerbox\File::add( $this->new_id_, $t_file_data, 'bug', $t_attachment->title, $p_desc = '', $p_user_id = null, $t_attachment->date_added, true );
 				unlink( $t_temp_file_name );
 			}
 		}

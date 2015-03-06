@@ -43,29 +43,22 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'email_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'relationship_api.php' );
 
-form_security_validate( 'bug_update' );
+\Flickerbox\Form::security_validate( 'bug_update' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 $t_existing_bug = bug_get( $f_bug_id, true );
-$f_update_type = gpc_get_string( 'action_type', BUG_UPDATE_TYPE_NORMAL );
+$f_update_type = \Flickerbox\GPC::get_string( 'action_type', BUG_UPDATE_TYPE_NORMAL );
 
 if( helper_get_current_project() !== $t_existing_bug->project_id ) {
 	$g_project_override = $t_existing_bug->project_id;
@@ -74,54 +67,54 @@ if( helper_get_current_project() !== $t_existing_bug->project_id ) {
 # Ensure that the user has permission to update bugs. This check also factors
 # in whether the user has permission to view private bugs. The
 # $g_limit_reporters option is also taken into consideration.
-access_ensure_bug_level( config_get( 'update_bug_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_threshold' ), $f_bug_id );
 
 # Check if the bug is in a read-only state and whether the current user has
 # permission to update read-only bugs.
 if( bug_is_readonly( $f_bug_id ) ) {
-	error_parameters( $f_bug_id );
+	\Flickerbox\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
 $t_updated_bug = clone $t_existing_bug;
 
-$t_updated_bug->additional_information = gpc_get_string( 'additional_information', $t_existing_bug->additional_information );
-$t_updated_bug->build = gpc_get_string( 'build', $t_existing_bug->build );
-$t_updated_bug->category_id = gpc_get_int( 'category_id', $t_existing_bug->category_id );
-$t_updated_bug->description = gpc_get_string( 'description', $t_existing_bug->description );
-$t_due_date = gpc_get_string( 'due_date', null );
+$t_updated_bug->additional_information = \Flickerbox\GPC::get_string( 'additional_information', $t_existing_bug->additional_information );
+$t_updated_bug->build = \Flickerbox\GPC::get_string( 'build', $t_existing_bug->build );
+$t_updated_bug->category_id = \Flickerbox\GPC::get_int( 'category_id', $t_existing_bug->category_id );
+$t_updated_bug->description = \Flickerbox\GPC::get_string( 'description', $t_existing_bug->description );
+$t_due_date = \Flickerbox\GPC::get_string( 'due_date', null );
 if( $t_due_date !== null ) {
-	if( is_blank( $t_due_date ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_due_date ) ) {
 		$t_updated_bug->due_date = 1;
 	} else {
 		$t_updated_bug->due_date = strtotime( $t_due_date );
 	}
 }
-$t_updated_bug->duplicate_id = gpc_get_int( 'duplicate_id', 0 );
-$t_updated_bug->eta = gpc_get_int( 'eta', $t_existing_bug->eta );
-$t_updated_bug->fixed_in_version = gpc_get_string( 'fixed_in_version', $t_existing_bug->fixed_in_version );
-$t_updated_bug->handler_id = gpc_get_int( 'handler_id', $t_existing_bug->handler_id );
-$t_updated_bug->last_updated = gpc_get_string( 'last_updated' );
-$t_updated_bug->os = gpc_get_string( 'os', $t_existing_bug->os );
-$t_updated_bug->os_build = gpc_get_string( 'os_build', $t_existing_bug->os_build );
-$t_updated_bug->platform = gpc_get_string( 'platform', $t_existing_bug->platform );
-$t_updated_bug->priority = gpc_get_int( 'priority', $t_existing_bug->priority );
-$t_updated_bug->projection = gpc_get_int( 'projection', $t_existing_bug->projection );
-$t_updated_bug->reporter_id = gpc_get_int( 'reporter_id', $t_existing_bug->reporter_id );
-$t_updated_bug->reproducibility = gpc_get_int( 'reproducibility', $t_existing_bug->reproducibility );
-$t_updated_bug->resolution = gpc_get_int( 'resolution', $t_existing_bug->resolution );
-$t_updated_bug->severity = gpc_get_int( 'severity', $t_existing_bug->severity );
-$t_updated_bug->status = gpc_get_int( 'status', $t_existing_bug->status );
-$t_updated_bug->steps_to_reproduce = gpc_get_string( 'steps_to_reproduce', $t_existing_bug->steps_to_reproduce );
-$t_updated_bug->summary = gpc_get_string( 'summary', $t_existing_bug->summary );
-$t_updated_bug->target_version = gpc_get_string( 'target_version', $t_existing_bug->target_version );
-$t_updated_bug->version = gpc_get_string( 'version', $t_existing_bug->version );
-$t_updated_bug->view_state = gpc_get_int( 'view_state', $t_existing_bug->view_state );
+$t_updated_bug->duplicate_id = \Flickerbox\GPC::get_int( 'duplicate_id', 0 );
+$t_updated_bug->eta = \Flickerbox\GPC::get_int( 'eta', $t_existing_bug->eta );
+$t_updated_bug->fixed_in_version = \Flickerbox\GPC::get_string( 'fixed_in_version', $t_existing_bug->fixed_in_version );
+$t_updated_bug->handler_id = \Flickerbox\GPC::get_int( 'handler_id', $t_existing_bug->handler_id );
+$t_updated_bug->last_updated = \Flickerbox\GPC::get_string( 'last_updated' );
+$t_updated_bug->os = \Flickerbox\GPC::get_string( 'os', $t_existing_bug->os );
+$t_updated_bug->os_build = \Flickerbox\GPC::get_string( 'os_build', $t_existing_bug->os_build );
+$t_updated_bug->platform = \Flickerbox\GPC::get_string( 'platform', $t_existing_bug->platform );
+$t_updated_bug->priority = \Flickerbox\GPC::get_int( 'priority', $t_existing_bug->priority );
+$t_updated_bug->projection = \Flickerbox\GPC::get_int( 'projection', $t_existing_bug->projection );
+$t_updated_bug->reporter_id = \Flickerbox\GPC::get_int( 'reporter_id', $t_existing_bug->reporter_id );
+$t_updated_bug->reproducibility = \Flickerbox\GPC::get_int( 'reproducibility', $t_existing_bug->reproducibility );
+$t_updated_bug->resolution = \Flickerbox\GPC::get_int( 'resolution', $t_existing_bug->resolution );
+$t_updated_bug->severity = \Flickerbox\GPC::get_int( 'severity', $t_existing_bug->severity );
+$t_updated_bug->status = \Flickerbox\GPC::get_int( 'status', $t_existing_bug->status );
+$t_updated_bug->steps_to_reproduce = \Flickerbox\GPC::get_string( 'steps_to_reproduce', $t_existing_bug->steps_to_reproduce );
+$t_updated_bug->summary = \Flickerbox\GPC::get_string( 'summary', $t_existing_bug->summary );
+$t_updated_bug->target_version = \Flickerbox\GPC::get_string( 'target_version', $t_existing_bug->target_version );
+$t_updated_bug->version = \Flickerbox\GPC::get_string( 'version', $t_existing_bug->version );
+$t_updated_bug->view_state = \Flickerbox\GPC::get_int( 'view_state', $t_existing_bug->view_state );
 
 $t_bug_note = new BugNoteData();
-$t_bug_note->note = gpc_get_string( 'bugnote_text', '' );
-$t_bug_note->view_state = gpc_get_bool( 'private', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE ) ? VS_PRIVATE : VS_PUBLIC;
-$t_bug_note->time_tracking = gpc_get_string( 'time_tracking', '0:00' );
+$t_bug_note->note = \Flickerbox\GPC::get_string( 'bugnote_text', '' );
+$t_bug_note->view_state = \Flickerbox\GPC::get_bool( 'private', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE ) ? VS_PRIVATE : VS_PUBLIC;
+$t_bug_note->time_tracking = \Flickerbox\GPC::get_string( 'time_tracking', '0:00' );
 
 if( $t_existing_bug->last_updated !== $t_updated_bug->last_updated ) {
 	trigger_error( ERROR_BUG_CONFLICTING_EDIT, ERROR );
@@ -156,12 +149,12 @@ if( ( $t_resolve_issue || $t_close_issue ) &&
 
 # Validate any change to the status of the issue.
 if( $t_existing_bug->status !== $t_updated_bug->status ) {
-	access_ensure_bug_level( config_get( 'update_bug_status_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_status_threshold' ), $f_bug_id );
 	if( !bug_check_workflow( $t_existing_bug->status, $t_updated_bug->status ) ) {
-		error_parameters( lang_get( 'status' ) );
+		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'status' ) );
 		trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 	}
-	if( !access_has_bug_level( access_get_status_threshold( $t_updated_bug->status, $t_updated_bug->project_id ), $f_bug_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Access::get_status_threshold( $t_updated_bug->status, $t_updated_bug->project_id ), $f_bug_id ) ) {
 		# The reporter may be allowed to close or reopen the issue regardless.
 		$t_can_bypass_status_access_thresholds = false;
 		if( $t_close_issue &&
@@ -186,17 +179,17 @@ if( $t_existing_bug->status !== $t_updated_bug->status ) {
 }
 
 # Validate any change to the handler of an issue.
-$t_issue_is_sponsored = sponsorship_get_amount( sponsorship_get_all_ids( $f_bug_id ) ) > 0;
+$t_issue_is_sponsored = \Flickerbox\Sponsorship::get_amount( \Flickerbox\Sponsorship::get_all_ids( $f_bug_id ) ) > 0;
 if( $t_existing_bug->handler_id !== $t_updated_bug->handler_id ) {
-	access_ensure_bug_level( config_get( 'update_bug_assign_threshold' ), $f_bug_id );
-	if( $t_issue_is_sponsored && !access_has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
+	\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_assign_threshold' ), $f_bug_id );
+	if( $t_issue_is_sponsored && !\Flickerbox\Access::has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
 		trigger_error( ERROR_SPONSORSHIP_HANDLER_ACCESS_LEVEL_TOO_LOW, ERROR );
 	}
 	if( $t_updated_bug->handler_id !== NO_USER ) {
-		if( !access_has_bug_level( config_get( 'handle_bug_threshold' ), $f_bug_id, $t_updated_bug->handler_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $f_bug_id, $t_updated_bug->handler_id ) ) {
 			trigger_error( ERROR_HANDLER_ACCESS_TOO_LOW, ERROR );
 		}
-		if( $t_issue_is_sponsored && !access_has_bug_level( config_get( 'assign_sponsored_bugs_threshold' ), $f_bug_id ) ) {
+		if( $t_issue_is_sponsored && !\Flickerbox\Access::has_bug_level( config_get( 'assign_sponsored_bugs_threshold' ), $f_bug_id ) ) {
 			trigger_error( ERROR_SPONSORSHIP_ASSIGNER_ACCESS_LEVEL_TOO_LOW, ERROR );
 		}
 	}
@@ -206,7 +199,7 @@ if( $t_existing_bug->handler_id !== $t_updated_bug->handler_id ) {
 if( $t_existing_bug->category_id !== $t_updated_bug->category_id ) {
 	if( $t_updated_bug->category_id === 0 &&
 	     !config_get( 'allow_no_category' ) ) {
-		error_parameters( lang_get( 'category' ) );
+		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'category' ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 }
@@ -230,7 +223,7 @@ if( $t_existing_bug->resolution != $t_updated_bug->resolution && (
 	   && $t_updated_bug->status >= $t_resolved_status
 	   )
 ) ) {
-	error_parameters(
+	\Flickerbox\Error::parameters(
 		get_enum_element( 'resolution', $t_updated_bug->resolution ),
 		get_enum_element( 'status', $t_updated_bug->status )
 	);
@@ -239,12 +232,12 @@ if( $t_existing_bug->resolution != $t_updated_bug->resolution && (
 
 # Ensure that the user has permission to change the target version of the issue.
 if( $t_existing_bug->target_version !== $t_updated_bug->target_version ) {
-	access_ensure_bug_level( config_get( 'roadmap_update_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'roadmap_update_threshold' ), $f_bug_id );
 }
 
 # Ensure that the user has permission to change the view status of the issue.
 if( $t_existing_bug->view_state !== $t_updated_bug->view_state ) {
-	access_ensure_bug_level( config_get( 'change_view_status_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'change_view_status_threshold' ), $f_bug_id );
 }
 
 # Determine the custom field "require check" to use for validating
@@ -262,11 +255,11 @@ $t_custom_fields_to_set = array();
 foreach ( $t_related_custom_field_ids as $t_cf_id ) {
 	$t_cf_def = custom_field_get_definition( $t_cf_id );
 
-	if( !gpc_isset_custom_field( $t_cf_id, $t_cf_def['type'] ) ) {
+	if( !\Flickerbox\GPC::isset_custom_field( $t_cf_id, $t_cf_def['type'] ) ) {
 		if( $t_cf_def[$t_cf_require_check] && $f_update_type == BUG_UPDATE_TYPE_NORMAL ) {
 			# A value for the custom field was expected however
 			# no value was given by the user.
-			error_parameters( lang_get_defaulted( custom_field_get_field( $t_cf_id, 'name' ) ) );
+			\Flickerbox\Error::parameters( \Flickerbox\Lang::get_defaulted( custom_field_get_field( $t_cf_id, 'name' ) ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		} else {
 			# The custom field isn't compulsory and the user did
@@ -281,7 +274,7 @@ foreach ( $t_related_custom_field_ids as $t_cf_id ) {
 		trigger_error( ERROR_ACCESS_DENIED, ERROR );
 	}
 
-	$t_new_custom_field_value = gpc_get_custom_field( 'custom_field_' . $t_cf_id, $t_cf_def['type'], null );
+	$t_new_custom_field_value = \Flickerbox\GPC::get_custom_field( 'custom_field_' . $t_cf_id, $t_cf_def['type'], null );
 	$t_old_custom_field_value = custom_field_get_value( $t_cf_id, $f_bug_id );
 
 	# Validate the value of the field against current validation rules.
@@ -289,7 +282,7 @@ foreach ( $t_related_custom_field_ids as $t_cf_id ) {
 	# modified such that old values that were once OK are now considered
 	# invalid.
 	if( !custom_field_validate( $t_cf_id, $t_new_custom_field_value ) ) {
-		error_parameters( lang_get_defaulted( custom_field_get_field( $t_cf_id, 'name' ) ) );
+		\Flickerbox\Error::parameters( \Flickerbox\Lang::get_defaulted( custom_field_get_field( $t_cf_id, 'name' ) ) );
 		trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 	}
 
@@ -305,7 +298,7 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 		trigger_error( ERROR_BUG_DUPLICATE_SELF, ERROR );
 	}
 	bug_ensure_exists( $t_updated_bug->duplicate_id );
-	if( !access_has_bug_level( config_get( 'update_bug_threshold' ), $t_updated_bug->duplicate_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_updated_bug->duplicate_id ) ) {
 		trigger_error( ERROR_RELATIONSHIP_ACCESS_LEVEL_TO_DEST_BUG_TOO_LOW, ERROR );
 	}
 	if( relationship_exists( $f_bug_id, $t_updated_bug->duplicate_id ) ) {
@@ -317,14 +310,14 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 if( $t_bug_note->note ||
 	 ( config_get( 'time_tracking_enabled' ) &&
 	   helper_duration_to_minutes( $t_bug_note->time_tracking ) > 0 ) ) {
-	access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
 	if( !$t_bug_note->note &&
 	     !config_get( 'time_tracking_without_note' ) ) {
-		error_parameters( lang_get( 'bugnote' ) );
+		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'bugnote' ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 	if( $t_bug_note->view_state !== config_get( 'default_bugnote_view_status' ) ) {
-		access_ensure_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id );
+		\Flickerbox\Access::ensure_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id );
 	}
 }
 
@@ -412,13 +405,13 @@ if( $t_resolve_issue ) {
 			$t_updated_bug->handler_id !== NO_USER ) {
 	email_generic( $f_bug_id, 'owner', 'email_notification_title_for_action_bug_assigned' );
 } else if( $t_existing_bug->status !== $t_updated_bug->status ) {
-	$t_new_status_label = MantisEnum::getLabel( config_get( 'status_enum_string' ), $t_updated_bug->status );
+	$t_new_status_label = \MantisEnum::getLabel( config_get( 'status_enum_string' ), $t_updated_bug->status );
 	$t_new_status_label = str_replace( ' ', '_', $t_new_status_label );
 	email_generic( $f_bug_id, $t_new_status_label, 'email_notification_title_for_status_bug_' . $t_new_status_label );
 } else {
 	email_generic( $f_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
 }
 
-form_security_purge( 'bug_update' );
+\Flickerbox\Form::security_purge( 'bug_update' );
 
 print_successful_redirect_to_bug( $f_bug_id );

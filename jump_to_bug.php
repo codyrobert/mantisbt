@@ -28,13 +28,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
 # Determine which view page to redirect back to.
-$f_bug_id		= gpc_get_int( 'bug_id' );
+$f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
 
 print_header_redirect_view( $f_bug_id );

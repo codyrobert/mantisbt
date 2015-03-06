@@ -29,9 +29,8 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'gpc_api.php' );
 
-$f_type = gpc_get_string( 'type', 'text' );
+$f_type = \Flickerbox\GPC::get_string( 'type', 'text' );
 
 header( 'Content-Type: application/opensearchdescription+xml' );
 ?>

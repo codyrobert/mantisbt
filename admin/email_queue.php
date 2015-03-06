@@ -26,12 +26,12 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-access_ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 
-$f_to = gpc_get( 'send', null );
-$f_mail_test = gpc_get_bool( 'mail_test' );
+$f_to = \Flickerbox\GPC::get( 'send', null );
+$f_mail_test = \Flickerbox\GPC::get_bool( 'mail_test' );
 
 if( $f_to !== null ) {
 	echo '<div class="important-msg">';
@@ -67,9 +67,9 @@ if( $f_mail_test ) {
 	echo '<div class="important-msg">';
 	echo '<strong>Testing Mail</strong> - ';
 
-	lang_push( 'english' );
+	\Flickerbox\Lang::push( 'english' );
 
-	$t_email_data = new EmailData;
+	$t_email_data = new \Flickerbox\Email\Data;
 	$t_email_data->email = config_get_global( 'webmaster_email' );
 	$t_email_data->subject = 'Testing PHP mail() function';
 	$t_email_data->body = 'Your PHP mail settings appear to be correctly set.';
@@ -93,9 +93,9 @@ if( count( $t_ids ) > 0 ) {
 	<table>
 		<thead>
 			<tr>
-				<th><?php echo lang_get( 'id' ); ?></th>
-				<th><?php echo lang_get( 'email' ); ?></th>
-				<th><?php echo lang_get( 'timestamp' ) ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'id' ); ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'email' ); ?></th>
+				<th><?php echo \Flickerbox\Lang::get( 'timestamp' ) ?></th>
 				<th>Send Or Delete</th>
 			</tr>
 		</thead>
@@ -108,7 +108,7 @@ if( count( $t_ids ) > 0 ) {
 				<td><?php echo $t_row->email_id; ?></td>
 				<td><?php echo $t_row->email; ?></td>
 				<td><?php echo date( config_get( 'complete_date_format' ), $t_row->submitted );?></td>
-				<td><?php html_button( 'email_queue.php', 'Send Or Delete', array( 'send' => $t_row->email_id ) ); ?></td>
+				<td><?php \Flickerbox\HTML::button( 'email_queue.php', 'Send Or Delete', array( 'send' => $t_row->email_id ) ); ?></td>
 			</tr>
 <?php
 	}
@@ -118,8 +118,8 @@ if( count( $t_ids ) > 0 ) {
 </div>
 <div id="send-email-div" class="form-container">
 <?php
-	html_button( 'email_queue.php', 'Send All', array( 'send' => 'all') );
-	html_button( 'email_queue.php', 'Send Or Delete All', array( 'send' => 'sendordelall') );
+	\Flickerbox\HTML::button( 'email_queue.php', 'Send All', array( 'send' => 'all') );
+	\Flickerbox\HTML::button( 'email_queue.php', 'Send Or Delete All', array( 'send' => 'sendordelall') );
 } else {
 	echo '<div class="important-msg">';
 	echo 'Email Queue Empty';
@@ -152,4 +152,4 @@ if( count( $t_ids ) > 0 ) {
 </div>
 <?php
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

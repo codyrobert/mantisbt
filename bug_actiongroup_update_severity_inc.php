@@ -34,11 +34,8 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
 /**
@@ -48,7 +45,7 @@ require_api( 'print_api.php' );
 function action_update_severity_print_title() {
 	echo '<tr>';
 	echo '<td class="form-title" colspan="2">';
-	echo lang_get( 'update_severity_title' );
+	echo \Flickerbox\Lang::get( 'update_severity_title' );
 	echo '</td></tr>';
 }
 
@@ -65,7 +62,7 @@ function action_update_severity_print_fields() {
 	</tbody>
 		<tr>
 			<th class="category">
-				<?php echo lang_get( 'update_severity_msg' ); ?>
+				<?php echo \Flickerbox\Lang::get( 'update_severity_msg' ); ?>
 			</th>
 			<td>
 				<select name="severity">';
@@ -77,7 +74,7 @@ function action_update_severity_print_fields() {
 	<tfoot>
 		<tr>
 			<td colspan="2" class="center">
-				<input type="submit" class="button" value="<?php echo lang_get( 'update_severity_button' ); ?>" />
+				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_severity_button' ); ?>" />
 			</td>
 		</tr>
 	</tfoot>
@@ -95,11 +92,11 @@ function action_update_severity_validate( $p_bug_id ) {
 	$t_bug_id = $p_bug_id;
 
 	if( bug_is_readonly( $t_bug_id ) ) {
-		return lang_get( 'actiongroup_error_issue_is_readonly' );
+		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
-	if( !access_has_bug_level( $t_update_severity_threshold, $t_bug_id ) ) {
-		return lang_get( 'access_denied' );
+	if( !\Flickerbox\Access::has_bug_level( $t_update_severity_threshold, $t_bug_id ) ) {
+		return \Flickerbox\Lang::get( 'access_denied' );
 	}
 
 	return null;
@@ -112,7 +109,7 @@ function action_update_severity_validate( $p_bug_id ) {
  * @return null Previous validation ensures that this function doesn't fail. Therefore we can always return null to indicate no errors occurred.
  */
 function action_update_severity_process( $p_bug_id ) {
-	$f_severity = gpc_get_string( 'severity' );
+	$f_severity = \Flickerbox\GPC::get_string( 'severity' );
 	bug_set_field( $p_bug_id, 'severity', $f_severity );
 	return null;
 }

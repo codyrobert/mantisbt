@@ -36,10 +36,7 @@
 $g_login_anonymous = false;
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -50,8 +47,8 @@ if( OFF == config_get( 'allow_signup' ) &&
 	trigger_error( ERROR_LOST_PASSWORD_NOT_ENABLED, ERROR );
 }
 
-$f_user_id = gpc_get_string( 'id' );
-$f_confirm_hash = gpc_get_string( 'confirm_hash' );
+$f_user_id = \Flickerbox\GPC::get_string( 'id' );
+$f_confirm_hash = \Flickerbox\GPC::get_string( 'confirm_hash' );
 
 # force logout on the current user if already authenticated
 if( auth_is_user_authenticated() ) {

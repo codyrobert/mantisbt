@@ -27,27 +27,27 @@ require_once( 'core.php' );
 
 plugin_require_api( 'core/graph_api.php' );
 
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 
-print_summary_menu( 'summary_page.php' );
+\Flickerbox\HTML::print_summary_menu( 'summary_page.php' );
 echo '<br />';
 
-print_summary_submenu();
+\Flickerbox\HTML::print_summary_submenu();
 $t_width = plugin_config_get( 'window_width' );
 $t_graph_width = (int)( ( $t_width - 50 ) * 0.6 );
 
 # gather the data for the graphs
-$t_metrics = enum_bug_group( lang_get( 'priority_enum_string' ), 'priority' );
-$t_token = token_set( TOKEN_GRAPH, json_encode( $t_metrics ) );
+$t_metrics = enum_bug_group( \Flickerbox\Lang::get( 'priority_enum_string' ), 'priority' );
+$t_token = \Flickerbox\Token::set( TOKEN_GRAPH, json_encode( $t_metrics ) );
 
 ?>
 <br />
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo plugin_lang_get( 'graph_imp_priority_title' ) ?>
+		<?php echo plugin_langget( 'graph_imp_priority_title' ) ?>
 	</td>
 </tr>
 <tr>
@@ -68,4 +68,4 @@ $t_token = token_set( TOKEN_GRAPH, json_encode( $t_metrics ) );
 </table>
 
 <?php
-	html_page_bottom();
+	\Flickerbox\HTML::page_bottom();

@@ -33,32 +33,28 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
 
-form_security_validate( 'manage_user_proj_add' );
+\Flickerbox\Form::security_validate( 'manage_user_proj_add' );
 
 auth_reauthenticate();
 
-$f_user_id		= gpc_get_int( 'user_id' );
-$f_access_level	= gpc_get_int( 'access_level' );
-$f_project_id	= gpc_get_int_array( 'project_id', array() );
+$f_user_id		= \Flickerbox\GPC::get_int( 'user_id' );
+$f_access_level	= \Flickerbox\GPC::get_int( 'access_level' );
+$f_project_id	= \Flickerbox\GPC::get_int_array( 'project_id', array() );
 $t_manage_user_threshold = config_get( 'manage_user_threshold' );
 
 user_ensure_exists( $f_user_id );
 
 foreach ( $f_project_id as $t_proj_id ) {
-	if( access_has_project_level( $t_manage_user_threshold, $t_proj_id ) &&
-		access_has_project_level( $f_access_level, $t_proj_id ) ) {
+	if( \Flickerbox\Access::has_project_level( $t_manage_user_threshold, $t_proj_id ) &&
+		\Flickerbox\Access::has_project_level( $f_access_level, $t_proj_id ) ) {
 		project_add_user( $t_proj_id, $f_user_id, $f_access_level );
 	}
 }
 
-form_security_purge( 'manage_user_proj_add' );
+\Flickerbox\Form::security_purge( 'manage_user_proj_add' );
 
 print_header_redirect( 'manage_user_edit_page.php?user_id=' . $f_user_id );

@@ -35,35 +35,29 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'string_api.php' );
 
 auth_reauthenticate();
 
-access_ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
 
-html_page_top( lang_get( 'manage_custom_field_link' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_custom_field_link' ) );
 
-print_manage_menu( 'manage_custom_field_page.php' );
+\Flickerbox\HTML::print_manage_menu( 'manage_custom_field_page.php' );
 ?>
 
 <div class="table-container">
-	<h2><?php echo lang_get( 'custom_fields_setup' ) ?></h2>
+	<h2><?php echo \Flickerbox\Lang::get( 'custom_fields_setup' ) ?></h2>
 	<table>
 		<thead>
 			<tr>
-				<th class="category"><?php echo lang_get( 'custom_field_name' ) ?></th>
-				<th class="category"><?php echo lang_get( 'custom_field_project_count' ) ?></th>
-				<th class="category"><?php echo lang_get( 'custom_field_type' ) ?></th>
-				<th class="category"><?php echo lang_get( 'custom_field_possible_values' ) ?></th>
-				<th class="category"><?php echo lang_get( 'custom_field_default_value' ) ?></th>
+				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_name' ) ?></th>
+				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_project_count' ) ?></th>
+				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_type' ) ?></th>
+				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_possible_values' ) ?></th>
+				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_default_value' ) ?></th>
 			</tr>
 		</thead>
 		<tbody><?php
@@ -76,20 +70,20 @@ print_manage_menu( 'manage_custom_field_page.php' );
 				</td>
 				<td><?php echo count( custom_field_get_project_ids( $t_field_id ) ) ?></td>
 				<td><?php echo get_enum_element( 'custom_field_type', $t_desc['type'] ) ?></td>
-				<td><?php echo string_display( $t_desc['possible_values'] ) ?></td>
-				<td><?php echo string_display( $t_desc['default_value'] ) ?></td>
+				<td><?php echo \Flickerbox\String::display( $t_desc['possible_values'] ) ?></td>
+				<td><?php echo \Flickerbox\String::display( $t_desc['default_value'] ) ?></td>
 			</tr><?php
 		} # Create Form END ?>
 		</tbody>
 	</table>
 	<form method="post" action="manage_custom_field_create.php">
 		<fieldset>
-			<?php echo form_security_field( 'manage_custom_field_create' ); ?>
+			<?php echo \Flickerbox\Form::security_field( 'manage_custom_field_create' ); ?>
 			<input type="text" name="name" size="32" maxlength="64" />
-			<input type="submit" class="button" value="<?php echo lang_get( 'add_custom_field_button' ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_custom_field_button' ) ?>" />
 		</fieldset>
 	</form>
 </div><?php
 
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

@@ -39,20 +39,11 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'error_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 require_api( 'user_pref_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * alternate color function
@@ -91,7 +82,7 @@ function helper_alternate_class( $p_index = null, $p_odd_class = 'row-1', $p_eve
 		$t_index = $p_index;
 	}
 
-	error_parameters( __FUNCTION__, 'CSS' );
+	\Flickerbox\Error::parameters( __FUNCTION__, 'CSS' );
 	trigger_error( ERROR_DEPRECATED_SUPERSEDED, DEPRECATED );
 
 	if( 1 == $t_index++ % 2 ) {
@@ -135,7 +126,7 @@ function helper_array_transpose( array $p_array ) {
  * @return string
  */
 function get_status_color( $p_status, $p_user = null, $p_project = null ) {
-	$t_status_label = MantisEnum::getLabel( config_get( 'status_enum_string', null, $p_user, $p_project ), $p_status );
+	$t_status_label = \MantisEnum::getLabel( config_get( 'status_enum_string', null, $p_user, $p_project ), $p_status );
 	$t_status_colors = config_get( 'status_colors', null, $p_user, $p_project );
 	$t_color = '#ffffff';
 
@@ -152,7 +143,7 @@ function get_status_color( $p_status, $p_user = null, $p_project = null ) {
  */
 function get_percentage_by_status() {
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 	# checking if it's a per project statistic or all projects
 	$t_specific_where = helper_project_specific_where( $t_project_id, $t_user_id );
@@ -160,7 +151,7 @@ function get_percentage_by_status() {
 	$t_query = 'SELECT status, COUNT(*) AS num
 				FROM {bug}
 				WHERE ' . $t_specific_where;
-	if( !access_has_project_level( config_get( 'private_bug_threshold' ) ) ) {
+	if( !\Flickerbox\Access::has_project_level( config_get( 'private_bug_threshold' ) ) ) {
 		$t_query .= ' AND view_state < ' . VS_PRIVATE;
 	}
 	$t_query .= ' GROUP BY status';
@@ -190,9 +181,9 @@ function get_percentage_by_status() {
  */
 function get_enum_element( $p_enum_name, $p_val, $p_user = null, $p_project = null ) {
 	$t_config_var = config_get( $p_enum_name . '_enum_string', null, $p_user, $p_project );
-	$t_string_var = lang_get( $p_enum_name . '_enum_string' );
+	$t_string_var = \Flickerbox\Lang::get( $p_enum_name . '_enum_string' );
 
-	return MantisEnum::getLocalizedLabel( $t_config_var, $t_string_var, $p_val );
+	return \MantisEnum::getLocalizedLabel( $t_config_var, $t_string_var, $p_val );
 }
 
 /**
@@ -345,17 +336,17 @@ function helper_get_current_project() {
 	if( $g_cache_current_project === null ) {
 		$t_cookie_name = config_get( 'project_cookie' );
 
-		$t_project_id = gpc_get_cookie( $t_cookie_name, null );
+		$t_project_id = \Flickerbox\GPC::get_cookie( $t_cookie_name, null );
 
 		if( null === $t_project_id ) {
-			$t_pref = user_pref_get( auth_get_current_user_id(), ALL_PROJECTS );
+			$t_pref = user_pref_get( \Flickerbox\Auth::get_current_user_id(), ALL_PROJECTS );
 			$t_project_id = $t_pref->default_project;
 		} else {
 			$t_project_id = explode( ';', $t_project_id );
 			$t_project_id = $t_project_id[count( $t_project_id ) - 1];
 		}
 
-		if( !project_exists( $t_project_id ) || ( 0 == project_get_field( $t_project_id, 'enabled' ) ) || !access_has_project_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+		if( !project_exists( $t_project_id ) || ( 0 == project_get_field( $t_project_id, 'enabled' ) ) || !\Flickerbox\Access::has_project_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 			$t_project_id = ALL_PROJECTS;
 		}
 		$g_cache_current_project = (int)$t_project_id;
@@ -373,10 +364,10 @@ function helper_get_current_project() {
 function helper_get_current_project_trace() {
 	$t_cookie_name = config_get( 'project_cookie' );
 
-	$t_project_id = gpc_get_cookie( $t_cookie_name, null );
+	$t_project_id = \Flickerbox\GPC::get_cookie( $t_cookie_name, null );
 
 	if( null === $t_project_id ) {
-		$t_bottom = current_user_get_pref( 'default_project' );
+		$t_bottom = \Flickerbox\Current_User::get_pref( 'default_project' );
 		$t_parent = $t_bottom;
 		$t_project_id = array(
 			$t_bottom,
@@ -395,7 +386,7 @@ function helper_get_current_project_trace() {
 		$t_bottom = $t_project_id[count( $t_project_id ) - 1];
 	}
 
-	if( !project_exists( $t_bottom ) || ( 0 == project_get_field( $t_bottom, 'enabled' ) ) || !access_has_project_level( config_get( 'view_bug_threshold', null, null, $t_bottom ), $t_bottom ) ) {
+	if( !project_exists( $t_bottom ) || ( 0 == project_get_field( $t_bottom, 'enabled' ) ) || !\Flickerbox\Access::has_project_level( config_get( 'view_bug_threshold', null, null, $t_bottom ), $t_bottom ) ) {
 		$t_project_id = array(
 			ALL_PROJECTS,
 		);
@@ -415,7 +406,7 @@ function helper_set_current_project( $p_project_id ) {
 	$t_project_cookie_name = config_get( 'project_cookie' );
 
 	$g_cache_current_project = $p_project_id;
-	gpc_set_cookie( $t_project_cookie_name, $p_project_id, true );
+	\Flickerbox\GPC::set_cookie( $t_project_cookie_name, $p_project_id, true );
 
 	return true;
 }
@@ -425,9 +416,9 @@ function helper_set_current_project( $p_project_id ) {
  * @return void
  */
 function helper_clear_pref_cookies() {
-	gpc_clear_cookie( config_get( 'project_cookie' ) );
-	gpc_clear_cookie( config_get( 'manage_users_cookie' ) );
-	gpc_clear_cookie( config_get( 'manage_config_cookie' ) );
+	\Flickerbox\GPC::clear_cookie( config_get( 'project_cookie' ) );
+	\Flickerbox\GPC::clear_cookie( config_get( 'manage_users_cookie' ) );
+	\Flickerbox\GPC::clear_cookie( config_get( 'manage_config_cookie' ) );
 }
 
 /**
@@ -441,11 +432,11 @@ function helper_clear_pref_cookies() {
  * @return boolean
  */
 function helper_ensure_confirmed( $p_message, $p_button_label ) {
-	if( true == gpc_get_bool( '_confirmed' ) ) {
+	if( true == \Flickerbox\GPC::get_bool( '_confirmed' ) ) {
 		return true;
 	}
 
-	html_page_top();
+	\Flickerbox\HTML::page_top();
 
 	echo '<div class="confirm-msg center">';
 	echo "\n" . $p_message . "\n";
@@ -461,7 +452,7 @@ function helper_ensure_confirmed( $p_message, $p_button_label ) {
 	echo "\n</form>\n";
 
 	echo '</div>' . "\n";
-	html_page_bottom();
+	\Flickerbox\HTML::page_bottom();
 	exit;
 }
 
@@ -493,7 +484,7 @@ function helper_call_custom_function( $p_function, array $p_args_array ) {
  */
 function helper_project_specific_where( $p_project_id, $p_user_id = null ) {
 	if( null === $p_user_id ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	$t_project_ids = user_get_all_accessible_projects( $p_user_id, $p_project_id );
@@ -539,11 +530,11 @@ function helper_get_columns_to_view( $p_columns_target = COLUMNS_TARGET_VIEW_PAG
 
 	$t_current_project_id = helper_get_current_project();
 
-	if( $t_current_project_id != ALL_PROJECTS && !access_has_project_level( config_get( 'view_handler_threshold' ), $t_current_project_id ) ) {
+	if( $t_current_project_id != ALL_PROJECTS && !\Flickerbox\Access::has_project_level( config_get( 'view_handler_threshold' ), $t_current_project_id ) ) {
 		$t_keys_to_remove[] = 'handler_id';
 	}
 
-	if( $t_current_project_id != ALL_PROJECTS && !access_has_project_level( config_get( 'roadmap_view_threshold' ), $t_current_project_id ) ) {
+	if( $t_current_project_id != ALL_PROJECTS && !\Flickerbox\Access::has_project_level( config_get( 'roadmap_view_threshold' ), $t_current_project_id ) ) {
 		$t_keys_to_remove[] = 'target_version';
 	}
 
@@ -574,7 +565,7 @@ function helper_get_default_export_filename( $p_extension_with_dot, $p_prefix = 
 	$t_current_project_id = helper_get_current_project();
 
 	if( ALL_PROJECTS == $t_current_project_id ) {
-		$t_filename .= user_get_name( auth_get_current_user_id() );
+		$t_filename .= user_get_name( \Flickerbox\Auth::get_current_user_id() );
 	} else {
 		$t_filename .= project_get_field( $t_current_project_id, 'name' );
 	}
@@ -607,7 +598,7 @@ function helper_get_tab_index() {
 function helper_log_to_page() {
 	# Check is authenticated before checking access level, otherwise user gets
 	# redirected to login_page.php.  See #8461.
-	return config_get_global( 'log_destination' ) === 'page' && auth_is_user_authenticated() && access_has_global_level( config_get( 'show_log_threshold' ) );
+	return config_get_global( 'log_destination' ) === 'page' && \Flickerbox\Auth::is_user_authenticated() && \Flickerbox\Access::has_global_level( config_get( 'show_log_threshold' ) );
 }
 
 /**
@@ -624,7 +615,7 @@ function helper_show_query_count() {
  * @return string
  */
 function helper_mantis_url( $p_url ) {
-	if( is_blank( $p_url ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_url ) ) {
 		return $p_url;
 	}
 	return config_get_global( 'short_path' ) . $p_url;
@@ -636,7 +627,7 @@ function helper_mantis_url( $p_url ) {
  * @return integer
  */
 function helper_duration_to_minutes( $p_hhmm ) {
-	if( is_blank( $p_hhmm ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_hhmm ) ) {
 		return 0;
 	}
 
@@ -645,7 +636,7 @@ function helper_duration_to_minutes( $p_hhmm ) {
 
 	# time can be composed of max 3 parts (hh:mm:ss)
 	if( count( $t_a ) > 3 ) {
-		error_parameters( 'p_hhmm', $p_hhmm );
+		\Flickerbox\Error::parameters( 'p_hhmm', $p_hhmm );
 		trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 	}
 
@@ -653,13 +644,13 @@ function helper_duration_to_minutes( $p_hhmm ) {
 	for( $i = 0;$i < $t_count;$i++ ) {
 		# all time parts should be integers and non-negative.
 		if( !is_numeric( $t_a[$i] ) || ( (integer)$t_a[$i] < 0 ) ) {
-			error_parameters( 'p_hhmm', $p_hhmm );
+			\Flickerbox\Error::parameters( 'p_hhmm', $p_hhmm );
 			trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 		}
 
 		# minutes and seconds are not allowed to exceed 59.
 		if( ( $i > 0 ) && ( $t_a[$i] > 59 ) ) {
-			error_parameters( 'p_hhmm', $p_hhmm );
+			\Flickerbox\Error::parameters( 'p_hhmm', $p_hhmm );
 			trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 		}
 	}

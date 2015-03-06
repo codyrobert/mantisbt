@@ -38,22 +38,14 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'file_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
 helper_begin_long_process();
 
-$f_bug_id	= gpc_get_int( 'bug_id', -1 );
+$f_bug_id	= \Flickerbox\GPC::get_int( 'bug_id', -1 );
 $f_files		= gpc_get_file( 'ufile', -1 );
 
 if( $f_bug_id == -1 && $f_files	== -1 ) {
@@ -61,7 +53,7 @@ if( $f_bug_id == -1 && $f_files	== -1 ) {
 	trigger_error( ERROR_FILE_TOO_BIG, ERROR );
 }
 
-form_security_validate( 'bug_file_add' );
+\Flickerbox\Form::security_validate( 'bug_file_add(' );
 
 $t_bug = bug_get( $f_bug_id, true );
 if( $t_bug->project_id != helper_get_current_project() ) {
@@ -70,29 +62,29 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 	$g_project_override = $t_bug->project_id;
 }
 
-if( !file_allow_bug_upload( $f_bug_id ) ) {
-	access_denied();
+if( !\Flickerbox\File::allow_bug_upload( $f_bug_id ) ) {
+	\Flickerbox\Access::denied();
 }
 
-access_ensure_bug_level( config_get( 'upload_bug_file_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'upload_bug_file_threshold' ), $f_bug_id );
 
 # Process array of files to upload
 if( -1 != $f_files ) {
 	$t_files = helper_array_transpose( $f_files );
 	foreach( $t_files as $t_file ) {
 		if( !empty( $t_file['name'] ) ) {
-			file_add( $f_bug_id, $t_file, 'bug' );
+			\Flickerbox\File::add( $f_bug_id, $t_file, 'bug' );
 		}
 	}
 }
 
-form_security_purge( 'bug_file_add' );
+\Flickerbox\Form::security_purge( 'bug_file_add(' );
 
 # Determine which view page to redirect back to.
-$t_redirect_url = string_get_bug_view_url( $f_bug_id );
+$t_redirect_url = \Flickerbox\String::get_bug_view_url( $f_bug_id );
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

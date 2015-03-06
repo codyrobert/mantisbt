@@ -64,21 +64,21 @@ function mc_project_get_issues_for_user( $p_username, $p_password, $p_project_id
 	$t_show_sticky = true;
 
 	if( strcasecmp( $p_filter_type, 'assigned' ) == 0 ) {
-		$t_filter = filter_create_assigned_to_unresolved( $p_project_id, $t_target_user_id );
+		$t_filter = \Flickerbox\Filter::create_assigned_to_unresolved( $p_project_id, $t_target_user_id );
 	} else if( strcasecmp( $p_filter_type, 'reported' ) == 0 ) {
 		# target id 0 for reporter doesn't make sense.
 		if( $t_target_user_id == 0 ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Target user id must be specified for \'reported\' filter.' );
 		}
 
-		$t_filter = filter_create_reported_by( $p_project_id, $t_target_user_id );
+		$t_filter = \Flickerbox\Filter::create_reported_by( $p_project_id, $t_target_user_id );
 	} else if( strcasecmp( $p_filter_type, 'monitored' ) == 0 ) {
-		$t_filter = filter_create_monitored_by( $p_project_id, $t_target_user_id );
+		$t_filter = \Flickerbox\Filter::create_monitored_by( $p_project_id, $t_target_user_id );
 	} else {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Unknown filter type \'' . $p_filter_type . '\'.' );
 	}
 
-	$t_rows = filter_get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id, $t_target_user_id, $t_show_sticky );
+	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id, $t_target_user_id, $t_show_sticky );
 
 	$t_result = array();
 
@@ -125,7 +125,7 @@ function mc_project_get_issues( $p_username, $p_password, $p_project_id, $p_page
 	$t_bug_count = 0;
 	$g_project_override = $p_project_id;
 
-	$t_rows = filter_get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
+	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
 
 	$t_result = array();
 
@@ -205,7 +205,7 @@ function mc_project_get_categories( $p_username, $p_password, $p_project_id ) {
 	}
 
 	$t_result = array();
-	$t_cat_array = category_get_all_rows( $p_project_id );
+	$t_cat_array = \Flickerbox\Category::get_all_rows( $p_project_id );
 	foreach( $t_cat_array as $t_category_row ) {
 		$t_result[] = $t_category_row['name'];
 	}
@@ -237,7 +237,7 @@ function mc_project_add_category( $p_username, $p_password, $p_project_id, $p_ca
 		return mci_soap_fault_access_denied();
 	}
 
-	return category_add( $p_project_id, $p_category_name );
+	return \Flickerbox\Category::add( $p_project_id, $p_category_name );
 }
 
 /**
@@ -267,10 +267,10 @@ function mc_project_delete_category ( $p_username, $p_password, $p_project_id, $
 	}
 
 	# find the id of the category
-	$p_category_id = category_get_id_by_name( $p_category_name, $p_project_id );
+	$p_category_id = \Flickerbox\Category::get_id_by_name( $p_category_name, $p_project_id );
 
 	# delete the category and link all the issue to the default category
-	return category_remove( $p_category_id, config_get( 'default_category_for_moves' ) );
+	return \Flickerbox\Category::remove( $p_category_id, config_get( 'default_category_for_moves' ) );
 }
 
 /**
@@ -306,10 +306,10 @@ function mc_project_rename_category_by_name( $p_username, $p_password, $p_projec
 	}
 
 	# find the id of the category
-	$p_category_id = category_get_id_by_name( $p_category_name, $p_project_id );
+	$p_category_id = \Flickerbox\Category::get_id_by_name( $p_category_name, $p_project_id );
 
 	# update the category
-	return category_update( $p_category_id, $p_category_name_new, $p_assigned_to );
+	return \Flickerbox\Category::update( $p_category_id, $p_category_name_new, $p_assigned_to );
 }
 
 /**
@@ -338,7 +338,7 @@ function mc_project_get_versions( $p_username, $p_password, $p_project_id ) {
 	}
 
 	$t_result = array();
-	foreach( version_get_all_rows( $p_project_id, VERSION_ALL ) as $t_version ) {
+	foreach( \Flickerbox\Version::get_all_rows( $p_project_id, VERSION_ALL ) as $t_version ) {
 		$t_result[] = mci_project_version_as_array( $t_version );
 	}
 
@@ -372,7 +372,7 @@ function mc_project_get_released_versions( $p_username, $p_password, $p_project_
 
 	$t_result = array();
 
-	foreach( version_get_all_rows( $p_project_id, VERSION_RELEASED ) as $t_version ) {
+	foreach( \Flickerbox\Version::get_all_rows( $p_project_id, VERSION_RELEASED ) as $t_version ) {
 		$t_result[] = mci_project_version_as_array( $t_version );
 	}
 
@@ -407,7 +407,7 @@ function mc_project_get_unreleased_versions( $p_username, $p_password, $p_projec
 
 	$t_result = array();
 
-	foreach( version_get_all_rows( $p_project_id, VERSION_FUTURE ) as $t_version ) {
+	foreach( \Flickerbox\Version::get_all_rows( $p_project_id, VERSION_FUTURE ) as $t_version ) {
 		$t_result[] = mci_project_version_as_array( $t_version );
 	}
 
@@ -439,7 +439,7 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 	$t_released = $p_version['released'];
 	$t_description = $p_version['description'];
 	$t_date_order =  $p_version['date_order'];
-	if( is_blank( $t_date_order ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_date_order ) ) {
 		$t_date_order = null;
 	} else {
 		$t_date_order = SoapObjectsFactory::parseDateTimeString( $t_date_order );
@@ -447,7 +447,7 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 
 	$t_obsolete = isset( $p_version['obsolete'] ) ? $p_version['obsolete'] : false;
 
-	if( is_blank( $t_project_id ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "project_id" was missing' );
 	}
 
@@ -463,11 +463,11 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( is_blank( $t_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_name ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "name" was missing' );
 	}
 
-	if( !version_is_unique( $t_name, $t_project_id ) ) {
+	if( !\Flickerbox\Version::is_unique( $t_name, $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version exists for project' );
 	}
 
@@ -477,8 +477,8 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 		$t_released = VERSION_RELEASED;
 	}
 
-	if( version_add( $t_project_id, $t_name, $t_released, $t_description, $t_date_order, $t_obsolete ) ) {
-		return version_get_id( $t_name, $t_project_id );
+	if( \Flickerbox\Version::add( $t_project_id, $t_name, $t_released, $t_description, $t_date_order, $t_obsolete ) ) {
+		return \Flickerbox\Version::get_id( $t_name, $t_project_id );
 	}
 
 	return null;
@@ -502,11 +502,11 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 		return mci_soap_fault_login_failed();
 	}
 
-	if( is_blank( $p_version_id ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "version_id" was missing' );
 	}
 
-	if( !version_exists( $p_version_id ) ) {
+	if( !\Flickerbox\Version::exists( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version \'' . $p_version_id . '\' does not exist.' );
 	}
 
@@ -520,7 +520,7 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 	$t_date_order = isset( $p_version['date_order'] ) ? SoapObjectsFactory::parseDateTimeString( $p_version['date_order'] ) : null;
 	$t_obsolete = isset( $p_version['obsolete'] ) ? $p_version['obsolete'] : false;
 
-	if( is_blank( $t_project_id ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "project_id" was missing' );
 	}
 
@@ -536,13 +536,13 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( is_blank( $t_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_name ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "name" was missing' );
 	}
 
 	# check for duplicates
-	$t_old_version_name = version_get_field( $p_version_id, 'version' );
-	if( ( strtolower( $t_old_version_name ) != strtolower( $t_name ) ) && !version_is_unique( $t_name, $t_project_id ) ) {
+	$t_old_version_name = \Flickerbox\Version::get_field( $p_version_id, 'version' );
+	if( ( strtolower( $t_old_version_name ) != strtolower( $t_name ) ) && !\Flickerbox\Version::is_unique( $t_name, $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version exists for project' );
 	}
 
@@ -561,7 +561,7 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 	$t_version_data->date_order = $t_date_order;
 	$t_version_data->obsolete = $t_obsolete;
 
-	return version_update( $t_version_data );
+	return \Flickerbox\Version::update( $t_version_data );
 }
 
 /**
@@ -581,15 +581,15 @@ function mc_project_version_delete( $p_username, $p_password, $p_version_id ) {
 		return mci_soap_fault_login_failed();
 	}
 
-	if( is_blank( $p_version_id ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "version_id" was missing' );
 	}
 
-	if( !version_exists( $p_version_id ) ) {
+	if( !\Flickerbox\Version::exists( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version \'' . $p_version_id . '\' does not exist.' );
 	}
 
-	$t_project_id = version_get_field( $p_version_id, 'project_id' );
+	$t_project_id = \Flickerbox\Version::get_field( $p_version_id, 'project_id' );
 	$g_project_override = $t_project_id;
 
 	if( !mci_has_readwrite_access( $t_user_id, $t_project_id ) ) {
@@ -600,7 +600,7 @@ function mc_project_version_delete( $p_username, $p_password, $p_version_id ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	return version_remove( $p_version_id );
+	return \Flickerbox\Version::remove( $p_version_id );
 }
 
 /**
@@ -635,7 +635,7 @@ function mc_project_get_custom_fields( $p_username, $p_password, $p_project_id )
 
 	foreach( custom_field_get_linked_ids( $p_project_id ) as $t_id ) {
 		$t_def = custom_field_get_definition( $t_id );
-		if( access_has_project_level( $t_def['access_level_r'], $p_project_id ) ) {
+		if( \Flickerbox\Access::has_project_level( $t_def['access_level_r'], $p_project_id ) ) {
 			$t_result[] = array(
 				'field' => array(
 					'id' => $t_def['id'],
@@ -684,7 +684,7 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 	$g_project_override = $p_project_id;
 
 	# Check if project documentation feature is enabled.
-	if( OFF == config_get( 'enable_project_documentation' ) || !file_is_uploading_enabled() ) {
+	if( OFF == config_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -1039,7 +1039,7 @@ function mc_project_get_issue_headers( $p_username, $p_password, $p_project_id, 
 	$t_page_count = 0;
 	$t_bug_count = 0;
 
-	$t_rows = filter_get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
+	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
 	$t_result = array();
 
 	# the page number was moved back, so we have exceeded the actual page number, see bug #12991
@@ -1083,10 +1083,10 @@ function mc_project_get_users( $p_username, $p_password, $p_project_id, $p_acces
 	$t_show_realname = ( ON == config_get( 'show_realname' ) );
 	$t_sort_by_last_name = ( ON == config_get( 'sort_by_last_name' ) );
 	foreach( $t_users as $t_user ) {
-		$t_user_name = string_attribute( $t_user['username'] );
+		$t_user_name = \Flickerbox\String::attribute( $t_user['username'] );
 		$t_sort_name = strtolower( $t_user_name );
 		if( $t_show_realname && ( $t_user['realname'] <> '' ) ) {
-			$t_user_name = string_attribute( $t_user['realname'] );
+			$t_user_name = \Flickerbox\String::attribute( $t_user['realname'] );
 			if( $t_sort_by_last_name ) {
 				$t_sort_name_bits = explode( ' ', strtolower( $t_user_name ), 2 );
 				$t_sort_name = ( isset( $t_sort_name_bits[1] ) ? $t_sort_name_bits[1] . ', ' : '' ) . $t_sort_name_bits[0];

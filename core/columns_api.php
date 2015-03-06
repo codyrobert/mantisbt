@@ -43,25 +43,14 @@
  * @uses string_api.php
  */
 
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'category_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'date_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
-require_api( 'file_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'icon_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'prepare_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'sponsorship_api.php' );
-require_api( 'string_api.php' );
 
 /**
  * Filters an array of columns based on configuration options.  The filtering can remove
@@ -119,7 +108,7 @@ function columns_filter_disabled( array $p_columns ) {
  * @return array of column names
  */
 function columns_get_standard( $p_enabled_columns_only = true ) {
-	$t_reflection = new ReflectionClass( 'BugData' );
+	$t_reflection = new \ReflectionClass( 'BugData' );
 	$t_columns = $t_reflection->getDefaultProperties();
 
 	$t_columns['selection'] = null;
@@ -320,7 +309,7 @@ function column_get_title( $p_column ) {
 			$t_custom_field = '@' . $t_custom_field . '@';
 		} else {
 			$t_def = custom_field_get_definition( $t_field_id );
-			$t_custom_field = lang_get_defaulted( $t_def['name'] );
+			$t_custom_field = \Flickerbox\Lang::get_defaulted( $t_def['name'] );
 		}
 
 		return $t_custom_field;
@@ -334,33 +323,33 @@ function column_get_title( $p_column ) {
 
 	switch( $p_column ) {
 		case 'attachment_count':
-			return lang_get( 'attachments' );
+			return \Flickerbox\Lang::get( 'attachments' );
 		case 'bugnotes_count':
 			return '#';
 		case 'category_id':
-			return lang_get( 'category' );
+			return \Flickerbox\Lang::get( 'category' );
 		case 'edit':
 			return '';
 		case 'handler_id':
-			return lang_get( 'assigned_to' );
+			return \Flickerbox\Lang::get( 'assigned_to' );
 		case 'last_updated':
-			return lang_get( 'updated' );
+			return \Flickerbox\Lang::get( 'updated' );
 		case 'os_build':
-			return lang_get( 'os_version' );
+			return \Flickerbox\Lang::get( 'os_version' );
 		case 'project_id':
-			return lang_get( 'email_project' );
+			return \Flickerbox\Lang::get( 'email_project' );
 		case 'reporter_id':
-			return lang_get( 'reporter' );
+			return \Flickerbox\Lang::get( 'reporter' );
 		case 'selection':
 			return '';
 		case 'sponsorship_total':
-			return sponsorship_get_currency();
+			return \Flickerbox\Sponsorship::get_currency();
 		case 'version':
-			return lang_get( 'product_version' );
+			return \Flickerbox\Lang::get( 'product_version' );
 		case 'view_state':
-			return lang_get( 'view_status' );
+			return \Flickerbox\Lang::get( 'view_status' );
 		default:
-			return lang_get_defaulted( $p_column );
+			return \Flickerbox\Lang::get_defaulted( $p_column );
 	}
 }
 
@@ -379,7 +368,7 @@ function columns_ensure_valid( $p_field_name, array $p_columns_to_validate, arra
 	# Check for invalid fields
 	foreach( $p_columns_to_validate as $t_column ) {
 		if( !in_array( utf8_strtolower( $t_column ), $t_columns_all_lower ) ) {
-			error_parameters( $p_field_name, $t_column );
+			\Flickerbox\Error::parameters( $p_field_name, $t_column );
 			trigger_error( ERROR_COLUMNS_INVALID, ERROR );
 			return false;
 		}
@@ -390,7 +379,7 @@ function columns_ensure_valid( $p_field_name, array $p_columns_to_validate, arra
 	foreach( $p_columns_to_validate as $t_column ) {
 		$t_column_lower = utf8_strtolower( $t_column );
 		if( in_array( $t_column, $t_columns_no_duplicates ) ) {
-			error_parameters( $p_field_name, $t_column );
+			\Flickerbox\Error::parameters( $p_field_name, $t_column );
 			trigger_error( ERROR_COLUMNS_DUPLICATE, ERROR );
 		} else {
 			$t_columns_no_duplicates[] = $t_column_lower;
@@ -458,8 +447,8 @@ function print_column_title_edit( $p_sort, $p_dir, $p_columns_target = COLUMNS_T
  */
 function print_column_title_id( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-id">';
-	print_view_bug_sort_link( lang_get( 'id' ), 'id', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'id' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'id' ), 'id', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'id' );
 	echo '</th>';
 }
 
@@ -474,8 +463,8 @@ function print_column_title_id( $p_sort, $p_dir, $p_columns_target = COLUMNS_TAR
  */
 function print_column_title_project_id( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-project-id">';
-	print_view_bug_sort_link( lang_get( 'email_project' ), 'project_id', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'project_id' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'email_project' ), 'project_id', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'project_id' );
 	echo '</th>';
 }
 
@@ -490,8 +479,8 @@ function print_column_title_project_id( $p_sort, $p_dir, $p_columns_target = COL
  */
 function print_column_title_reporter_id( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-reporter">';
-	print_view_bug_sort_link( lang_get( 'reporter' ), 'reporter_id', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'reporter_id' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'reporter' ), 'reporter_id', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'reporter_id' );
 	echo '</th>';
 }
 
@@ -506,8 +495,8 @@ function print_column_title_reporter_id( $p_sort, $p_dir, $p_columns_target = CO
  */
 function print_column_title_handler_id( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-assigned-to">';
-	print_view_bug_sort_link( lang_get( 'assigned_to' ), 'handler_id', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'handler_id' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'assigned_to' ), 'handler_id', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'handler_id' );
 	echo '</th>';
 }
 
@@ -523,9 +512,9 @@ function print_column_title_handler_id( $p_sort, $p_dir, $p_columns_target = COL
 function print_column_title_priority( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-priority">';
 	# Use short label only when displaying icons
-	$t_label = lang_get( config_get( 'show_priority_text' ) ? 'priority' : 'priority_abbreviation' );
+	$t_label = \Flickerbox\Lang::get( config_get( 'show_priority_text' ) ? 'priority' : 'priority_abbreviation' );
 	print_view_bug_sort_link( $t_label, 'priority', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'priority' );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'priority' );
 	echo '</th>';
 }
 
@@ -540,8 +529,8 @@ function print_column_title_priority( $p_sort, $p_dir, $p_columns_target = COLUM
  */
 function print_column_title_reproducibility( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-reproducibility">';
-	print_view_bug_sort_link( lang_get( 'reproducibility' ), 'reproducibility', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'reproducibility' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'reproducibility' ), 'reproducibility', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'reproducibility' );
 	echo '</th>';
 }
 
@@ -556,8 +545,8 @@ function print_column_title_reproducibility( $p_sort, $p_dir, $p_columns_target 
  */
 function print_column_title_projection( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-projection">';
-	print_view_bug_sort_link( lang_get( 'projection' ), 'projection', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'projection' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'projection' ), 'projection', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'projection' );
 	echo '</th>';
 }
 
@@ -572,8 +561,8 @@ function print_column_title_projection( $p_sort, $p_dir, $p_columns_target = COL
  */
 function print_column_title_eta( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-eta">';
-	print_view_bug_sort_link( lang_get( 'eta' ), 'eta', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'eta' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'eta' ), 'eta', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'eta' );
 	echo '</th>';
 }
 
@@ -588,8 +577,8 @@ function print_column_title_eta( $p_sort, $p_dir, $p_columns_target = COLUMNS_TA
  */
 function print_column_title_resolution( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-resolution">';
-	print_view_bug_sort_link( lang_get( 'resolution' ), 'resolution', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'resolution' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'resolution' ), 'resolution', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'resolution' );
 	echo '</th>';
 }
 
@@ -604,8 +593,8 @@ function print_column_title_resolution( $p_sort, $p_dir, $p_columns_target = COL
  */
 function print_column_title_fixed_in_version( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-fixed-in-version">';
-	print_view_bug_sort_link( lang_get( 'fixed_in_version' ), 'fixed_in_version', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'fixed_in_version' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'fixed_in_version' ), 'fixed_in_version', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'fixed_in_version' );
 	echo '</th>';
 }
 
@@ -620,8 +609,8 @@ function print_column_title_fixed_in_version( $p_sort, $p_dir, $p_columns_target
  */
 function print_column_title_target_version( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-target-version">';
-	print_view_bug_sort_link( lang_get( 'target_version' ), 'target_version', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'target_version' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'target_version' ), 'target_version', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'target_version' );
 	echo '</th>';
 }
 
@@ -637,10 +626,10 @@ function print_column_title_target_version( $p_sort, $p_dir, $p_columns_target =
 function print_column_title_view_state( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	global $t_icon_path;
 	echo '<th class="column-view-state">';
-	$t_view_state_text = lang_get( 'view_status' );
+	$t_view_state_text = \Flickerbox\Lang::get( 'view_status' );
 	$t_view_state_icon = '<img src="' . $t_icon_path . 'protected.gif" alt="' . $t_view_state_text . '" title="' . $t_view_state_text . '" />';
 	print_view_bug_sort_link( $t_view_state_icon, 'view_state', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'view_state' );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'view_state' );
 	echo '</th>';
 }
 
@@ -655,8 +644,8 @@ function print_column_title_view_state( $p_sort, $p_dir, $p_columns_target = COL
  */
 function print_column_title_os( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-os">';
-	print_view_bug_sort_link( lang_get( 'os' ), 'os', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'os' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'os' ), 'os', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'os' );
 	echo '</th>';
 }
 
@@ -671,8 +660,8 @@ function print_column_title_os( $p_sort, $p_dir, $p_columns_target = COLUMNS_TAR
  */
 function print_column_title_os_build( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-os-build">';
-	print_view_bug_sort_link( lang_get( 'os_version' ), 'os_build', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'os_build' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'os_version' ), 'os_build', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'os_build' );
 	echo '</th>';
 }
 
@@ -688,11 +677,11 @@ function print_column_title_os_build( $p_sort, $p_dir, $p_columns_target = COLUM
 function print_column_title_build( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	if( $p_columns_target != COLUMNS_TARGET_CSV_PAGE ) {
 		echo '<th class="column-build">';
-		print_view_bug_sort_link( lang_get( 'build' ), 'build', $p_sort, $p_dir, $p_columns_target );
-		print_sort_icon( $p_dir, $p_sort, 'build' );
+		print_view_bug_sort_link( \Flickerbox\Lang::get( 'build' ), 'build', $p_sort, $p_dir, $p_columns_target );
+		\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'build' );
 		echo '</th>';
 	} else {
-		echo lang_get( 'build' );
+		echo \Flickerbox\Lang::get( 'build' );
 	}
 }
 
@@ -707,8 +696,8 @@ function print_column_title_build( $p_sort, $p_dir, $p_columns_target = COLUMNS_
  */
 function print_column_title_platform( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-platform">';
-	print_view_bug_sort_link( lang_get( 'platform' ), 'platform', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'platform' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'platform' ), 'platform', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'platform' );
 	echo '</th>';
 }
 
@@ -723,8 +712,8 @@ function print_column_title_platform( $p_sort, $p_dir, $p_columns_target = COLUM
  */
 function print_column_title_version( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-version">';
-	print_view_bug_sort_link( lang_get( 'product_version' ), 'version', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'version' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'product_version' ), 'version', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'version' );
 	echo '</th>';
 }
 
@@ -739,8 +728,8 @@ function print_column_title_version( $p_sort, $p_dir, $p_columns_target = COLUMN
  */
 function print_column_title_date_submitted( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-date-submitted">';
-	print_view_bug_sort_link( lang_get( 'date_submitted' ), 'date_submitted', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'date_submitted' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'date_submitted' ), 'date_submitted', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'date_submitted' );
 	echo '</th>';
 }
 
@@ -755,7 +744,7 @@ function print_column_title_date_submitted( $p_sort, $p_dir, $p_columns_target =
  */
 function print_column_title_attachment_count( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	global $t_icon_path;
-	$t_attachment_count_text = lang_get( 'attachment_count' );
+	$t_attachment_count_text = \Flickerbox\Lang::get( 'attachment_count' );
 	$t_attachment_count_icon = '<img src="' . $t_icon_path . 'attachment.png" alt="' . $t_attachment_count_text . '" title="' . $t_attachment_count_text . '" />';
 	echo "\t" . '<th class="column-attachments">' . $t_attachment_count_icon . '</th>' . "\n";
 }
@@ -771,8 +760,8 @@ function print_column_title_attachment_count( $p_sort, $p_dir, $p_columns_target
  */
 function print_column_title_category_id( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-category">';
-	print_view_bug_sort_link( lang_get( 'category' ), 'category_id', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'category_id' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'category' ), 'category_id', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'category_id' );
 	echo '</th>';
 }
 
@@ -802,8 +791,8 @@ function print_column_title_category( $p_sort, $p_dir, $p_columns_target = COLUM
  */
 function print_column_title_sponsorship_total( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo "\t<th class=\"column-sponsorship\">";
-	print_view_bug_sort_link( sponsorship_get_currency(), 'sponsorship_total', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'sponsorship_total' );
+	print_view_bug_sort_link( \Flickerbox\Sponsorship::get_currency(), 'sponsorship_total', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'sponsorship_total' );
 	echo "</th>\n";
 }
 
@@ -818,8 +807,8 @@ function print_column_title_sponsorship_total( $p_sort, $p_dir, $p_columns_targe
  */
 function print_column_title_severity( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-severity">';
-	print_view_bug_sort_link( lang_get( 'severity' ), 'severity', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'severity' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'severity' ), 'severity', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'severity' );
 	echo '</th>';
 }
 
@@ -834,8 +823,8 @@ function print_column_title_severity( $p_sort, $p_dir, $p_columns_target = COLUM
  */
 function print_column_title_status( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-status">';
-	print_view_bug_sort_link( lang_get( 'status' ), 'status', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'status' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'status' ), 'status', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'status' );
 	echo '</th>';
 }
 
@@ -850,8 +839,8 @@ function print_column_title_status( $p_sort, $p_dir, $p_columns_target = COLUMNS
  */
 function print_column_title_last_updated( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-last-modified">';
-	print_view_bug_sort_link( lang_get( 'updated' ), 'last_updated', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'last_updated' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'updated' ), 'last_updated', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'last_updated' );
 	echo '</th>';
 }
 
@@ -866,8 +855,8 @@ function print_column_title_last_updated( $p_sort, $p_dir, $p_columns_target = C
  */
 function print_column_title_summary( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-summary">';
-	print_view_bug_sort_link( lang_get( 'summary' ), 'summary', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'summary' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'summary' ), 'summary', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'summary' );
 	echo '</th>';
 }
 
@@ -895,7 +884,7 @@ function print_column_title_bugnotes_count( $p_sort, $p_dir, $p_columns_target =
  */
 function print_column_title_description( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-description">';
-	echo lang_get( 'description' );
+	echo \Flickerbox\Lang::get( 'description' );
 	echo '</th>';
 }
 
@@ -910,7 +899,7 @@ function print_column_title_description( $p_sort, $p_dir, $p_columns_target = CO
  */
 function print_column_title_steps_to_reproduce( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-steps-to-reproduce">';
-	echo lang_get( 'steps_to_reproduce' );
+	echo \Flickerbox\Lang::get( 'steps_to_reproduce' );
 	echo '</th>';
 }
 
@@ -925,7 +914,7 @@ function print_column_title_steps_to_reproduce( $p_sort, $p_dir, $p_columns_targ
  */
 function print_column_title_additional_information( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-additional-information">';
-	echo lang_get( 'additional_information' );
+	echo \Flickerbox\Lang::get( 'additional_information' );
 	echo '</th>';
 }
 
@@ -939,8 +928,8 @@ function print_column_title_additional_information( $p_sort, $p_dir, $p_columns_
  */
 function print_column_title_due_date( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-due-date">';
-	print_view_bug_sort_link( lang_get( 'due_date' ), 'due_date', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'due_date' );
+	print_view_bug_sort_link( \Flickerbox\Lang::get( 'due_date' ), 'due_date', $p_sort, $p_dir, $p_columns_target );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'due_date' );
 	echo '</th>';
 }
 
@@ -956,10 +945,10 @@ function print_column_title_due_date( $p_sort, $p_dir, $p_columns_target = COLUM
 function print_column_title_overdue( $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	global $t_icon_path;
 	echo '<th class="column-overdue">';
-	$t_overdue_text = lang_get( 'overdue' );
+	$t_overdue_text = \Flickerbox\Lang::get( 'overdue' );
 	$t_overdue_icon = '<img src="' . $t_icon_path . 'overdue.png" alt="' . $t_overdue_text . '" title="' . $t_overdue_text . '" />';
 	print_view_bug_sort_link( $t_overdue_icon, 'due_date', $p_sort, $p_dir, $p_columns_target );
-	print_sort_icon( $p_dir, $p_sort, 'due_date' );
+	\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, 'due_date' );
 	echo '</th>';
 }
 
@@ -975,20 +964,20 @@ function print_column_selection( BugData $p_bug, $p_columns_target = COLUMNS_TAR
 	global $g_checkboxes_exist;
 
 	echo '<td class="column-selection">';
-	if( access_has_any_project( config_get( 'report_bug_threshold', null, null, $p_bug->project_id ) ) ||
+	if( \Flickerbox\Access::has_any_project( config_get( 'report_bug_threshold', null, null, $p_bug->project_id ) ) ||
 		# !TODO: check if any other projects actually exist for the bug to be moved to
-		access_has_project_level( config_get( 'move_bug_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'move_bug_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
 		# !TODO: factor in $g_auto_set_status_to_assigned == ON
-		access_has_project_level( config_get( 'update_bug_assign_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
-		access_has_project_level( config_get( 'update_bug_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
-		access_has_project_level( config_get( 'delete_bug_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'update_bug_assign_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'update_bug_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'delete_bug_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
 		# !TODO: check to see if the bug actually has any different selectable workflow states
-		access_has_project_level( config_get( 'update_bug_status_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
-		access_has_project_level( config_get( 'set_bug_sticky_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
-		access_has_project_level( config_get( 'change_view_status_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
-		access_has_project_level( config_get( 'add_bugnote_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
-		access_has_project_level( config_get( 'tag_attach_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
-		access_has_project_level( config_get( 'roadmap_update_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ) {
+		\Flickerbox\Access::has_project_level( config_get( 'update_bug_status_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'set_bug_sticky_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'change_view_status_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'add_bugnote_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'tag_attach_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ||
+		\Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold', null, null, $p_bug->project_id ), $p_bug->project_id ) ) {
 		$g_checkboxes_exist = true;
 		printf( '<input type="checkbox" name="bug_arr[]" value="%d" />', $p_bug->id );
 	} else {
@@ -1011,10 +1000,10 @@ function print_column_selection( BugData $p_bug, $p_columns_target = COLUMNS_TAR
 function print_column_title_plugin( $p_column, $p_column_object, $p_sort, $p_dir, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<th class="column-plugin">';
 	if( $p_column_object->sortable ) {
-		print_view_bug_sort_link( string_display_line( $p_column_object->title ), $p_column, $p_sort, $p_dir, $p_columns_target );
-		print_sort_icon( $p_dir, $p_sort, $p_column );
+		print_view_bug_sort_link( \Flickerbox\String::display_line( $p_column_object->title ), $p_column, $p_sort, $p_dir, $p_columns_target );
+		\Flickerbox\Icon::print_sort_icon( $p_dir, $p_sort, $p_column );
 	} else {
-		echo string_display_line( $p_column_object->title );
+		echo \Flickerbox\String::display_line( $p_column_object->title );
 	}
 	echo '</th>';
 }
@@ -1050,11 +1039,11 @@ function print_column_edit( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_V
 
 	echo '<td class="column-edit">';
 
-	if( !bug_is_readonly( $p_bug->id ) && access_has_bug_level( config_get( 'update_bug_threshold' ), $p_bug->id ) ) {
-		echo '<a href="' . string_get_bug_update_url( $p_bug->id ) . '">';
+	if( !bug_is_readonly( $p_bug->id ) && \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_bug->id ) ) {
+		echo '<a href="' . \Flickerbox\String::get_bug_update_url( $p_bug->id ) . '">';
 		echo '<img width="16" height="16" src="' . $t_icon_path . 'update.png';
-		echo '" alt="' . lang_get( 'update_bug_button' ) . '"';
-		echo ' title="' . lang_get( 'update_bug_button' ) . '" /></a>';
+		echo '" alt="' . \Flickerbox\Lang::get( 'update_bug_button' ) . '"';
+		echo ' title="' . \Flickerbox\Lang::get( 'update_bug_button' ) . '" /></a>';
 	} else {
 		echo '&#160;';
 	}
@@ -1075,7 +1064,7 @@ function print_column_priority( BugData $p_bug, $p_columns_target = COLUMNS_TARG
 	if( ON == config_get( 'show_priority_text' ) ) {
 		print_formatted_priority_string( $p_bug );
 	} else {
-		print_status_icon( $p_bug->priority );
+		\Flickerbox\Icon::print_status_icon( $p_bug->priority );
 	}
 	echo '</td>';
 }
@@ -1106,8 +1095,8 @@ function print_column_sponsorship_total( BugData $p_bug, $p_columns_target = COL
 	echo "\t<td class=\"right column-sponsorship\">";
 
 	if( $p_bug->sponsorship_total > 0 ) {
-		$t_sponsorship_amount = sponsorship_format_amount( $p_bug->sponsorship_total );
-		echo string_no_break( $t_sponsorship_amount );
+		$t_sponsorship_amount = \Flickerbox\Sponsorship::format_amount( $p_bug->sponsorship_total );
+		echo \Flickerbox\String::no_break( $t_sponsorship_amount );
 	}
 
 	echo "</td>\n";
@@ -1139,7 +1128,7 @@ function print_column_bugnotes_count( BugData $p_bug, $p_columns_target = COLUMN
 		if( $t_show_in_bold ) {
 			echo '<span class="bold">';
 		}
-		print_link( string_get_bug_view_url( $p_bug->id ) . '&nbn=' . $t_bugnote_count . '#bugnotes', $t_bugnote_count );
+		print_link( \Flickerbox\String::get_bug_view_url( $p_bug->id ) . '&nbn=' . $t_bugnote_count . '#bugnotes', $t_bugnote_count );
 		if( $t_show_in_bold ) {
 			echo '</span>';
 		}
@@ -1163,15 +1152,15 @@ function print_column_attachment_count( BugData $p_bug, $p_columns_target = COLU
 
 	# Check for attachments
 	$t_attachment_count = 0;
-	if( file_can_view_bug_attachments( $p_bug->id, null ) ) {
-		$t_attachment_count = file_bug_attachment_count( $p_bug->id );
+	if( \Flickerbox\File::can_view_bug_attachments( $p_bug->id, null ) ) {
+		$t_attachment_count = \Flickerbox\File::bug_attachment_count( $p_bug->id );
 	}
 
 	echo '<td class="column-attachments">';
 
 	if( $t_attachment_count > 0 ) {
-		$t_href = string_get_bug_view_url( $p_bug->id ) . '#attachments';
-		$t_href_title = sprintf( lang_get( 'view_attachments_for_issue' ), $t_attachment_count, $p_bug->id );
+		$t_href = \Flickerbox\String::get_bug_view_url( $p_bug->id ) . '#attachments';
+		$t_href_title = sprintf( \Flickerbox\Lang::get( 'view_attachments_for_issue' ), $t_attachment_count, $p_bug->id );
 		echo '<a href="' . $t_href . '" title="' . $t_href_title . '">' . $t_attachment_count . '</a>';
 	} else {
 		echo ' &#160; ';
@@ -1199,11 +1188,11 @@ function print_column_category_id( BugData $p_bug, $p_columns_target = COLUMNS_T
 	# type project name if viewing 'all projects' or if issue is in a subproject
 	if( ON == config_get( 'show_bug_project_links' ) && helper_get_current_project() != $p_bug->project_id ) {
 		echo '<small class="project">[';
-		print_view_bug_sort_link( string_display_line( $t_project_name ), 'project_id', $t_sort, $t_dir, $p_columns_target );
+		print_view_bug_sort_link( \Flickerbox\String::display_line( $t_project_name ), 'project_id', $t_sort, $t_dir, $p_columns_target );
 		echo ']</small><br />';
 	}
 
-	echo string_display_line( category_full_name( $p_bug->category_id, false ) );
+	echo \Flickerbox\String::display_line( \Flickerbox\Category::full_name( $p_bug->category_id, false ) );
 
 	echo '</td>';
 }
@@ -1231,7 +1220,7 @@ function print_column_severity( BugData $p_bug, $p_columns_target = COLUMNS_TARG
  * @access public
  */
 function print_column_eta( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	echo '<td class="column-eta">', get_enum_element( 'eta', $p_bug->eta, auth_get_current_user_id(), $p_bug->project_id ), '</td>';
+	echo '<td class="column-eta">', get_enum_element( 'eta', $p_bug->eta, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
 }
 
 /**
@@ -1243,7 +1232,7 @@ function print_column_eta( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VI
  * @access public
  */
 function print_column_projection( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	echo '<td class="column-projection">', get_enum_element( 'projection', $p_bug->projection, auth_get_current_user_id(), $p_bug->project_id ), '</td>';
+	echo '<td class="column-projection">', get_enum_element( 'projection', $p_bug->projection, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
 }
 
 /**
@@ -1255,7 +1244,7 @@ function print_column_projection( BugData $p_bug, $p_columns_target = COLUMNS_TA
  * @access public
  */
 function print_column_reproducibility( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	echo '<td class="column-reproducibility">', get_enum_element( 'reproducibility', $p_bug->reproducibility, auth_get_current_user_id(), $p_bug->project_id ), '</td>';
+	echo '<td class="column-reproducibility">', get_enum_element( 'reproducibility', $p_bug->reproducibility, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
 }
 
 /**
@@ -1268,7 +1257,7 @@ function print_column_reproducibility( BugData $p_bug, $p_columns_target = COLUM
  */
 function print_column_resolution( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<td class="column-resolution">',
-		get_enum_element( 'resolution', $p_bug->resolution, auth_get_current_user_id(), $p_bug->project_id ),
+		get_enum_element( 'resolution', $p_bug->resolution, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ),
 		'</td>';
 }
 
@@ -1283,13 +1272,13 @@ function print_column_resolution( BugData $p_bug, $p_columns_target = COLUMNS_TA
 function print_column_status( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<td class="column-status">';
 	printf( '<span class="issue-status" title="%s">%s</span>',
-		get_enum_element( 'resolution', $p_bug->resolution, auth_get_current_user_id(), $p_bug->project_id ),
-		get_enum_element( 'status', $p_bug->status, auth_get_current_user_id(), $p_bug->project_id )
+		get_enum_element( 'resolution', $p_bug->resolution, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ),
+		get_enum_element( 'status', $p_bug->status, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id )
 	);
 
 	# print username instead of status
-	if( ( ON == config_get( 'show_assigned_names' ) ) && ( $p_bug->handler_id > 0 ) && ( access_has_project_level( config_get( 'view_handler_threshold' ), $p_bug->project_id ) ) ) {
-		printf( ' (%s)', prepare_user_name( $p_bug->handler_id ) );
+	if( ( ON == config_get( 'show_assigned_names' ) ) && ( $p_bug->handler_id > 0 ) && ( \Flickerbox\Access::has_project_level( config_get( 'view_handler_threshold' ), $p_bug->project_id ) ) ) {
+		printf( ' (%s)', \Flickerbox\Prepare::user_name( $p_bug->handler_id ) );
 	}
 	echo '</td>';
 }
@@ -1307,8 +1296,8 @@ function print_column_handler_id( BugData $p_bug, $p_columns_target = COLUMNS_TA
 
 	# In case of a specific project, if the current user has no access to the field, then it would have been excluded from the
 	# list of columns to view.  In case of ALL_PROJECTS, then we need to check the access per row.
-	if( $p_bug->handler_id > 0 && ( helper_get_current_project() != ALL_PROJECTS || access_has_project_level( config_get( 'view_handler_threshold' ), $p_bug->project_id ) ) ) {
-		echo prepare_user_name( $p_bug->handler_id );
+	if( $p_bug->handler_id > 0 && ( helper_get_current_project() != ALL_PROJECTS || \Flickerbox\Access::has_project_level( config_get( 'view_handler_threshold' ), $p_bug->project_id ) ) ) {
+		echo \Flickerbox\Prepare::user_name( $p_bug->handler_id );
 	}
 
 	echo '</td>';
@@ -1324,7 +1313,7 @@ function print_column_handler_id( BugData $p_bug, $p_columns_target = COLUMNS_TA
  */
 function print_column_reporter_id( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<td class="column-reporter">';
-	echo prepare_user_name( $p_bug->reporter_id );
+	echo \Flickerbox\Prepare::user_name( $p_bug->reporter_id );
 	echo '</td>';
 }
 
@@ -1338,7 +1327,7 @@ function print_column_reporter_id( BugData $p_bug, $p_columns_target = COLUMNS_T
  */
 function print_column_project_id( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<td class="column-project-id">';
-	echo string_display_line( project_get_name( $p_bug->project_id ) );
+	echo \Flickerbox\String::display_line( project_get_name( $p_bug->project_id ) );
 	echo '</td>';
 }
 
@@ -1353,7 +1342,7 @@ function print_column_project_id( BugData $p_bug, $p_columns_target = COLUMNS_TA
 function print_column_last_updated( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	global $g_filter;
 
-	$t_last_updated = string_display_line( date( config_get( 'short_date_format' ), $p_bug->last_updated ) );
+	$t_last_updated = \Flickerbox\String::display_line( date( config_get( 'short_date_format' ), $p_bug->last_updated ) );
 
 	echo '<td class="column-last-modified">';
 	if( $p_bug->last_updated > strtotime( '-' . $g_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] . ' hours' ) ) {
@@ -1373,7 +1362,7 @@ function print_column_last_updated( BugData $p_bug, $p_columns_target = COLUMNS_
  * @access public
  */
 function print_column_date_submitted( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	$t_date_submitted = string_display_line( date( config_get( 'short_date_format' ), $p_bug->date_submitted ) );
+	$t_date_submitted = \Flickerbox\String::display_line( date( config_get( 'short_date_format' ), $p_bug->date_submitted ) );
 
 	echo '<td class="column-date-submitted">', $t_date_submitted, '</td>';
 }
@@ -1388,9 +1377,9 @@ function print_column_date_submitted( BugData $p_bug, $p_columns_target = COLUMN
  */
 function print_column_summary( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	if( $p_columns_target == COLUMNS_TARGET_CSV_PAGE ) {
-		$t_summary = string_attribute( $p_bug->summary );
+		$t_summary = \Flickerbox\String::attribute( $p_bug->summary );
 	} else {
-		$t_summary = string_display_line_links( $p_bug->summary );
+		$t_summary = \Flickerbox\String::display_line_links( $p_bug->summary );
 	}
 
 	echo '<td class="column-summary">' . $t_summary . '</td>';
@@ -1405,7 +1394,7 @@ function print_column_summary( BugData $p_bug, $p_columns_target = COLUMNS_TARGE
  * @access public
  */
 function print_column_description( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	$t_description = string_display_links( $p_bug->description );
+	$t_description = \Flickerbox\String::display_links( $p_bug->description );
 
 	echo '<td class="column-description">', $t_description, '</td>';
 }
@@ -1419,7 +1408,7 @@ function print_column_description( BugData $p_bug, $p_columns_target = COLUMNS_T
  * @access public
  */
 function print_column_steps_to_reproduce( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	$t_steps_to_reproduce = string_display_links( $p_bug->steps_to_reproduce );
+	$t_steps_to_reproduce = \Flickerbox\String::display_links( $p_bug->steps_to_reproduce );
 
 	echo '<td class="column-steps-to-reproduce">', $t_steps_to_reproduce, '</td>';
 }
@@ -1433,7 +1422,7 @@ function print_column_steps_to_reproduce( BugData $p_bug, $p_columns_target = CO
  * @access public
  */
 function print_column_additional_information( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	$t_additional_information = string_display_links( $p_bug->additional_information );
+	$t_additional_information = \Flickerbox\String::display_links( $p_bug->additional_information );
 
 	echo '<td class="column-additional-information">', $t_additional_information, '</td>';
 }
@@ -1451,8 +1440,8 @@ function print_column_target_version( BugData $p_bug, $p_columns_target = COLUMN
 
 	# In case of a specific project, if the current user has no access to the field, then it would have been excluded from the
 	# list of columns to view.  In case of ALL_PROJECTS, then we need to check the access per row.
-	if( helper_get_current_project() != ALL_PROJECTS || access_has_project_level( config_get( 'roadmap_view_threshold' ), $p_bug->project_id ) ) {
-		echo string_display_line( $p_bug->target_version );
+	if( helper_get_current_project() != ALL_PROJECTS || \Flickerbox\Access::has_project_level( config_get( 'roadmap_view_threshold' ), $p_bug->project_id ) ) {
+		echo \Flickerbox\String::display_line( $p_bug->target_version );
 	}
 
 	echo '</td>';
@@ -1472,7 +1461,7 @@ function print_column_view_state( BugData $p_bug, $p_columns_target = COLUMNS_TA
 	echo '<td class="column-view-state">';
 
 	if( VS_PRIVATE == $p_bug->view_state ) {
-		$t_view_state_text = lang_get( 'private' );
+		$t_view_state_text = \Flickerbox\Lang::get( 'private' );
 		echo '<img src="' . $t_icon_path . 'protected.gif" alt="' . $t_view_state_text . '" title="' . $t_view_state_text . '" />';
 	} else {
 		echo '&#160;';
@@ -1492,15 +1481,15 @@ function print_column_view_state( BugData $p_bug, $p_columns_target = COLUMNS_TA
 function print_column_due_date( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	$t_overdue = '';
 
-	if( !access_has_bug_level( config_get( 'due_date_view_threshold' ), $p_bug->id ) ||
-		date_is_null( $p_bug->due_date )
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $p_bug->id ) ||
+		\Flickerbox\Date::is_null( $p_bug->due_date )
 	) {
 		$t_value = '&#160;';
 	} else {
 		if( bug_is_overdue( $p_bug->id ) ) {
 			$t_overdue = ' overdue';
 		}
-		$t_value = string_display_line( date( config_get( 'short_date_format' ), $p_bug->due_date ) );
+		$t_value = \Flickerbox\String::display_line( date( config_get( 'short_date_format' ), $p_bug->due_date ) );
 	}
 
 	printf( '<td class="column-due-date%s">%s</td>', $t_overdue, $t_value );
@@ -1519,12 +1508,12 @@ function print_column_overdue( BugData $p_bug, $p_columns_target = COLUMNS_TARGE
 
 	echo '<td class="column-overdue">';
 
-	if( access_has_bug_level( config_get( 'due_date_view_threshold' ), $p_bug->id ) &&
-		!date_is_null( $p_bug->due_date ) &&
+	if( \Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $p_bug->id ) &&
+		!\Flickerbox\Date::is_null( $p_bug->due_date ) &&
 		bug_is_overdue( $p_bug->id ) ) {
-		$t_overdue_text = lang_get( 'overdue' );
-		$t_overdue_text_hover = sprintf( lang_get( 'overdue_since' ), date( config_get( 'short_date_format' ), $p_bug->due_date ) );
-		echo '<img src="' . $t_icon_path . 'overdue.png" alt="' . $t_overdue_text . '" title="' . string_display_line( $t_overdue_text_hover ) . '" />';
+		$t_overdue_text = \Flickerbox\Lang::get( 'overdue' );
+		$t_overdue_text_hover = sprintf( \Flickerbox\Lang::get( 'overdue_since' ), date( config_get( 'short_date_format' ), $p_bug->due_date ) );
+		echo '<img src="' . $t_icon_path . 'overdue.png" alt="' . $t_overdue_text . '" title="' . \Flickerbox\String::display_line( $t_overdue_text_hover ) . '" />';
 	} else {
 		echo '&#160;';
 	}

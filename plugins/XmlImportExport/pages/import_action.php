@@ -25,26 +25,26 @@
 $t_plugin_path = config_get( 'plugin_path' );
 require_once( $t_plugin_path . 'XmlImportExport/ImportXml.php' );
 
-form_security_validate( 'plugin_xml_import_action' );
+\Flickerbox\Form::security_validate( 'plugin_xml_import_action' );
 
 auth_reauthenticate( );
 
 $f_file = gpc_get_file( 'file', -1 );
-$f_strategy = gpc_get_string( 'strategy' );
-$f_fallback = gpc_get_string( 'fallback' );
-$f_project = gpc_get_int( 'project_id' ); # not used, but ensures a project is selected
-$f_keepcategory = gpc_get_bool( 'keepcategory' );
-$f_defaultcategory = gpc_get_int( 'defaultcategory' );
+$f_strategy = \Flickerbox\GPC::get_string( 'strategy' );
+$f_fallback = \Flickerbox\GPC::get_string( 'fallback' );
+$f_project = \Flickerbox\GPC::get_int( 'project_id' ); # not used, but ensures a project is selected
+$f_keepcategory = \Flickerbox\GPC::get_bool( 'keepcategory' );
+$f_defaultcategory = \Flickerbox\GPC::get_int( 'defaultcategory' );
 
-file_ensure_uploaded( $f_file );
+\Flickerbox\File::ensure_uploaded( $f_file );
 
 $t_importer = new ImportXML( $f_file, $f_strategy, $f_fallback, $f_keepcategory, $f_defaultcategory );
 
-form_security_purge( 'plugin_xml_import_action' );
+\Flickerbox\Form::security_purge( 'plugin_xml_import_action' );
 
-html_page_top( plugin_lang_get( 'import' ) );
+\Flickerbox\HTML::page_top( plugin_langget( 'import' ) );
 
-print_manage_menu( 'manage_import_issues_page.php' );
+\Flickerbox\HTML::print_manage_menu( 'manage_import_issues_page.php' );
 
 ?>
 
@@ -59,4 +59,4 @@ $t_importer->import( );
 </pre>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

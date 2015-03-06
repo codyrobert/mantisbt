@@ -17,8 +17,8 @@
 /**
  * CALLERS
  * This page is called from:
- * - print_menu()
- * - print_account_menu()
+ * - \Flickerbox\HTML::print_menu()
+ * - \Flickerbox\HTML::print_account_menu()
  * - header redirects from account_*.php
  * - included by verify.php to allow user to change their password
  *
@@ -59,36 +59,27 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'ldap_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 $t_account_verification = defined( 'ACCOUNT_VERIFICATION_INC' );
 
 #============ Permissions ============
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
 if( !$t_account_verification ) {
-	auth_reauthenticate();
+	\Flickerbox\Auth::reauthenticate();
 }
 
-current_user_ensure_unprotected();
+\Flickerbox\Current_User::ensure_unprotected();
 
-html_page_top( lang_get( 'account_link' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'account_link' ) );
 
 # extracts the user information for the currently logged in user
 # and prefixes it with u_
-$t_row = user_get_row( auth_get_current_user_id() );
+$t_row = user_get_row( \Flickerbox\Auth::get_current_user_id() );
 
 extract( $t_row, EXTR_PREFIX_ALL, 'u' );
 
@@ -99,29 +90,29 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 $u_email = user_get_email( $u_id );
 
 # If the password is the default password, then prompt user to change it.
-$t_reset_password = $u_username == 'administrator' && auth_does_password_match( $u_id, 'root' );
+$t_reset_password = $u_username == 'administrator' && \Flickerbox\Auth::does_password_match( $u_id, 'root' );
 
 # note if we are being included by a script of a different name, if so,
 # this is a mandatory password change request
-$t_verify = is_page_name( 'verify.php' );
+$t_verify = \Flickerbox\Utility::is_page_name( 'verify.php' );
 
 $t_force_pw_reset = false;
 
 if( $t_verify || $t_reset_password ) {
-	$t_can_change_password = helper_call_custom_function( 'auth_can_change_password', array() );
+	$t_can_change_password = helper_call_custom_function( '\Flickerbox\Auth::can_change_password', array() );
 
 	echo '<div id="reset-passwd-msg" class="important-msg">';
 	echo '<ul>';
 
 	if( $t_verify ) {
-		echo '<li>' . lang_get( 'verify_warning' ) . '</li>';
+		echo '<li>' . \Flickerbox\Lang::get( 'verify_warning' ) . '</li>';
 
 		if( $t_can_change_password ) {
-			echo '<li>' . lang_get( 'verify_change_password' ) . '</li>';
+			echo '<li>' . \Flickerbox\Lang::get( 'verify_change_password' ) . '</li>';
 			$t_force_pw_reset = true;
 		}
 	} else if( $t_reset_password && $t_can_change_password ) {
-		echo '<li>' . lang_get( 'warning_default_administrator_account_present' ) . '</li>';
+		echo '<li>' . \Flickerbox\Lang::get( 'warning_default_administrator_account_present' ) . '</li>';
 		$t_force_pw_reset = true;
 	}
 
@@ -138,21 +129,21 @@ if( $t_force_pw_reset ) {
 <div id="account-update-div" class="form-container">
 	<form id="account-update-form" method="post" action="account_update.php">
 		<fieldset <?php echo $t_force_pw_reset_html ?>>
-			<legend><span><?php echo lang_get( 'edit_account_title' ); ?></span></legend>
-			<?php echo form_security_field( 'account_update' );
-			print_account_menu( 'account_page.php' );
+			<legend><span><?php echo \Flickerbox\Lang::get( 'edit_account_title' ); ?></span></legend>
+			<?php echo \Flickerbox\Form::security_field( 'account_update' );
+			\Flickerbox\HTML::print_account_menu( 'account_page.php' );
 
-			if( !helper_call_custom_function( 'auth_can_change_password', array() ) ) {
+			if( !helper_call_custom_function( '\Flickerbox\Auth::can_change_password', array() ) ) {
 				# With LDAP -->
 			?>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo lang_get( 'username' ) ?></span></span>
-				<span class="input"><span class="field-value"><?php echo string_display_line( $u_username ) ?></span></span>
+				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></span>
+				<span class="input"><span class="field-value"><?php echo \Flickerbox\String::display_line( $u_username ) ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo lang_get( 'password' ) ?></span></span>
-				<span class="input"><span class="field-value"><?php echo lang_get( 'no_password_change' ) ?></span></span>
+				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'password' ) ?></span></span>
+				<span class="input"><span class="field-value"><?php echo \Flickerbox\Lang::get( 'no_password_change' ) ?></span></span>
 				<span class="label-style"></span>
 			</div><?php
 			} else {
@@ -160,38 +151,38 @@ if( $t_force_pw_reset ) {
 				$t_show_update_button = true;
 			?>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo lang_get( 'username' ) ?></span></span>
-				<span class="input"><span class="field-value"><?php echo string_display_line( $u_username ) ?></span></span>
+				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></span>
+				<span class="input"><span class="field-value"><?php echo \Flickerbox\String::display_line( $u_username ) ?></span></span>
 				<span class="label-style"></span>
 			</div><?php
 			# When verifying account, set a token and don't display current password
 			if( $t_account_verification ) {
-				token_set( TOKEN_ACCOUNT_VERIFY, true, TOKEN_EXPIRY_AUTHENTICATED, $u_id );
+				\Flickerbox\Token::set( TOKEN_ACCOUNT_VERIFY, true, TOKEN_EXPIRY_AUTHENTICATED, $u_id );
 			} else {
 			?>
 			<div class="field-container">
-				<label for="password" <?php echo $t_force_pw_reset_html ?>><span><?php echo lang_get( 'current_password' ) ?></span></label>
-				<span class="input"><input id="password-current" type="password" name="password_current" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" /></span>
+				<label for="password" <?php echo $t_force_pw_reset_html ?>><span><?php echo \Flickerbox\Lang::get( 'current_password' ) ?></span></label>
+				<span class="input"><input id="password-current" type="password" name="password_current" size="32" maxlength="<?php echo \Flickerbox\Auth::get_password_max_size(); ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<?php } ?>
 			<div class="field-container">
-				<label for="password" <?php echo $t_force_pw_reset_html ?>><span><?php echo lang_get( 'password' ) ?></span></label>
-				<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" /></span>
+				<label for="password" <?php echo $t_force_pw_reset_html ?>><span><?php echo \Flickerbox\Lang::get( 'password' ) ?></span></label>
+				<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo \Flickerbox\Auth::get_password_max_size(); ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="password-confirm" <?php echo $t_force_pw_reset_html ?>><span><?php echo lang_get( 'confirm_password' ) ?></span></label>
-				<span class="input"><input id="password-confirm" type="password" name="password_confirm" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" /></span>
+				<label for="password-confirm" <?php echo $t_force_pw_reset_html ?>><span><?php echo \Flickerbox\Lang::get( 'confirm_password' ) ?></span></label>
+				<span class="input"><input id="password-confirm" type="password" name="password_confirm" size="32" maxlength="<?php echo \Flickerbox\Auth::get_password_max_size(); ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<?php } ?>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo lang_get( 'email' ) ?></span></span>
+				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'email' ) ?></span></span>
 				<span class="input"><?php
 				if( $t_ldap && ON == config_get( 'use_ldap_email' ) ) {
 					# With LDAP
-					echo '<span class="field-value">' . string_display_line( $u_email ) . '</span>';
+					echo '<span class="field-value">' . \Flickerbox\String::display_line( $u_email ) . '</span>';
 				} else {
 					# Without LDAP
 					$t_show_update_button = true;
@@ -203,41 +194,41 @@ if( $t_force_pw_reset ) {
 			<div class="field-container"><?php
 				if( $t_ldap && ON == config_get( 'use_ldap_realname' ) ) {
 					# With LDAP
-					echo '<span class="display-label"><span>' . lang_get( 'realname' ) . '</span></span>';
+					echo '<span class="display-label"><span>' . \Flickerbox\Lang::get( 'realname' ) . '</span></span>';
 					echo '<span class="input">';
 					echo '<span class="field-value">';
-					echo string_display_line( ldap_realname_from_username( $u_username ) );
+					echo \Flickerbox\String::display_line( \Flickerbox\LDAP::realname_from_username( $u_username ) );
 					echo '</span>';
 					echo '</span>';
 				} else {
 					# Without LDAP
 					$t_show_update_button = true;
-					echo '<label for="realname"><span>' . lang_get( 'realname' ) . '</span></label>';
+					echo '<label for="realname"><span>' . \Flickerbox\Lang::get( 'realname' ) . '</span></label>';
 					echo '<span class="input">';
-					echo '<input id="realname" type="text" size="32" maxlength="' . DB_FIELD_SIZE_REALNAME . '" name="realname" value="' . string_attribute( $u_realname ) . '" />';
+					echo '<input id="realname" type="text" size="32" maxlength="' . DB_FIELD_SIZE_REALNAME . '" name="realname" value="' . \Flickerbox\String::attribute( $u_realname ) . '" />';
 					echo '</span>';
 				} ?>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo lang_get( 'access_level' ) ?></span></span>
+				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'access_level' ) ?></span></span>
 				<span class="input"><span class="field-value"><?php echo get_enum_element( 'access_levels', $u_access_level ); ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo lang_get( 'access_level_project' ) ?></span></span>
-				<span class="input"><span class="field-value"><?php echo get_enum_element( 'access_levels', current_user_get_access_level() ); ?></span></span>
+				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'access_level_project' ) ?></span></span>
+				<span class="input"><span class="field-value"><?php echo get_enum_element( 'access_levels', \Flickerbox\Current_User::get_access_level() ); ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<?php
-			$t_projects = user_get_assigned_projects( auth_get_current_user_id() );
+			$t_projects = user_get_assigned_projects( \Flickerbox\Auth::get_current_user_id() );
 			if( count( $t_projects ) > 0 ) {
 				echo '<div class="field-container">';
-				echo '<span class="display-label"><span>' . lang_get( 'assigned_projects' ) . '</span></span>';
+				echo '<span class="display-label"><span>' . \Flickerbox\Lang::get( 'assigned_projects' ) . '</span></span>';
 				echo '<div class="input">';
 				echo '<ul class="project-list">';
 				foreach( $t_projects as $t_project_id=>$t_project ) {
-					$t_project_name = string_attribute( $t_project['name'] );
+					$t_project_name = \Flickerbox\String::attribute( $t_project['name'] );
 					$t_view_state = $t_project['view_state'];
 					$t_access_level = $t_project['access_level'];
 					$t_access_level = get_enum_element( 'access_levels', $t_access_level );
@@ -252,7 +243,7 @@ if( $t_force_pw_reset ) {
 			}
 			?>
 	<?php if( $t_show_update_button ) { ?>
-		<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'update_user_button' ) ?>" /></span>
+		<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_user_button' ) ?>" /></span>
 	<?php } ?>
 		</fieldset>
 	</form>
@@ -264,11 +255,11 @@ if( ON == config_get( 'allow_account_delete' ) ) { ?>
 <div class="form-container">
 	<form method="post" action="account_delete.php">
 		<fieldset>
-			<?php echo form_security_field( 'account_delete' ) ?>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'delete_account_button' ) ?>" /></span>
+			<?php echo \Flickerbox\Form::security_field( 'account_delete' ) ?>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'delete_account_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 <?php
 }
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

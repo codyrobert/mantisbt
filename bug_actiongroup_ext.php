@@ -37,30 +37,23 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'bug_group_action_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
 helper_begin_long_process();
 
-$f_action = gpc_get_string( 'action' );
-$f_bug_arr	= gpc_get_int_array( 'bug_arr', array() );
+$f_action = \Flickerbox\GPC::get_string( 'action' );
+$f_bug_arr	= \Flickerbox\GPC::get_int_array( 'bug_arr', array() );
 
 $t_form_name = 'bug_actiongroup_' . $f_action;
 
-form_security_validate( $t_form_name );
+\Flickerbox\Form::security_validate( $t_form_name );
 
-bug_group_action_init( $f_action );
+\Flickerbox\Bug\Group::action_init( $f_action );
 
 # group bugs by project
 $t_projects_bugs = array();
@@ -80,12 +73,12 @@ $t_failed_ids = array();
 foreach( $t_projects_bugs as $t_project_id => $t_bugs ) {
 	$g_project_override = $t_project_id;
 	foreach( $t_bugs as $t_bug_id ) {
-		$t_fail_reason = bug_group_action_validate( $f_action, $t_bug_id );
+		$t_fail_reason = \Flickerbox\Bug\Group::action_validate( $f_action, $t_bug_id );
 		if( $t_fail_reason !== null ) {
 			$t_failed_ids[$t_bug_id] = $t_fail_reason;
 		}
 		if( !isset( $t_failed_ids[$t_bug_id] ) ) {
-			$t_fail_reason = bug_group_action_process( $f_action, $t_bug_id );
+			$t_fail_reason = \Flickerbox\Bug\Group::action_process( $f_action, $t_bug_id );
 			if( $t_fail_reason !== null ) {
 				$t_failed_ids[$t_bug_id] = $t_fail_reason;
 			}
@@ -95,23 +88,23 @@ foreach( $t_projects_bugs as $t_project_id => $t_bugs ) {
 
 $g_project_override = null;
 
-form_security_purge( $t_form_name );
+\Flickerbox\Form::security_purge( $t_form_name );
 
 if( count( $t_failed_ids ) > 0 ) {
-	html_page_top();
+	\Flickerbox\HTML::page_top();
 
 	echo '<div>';
 
-	$t_word_separator = lang_get( 'word_separator' );
+	$t_word_separator = \Flickerbox\Lang::get( 'word_separator' );
 	foreach( $t_failed_ids as $t_id => $t_reason ) {
-		$t_label = sprintf( lang_get( 'label' ), string_get_bug_view_link( $t_id ) ) . $t_word_separator;
+		$t_label = sprintf( \Flickerbox\Lang::get( 'label' ), \Flickerbox\String::get_bug_view_link( $t_id ) ) . $t_word_separator;
 		printf( "<p>%s%s</p>\n", $t_label, $t_reason );
 	}
 
-	print_bracket_link( 'view_all_bug_page.php', lang_get( 'proceed' ) );
+	print_bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'proceed' ) );
 	echo '</div>';
 
-	html_page_bottom();
+	\Flickerbox\HTML::page_bottom();
 } else {
 	print_header_redirect( 'view_all_bug_page.php' );
 }

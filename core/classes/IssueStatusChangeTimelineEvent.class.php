@@ -94,23 +94,23 @@ class IssueStatusChangeTimelineEvent extends TimelineEvent {
 		switch( $this->type ) {
 			case IssueStatusChangeTimelineEvent::RESOLVED:
 				$t_string = sprintf(
-					lang_get( 'timeline_issue_resolved' ),
+					\Flickerbox\Lang::get( 'timeline_issue_resolved' ),
 					user_get_name( $this->user_id ),
-					string_get_bug_view_link( $this->issue_id )
+					\Flickerbox\String::get_bug_view_link( $this->issue_id )
 				);
 				break;
 			case IssueStatusChangeTimelineEvent::CLOSED:
 				$t_string = sprintf(
-					lang_get( 'timeline_issue_closed' ),
+					\Flickerbox\Lang::get( 'timeline_issue_closed' ),
 					user_get_name( $this->user_id ),
-					string_get_bug_view_link( $this->issue_id )
+					\Flickerbox\String::get_bug_view_link( $this->issue_id )
 				);
 				break;
 			case IssueStatusChangeTimelineEvent::REOPENED:
 				$t_string = sprintf(
-					lang_get( 'timeline_issue_reopened' ),
+					\Flickerbox\Lang::get( 'timeline_issue_reopened' ),
 					user_get_name( $this->user_id ),
-					string_get_bug_view_link( $this->issue_id )
+					\Flickerbox\String::get_bug_view_link( $this->issue_id )
 				);
 				break;
 			case IssueStatusChangeTimelineEvent::IGNORED:

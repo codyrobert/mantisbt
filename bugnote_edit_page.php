@@ -51,24 +51,15 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-$f_bugnote_id = gpc_get_int( 'bugnote_id' );
+$f_bugnote_id = \Flickerbox\GPC::get_int( 'bugnote_id' );
 $t_bug_id = bugnote_get_field( $f_bugnote_id, 'bug_id' );
 
 $t_bug = bug_get( $t_bug_id, true );
@@ -79,47 +70,47 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 # Check if the current user is allowed to edit the bugnote
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 $t_reporter_id = bugnote_get_field( $f_bugnote_id, 'reporter_id' );
 
 if( $t_user_id == $t_reporter_id ) {
-	access_ensure_bugnote_level( config_get( 'bugnote_user_edit_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( config_get( 'bugnote_user_edit_threshold' ), $f_bugnote_id );
 } else {
-	access_ensure_bugnote_level( config_get( 'update_bugnote_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( config_get( 'update_bugnote_threshold' ), $f_bugnote_id );
 }
 
 # Check if the bug is readonly
 if( bug_is_readonly( $t_bug_id ) ) {
-	error_parameters( $t_bug_id );
+	\Flickerbox\Error::parameters( $t_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-$t_bugnote_text = string_textarea( bugnote_get_text( $f_bugnote_id ) );
+$t_bugnote_text = \Flickerbox\String::textarea( bugnote_get_text( $f_bugnote_id ) );
 
 # No need to gather the extra information if not used
 if( config_get( 'time_tracking_enabled' ) &&
-	access_has_bug_level( config_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) {
+	\Flickerbox\Access::has_bug_level( config_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) {
 	$t_time_tracking = bugnote_get_field( $f_bugnote_id, 'time_tracking' );
 	$t_time_tracking = db_minutes_to_hhmm( $t_time_tracking );
 }
 
 # Determine which view page to redirect back to.
-$t_redirect_url = string_get_bug_view_url( $t_bug_id );
+$t_redirect_url = \Flickerbox\String::get_bug_view_url( $t_bug_id );
 
-html_page_top( bug_format_summary( $t_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( bug_format_summary( $t_bug_id, SUMMARY_CAPTION ) );
 ?>
 <br />
 <div>
 <form method="post" action="bugnote_update.php">
-<?php echo form_security_field( 'bugnote_update' ) ?>
+<?php echo \Flickerbox\Form::security_field( 'bugnote_update' ) ?>
 <table class="width75" cellspacing="1">
 <tr>
 	<td class="form-title">
 		<input type="hidden" name="bugnote_id" value="<?php echo $f_bugnote_id ?>" />
-		<?php echo lang_get( 'edit_bugnote_title' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'edit_bugnote_title' ) ?>
 	</td>
 	<td class="right">
-		<?php print_bracket_link( $t_redirect_url, lang_get( 'go_back' ) ) ?>
+		<?php print_bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'go_back' ) ) ?>
 	</td>
 </tr>
 <tr class="row-1">
@@ -128,10 +119,10 @@ html_page_top( bug_format_summary( $t_bug_id, SUMMARY_CAPTION ) );
 	</td>
 </tr>
 <?php if( config_get( 'time_tracking_enabled' ) ) { ?>
-<?php if( access_has_bug_level( config_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) { ?>
+<?php if( \Flickerbox\Access::has_bug_level( config_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) { ?>
 <tr class="row-2">
 	<td class="center" colspan="2">
-		<strong><?php echo lang_get( 'time_tracking' ) ?> (HH:MM)</strong><br />
+		<strong><?php echo \Flickerbox\Lang::get( 'time_tracking' ) ?> (HH:MM)</strong><br />
 		<input type="text" name="time_tracking" size="5" value="<?php echo $t_time_tracking ?>" />
 	</td>
 </tr>
@@ -142,11 +133,11 @@ html_page_top( bug_format_summary( $t_bug_id, SUMMARY_CAPTION ) );
 
 <tr>
 	<td class="center" colspan="2">
-		<input type="submit" class="button" value="<?php echo lang_get( 'update_information_button' ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_information_button' ) ?>" />
 	</td>
 </tr>
 </table>
 </form>
 </div>
 
-<?php html_page_bottom();
+<?php \Flickerbox\HTML::page_bottom();

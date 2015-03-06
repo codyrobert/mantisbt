@@ -31,41 +31,38 @@
 
 require_once( 'core.php' );
 plugin_require_api( 'core/Period.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
 require_api( 'plugin_api.php' );
 
-require_js( 'jscalendar/calendar.js' );
-require_js( 'jscalendar/lang/calendar-en.js' );
-require_js( 'jscalendar/calendar-setup.js' );
-require_css( 'calendar-blue.css' );
+\Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
+\Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
+\Flickerbox\HTML::require_js( 'jscalendar/calendar-setup.js' );
+\Flickerbox\HTML::require_css( 'calendar-blue.css' );
 
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-$f_interval = gpc_get_int( 'interval', 0 );
+$f_interval = \Flickerbox\GPC::get_int( 'interval', 0 );
 $t_today = date( 'Y-m-d' );
-$f_type = gpc_get_int( 'graph_type', 0 );
-$f_show_as_table = gpc_get_bool( 'show_table', false );
+$f_type = \Flickerbox\GPC::get_int( 'graph_type', 0 );
+$f_show_as_table = \Flickerbox\GPC::get_bool( 'show_table', false );
 
-html_page_top1( plugin_lang_get( 'graph_page' ) );
+\Flickerbox\HTML::page_top1( plugin_langget( 'graph_page' ) );
 $t_path = config_get( 'path' );
-html_page_top2();
+\Flickerbox\HTML::page_top2();
 
 $t_period = new Period();
 $t_period->set_period_from_selector( 'interval' );
 $t_types = array(
-				0 => plugin_lang_get( 'select' ),
-				2 => plugin_lang_get( 'select_bystatus' ),
-				3 => plugin_lang_get( 'select_summbystatus' ),
-				4 => plugin_lang_get( 'select_bycat' ),
-				6 => plugin_lang_get( 'select_both' ),
+				0 => plugin_langget( 'select' ),
+				2 => plugin_langget( 'select_bystatus' ),
+				3 => plugin_langget( 'select_summbystatus' ),
+				4 => plugin_langget( 'select_bycat' ),
+				6 => plugin_langget( 'select_both' ),
 		   );
 
 $t_show = array(
-				0 => plugin_lang_get( 'show_as_graph' ),
-				1 => plugin_lang_get( 'show_as_table' ),
+				0 => plugin_langget( 'show_as_graph' ),
+				1 => plugin_langget( 'show_as_table' ),
 		  );
 ?>
 		<form id="graph_form" method="post" action="<?php echo plugin_page( 'bug_graph_page.php' ); ?>">
@@ -82,14 +79,14 @@ $t_show = array(
 						<?php echo get_dropdown( $t_show, 'show_table', $f_show_as_table ? 1 : 0 ); ?>
 					</td>
 					<td>
-						<input type="submit" class="button" name="show" value="<?php echo plugin_lang_get( 'show_graph' ); ?>"/>
+						<input type="submit" class="button" name="show" value="<?php echo plugin_langget( 'show_graph' ); ?>"/>
 					</td>
 				</tr>
 			</table>
 		</form>
 <?php
 # build the graphs if both an interval and graph type are selected
-if( ( 0 != $f_type ) && ( $f_interval > 0 ) && ( gpc_get( 'show', '' ) != '') ) {
+if( ( 0 != $f_type ) && ( $f_interval > 0 ) && ( \Flickerbox\GPC::get( 'show', '' ) != '') ) {
 	$t_width = plugin_config_get( 'window_width' );
 	$t_summary = ( $f_type % 2 ) != 0;
 	$t_body = (int)( $f_type / 2 );
@@ -119,4 +116,4 @@ if( ( 0 != $f_type ) && ( $f_interval > 0 ) && ( gpc_get( 'show', '' ) != '') ) 
 	}
 }
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

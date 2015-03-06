@@ -33,30 +33,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'news_api.php' );
 require_api( 'print_api.php' );
 
-news_ensure_enabled();
+\Flickerbox\News::ensure_enabled();
 
-$f_news_id = gpc_get_int( 'news_id', null );
+$f_news_id = \Flickerbox\GPC::get_int( 'news_id', null );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 ?>
 
 <?php
 if( $f_news_id !== null ) {
-	$t_project_id = news_get_field( $f_news_id, 'project_id' );
-	if( news_is_private( $f_news_id ) ) {
-		access_ensure_project_level(	config_get( 'private_news_threshold' ),
+	$t_project_id = \Flickerbox\News::get_field( $f_news_id, 'project_id' );
+	if( \Flickerbox\News::is_private( $f_news_id ) ) {
+		\Flickerbox\Access::ensure_project_level(	config_get( 'private_news_threshold' ),
 						$t_project_id );
 	} else {
-		access_ensure_project_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id );
+		\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id );
 	}
 
 	print_news_string_by_news_id( $f_news_id );
@@ -64,8 +58,8 @@ if( $f_news_id !== null ) {
 ?>
 
 <div id="news-menu">
-	<?php print_bracket_link( 'news_list_page.php', lang_get( 'archives' ) ); ?>
+	<?php print_bracket_link( 'news_list_page.php', \Flickerbox\Lang::get( 'archives' ) ); ?>
 </div>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

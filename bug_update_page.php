@@ -49,32 +49,20 @@
 $g_allow_browser_cache = 1;
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'last_visited_api.php' );
-require_api( 'prepare_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'version_api.php' );
 
-require_css( 'status_config.php' );
+\Flickerbox\HTML::require_css( 'status_config.php' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
-$f_reporter_edit = gpc_get_bool( 'reporter_edit' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
+$f_reporter_edit = \Flickerbox\GPC::get_bool( 'reporter_edit' );
 
 $t_bug = bug_get( $f_bug_id, true );
 
@@ -85,11 +73,11 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 if( bug_is_readonly( $f_bug_id ) ) {
-	error_parameters( $f_bug_id );
+	\Flickerbox\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-access_ensure_bug_level( config_get( 'update_bug_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_threshold' ), $f_bug_id );
 
 $t_fields = config_get( 'bug_update_page_fields' );
 $t_fields = columns_filter_disabled( $t_fields );
@@ -105,7 +93,7 @@ $t_show_id = in_array( 'id', $t_fields );
 $t_show_project = in_array( 'project', $t_fields );
 $t_show_category = in_array( 'category_id', $t_fields );
 $t_show_view_state = in_array( 'view_state', $t_fields );
-$t_view_state = $t_show_view_state ? string_display_line( get_enum_element( 'view_state', $t_bug->view_state ) ) : '';
+$t_view_state = $t_show_view_state ? \Flickerbox\String::display_line( get_enum_element( 'view_state', $t_bug->view_state ) ) : '';
 $t_show_date_submitted = in_array( 'date_submitted', $t_fields );
 $t_show_last_updated = in_array( 'last_updated', $t_fields );
 $t_show_reporter = in_array( 'reporter', $t_fields );
@@ -121,48 +109,48 @@ $t_show_profiles = config_get( 'enable_profiles' ) == ON;
 $t_show_platform = $t_show_profiles && in_array( 'platform', $t_fields );
 $t_show_os = $t_show_profiles && in_array( 'os', $t_fields );
 $t_show_os_version = $t_show_profiles && in_array( 'os_version', $t_fields );
-$t_show_versions = version_should_show_product_version( $t_bug->project_id );
+$t_show_versions = \Flickerbox\Version::should_show_product_version( $t_bug->project_id );
 $t_show_product_version = $t_show_versions && in_array( 'product_version', $t_fields );
 $t_show_product_build = $t_show_versions && in_array( 'product_build', $t_fields ) && ( config_get( 'enable_product_build' ) == ON );
-$t_product_build_attribute = $t_show_product_build ? string_attribute( $t_bug->build ) : '';
-$t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields ) && access_has_bug_level( config_get( 'roadmap_update_threshold' ), $t_bug_id );
+$t_product_build_attribute = $t_show_product_build ? \Flickerbox\String::attribute( $t_bug->build ) : '';
+$t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'roadmap_update_threshold' ), $t_bug_id );
 $t_show_fixed_in_version = $t_show_versions && in_array( 'fixed_in_version', $t_fields );
-$t_show_due_date = in_array( 'due_date', $t_fields ) && access_has_bug_level( config_get( 'due_date_view_threshold' ), $t_bug_id );
+$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $t_bug_id );
 $t_show_summary = in_array( 'summary', $t_fields );
-$t_summary_attribute = $t_show_summary ? string_attribute( $t_bug->summary ) : '';
+$t_summary_attribute = $t_show_summary ? \Flickerbox\String::attribute( $t_bug->summary ) : '';
 $t_show_description = in_array( 'description', $t_fields );
-$t_description_textarea = $t_show_description ? string_textarea( $t_bug->description ) : '';
+$t_description_textarea = $t_show_description ? \Flickerbox\String::textarea( $t_bug->description ) : '';
 $t_show_additional_information = in_array( 'additional_info', $t_fields );
-$t_additional_information_textarea = $t_show_additional_information ? string_textarea( $t_bug->additional_information ) : '';
+$t_additional_information_textarea = $t_show_additional_information ? \Flickerbox\String::textarea( $t_bug->additional_information ) : '';
 $t_show_steps_to_reproduce = in_array( 'steps_to_reproduce', $t_fields );
-$t_steps_to_reproduce_textarea = $t_show_steps_to_reproduce ? string_textarea( $t_bug->steps_to_reproduce ) : '';
+$t_steps_to_reproduce_textarea = $t_show_steps_to_reproduce ? \Flickerbox\String::textarea( $t_bug->steps_to_reproduce ) : '';
 if( NO_USER == $t_bug->handler_id ) {
 	$t_handler_name =  '';
 } else {
-	$t_handler_name = string_display_line( user_get_name( $t_bug->handler_id ) );
+	$t_handler_name = \Flickerbox\String::display_line( user_get_name( $t_bug->handler_id ) );
 }
 
-$t_can_change_view_state = $t_show_view_state && access_has_project_level( config_get( 'change_view_status_threshold' ) );
+$t_can_change_view_state = $t_show_view_state && \Flickerbox\Access::has_project_level( config_get( 'change_view_status_threshold' ) );
 
 if( $t_show_product_version ) {
 	$t_product_version_released_mask = VERSION_RELEASED;
 
-	if( access_has_project_level( config_get( 'report_issues_for_unreleased_versions_threshold' ) ) ) {
+	if( \Flickerbox\Access::has_project_level( config_get( 'report_issues_for_unreleased_versions_threshold' ) ) ) {
 		$t_product_version_released_mask = VERSION_ALL;
 	}
 }
 
 $t_formatted_bug_id = $t_show_id ? bug_format_id( $f_bug_id ) : '';
-$t_project_name = $t_show_project ? string_display_line( project_get_name( $t_bug->project_id ) ) : '';
+$t_project_name = $t_show_project ? \Flickerbox\String::display_line( project_get_name( $t_bug->project_id ) ) : '';
 
 if( $t_show_due_date ) {
-	require_js( 'jscalendar/calendar.js' );
-	require_js( 'jscalendar/lang/calendar-en.js' );
-	require_js( 'jscalendar/calendar-setup.js' );
-	require_css( 'calendar-blue.css' );
+	\Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
+	\Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
+	\Flickerbox\HTML::require_js( 'jscalendar/calendar-setup.js' );
+	\Flickerbox\HTML::require_css( 'calendar-blue.css' );
 }
 
-html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 
 print_recently_visited();
 
@@ -170,17 +158,17 @@ print_recently_visited();
 <br />
 <div id="bug-update" class="form-container">
 	<form id="update_bug_form" method="post" action="bug_update.php">
-		<?php echo form_security_field( 'bug_update' ); ?>
+		<?php echo \Flickerbox\Form::security_field( 'bug_update' ); ?>
 		<table>
 			<thead>
 				<tr>
 					<td class="form-title" colspan="3">
 						<input type="hidden" name="bug_id" value="<?php echo $t_bug_id ?>" />
 						<input type="hidden" name="last_updated" value="<?php echo $t_bug->last_updated ?>" />
-						<?php echo lang_get( 'updating_bug_advanced_title' ); ?>
+						<?php echo \Flickerbox\Lang::get( 'updating_bug_advanced_title' ); ?>
 					</td>
 					<td class="right" colspan="3">
-						<?php print_bracket_link( string_get_bug_view_url( $t_bug_id ), lang_get( 'back_to_bug_link' ) );
+						<?php print_bracket_link( \Flickerbox\String::get_bug_view_url( $t_bug_id ), \Flickerbox\Lang::get( 'back_to_bug_link' ) );
 						?>
 					</td>
 				</tr>
@@ -193,7 +181,7 @@ if( $t_top_buttons_enabled ) {
 					<td class="center" colspan="6">
 						<input <?php helper_get_tab_index(); ?>
 							type="submit" class="button"
-							value="<?php echo lang_get( 'update_information_button' ); ?>" />
+							value="<?php echo \Flickerbox\Lang::get( 'update_information_button' ); ?>" />
 					</td>
 				</tr>
 			</thead>
@@ -211,12 +199,12 @@ if( $t_show_id || $t_show_project || $t_show_category || $t_show_view_state || $
 	#
 
 	echo '<tr>';
-	echo '<td width="15%" class="category">', $t_show_id ? lang_get( 'id' ) : '', '</td>';
-	echo '<td width="20%" class="category">', $t_show_project ? lang_get( 'email_project' ) : '', '</td>';
-	echo '<td width="15%" class="category">', $t_show_category ? '<label for="category_id">' . lang_get( 'category' ) . '</label>' : '', '</td>';
-	echo '<td width="20%" class="category">', $t_show_view_state ? '<label for="view_state">' . lang_get( 'view_status' ) . '</label>' : '', '</td>';
-	echo '<td width="15%" class="category">', $t_show_date_submitted ? lang_get( 'date_submitted' ) : '', '</td>';
-	echo '<td width="15%" class="category">', $t_show_last_updated ? lang_get( 'last_update' ) : '', '</td>';
+	echo '<td width="15%" class="category">', $t_show_id ? \Flickerbox\Lang::get( 'id' ) : '', '</td>';
+	echo '<td width="20%" class="category">', $t_show_project ? \Flickerbox\Lang::get( 'email_project' ) : '', '</td>';
+	echo '<td width="15%" class="category">', $t_show_category ? '<label for="category_id">' . \Flickerbox\Lang::get( 'category' ) . '</label>' : '', '</td>';
+	echo '<td width="20%" class="category">', $t_show_view_state ? '<label for="view_state">' . \Flickerbox\Lang::get( 'view_status' ) . '</label>' : '', '</td>';
+	echo '<td width="15%" class="category">', $t_show_date_submitted ? \Flickerbox\Lang::get( 'date_submitted' ) : '', '</td>';
+	echo '<td width="15%" class="category">', $t_show_last_updated ? \Flickerbox\Lang::get( 'last_update' ) : '', '</td>';
 	echo '</tr>';
 
 	#
@@ -279,23 +267,23 @@ if( $t_show_reporter ) {
 
 	if( $t_show_reporter ) {
 		# Reporter
-		echo '<th class="category"><label for="reporter_id">' . lang_get( 'reporter' ) . '</label></th>';
+		echo '<th class="category"><label for="reporter_id">' . \Flickerbox\Lang::get( 'reporter' ) . '</label></th>';
 		echo '<td>';
 
 		# Do not allow the bug's reporter to edit the Reporter field
 		# when limit_reporters is ON
 		if( ON == config_get( 'limit_reporters' )
-		&&  !access_has_project_level( config_get( 'report_bug_threshold', null, null, $t_bug->project_id ) + 1, $t_bug->project_id )
+		&&  !\Flickerbox\Access::has_project_level( config_get( 'report_bug_threshold', null, null, $t_bug->project_id ) + 1, $t_bug->project_id )
 		) {
-			echo string_attribute( user_get_name( $t_bug->reporter_id ) );
+			echo \Flickerbox\String::attribute( user_get_name( $t_bug->reporter_id ) );
 		} else {
 			if ( $f_reporter_edit ) {
 				echo '<select ' . helper_get_tab_index() . ' id="reporter_id" name="reporter_id">';
 				print_reporter_option_list( $t_bug->reporter_id, $t_bug->project_id );
 				echo '</select>';
 			} else {
-				echo string_attribute( user_get_name( $t_bug->reporter_id ) );
-				echo ' [<a href="#reporter_edit" class="click-url" url="' . string_get_bug_update_url( $f_bug_id ) . '&amp;reporter_edit=true">' . lang_get( 'edit_link' ) . '</a>]';
+				echo \Flickerbox\String::attribute( user_get_name( $t_bug->reporter_id ) );
+				echo ' [<a href="#reporter_edit" class="click-url" url="' . \Flickerbox\String::get_bug_update_url( $f_bug_id ) . '&amp;reporter_edit=true">' . \Flickerbox\Lang::get( 'edit_link' ) . '</a>]';
 			}
 		}
 		echo '</td>';
@@ -319,10 +307,10 @@ if( $t_show_handler || $t_show_due_date ) {
 	$t_spacer = 2;
 
 	# Assigned To
-	echo '<th class="category"><label for="handler_id">' . lang_get( 'assigned_to' ) . '</label></th>';
+	echo '<th class="category"><label for="handler_id">' . \Flickerbox\Lang::get( 'assigned_to' ) . '</label></th>';
 	echo '<td>';
 
-	if( access_has_project_level( config_get( 'update_bug_assign_threshold', config_get( 'update_bug_threshold' ) ) ) ) {
+	if( \Flickerbox\Access::has_project_level( config_get( 'update_bug_assign_threshold', config_get( 'update_bug_threshold' ) ) ) ) {
 		echo '<select ' . helper_get_tab_index() . ' id="handler_id" name="handler_id">';
 		echo '<option value="0"></option>';
 		print_assign_to_option_list( $t_bug->handler_id, $t_bug->project_id );
@@ -335,7 +323,7 @@ if( $t_show_handler || $t_show_due_date ) {
 
 	if( $t_show_due_date ) {
 		# Due Date
-		echo '<th class="category"><label for="due_date">' . lang_get( 'due_date' ) . '</label></th>';
+		echo '<th class="category"><label for="due_date">' . \Flickerbox\Lang::get( 'due_date' ) . '</label></th>';
 
 		if( bug_is_overdue( $t_bug_id ) ) {
 			echo '<td class="overdue">';
@@ -343,15 +331,15 @@ if( $t_show_handler || $t_show_due_date ) {
 			echo '<td>';
 		}
 
-		if( access_has_bug_level( config_get( 'due_date_update_threshold' ), $t_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'due_date_update_threshold' ), $t_bug_id ) ) {
 			$t_date_to_display = '';
 
-			if( !date_is_null( $t_bug->due_date ) ) {
+			if( !\Flickerbox\Date::is_null( $t_bug->due_date ) ) {
 				$t_date_to_display = date( config_get( 'calendar_date_format' ), $t_bug->due_date );
 			}
 			echo '<input ' . helper_get_tab_index() . ' type="text" id="due_date" name="due_date" class="datetime" size="20" maxlength="16" value="' . $t_date_to_display . '" />';
 		} else {
-			if( !date_is_null( $t_bug->due_date ) ) {
+			if( !\Flickerbox\Date::is_null( $t_bug->due_date ) ) {
 				echo date( config_get( 'short_date_format' ), $t_bug->due_date );
 			}
 		}
@@ -378,7 +366,7 @@ if( $t_show_priority || $t_show_severity || $t_show_reproducibility ) {
 
 	if( $t_show_priority ) {
 		# Priority
-		echo '<th class="category"><label for="priority">' . lang_get( 'priority' ) . '</label></th>';
+		echo '<th class="category"><label for="priority">' . \Flickerbox\Lang::get( 'priority' ) . '</label></th>';
 		echo '<td><select ' . helper_get_tab_index() . ' id="priority" name="priority">';
 		print_enum_string_option_list( 'priority', $t_bug->priority );
 		echo '</select></td>';
@@ -388,7 +376,7 @@ if( $t_show_priority || $t_show_severity || $t_show_reproducibility ) {
 
 	if( $t_show_severity ) {
 		# Severity
-		echo '<th class="category"><label for="severity">' . lang_get( 'severity' ) . '</label></th>';
+		echo '<th class="category"><label for="severity">' . \Flickerbox\Lang::get( 'severity' ) . '</label></th>';
 		echo '<td><select ' . helper_get_tab_index() . ' id="severity" name="severity">';
 		print_enum_string_option_list( 'severity', $t_bug->severity );
 		echo '</select></td>';
@@ -398,7 +386,7 @@ if( $t_show_priority || $t_show_severity || $t_show_reproducibility ) {
 
 	if( $t_show_reproducibility ) {
 		# Reproducibility
-		echo '<th class="category"><label for="reproducibility">' . lang_get( 'reproducibility' ) . '</label></th>';
+		echo '<th class="category"><label for="reproducibility">' . \Flickerbox\Lang::get( 'reproducibility' ) . '</label></th>';
 		echo '<td><select ' . helper_get_tab_index() . ' id="reproducibility" name="reproducibility">';
 		print_enum_string_option_list( 'reproducibility', $t_bug->reproducibility );
 		echo '</select></td>';
@@ -425,14 +413,14 @@ if( $t_show_status || $t_show_resolution ) {
 
 	if( $t_show_status ) {
 		# Status
-		echo '<th class="category"><label for="status">' . lang_get( 'status' ) . '</label></th>';
+		echo '<th class="category"><label for="status">' . \Flickerbox\Lang::get( 'status' ) . '</label></th>';
 
 		# choose color based on status
-		$t_status_label = html_get_status_css_class( $t_bug->status );
+		$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status );
 
 		echo '<td class="' . $t_status_label .  '">';
 		print_status_option_list( 'status', $t_bug->status,
-			access_can_close_bug( $t_bug ),
+			\Flickerbox\Access::can_close_bug( $t_bug ),
 			$t_bug->project_id );
 		echo '</td>';
 	} else {
@@ -441,7 +429,7 @@ if( $t_show_status || $t_show_resolution ) {
 
 	if( $t_show_resolution ) {
 		# Resolution
-		echo '<th class="category"><label for="resolution">' . lang_get( 'resolution' ) . '</label></th>';
+		echo '<th class="category"><label for="resolution">' . \Flickerbox\Lang::get( 'resolution' ) . '</label></th>';
 		echo '<td><select ' . helper_get_tab_index() . ' id="resolution" name="resolution">';
 		print_enum_string_option_list( 'resolution', $t_bug->resolution );
 		echo '</select></td>';
@@ -468,7 +456,7 @@ if( $t_show_projection || $t_show_eta ) {
 
 	if( $t_show_projection ) {
 		# Projection
-		echo '<th class="category"><label for="projection">' . lang_get( 'projection' ) . '</label></th>';
+		echo '<th class="category"><label for="projection">' . \Flickerbox\Lang::get( 'projection' ) . '</label></th>';
 		echo '<td><select ' . helper_get_tab_index() . ' id="projection" name="projection">';
 		print_enum_string_option_list( 'projection', $t_bug->projection );
 		echo '</select></td>';
@@ -478,7 +466,7 @@ if( $t_show_projection || $t_show_eta ) {
 
 	# ETA
 	if( $t_show_eta ) {
-		echo '<th class="category"><label for="eta">' . lang_get( 'eta' ) . '</label></th>';
+		echo '<th class="category"><label for="eta">' . \Flickerbox\Lang::get( 'eta' ) . '</label></th>';
 		echo '<td><select ' . helper_get_tab_index() . ' id="eta" name="eta">';
 		print_enum_string_option_list( 'eta', (int)$t_bug->eta );
 		echo '</select></td>';
@@ -503,7 +491,7 @@ if( $t_show_platform || $t_show_os || $t_show_os_version ) {
 
 	if( $t_show_platform ) {
 		# Platform
-		echo '<th class="category"><label for="platform">' . lang_get( 'platform' ) . '</label></th>';
+		echo '<th class="category"><label for="platform">' . \Flickerbox\Lang::get( 'platform' ) . '</label></th>';
 		echo '<td>';
 
 		if( config_get( 'allow_freetext_in_profile_fields' ) == OFF ) {
@@ -511,7 +499,7 @@ if( $t_show_platform || $t_show_os || $t_show_os_version ) {
 			print_platform_option_list( $t_bug->platform );
 			echo '</select>';
 		} else {
-			echo '<input type="text" id="platform" name="platform" class="autocomplete" size="16" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . string_attribute( $t_bug->platform ) . '" />';
+			echo '<input type="text" id="platform" name="platform" class="autocomplete" size="16" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $t_bug->platform ) . '" />';
 		}
 
 		echo '</td>';
@@ -521,7 +509,7 @@ if( $t_show_platform || $t_show_os || $t_show_os_version ) {
 
 	if( $t_show_os ) {
 		# Operating System
-		echo '<th class="category"><label for="os">' . lang_get( 'os' ) . '</label></th>';
+		echo '<th class="category"><label for="os">' . \Flickerbox\Lang::get( 'os' ) . '</label></th>';
 		echo '<td>';
 
 		if( config_get( 'allow_freetext_in_profile_fields' ) == OFF ) {
@@ -529,7 +517,7 @@ if( $t_show_platform || $t_show_os || $t_show_os_version ) {
 			print_os_option_list( $t_bug->os );
 			echo '</select>';
 		} else {
-			echo '<input type="text" id="os" name="os" class="autocomplete" size="16" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . string_attribute( $t_bug->os ) . '" />';
+			echo '<input type="text" id="os" name="os" class="autocomplete" size="16" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $t_bug->os ) . '" />';
 		}
 
 		echo '</td>';
@@ -539,7 +527,7 @@ if( $t_show_platform || $t_show_os || $t_show_os_version ) {
 
 	if( $t_show_os_version ) {
 		# OS Version
-		echo '<th class="category"><label for="os_build">' . lang_get( 'os_version' ) . '</label></th>';
+		echo '<th class="category"><label for="os_build">' . \Flickerbox\Lang::get( 'os_version' ) . '</label></th>';
 		echo '<td>';
 
 		if( config_get( 'allow_freetext_in_profile_fields' ) == OFF ) {
@@ -547,7 +535,7 @@ if( $t_show_platform || $t_show_os || $t_show_os_version ) {
 			print_os_build_option_list( $t_bug->os_build );
 			echo '</select>';
 		} else {
-			echo '<input type="text" id="os_build" name="os_build" class="autocomplete" size="16" maxlength="16" tabindex="' . helper_get_tab_index_value() . '" value="' . string_attribute( $t_bug->os_build ) . '" />';
+			echo '<input type="text" id="os_build" name="os_build" class="autocomplete" size="16" maxlength="16" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $t_bug->os_build ) . '" />';
 		}
 
 		echo '</td>';
@@ -574,7 +562,7 @@ if( $t_show_product_version || $t_show_product_build ) {
 
 	# Product Version  or Product Build, if version is suppressed
 	if( $t_show_product_version ) {
-		echo '<th class="category"><label for="version">' . lang_get( 'product_version' ) . '</label></th>';
+		echo '<th class="category"><label for="version">' . \Flickerbox\Lang::get( 'product_version' ) . '</label></th>';
 		echo '<td>', '<select ', helper_get_tab_index(), ' id="version" name="version">';
 		print_version_option_list( $t_bug->version, $t_bug->project_id, $t_product_version_released_mask );
 		echo '</select></td>';
@@ -583,7 +571,7 @@ if( $t_show_product_version || $t_show_product_build ) {
 	}
 
 	if( $t_show_product_build ) {
-		echo '<th class="category"><label for="build">' . lang_get( 'product_build' ) . '</label></th>';
+		echo '<th class="category"><label for="build">' . \Flickerbox\Lang::get( 'product_build' ) . '</label></th>';
 		echo '<td>';
 		echo '<input type="text" id="build" name="build" size="16" maxlength="32" ' . helper_get_tab_index() . ' value="' . $t_product_build_attribute . '" />';
 		echo '</td>';
@@ -608,7 +596,7 @@ if( $t_show_target_version || $t_show_fixed_in_version ) {
 
 	# Target Version
 	if( $t_show_target_version ) {
-		echo '<th class="category"><label for="target_version">' . lang_get( 'target_version' ) . '</label></th>';
+		echo '<th class="category"><label for="target_version">' . \Flickerbox\Lang::get( 'target_version' ) . '</label></th>';
 		echo '<td><select ' . helper_get_tab_index() . ' id="target_version" name="target_version">';
 		print_version_option_list( $t_bug->target_version, $t_bug->project_id, VERSION_FUTURE );
 		echo '</select></td>';
@@ -618,7 +606,7 @@ if( $t_show_target_version || $t_show_fixed_in_version ) {
 
 	# Fixed in Version
 	if( $t_show_fixed_in_version ) {
-		echo '<th class="category"><label for="fixed_in_version">' . lang_get( 'fixed_in_version' ) . '</label></th>';
+		echo '<th class="category"><label for="fixed_in_version">' . \Flickerbox\Lang::get( 'fixed_in_version' ) . '</label></th>';
 		echo '<td>';
 		echo '<select ' . helper_get_tab_index() . ' id="fixed_in_version" name="fixed_in_version">';
 		print_version_option_list( $t_bug->fixed_in_version, $t_bug->project_id, VERSION_ALL );
@@ -643,7 +631,7 @@ echo '<tr class="hidden"></tr>';
 # Summary
 if( $t_show_summary ) {
 	echo '<tr>';
-	echo '<th class="category"><label for="summary">' . lang_get( 'summary' ) . '</label></th>';
+	echo '<th class="category"><label for="summary">' . \Flickerbox\Lang::get( 'summary' ) . '</label></th>';
 	echo '<td colspan="5">', '<input ', helper_get_tab_index(), ' type="text" id="summary" name="summary" size="105" maxlength="128" value="', $t_summary_attribute, '" />';
 	echo '</td></tr>';
 }
@@ -651,7 +639,7 @@ if( $t_show_summary ) {
 # Description
 if( $t_show_description ) {
 	echo '<tr>';
-	echo '<th class="category"><label for="description">' . lang_get( 'description' ) . '</label></th>';
+	echo '<th class="category"><label for="description">' . \Flickerbox\Lang::get( 'description' ) . '</label></th>';
 	echo '<td colspan="5">';
 	echo '<textarea ', helper_get_tab_index(), ' cols="80" rows="10" id="description" name="description">', $t_description_textarea, '</textarea>';
 	echo '</td></tr>';
@@ -660,7 +648,7 @@ if( $t_show_description ) {
 # Steps to Reproduce
 if( $t_show_steps_to_reproduce ) {
 	echo '<tr>';
-	echo '<th class="category"><label for="steps_to_reproduce">' . lang_get( 'steps_to_reproduce' ) . '</label></th>';
+	echo '<th class="category"><label for="steps_to_reproduce">' . \Flickerbox\Lang::get( 'steps_to_reproduce' ) . '</label></th>';
 	echo '<td colspan="5">';
 	echo '<textarea ', helper_get_tab_index(), ' cols="80" rows="10" id="steps_to_reproduce" name="steps_to_reproduce">', $t_steps_to_reproduce_textarea, '</textarea>';
 	echo '</td></tr>';
@@ -669,7 +657,7 @@ if( $t_show_steps_to_reproduce ) {
 # Additional Information
 if( $t_show_additional_information ) {
 	echo '<tr>';
-	echo '<th class="category"><label for="additional_information">' . lang_get( 'additional_information' ) . '</label></th>';
+	echo '<th class="category"><label for="additional_information">' . \Flickerbox\Lang::get( 'additional_information' ) . '</label></th>';
 	echo '<td colspan="5">';
 	echo '<textarea ', helper_get_tab_index(), ' cols="80" rows="10" id="additional_information" name="additional_information">', $t_additional_information_textarea, '</textarea>';
 	echo '</td></tr>';
@@ -693,9 +681,9 @@ foreach ( $t_related_custom_field_ids as $t_id ) {
 			echo '<span class="required">*</span>';
 		}
 		if( $t_def['type'] != CUSTOM_FIELD_TYPE_RADIO && $t_def['type'] != CUSTOM_FIELD_TYPE_CHECKBOX ) {
-			echo '<label for="custom_field_' . string_attribute( $t_def['id'] ) . '">' . string_display( lang_get_defaulted( $t_def['name'] ) ) . '</label>';
+			echo '<label for="custom_field_' . \Flickerbox\String::attribute( $t_def['id'] ) . '">' . \Flickerbox\String::display( \Flickerbox\Lang::get_defaulted( $t_def['name'] ) ) . '</label>';
 		} else {
-			echo string_display( lang_get_defaulted( $t_def['name'] ) );
+			echo \Flickerbox\String::display( \Flickerbox\Lang::get_defaulted( $t_def['name'] ) );
 		}
 		echo '</td><td colspan="5">';
 		print_custom_field_input( $t_def, $t_bug_id );
@@ -711,19 +699,19 @@ if( $t_custom_fields_found ) {
 
 # Bugnote Text Box
 echo '<tr>';
-echo '<th class="category"><label for="bugnote_text">' . lang_get( 'add_bugnote_title' ) . '</label></th>';
+echo '<th class="category"><label for="bugnote_text">' . \Flickerbox\Lang::get( 'add_bugnote_title' ) . '</label></th>';
 echo '<td colspan="5"><textarea ', helper_get_tab_index(), ' id="bugnote_text" name="bugnote_text" cols="80" rows="10"></textarea></td></tr>';
 
 # Bugnote Private Checkbox (if permitted)
-if( access_has_bug_level( config_get( 'private_bugnote_threshold' ), $t_bug_id ) ) {
+if( \Flickerbox\Access::has_bug_level( config_get( 'private_bugnote_threshold' ), $t_bug_id ) ) {
 	echo '<tr>';
-	echo '<th class="category">' . lang_get( 'private' ) . '</th>';
+	echo '<th class="category">' . \Flickerbox\Lang::get( 'private' ) . '</th>';
 	echo '<td colspan="5">';
 
 	$t_default_bugnote_view_status = config_get( 'default_bugnote_view_status' );
-	if( access_has_bug_level( config_get( 'set_view_status_threshold' ), $t_bug_id ) ) {
+	if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $t_bug_id ) ) {
 		echo '<input ', helper_get_tab_index(), ' type="checkbox" id="private" name="private" ', check_checked( config_get( 'default_bugnote_view_status' ), VS_PRIVATE ), ' />';
-		echo lang_get( 'private' );
+		echo \Flickerbox\Lang::get( 'private' );
 	} else {
 		echo get_enum_element( 'view_state', $t_default_bugnote_view_status );
 	}
@@ -733,9 +721,9 @@ if( access_has_bug_level( config_get( 'private_bugnote_threshold' ), $t_bug_id )
 
 # Time Tracking (if permitted)
 if( config_get( 'time_tracking_enabled' ) ) {
-	if( access_has_bug_level( config_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) {
+	if( \Flickerbox\Access::has_bug_level( config_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) {
 		echo '<tr>';
-		echo '<th class="category"><label for="time_tracking">' . lang_get( 'time_tracking' ) . '</label></th>';
+		echo '<th class="category"><label for="time_tracking">' . \Flickerbox\Lang::get( 'time_tracking' ) . '</label></th>';
 		echo '<td colspan="5"><input type="text" id="time_tracking" name="time_tracking" size="5" placeholder="hh:mm" /></td></tr>';
 	}
 }
@@ -750,7 +738,7 @@ if( $t_bottom_buttons_enabled ) {
 					<td class="center" colspan="6">
 						<input <?php helper_get_tab_index(); ?>
 							type="submit" class="button"
-							value="<?php echo lang_get( 'update_information_button' ); ?>" />
+							value="<?php echo \Flickerbox\Lang::get( 'update_information_button' ); ?>" />
 					</td>
 				</tr>
 			</tfoot>
@@ -765,6 +753,6 @@ if( $t_bottom_buttons_enabled ) {
 <?php
 define( 'BUGNOTE_VIEW_INC_ALLOW', true );
 include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'bugnote_view_inc.php' );
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();
 
-last_visited_issue( $t_bug_id );
+\Flickerbox\Last_Visited::issue( $t_bug_id );

@@ -43,24 +43,16 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'bug_revision_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'database_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'project_api.php' );
 require_api( 'relationship_api.php' );
-require_api( 'sponsorship_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * log the changes (old / new value are supplied to reduce db access)
@@ -77,7 +69,7 @@ function history_log_event_direct( $p_bug_id, $p_field_name, $p_old_value, $p_ne
 	# Only log events that change the value
 	if( $p_new_value != $p_old_value ) {
 		if( null === $p_user_id ) {
-			$p_user_id = auth_get_current_user_id();
+			$p_user_id = \Flickerbox\Auth::get_current_user_id();
 		}
 
 		$c_field_name = $p_field_name;
@@ -115,7 +107,7 @@ function history_log_event( $p_bug_id, $p_field_name, $p_old_value ) {
  * @return void
  */
 function history_log_event_special( $p_bug_id, $p_type, $p_old_value = '', $p_new_value = '' ) {
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 	if( is_null( $p_old_value ) ) {
 		$p_old_value = '';
@@ -169,7 +161,7 @@ function history_get_events_array( $p_bug_id, $p_user_id = null ) {
 function history_get_raw_events_array( $p_bug_id, $p_user_id = null, $p_start_time = null, $p_end_time = null ) {
 	$t_history_order = config_get( 'history_order' );
 
-	$t_user_id = (( null === $p_user_id ) ? auth_get_current_user_id() : $p_user_id );
+	$t_user_id = (( null === $p_user_id ) ? \Flickerbox\Auth::get_current_user_id() : $p_user_id );
 
 	$t_roadmap_view_access_level = config_get( 'roadmap_view_threshold' );
 	$t_due_date_view_threshold = config_get( 'due_date_view_threshold' );
@@ -205,7 +197,7 @@ function history_get_raw_events_array( $p_bug_id, $p_user_id = null, $p_start_ti
 	$t_result = db_query( $t_query, $t_params );
 	$t_raw_history = array();
 
-	$t_private_bugnote_visible = access_has_bug_level( config_get( 'private_bugnote_threshold' ), $p_bug_id, $t_user_id );
+	$t_private_bugnote_visible = \Flickerbox\Access::has_bug_level( config_get( 'private_bugnote_threshold' ), $p_bug_id, $t_user_id );
 	$t_tag_view_threshold = config_get( 'tag_view_threshold' );
 	$t_view_attachments_threshold = config_get( 'view_attachments_threshold' );
 	$t_show_monitor_list_threshold = config_get( 'show_monitor_list_threshold' );
@@ -225,15 +217,15 @@ function history_get_raw_events_array( $p_bug_id, $p_user_id = null, $p_start_ti
 				}
 			}
 
-			if( ( $v_field_name == 'target_version' ) && !access_has_bug_level( $t_roadmap_view_access_level, $p_bug_id, $t_user_id ) ) {
+			if( ( $v_field_name == 'target_version' ) && !\Flickerbox\Access::has_bug_level( $t_roadmap_view_access_level, $p_bug_id, $t_user_id ) ) {
 				continue;
 			}
 
-			if( ( $v_field_name == 'due_date' ) && !access_has_bug_level( $t_due_date_view_threshold, $p_bug_id, $t_user_id ) ) {
+			if( ( $v_field_name == 'due_date' ) && !\Flickerbox\Access::has_bug_level( $t_due_date_view_threshold, $p_bug_id, $t_user_id ) ) {
 				continue;
 			}
 
-			if( ( $v_field_name == 'handler_id' ) && !access_has_bug_level( $t_show_handler_threshold, $p_bug_id, $t_user_id ) ) {
+			if( ( $v_field_name == 'handler_id' ) && !\Flickerbox\Access::has_bug_level( $t_show_handler_threshold, $p_bug_id, $t_user_id ) ) {
 				continue;
 			}
 		}
@@ -256,21 +248,21 @@ function history_get_raw_events_array( $p_bug_id, $p_user_id = null, $p_start_ti
 
 		# tags
 		if( $v_type == TAG_ATTACHED || $v_type == TAG_DETACHED || $v_type == TAG_RENAMED ) {
-			if( !access_has_bug_level( $t_tag_view_threshold, $p_bug_id, $t_user_id ) ) {
+			if( !\Flickerbox\Access::has_bug_level( $t_tag_view_threshold, $p_bug_id, $t_user_id ) ) {
 				continue;
 			}
 		}
 
 		# attachments
 		if( $v_type == FILE_ADDED || $v_type == FILE_DELETED ) {
-			if( !access_has_bug_level( $t_view_attachments_threshold, $p_bug_id, $t_user_id ) ) {
+			if( !\Flickerbox\Access::has_bug_level( $t_view_attachments_threshold, $p_bug_id, $t_user_id ) ) {
 				continue;
 			}
 		}
 
 		# monitoring
 		if( $v_type == BUG_MONITOR || $v_type == BUG_UNMONITOR ) {
-			if( !access_has_bug_level( $t_show_monitor_list_threshold, $p_bug_id, $t_user_id ) ) {
+			if( !\Flickerbox\Access::has_bug_level( $t_show_monitor_list_threshold, $p_bug_id, $t_user_id ) ) {
 				continue;
 			}
 		}
@@ -281,7 +273,7 @@ function history_get_raw_events_array( $p_bug_id, $p_user_id = null, $p_start_ti
 
 			# If bug doesn't exist, then we don't know whether to expose it or not based on the fact whether it was
 			# accessible to user or not.  This also simplifies client code that is accessing the history log.
-			if( !bug_exists( $t_related_bug_id ) || !access_has_bug_level( config_get( 'view_bug_threshold' ), $t_related_bug_id, $t_user_id ) ) {
+			if( !bug_exists( $t_related_bug_id ) || !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold' ), $t_related_bug_id, $t_user_id ) ) {
 				continue;
 			}
 		}
@@ -322,7 +314,7 @@ function history_localize_item( $p_field_name, $p_type, $p_old_value, $p_new_val
 	$t_raw = true;
 
 	if( PLUGIN_HISTORY == $p_type ) {
-		$t_note = lang_get_defaulted( 'plugin_' . $p_field_name, $p_field_name );
+		$t_note = \Flickerbox\Lang::get_defaulted( 'plugin_' . $p_field_name, $p_field_name );
 		$t_change = ( isset( $p_new_value ) ? $p_old_value . ' => ' . $p_new_value : $p_old_value );
 
 		return array( 'note' => $t_note, 'change' => $t_change, 'raw' => true );
@@ -330,52 +322,52 @@ function history_localize_item( $p_field_name, $p_type, $p_old_value, $p_new_val
 
 	switch( $p_field_name ) {
 		case 'category':
-			$t_field_localized = lang_get( 'category' );
+			$t_field_localized = \Flickerbox\Lang::get( 'category' );
 			break;
 		case 'status':
 			$p_old_value = get_enum_element( 'status', $p_old_value );
 			$p_new_value = get_enum_element( 'status', $p_new_value );
-			$t_field_localized = lang_get( 'status' );
+			$t_field_localized = \Flickerbox\Lang::get( 'status' );
 			break;
 		case 'severity':
 			$p_old_value = get_enum_element( 'severity', $p_old_value );
 			$p_new_value = get_enum_element( 'severity', $p_new_value );
-			$t_field_localized = lang_get( 'severity' );
+			$t_field_localized = \Flickerbox\Lang::get( 'severity' );
 			break;
 		case 'reproducibility':
 			$p_old_value = get_enum_element( 'reproducibility', $p_old_value );
 			$p_new_value = get_enum_element( 'reproducibility', $p_new_value );
-			$t_field_localized = lang_get( 'reproducibility' );
+			$t_field_localized = \Flickerbox\Lang::get( 'reproducibility' );
 			break;
 		case 'resolution':
 			$p_old_value = get_enum_element( 'resolution', $p_old_value );
 			$p_new_value = get_enum_element( 'resolution', $p_new_value );
-			$t_field_localized = lang_get( 'resolution' );
+			$t_field_localized = \Flickerbox\Lang::get( 'resolution' );
 			break;
 		case 'priority':
 			$p_old_value = get_enum_element( 'priority', $p_old_value );
 			$p_new_value = get_enum_element( 'priority', $p_new_value );
-			$t_field_localized = lang_get( 'priority' );
+			$t_field_localized = \Flickerbox\Lang::get( 'priority' );
 			break;
 		case 'eta':
 			$p_old_value = get_enum_element( 'eta', $p_old_value );
 			$p_new_value = get_enum_element( 'eta', $p_new_value );
-			$t_field_localized = lang_get( 'eta' );
+			$t_field_localized = \Flickerbox\Lang::get( 'eta' );
 			break;
 		case 'view_state':
 			$p_old_value = get_enum_element( 'view_state', $p_old_value );
 			$p_new_value = get_enum_element( 'view_state', $p_new_value );
-			$t_field_localized = lang_get( 'view_status' );
+			$t_field_localized = \Flickerbox\Lang::get( 'view_status' );
 			break;
 		case 'projection':
 			$p_old_value = get_enum_element( 'projection', $p_old_value );
 			$p_new_value = get_enum_element( 'projection', $p_new_value );
-			$t_field_localized = lang_get( 'projection' );
+			$t_field_localized = \Flickerbox\Lang::get( 'projection' );
 			break;
 		case 'sticky':
-			$p_old_value = gpc_string_to_bool( $p_old_value ) ? lang_get( 'yes' ) : lang_get( 'no' );
-			$p_new_value = gpc_string_to_bool( $p_new_value ) ? lang_get( 'yes' ) : lang_get( 'no' );
-			$t_field_localized = lang_get( 'sticky_issue' );
+			$p_old_value = \Flickerbox\GPC::string_to_bool( $p_old_value ) ? \Flickerbox\Lang::get( 'yes' ) : \Flickerbox\Lang::get( 'no' );
+			$p_new_value = \Flickerbox\GPC::string_to_bool( $p_new_value ) ? \Flickerbox\Lang::get( 'yes' ) : \Flickerbox\Lang::get( 'no' );
+			$t_field_localized = \Flickerbox\Lang::get( 'sticky_issue' );
 			break;
 		case 'project_id':
 			if( project_exists( $p_old_value ) ) {
@@ -391,13 +383,13 @@ function history_localize_item( $p_field_name, $p_type, $p_old_value, $p_new_val
 			} else {
 				$p_new_value = '@' . $p_new_value . '@';
 			}
-			$t_field_localized = lang_get( 'email_project' );
+			$t_field_localized = \Flickerbox\Lang::get( 'email_project' );
 			break;
 		case 'handler_id':
-			$t_field_localized = lang_get( 'assigned_to' );
+			$t_field_localized = \Flickerbox\Lang::get( 'assigned_to' );
 		case 'reporter_id':
 			if( 'reporter_id' == $p_field_name ) {
-				$t_field_localized = lang_get( 'reporter' );
+				$t_field_localized = \Flickerbox\Lang::get( 'reporter' );
 			}
 			if( 0 == $p_old_value ) {
 				$p_old_value = '';
@@ -412,44 +404,44 @@ function history_localize_item( $p_field_name, $p_type, $p_old_value, $p_new_val
 			}
 			break;
 		case 'version':
-			$t_field_localized = lang_get( 'product_version' );
+			$t_field_localized = \Flickerbox\Lang::get( 'product_version' );
 			break;
 		case 'fixed_in_version':
-			$t_field_localized = lang_get( 'fixed_in_version' );
+			$t_field_localized = \Flickerbox\Lang::get( 'fixed_in_version' );
 			break;
 		case 'target_version':
-			$t_field_localized = lang_get( 'target_version' );
+			$t_field_localized = \Flickerbox\Lang::get( 'target_version' );
 			break;
 		case 'date_submitted':
 			$p_old_value = date( config_get( 'normal_date_format' ), $p_old_value );
 			$p_new_value = date( config_get( 'normal_date_format' ), $p_new_value );
-			$t_field_localized = lang_get( 'date_submitted' );
+			$t_field_localized = \Flickerbox\Lang::get( 'date_submitted' );
 			break;
 		case 'last_updated':
 			$p_old_value = date( config_get( 'normal_date_format' ), $p_old_value );
 			$p_new_value = date( config_get( 'normal_date_format' ), $p_new_value );
-			$t_field_localized = lang_get( 'last_update' );
+			$t_field_localized = \Flickerbox\Lang::get( 'last_update' );
 			break;
 		case 'os':
-			$t_field_localized = lang_get( 'os' );
+			$t_field_localized = \Flickerbox\Lang::get( 'os' );
 			break;
 		case 'os_build':
-			$t_field_localized = lang_get( 'os_version' );
+			$t_field_localized = \Flickerbox\Lang::get( 'os_version' );
 			break;
 		case 'build':
-			$t_field_localized = lang_get( 'build' );
+			$t_field_localized = \Flickerbox\Lang::get( 'build' );
 			break;
 		case 'platform':
-			$t_field_localized = lang_get( 'platform' );
+			$t_field_localized = \Flickerbox\Lang::get( 'platform' );
 			break;
 		case 'summary':
-			$t_field_localized = lang_get( 'summary' );
+			$t_field_localized = \Flickerbox\Lang::get( 'summary' );
 			break;
 		case 'duplicate_id':
-			$t_field_localized = lang_get( 'duplicate_id' );
+			$t_field_localized = \Flickerbox\Lang::get( 'duplicate_id' );
 			break;
 		case 'sponsorship_total':
-			$t_field_localized = lang_get( 'sponsorship_total' );
+			$t_field_localized = \Flickerbox\Lang::get( 'sponsorship_total' );
 			break;
 		case 'due_date':
 			if( $p_old_value !== '' ) {
@@ -458,7 +450,7 @@ function history_localize_item( $p_field_name, $p_type, $p_old_value, $p_new_val
 			if( $p_new_value !== '' ) {
 				$p_new_value = date( config_get( 'normal_date_format' ), (int)$p_new_value );
 			}
-			$t_field_localized = lang_get( 'due_date' );
+			$t_field_localized = \Flickerbox\Lang::get( 'due_date' );
 			break;
 		default:
 
@@ -470,141 +462,141 @@ function history_localize_item( $p_field_name, $p_type, $p_old_value, $p_new_val
 					$p_old_value = string_custom_field_value_for_email( $p_old_value, $t_cf_type );
 				}
 				$p_new_value = string_custom_field_value_for_email( $p_new_value, $t_cf_type );
-				$t_field_localized = lang_get_defaulted( $p_field_name );
+				$t_field_localized = \Flickerbox\Lang::get_defaulted( $p_field_name );
 			}
 		}
 
 		if( NORMAL_TYPE != $p_type ) {
 			switch( $p_type ) {
 				case NEW_BUG:
-					$t_note = lang_get( 'new_bug' );
+					$t_note = \Flickerbox\Lang::get( 'new_bug' );
 					break;
 				case BUGNOTE_ADDED:
-					$t_note = lang_get( 'bugnote_added' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bugnote_added' ) . ': ' . $p_old_value;
 					break;
 				case BUGNOTE_UPDATED:
-					$t_note = lang_get( 'bugnote_edited' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bugnote_edited' ) . ': ' . $p_old_value;
 					$t_old_value = (int)$p_old_value;
 					$t_new_value = (int)$p_new_value;
-					if( $p_linkify && bug_revision_exists( $t_new_value ) ) {
+					if( $p_linkify && \Flickerbox\Bug\Revision::exists( $t_new_value ) ) {
 						if( bugnote_exists( $t_old_value ) ) {
 							$t_bug_revision_view_page_argument = 'bugnote_id=' . $t_old_value . '#r' . $t_new_value;
 						} else {
 							$t_bug_revision_view_page_argument = 'rev_id=' . $t_new_value;
 						}
 						$t_change = '<a href="bug_revision_view_page.php?' . $t_bug_revision_view_page_argument . '">' .
-							lang_get( 'view_revisions' ) . '</a>';
+							\Flickerbox\Lang::get( 'view_revisions' ) . '</a>';
 						$t_raw = false;
 					}
 					break;
 				case BUGNOTE_DELETED:
-					$t_note = lang_get( 'bugnote_deleted' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bugnote_deleted' ) . ': ' . $p_old_value;
 					break;
 				case DESCRIPTION_UPDATED:
-					$t_note = lang_get( 'description_updated' );
+					$t_note = \Flickerbox\Lang::get( 'description_updated' );
 					$t_old_value = (int)$p_old_value;
-					if( $p_linkify && bug_revision_exists( $t_old_value ) ) {
+					if( $p_linkify && \Flickerbox\Bug\Revision::exists( $t_old_value ) ) {
 						$t_change = '<a href="bug_revision_view_page.php?rev_id=' . $t_old_value . '#r' . $t_old_value . '">' .
-							lang_get( 'view_revisions' ) . '</a>';
+							\Flickerbox\Lang::get( 'view_revisions' ) . '</a>';
 						$t_raw = false;
 					}
 					break;
 				case ADDITIONAL_INFO_UPDATED:
-					$t_note = lang_get( 'additional_information_updated' );
+					$t_note = \Flickerbox\Lang::get( 'additional_information_updated' );
 					$t_old_value = (int)$p_old_value;
-					if( $p_linkify && bug_revision_exists( $t_old_value ) ) {
+					if( $p_linkify && \Flickerbox\Bug\Revision::exists( $t_old_value ) ) {
 						$t_change = '<a href="bug_revision_view_page.php?rev_id=' . $t_old_value . '#r' . $t_old_value . '">' .
-							lang_get( 'view_revisions' ) . '</a>';
+							\Flickerbox\Lang::get( 'view_revisions' ) . '</a>';
 						$t_raw = false;
 					}
 					break;
 				case STEP_TO_REPRODUCE_UPDATED:
-					$t_note = lang_get( 'steps_to_reproduce_updated' );
+					$t_note = \Flickerbox\Lang::get( 'steps_to_reproduce_updated' );
 					$t_old_value = (int)$p_old_value;
-					if( $p_linkify && bug_revision_exists( $t_old_value ) ) {
+					if( $p_linkify && \Flickerbox\Bug\Revision::exists( $t_old_value ) ) {
 						$t_change = '<a href="bug_revision_view_page.php?rev_id=' . $t_old_value . '#r' . $t_old_value . '">' .
-							lang_get( 'view_revisions' ) . '</a>';
+							\Flickerbox\Lang::get( 'view_revisions' ) . '</a>';
 						$t_raw = false;
 					}
 					break;
 				case FILE_ADDED:
-					$t_note = lang_get( 'file_added' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( '\Flickerbox\File::add(ed' ) . ': ' . $p_old_value;
 					break;
 				case FILE_DELETED:
-					$t_note = lang_get( 'file_deleted' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'file_deleted' ) . ': ' . $p_old_value;
 					break;
 				case BUGNOTE_STATE_CHANGED:
 					$p_old_value = get_enum_element( 'view_state', $p_old_value );
-					$t_note = lang_get( 'bugnote_view_state' ) . ': ' . $p_new_value . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bugnote_view_state' ) . ': ' . $p_new_value . ': ' . $p_old_value;
 					break;
 				case BUG_MONITOR:
 					$p_old_value = user_get_name( $p_old_value );
-					$t_note = lang_get( 'bug_monitor' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bug_monitor' ) . ': ' . $p_old_value;
 					break;
 				case BUG_UNMONITOR:
 					if( $p_old_value !== '' ) {
 						$p_old_value = user_get_name( $p_old_value );
 					}
-					$t_note = lang_get( 'bug_end_monitor' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bug_end_monitor' ) . ': ' . $p_old_value;
 					break;
 				case BUG_DELETED:
-					$t_note = lang_get( 'bug_deleted' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bug_deleted' ) . ': ' . $p_old_value;
 					break;
 				case BUG_ADD_SPONSORSHIP:
-					$t_note = lang_get( 'sponsorship_added' );
-					$t_change = user_get_name( $p_old_value ) . ': ' . sponsorship_format_amount( $p_new_value );
+					$t_note = \Flickerbox\Lang::get( 'sponsorship_added' );
+					$t_change = user_get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
 					break;
 				case BUG_UPDATE_SPONSORSHIP:
-					$t_note = lang_get( 'sponsorship_updated' );
-					$t_change = user_get_name( $p_old_value ) . ': ' . sponsorship_format_amount( $p_new_value );
+					$t_note = \Flickerbox\Lang::get( 'sponsorship_updated' );
+					$t_change = user_get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
 					break;
 				case BUG_DELETE_SPONSORSHIP:
-					$t_note = lang_get( 'sponsorship_deleted' );
-					$t_change = user_get_name( $p_old_value ) . ': ' . sponsorship_format_amount( $p_new_value );
+					$t_note = \Flickerbox\Lang::get( 'sponsorship_deleted' );
+					$t_change = user_get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
 					break;
 				case BUG_PAID_SPONSORSHIP:
-					$t_note = lang_get( 'sponsorship_paid' );
+					$t_note = \Flickerbox\Lang::get( 'sponsorship_paid' );
 					$t_change = user_get_name( $p_old_value ) . ': ' . get_enum_element( 'sponsorship', $p_new_value );
 					break;
 				case BUG_ADD_RELATIONSHIP:
-					$t_note = lang_get( 'relationship_added' );
+					$t_note = \Flickerbox\Lang::get( 'relationship_added' );
 					$t_change = relationship_get_description_for_history( $p_old_value ) . ' ' . bug_format_id( $p_new_value );
 					break;
 				case BUG_REPLACE_RELATIONSHIP:
-					$t_note = lang_get( 'relationship_replaced' );
+					$t_note = \Flickerbox\Lang::get( 'relationship_replaced' );
 					$t_change = relationship_get_description_for_history( $p_old_value ) . ' ' . bug_format_id( $p_new_value );
 					break;
 				case BUG_DEL_RELATIONSHIP:
-					$t_note = lang_get( 'relationship_deleted' );
+					$t_note = \Flickerbox\Lang::get( 'relationship_deleted' );
 
 					# Fix for #7846: There are some cases where old value is empty, this may be due to an old bug.
-					if( !is_blank( $p_old_value ) && $p_old_value > 0 ) {
+					if( !\Flickerbox\Utility::is_blank( $p_old_value ) && $p_old_value > 0 ) {
 						$t_change = relationship_get_description_for_history( $p_old_value ) . ' ' . bug_format_id( $p_new_value );
 					} else {
 						$t_change = bug_format_id( $p_new_value );
 					}
 					break;
 				case BUG_CLONED_TO:
-					$t_note = lang_get( 'bug_cloned_to' ) . ': ' . bug_format_id( $p_new_value );
+					$t_note = \Flickerbox\Lang::get( 'bug_cloned_to' ) . ': ' . bug_format_id( $p_new_value );
 					break;
 				case BUG_CREATED_FROM:
-					$t_note = lang_get( 'bug_created_from' ) . ': ' . bug_format_id( $p_new_value );
+					$t_note = \Flickerbox\Lang::get( 'bug_created_from' ) . ': ' . bug_format_id( $p_new_value );
 					break;
 				case TAG_ATTACHED:
-					$t_note = lang_get( 'tag_history_attached' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'tag_history_attached' ) . ': ' . $p_old_value;
 					break;
 				case TAG_DETACHED:
-					$t_note = lang_get( 'tag_history_detached' ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'tag_history_detached' ) . ': ' . $p_old_value;
 					break;
 				case TAG_RENAMED:
-					$t_note = lang_get( 'tag_history_renamed' );
+					$t_note = \Flickerbox\Lang::get( 'tag_history_renamed' );
 					$t_change = $p_old_value . ' => ' . $p_new_value;
 					break;
 				case BUG_REVISION_DROPPED:
-					$t_note = lang_get( 'bug_revision_dropped_history' ) . ': ' . bug_revision_get_type_name( $p_new_value ) . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bug_revision_dropped_history' ) . ': ' . \Flickerbox\Bug\Revision::get_type_name( $p_new_value ) . ': ' . $p_old_value;
 					break;
 				case BUGNOTE_REVISION_DROPPED:
-					$t_note = lang_get( 'bugnote_revision_dropped_history' ) . ': ' . $p_new_value . ': ' . $p_old_value;
+					$t_note = \Flickerbox\Lang::get( 'bugnote_revision_dropped_history' ) . ': ' . $p_new_value . ': ' . $p_old_value;
 					break;
 			}
 	}

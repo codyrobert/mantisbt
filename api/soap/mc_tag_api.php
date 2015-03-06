@@ -38,7 +38,7 @@ function mc_tag_get_all( $p_username, $p_password, $p_page_number, $p_per_page )
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !access_has_global_level( config_get( 'tag_view_threshold' ) ) ) {
+	if( !\Flickerbox\Access::has_global_level( config_get( 'tag_view_threshold' ) ) ) {
 		return mci_soap_fault_access_denied( $t_user_id, 'No rights to view tags' );
 	}
 
@@ -47,8 +47,8 @@ function mc_tag_get_all( $p_username, $p_password, $p_page_number, $p_per_page )
 	}
 
 	$t_results = array();
-	$t_total_results = tag_count( '' );
-	$t_tags = tag_get_all( '', $p_per_page, $p_per_page *  ( $p_page_number - 1 ) );
+	$t_total_results = \Flickerbox\Tag::count( '' );
+	$t_tags = \Flickerbox\Tag::get_all( '', $p_per_page, $p_per_page *  ( $p_page_number - 1 ) );
 
 	while( $t_tag = db_fetch_array( $t_tags ) ) {
 		$t_tag['user_id'] = mci_account_get_array_by_id( $t_tag['user_id'] );
@@ -57,7 +57,7 @@ function mc_tag_get_all( $p_username, $p_password, $p_page_number, $p_per_page )
 		$t_results[] = $t_tag;
 	}
 
-	log_event( LOG_WEBSERVICE,
+	\Flickerbox\Log::event( LOG_WEBSERVICE,
 		'retrieved ' . count( $t_results ) .
 		'/' . $t_total_results . ' tags (page #' . $p_page_number . ')'
 	);
@@ -83,7 +83,7 @@ function mc_tag_add( $p_username, $p_password, stdClass $p_tag ) {
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !access_has_global_level( config_get( 'tag_create_threshold' ) ) ) {
+	if( !\Flickerbox\Access::has_global_level( config_get( 'tag_create_threshold' ) ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -94,17 +94,17 @@ function mc_tag_add( $p_username, $p_password, stdClass $p_tag ) {
 	$t_tag_name = $p_tag['name'];
 	$t_tag_description = array_key_exists( 'description', $p_tag ) ? $p_tag['description'] : '';
 
-	if( !tag_name_is_valid( $t_tag_name, $t_valid_matches ) ) {
+	if( !\Flickerbox\Tag::name_is_valid( $t_tag_name, $t_valid_matches ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Invalid tag name : "' . $t_tag_name . '"' );
 	}
 
-	$t_matching_by_name = tag_get_by_name( $t_tag_name );
+	$t_matching_by_name = \Flickerbox\Tag::get_by_name( $t_tag_name );
 	if( $t_matching_by_name != false ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'A tag with the same name already exists , id: ' . $t_matching_by_name['id'] );
 	}
 
-	log_event( LOG_WEBSERVICE, 'creating tag \'' . $t_tag_name . '\' for user \'' . $t_user_id . '\'' );
-	return tag_create( $t_tag_name, $t_user_id, $t_tag_description );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'creating tag \'' . $t_tag_name . '\' for user \'' . $t_user_id . '\'' );
+	return \Flickerbox\Tag::create( $t_tag_name, $t_user_id, $t_tag_description );
 }
 
 /**
@@ -123,16 +123,16 @@ function mc_tag_delete( $p_username, $p_password, $p_tag_id ) {
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !access_has_global_level( config_get( 'tag_edit_threshold' ) ) ) {
+	if( !\Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !tag_exists( $p_tag_id ) ) {
+	if( !\Flickerbox\Tag::exists( $p_tag_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'No tag with id ' . $p_tag_id );
 	}
 
-	log_event( LOG_WEBSERVICE, 'deleting tag id \'' . $p_tag_id . '\'' );
-	return tag_delete( $p_tag_id );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'deleting tag id \'' . $p_tag_id . '\'' );
+	return \Flickerbox\Tag::delete( $p_tag_id );
 }
 
 /**
@@ -147,7 +147,7 @@ function mci_tag_set_for_issue ( $p_issue_id, array $p_tags, $p_user_id ) {
 	$t_tag_ids_to_detach = array();
 
 	$t_submitted_tag_ids = array();
-	$t_attached_tags = tag_bug_get_attached( $p_issue_id );
+	$t_attached_tags = \Flickerbox\Tag::bug_get_attached( $p_issue_id );
 	$t_attached_tag_ids = array();
 	foreach( $t_attached_tags as $t_attached_tag ) {
 		$t_attached_tag_ids[] = $t_attached_tag['id'];
@@ -174,16 +174,16 @@ function mci_tag_set_for_issue ( $p_issue_id, array $p_tags, $p_user_id ) {
 	}
 
 	foreach( $t_tag_ids_to_detach as $t_tag_id ) {
-		if( access_has_bug_level( config_get( 'tag_detach_threshold' ), $p_issue_id, $p_user_id ) ) {
-			log_event( LOG_WEBSERVICE, 'detaching tag id \'' . $t_tag_id . '\' from issue \'' . $p_issue_id . '\'' );
-			tag_bug_detach( $t_tag_id, $p_issue_id );
+		if( \Flickerbox\Access::has_bug_level( config_get( 'tag_detach_threshold' ), $p_issue_id, $p_user_id ) ) {
+			\Flickerbox\Log::event( LOG_WEBSERVICE, 'detaching tag id \'' . $t_tag_id . '\' from issue \'' . $p_issue_id . '\'' );
+			\Flickerbox\Tag::bug_detach( $t_tag_id, $p_issue_id );
 		}
 	}
 
 	foreach ( $t_tag_ids_to_attach as $t_tag_id ) {
-		if( access_has_bug_level( config_get( 'tag_attach_threshold' ), $p_issue_id, $p_user_id ) ) {
-			log_event( LOG_WEBSERVICE, 'attaching tag id \'' . $t_tag_id . '\' to issue \'' . $p_issue_id . '\'' );
-			tag_bug_attach( $t_tag_id, $p_issue_id );
+		if( \Flickerbox\Access::has_bug_level( config_get( 'tag_attach_threshold' ), $p_issue_id, $p_user_id ) ) {
+			\Flickerbox\Log::event( LOG_WEBSERVICE, 'attaching tag id \'' . $t_tag_id . '\' to issue \'' . $p_issue_id . '\'' );
+			\Flickerbox\Tag::bug_attach( $t_tag_id, $p_issue_id );
 		}
 	}
 }

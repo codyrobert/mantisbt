@@ -217,10 +217,10 @@ function mc_enum_get( $p_username, $p_password, $p_enumeration ) {
 	}
 
 	# safe to call directly after login checks
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_lang = mci_get_user_lang( $t_user_id );
 
-	return lang_get( $p_enumeration . '_enum_string', $t_lang );
+	return \Flickerbox\Lang::get( $p_enumeration . '_enum_string', $t_lang );
 }
 
 /**
@@ -233,14 +233,14 @@ function mc_enum_get( $p_username, $p_password, $p_enumeration ) {
 function mci_explode_to_objectref( $p_enumeration_name ) {
 	$t_config_var_name = $p_enumeration_name . '_enum_string';
 	$t_config_var_value = config_get( $t_config_var_name );
-	$t_translated_values = lang_get( $t_config_var_name, mci_get_user_lang( auth_get_current_user_id() ) );
+	$t_translated_values = \Flickerbox\Lang::get( $t_config_var_name, mci_get_user_lang( auth_get_current_user_id() ) );
 
-	$t_enum_values = MantisEnum::getValues( $t_config_var_value );
+	$t_enum_values = \MantisEnum::getValues( $t_config_var_value );
 
 	$t_result = array();
 
 	foreach ( $t_enum_values as $t_key ) {
-		$t_translated = MantisEnum::getLocalizedLabel( $t_config_var_value, $t_translated_values, $t_key );
+		$t_translated = \MantisEnum::getLocalizedLabel( $t_config_var_value, $t_translated_values, $t_key );
 
 		$t_result[] = array(
 			'id' => $t_key,
@@ -293,7 +293,7 @@ function mci_enum_get_array_by_id( $p_enum_id, $p_enum_type, $p_lang ) {
  * @return integer The id corresponding to the given label, or 0 if not found.
  */
 function mci_get_enum_value_from_label( $p_enum_string, $p_label ) {
-	$t_value = MantisEnum::getValue( $p_enum_string, $p_label );
+	$t_value = \MantisEnum::getValue( $p_enum_string, $p_label );
 	if( $t_value === false ) {
 		return 0;
 	}
@@ -319,7 +319,7 @@ function mci_get_enum_id_from_objectref( $p_enum, $p_object_ref ) {
 		$t_id = (int)$p_object_ref['id'];
 	} else {
 		$t_enum = config_get( $p_enum . '_enum_string' );
-		if( !is_null( $p_object_ref ) && isset( $p_object_ref['name'] ) && !is_blank( $p_object_ref['name'] ) ) {
+		if( !is_null( $p_object_ref ) && isset( $p_object_ref['name'] ) && !\Flickerbox\Utility::is_blank( $p_object_ref['name'] ) ) {
 			$t_id = mci_get_enum_value_from_label( $t_enum, $p_object_ref['name'] );
 			if( $t_id == 0 ) {
 				$t_id = config_get( 'webservice_' . $p_enum . '_enum_default_when_not_found' );

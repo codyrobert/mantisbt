@@ -34,7 +34,6 @@ if( !defined( 'CHECK_CRYPTO_INC_ALLOW' ) ) {
 # MantisBT Check API
 require_once( 'check_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 
 check_print_section_header_row( 'Cryptography' );
 

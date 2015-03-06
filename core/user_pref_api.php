@@ -33,14 +33,9 @@
  * @uses utility_api.php
  */
 
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'error_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * Preference Structure Definition
@@ -420,7 +415,7 @@ function user_pref_insert( $p_user_id, $p_project_id, UserPreferences $p_prefs )
 	user_ensure_unprotected( $p_user_id );
 
 	if( $s_vars == null ) {
-		$s_vars = getClassProperties( 'UserPreferences', 'protected' );
+		$s_vars = \Flickerbox\Utility::getClassProperties( 'UserPreferences', 'protected' );
 	}
 
 	$t_values = array();
@@ -457,7 +452,7 @@ function user_pref_update( $p_user_id, $p_project_id, UserPreferences $p_prefs )
 	user_ensure_unprotected( $p_user_id );
 
 	if( $s_vars == null ) {
-		$s_vars = getClassProperties( 'UserPreferences', 'protected' );
+		$s_vars = \Flickerbox\Utility::getClassProperties( 'UserPreferences', 'protected' );
 	}
 
 	$t_pairs = array();
@@ -541,8 +536,8 @@ function user_pref_get( $p_user_id, $p_project_id = ALL_PROJECTS ) {
 	global $g_cache_current_user_pref;
 
 	if( isset( $g_cache_current_user_pref[(int)$p_project_id] ) &&
-		auth_is_user_authenticated() &&
-		auth_get_current_user_id() == $p_user_id ) {
+		\Flickerbox\Auth::is_user_authenticated() &&
+		\Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
 		return $g_cache_current_user_pref[(int)$p_project_id];
 	}
 
@@ -565,7 +560,7 @@ function user_pref_get( $p_user_id, $p_project_id = ALL_PROJECTS ) {
 	}
 
 	if( $s_vars == null ) {
-		$s_vars = getClassProperties( 'UserPreferences', 'protected' );
+		$s_vars = \Flickerbox\Utility::getClassProperties( 'UserPreferences', 'protected' );
 	}
 
 	$t_row_keys = array_keys( $t_row );
@@ -578,7 +573,7 @@ function user_pref_get( $p_user_id, $p_project_id = ALL_PROJECTS ) {
 			$t_prefs->$t_var = $t_row[$t_var];
 		}
 	}
-	if( auth_is_user_authenticated() && auth_get_current_user_id() == $p_user_id ) {
+	if( \Flickerbox\Auth::is_user_authenticated() && \Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
 		$g_cache_current_user_pref[(int)$p_project_id] = $t_prefs;
 	}
 	return $t_prefs;
@@ -599,14 +594,14 @@ function user_pref_get_pref( $p_user_id, $p_pref_name, $p_project_id = ALL_PROJE
 	$t_prefs = user_pref_get( $p_user_id, $p_project_id );
 
 	if( $s_vars == null ) {
-		$t_reflection = new ReflectionClass( 'UserPreferences' );
+		$t_reflection = new \ReflectionClass( 'UserPreferences' );
 		$s_vars = $t_reflection->getDefaultProperties();
 	}
 
 	if( in_array( $p_pref_name, array_keys( $s_vars ), true ) ) {
 		return $t_prefs->Get( $p_pref_name );
 	} else {
-		error_parameters( $p_pref_name );
+		\Flickerbox\Error::parameters( $p_pref_name );
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 		return '';
 	}
@@ -623,7 +618,7 @@ function user_pref_get_language( $p_user_id, $p_project_id = ALL_PROJECTS ) {
 
 	# ensure the language is a valid one
 	$t_lang = $t_prefs->language;
-	if( !lang_language_exists( $t_lang ) ) {
+	if( !\Flickerbox\Lang::language_exists( $t_lang ) ) {
 		$t_lang = null;
 	}
 	return $t_lang;

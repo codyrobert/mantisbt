@@ -25,7 +25,7 @@
  */
 
 if( OFF == plugin_config_get( 'eczlibrary' ) ) {
-	$t_font_path = get_font_path();
+	$t_font_path = \Flickerbox\Utility::get_font_path();
 	if( $t_font_path !== '' && !defined( 'TTF_DIR' ) ) {
 		define( 'TTF_DIR', $t_font_path );
 	}
@@ -74,7 +74,7 @@ function graph_get_font() {
 		} else {
 			$t_font = 'arial.ttf';
 		}
-		$t_font_path = get_font_path();
+		$t_font_path = \Flickerbox\Utility::get_font_path();
 		if( empty( $t_font_path ) ) {
 			error_text( 'Unable to read/find font', 'Unable to read/find font' );
 		}
@@ -266,23 +266,23 @@ function graph_group( array $p_metrics, $p_title = '', $p_graph_width = 350, $p_
 		$t_tot = new BarPlot( array_values( $t_total ) );
 		$t_tot->SetFillColor( 'lightblue' );
 		$t_tot->SetWidth( 0.7 );
-		$t_tot->SetLegend( plugin_lang_get( 'legend_total' ) );
+		$t_tot->SetLegend( plugin_langget( 'legend_total' ) );
 		$t_graph->Add( $t_tot );
 
 		$t_plot1 = new BarPlot( array_values( $p_metrics['open'] ) );
 		$t_plot1->SetFillColor( 'yellow' );
 		$t_plot1->SetWidth( 1 );
-		$t_plot1->SetLegend( plugin_lang_get( 'legend_opened' ) );
+		$t_plot1->SetLegend( plugin_langget( 'legend_opened' ) );
 
 		$t_plot2 = new BarPlot( array_values( $p_metrics['closed'] ) );
 		$t_plot2->SetFillColor( 'blue' );
 		$t_plot2->SetWidth( 1 );
-		$t_plot2->SetLegend( plugin_lang_get( 'legend_closed' ) );
+		$t_plot2->SetLegend( plugin_langget( 'legend_closed' ) );
 
 		$t_plot3 = new BarPlot( array_values( $p_metrics['resolved'] ) );
 		$t_plot3->SetFillColor( 'red' );
 		$t_plot3->SetWidth( 1 );
-		$t_plot3->SetLegend( plugin_lang_get( 'legend_resolved' ) );
+		$t_plot3->SetLegend( plugin_langget( 'legend_resolved' ) );
 
 		$t_gbplot = new GroupBarPlot( array( $t_plot1, $t_plot3, $t_plot2 ) );
 		$t_graph->Add( $t_gbplot );
@@ -384,7 +384,7 @@ function graph_pie( array $p_metrics, $p_title = '', $p_graph_width = 500, $p_gr
  */
 function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_graph_height = 380 ) {
 	$t_graph_font = graph_get_font();
-	error_check( is_array( $p_metrics ) ? count( $p_metrics ) : 0, plugin_lang_get( 'cumulative' ) . ' ' . lang_get( 'by_date' ) );
+	error_check( is_array( $p_metrics ) ? count( $p_metrics ) : 0, plugin_langget( 'cumulative' ) . ' ' . \Flickerbox\Lang::get( 'by_date' ) );
 
 	if( plugin_config_get( 'eczlibrary' ) == ON ) {
 		$t_graph = new ezcGraphLineChart();
@@ -394,15 +394,15 @@ function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_gra
 		$t_graph->xAxis = new ezcGraphChartElementNumericAxis();
 
 		$t_graph->data[0] = new ezcGraphArrayDataSet( $p_metrics[0] );
-		$t_graph->data[0]->label = plugin_lang_get( 'legend_reported' );
+		$t_graph->data[0]->label = plugin_langget( 'legend_reported' );
 		$t_graph->data[0]->color = '#FF0000';
 
 		$t_graph->data[1] = new ezcGraphArrayDataSet( $p_metrics[1] );
-		$t_graph->data[1]->label = plugin_lang_get( 'legend_resolved' );
+		$t_graph->data[1]->label = plugin_langget( 'legend_resolved' );
 		$t_graph->data[1]->color = '#0000FF';
 
 		$t_graph->data[2] = new ezcGraphArrayDataSet( $p_metrics[2] );
-		$t_graph->data[2]->label = plugin_lang_get( 'legend_still_open' );
+		$t_graph->data[2]->label = plugin_langget( 'legend_still_open' );
 		$t_graph->data[2]->color = '#000000';
 
 		$t_graph->additionalAxis[2] = $t_n_axis = new ezcGraphChartElementNumericAxis();
@@ -424,7 +424,7 @@ function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_gra
 		$t_graph->driver->options->jpegQuality = 100;
 		$t_graph->driver->options->imageFormat = IMG_JPEG;
 
-		$t_graph->title = plugin_lang_get( 'cumulative' ) . ' ' . lang_get( 'by_date' );
+		$t_graph->title = plugin_langget( 'cumulative' ) . ' ' . \Flickerbox\Lang::get( 'by_date' );
 		$t_graph->options->font = $t_graph_font ;
 
 		$t_graph->renderToOutput( $p_graph_width, $p_graph_height );
@@ -448,7 +448,7 @@ function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_gra
 		$t_graph->SetY2Scale( 'lin' );
 		$t_graph->SetMarginColor( 'white' );
 		$t_graph->SetFrame( false );
-		$t_graph->title->Set( plugin_lang_get( 'cumulative' ) . ' ' . lang_get( 'by_date' ) );
+		$t_graph->title->Set( plugin_langget( 'cumulative' ) . ' ' . \Flickerbox\Lang::get( 'by_date' ) );
 		$t_graph->title->SetFont( $t_graph_font, FS_BOLD );
 
 		$t_graph->legend->Pos( 0.05, 0.9, 'right', 'bottom' );
@@ -473,19 +473,19 @@ function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_gra
 		$t_plot1 = new LinePlot( $t_reported_plot, $t_plot_date );
 		$t_plot1->SetColor( 'blue' );
 		$t_plot1->SetCenter();
-		$t_plot1->SetLegend( plugin_lang_get( 'legend_reported' ) );
+		$t_plot1->SetLegend( plugin_langget( 'legend_reported' ) );
 		$t_graph->AddY2( $t_plot1 );
 
 		$t_plot3 = new LinePlot( $t_still_open_plot, $t_plot_date );
 		$t_plot3->SetColor( 'red' );
 		$t_plot3->SetCenter();
-		$t_plot3->SetLegend( plugin_lang_get( 'legend_still_open' ) );
+		$t_plot3->SetLegend( plugin_langget( 'legend_still_open' ) );
 		$t_graph->Add( $t_plot3 );
 
 		$t_plot2 = new LinePlot( $t_resolved_plot, $t_plot_date );
 		$t_plot2->SetColor( 'black' );
 		$t_plot2->SetCenter();
-		$t_plot2->SetLegend( plugin_lang_get( 'legend_resolved' ) );
+		$t_plot2->SetLegend( plugin_langget( 'legend_resolved' ) );
 		$t_graph->AddY2( $t_plot2 );
 
 		if( helper_show_query_count() ) {
@@ -508,7 +508,7 @@ function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_gra
  */
 function graph_bydate( array $p_metrics, array $p_labels, $p_title, $p_graph_width = 300, $p_graph_height = 380 ) {
 	$t_graph_font = graph_get_font();
-	error_check( is_array( $p_metrics ) ? count( $p_metrics ) : 0, lang_get( 'by_date' ) );
+	error_check( is_array( $p_metrics ) ? count( $p_metrics ) : 0, \Flickerbox\Lang::get( 'by_date' ) );
 
 	if( plugin_config_get( 'eczlibrary' ) == ON ) {
 		$t_metrics = array();
@@ -543,7 +543,7 @@ function graph_bydate( array $p_metrics, array $p_labels, $p_title, $p_graph_wid
 		$t_graph->driver->options->jpegQuality = 100;
 		$t_graph->driver->options->imageFormat = IMG_JPEG;
 
-		$t_graph->title = $p_title . ' ' . lang_get( 'by_date' );
+		$t_graph->title = $p_title . ' ' . \Flickerbox\Lang::get( 'by_date' );
 		$t_graph->title->maxHeight = .03;
 		$t_graph->options->font = $t_graph_font ;
 
@@ -557,7 +557,7 @@ function graph_bydate( array $p_metrics, array $p_labels, $p_title, $p_graph_wid
 		$t_graph->SetScale( 'linlin' );
 		$t_graph->SetMarginColor( 'white' );
 		$t_graph->SetFrame( false );
-		$t_graph->title->Set( $p_title . ' ' . lang_get( 'by_date' ) );
+		$t_graph->title->Set( $p_title . ' ' . \Flickerbox\Lang::get( 'by_date' ) );
 		$t_graph->title->SetFont( $t_graph_font, FS_BOLD );
 
 		$t_graph->legend->Pos( 0.01, 0.05, 'right', 'top' );
@@ -621,11 +621,11 @@ function graph_total_metrics( array $p_metrics ) {
  */
 function create_bug_enum_summary( $p_enum_string, $p_enum ) {
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_specific_where = ' AND ' . helper_project_specific_where( $t_project_id, $t_user_id );
 
 	$t_metrics = array();
-	$t_assoc_array = MantisEnum::getAssocArrayIndexedByValues( $p_enum_string );
+	$t_assoc_array = \MantisEnum::getAssocArrayIndexedByValues( $p_enum_string );
 
 	if( !db_field_exists( $p_enum, db_get_table( 'bug' ) ) ) {
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, ERROR );
@@ -649,7 +649,7 @@ function create_bug_enum_summary( $p_enum_string, $p_enum ) {
  */
 function enum_bug_group( $p_enum_string, $p_enum ) {
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_res_val = config_get( 'bug_resolved_status_threshold' );
 	$t_clo_val = config_get( 'bug_closed_status_threshold' );
 	$t_specific_where = ' AND ' . helper_project_specific_where( $t_project_id, $t_user_id );
@@ -658,7 +658,7 @@ function enum_bug_group( $p_enum_string, $p_enum ) {
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, ERROR );
 	}
 
-	$t_array_indexed_by_enum_values = MantisEnum::getAssocArrayIndexedByValues( $p_enum_string );
+	$t_array_indexed_by_enum_values = \MantisEnum::getAssocArrayIndexedByValues( $p_enum_string );
 	foreach ( $t_array_indexed_by_enum_values as $t_value => $t_label ) {
 		# Calculates the number of bugs opened and puts the results in a table
 		$t_query = 'SELECT COUNT(*) FROM {bug}
@@ -692,7 +692,7 @@ function enum_bug_group( $p_enum_string, $p_enum ) {
  */
 function create_developer_summary() {
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_specific_where = ' AND ' . helper_project_specific_where( $t_project_id, $t_user_id );
 
 	$t_res_val = config_get( 'bug_resolved_status_threshold' );
@@ -745,7 +745,7 @@ function create_developer_summary() {
  */
 function create_reporter_summary() {
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_specific_where = helper_project_specific_where( $t_project_id, $t_user_id );
 
 	$t_query = 'SELECT reporter_id FROM {bug} WHERE ' . $t_specific_where;
@@ -782,7 +782,7 @@ function create_reporter_summary() {
  */
 function create_category_summary() {
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_specific_where = helper_project_specific_where( $t_project_id, $t_user_id );
 
 	$t_query = 'SELECT id, name FROM {category}
@@ -818,7 +818,7 @@ function create_cumulative_bydate() {
 	$t_res_val = config_get( 'bug_resolved_status_threshold' );
 
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_specific_where = helper_project_specific_where( $t_project_id, $t_user_id );
 
 	# Get all the submitted dates
@@ -919,7 +919,7 @@ function graph_date_format( $p_date ) {
  */
 function error_check( $p_bug_count, $p_title ) {
 	if( 0 == $p_bug_count ) {
-		error_text( $p_title, plugin_lang_get( 'not_enough_data' ) );
+		error_text( $p_title, plugin_langget( 'not_enough_data' ) );
 	}
 }
 

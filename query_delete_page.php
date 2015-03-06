@@ -35,46 +35,38 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
-require_api( 'compress_api.php' );
-require_api( 'filter_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-auth_ensure_user_authenticated();
-compress_enable();
+\Flickerbox\Auth::ensure_user_authenticated();
+\Flickerbox\Compress::enable();
 
-$f_query_id = gpc_get_int( 'source_query_id' );
+$f_query_id = \Flickerbox\GPC::get_int( 'source_query_id' );
 $t_redirect_url = 'query_view_page.php';
 $t_delete_url = 'query_delete.php';
 
-if( !filter_db_can_delete_filter( $f_query_id ) ) {
+if( !\Flickerbox\Filter::db_can_delete_filter( $f_query_id ) ) {
 	print_header_redirect( $t_redirect_url );
 }
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 ?>
 <br />
 <div class="center">
-<strong><?php print string_display( filter_db_get_name( $f_query_id ) ); ?></strong>
-<?php echo lang_get( 'query_delete_msg' ); ?>
+<strong><?php print \Flickerbox\String::display( \Flickerbox\Filter::db_get_name( $f_query_id ) ); ?></strong>
+<?php echo \Flickerbox\Lang::get( 'query_delete_msg' ); ?>
 
 <form method="post" action="<?php print $t_delete_url; ?>">
-<?php echo form_security_field( 'query_delete' ) ?>
+<?php echo \Flickerbox\Form::security_field( 'query_delete' ) ?>
 <br /><br />
 <input type="hidden" name="source_query_id" value="<?php print $f_query_id; ?>"/>
-<input type="submit" class="button" value="<?php print lang_get( 'delete_query' ); ?>"/>
+<input type="submit" class="button" value="<?php print \Flickerbox\Lang::get( 'delete_query' ); ?>"/>
 </form>
 
 <form method="post" action="<?php print $t_redirect_url; ?>">
 <?php # CSRF protection not required here - form does not result in modifications ?>
-<input type="submit" class="button" value="<?php print lang_get( 'go_back' ); ?>"/>
+<input type="submit" class="button" value="<?php print \Flickerbox\Lang::get( 'go_back' ); ?>"/>
 </form>
 
 <?php
 print '</div>';
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

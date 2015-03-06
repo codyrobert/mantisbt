@@ -44,9 +44,6 @@ require_once( dirname( dirname( dirname( __FILE__ ) ) ) . '/core.php' );
 
 require_once( 'check_api.php' );
 
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'http_api.php' );
 
 # Initialise a special error handler for use with check.php so that errors are
 # not treated as being fatal. Instead, integrate error handling inline with the
@@ -57,8 +54,8 @@ check_init_error_handler();
 # of the tests may take a long time to complete.
 set_time_limit( 60 * 5 );
 
-$g_show_all = gpc_get_bool( 'show_all', false );
-$g_show_errors = gpc_get_bool( 'show_errors', false );
+$g_show_all = \Flickerbox\GPC::get_bool( 'show_all', false );
+$g_show_errors = \Flickerbox\GPC::get_bool( 'show_errors', false );
 
 /**
  * Returns a URL to implement filtering on the admin check page
@@ -88,20 +85,20 @@ $t_show_errors_mode_link = sprintf( $t_link,
 	'verbose error messages'
 );
 
-http_content_headers();
+\Flickerbox\HTTP::content_headers();
 
-html_begin();
+\Flickerbox\HTML::begin();
 
-html_head_begin();
-html_css_link( 'admin.css' );
-html_content_type();
-html_title( 'MantisBT Administration - Check Installation' );
-html_head_end();
+\Flickerbox\HTML::head_begin();
+\Flickerbox\HTML::css_link( 'admin.css' );
+\Flickerbox\HTML::content_type();
+\Flickerbox\HTML::title( 'MantisBT Administration - Check Installation' );
+\Flickerbox\HTML::head_end();
 ?>
 
 <body>
 
-<?php html_top_banner(); ?>
+<?php \Flickerbox\HTML::top_banner(); ?>
 
 <p class="notice">Verbosity: <?php echo $t_show_all_mode_link ?> | <?php echo $t_show_errors_mode_link ?></p>
 <table id="check-results">

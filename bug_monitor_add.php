@@ -38,28 +38,21 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'bug_monitor_add' );
+\Flickerbox\Form::security_validate( 'bug_monitor_add' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 $t_bug = bug_get( $f_bug_id, true );
-$f_username = gpc_get_string( 'username', '' );
+$f_username = \Flickerbox\GPC::get_string( 'username', '' );
 
-$t_logged_in_user_id = auth_get_current_user_id();
+$t_logged_in_user_id = \Flickerbox\Auth::get_current_user_id();
 
-if( is_blank( $f_username ) ) {
+if( \Flickerbox\Utility::is_blank( $f_username ) ) {
 	$t_user_id = $t_logged_in_user_id;
 } else {
 	$t_user_id = user_get_id_by_name( $f_username );
@@ -67,7 +60,7 @@ if( is_blank( $f_username ) ) {
 		$t_user_id = user_get_id_by_realname( $f_username );
 
 		if( $t_user_id === false ) {
-			error_parameters( $f_username );
+			\Flickerbox\Error::parameters( $f_username );
 			trigger_error( ERROR_USER_BY_NAME_NOT_FOUND, E_USER_ERROR );
 		}
 	}
@@ -86,13 +79,13 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 if( $t_logged_in_user_id == $t_user_id ) {
-	access_ensure_bug_level( config_get( 'monitor_bug_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'monitor_bug_threshold' ), $f_bug_id );
 } else {
-	access_ensure_bug_level( config_get( 'monitor_add_others_bug_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'monitor_add_others_bug_threshold' ), $f_bug_id );
 }
 
 bug_monitor( $f_bug_id, $t_user_id );
 
-form_security_purge( 'bug_monitor_add' );
+\Flickerbox\Form::security_purge( 'bug_monitor_add' );
 
 print_successful_redirect_to_bug( $f_bug_id );

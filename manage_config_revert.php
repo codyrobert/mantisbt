@@ -39,55 +39,47 @@
 
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 
-form_security_validate( 'manage_config_revert' );
+\Flickerbox\Form::security_validate( 'manage_config_revert' );
 
 auth_reauthenticate();
 
-$f_project_id = gpc_get_int( 'project', 0 );
-$f_revert = gpc_get_string( 'revert', '' );
-$f_return = gpc_get_string( 'return' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project', 0 );
+$f_revert = \Flickerbox\GPC::get_string( 'revert', '' );
+$f_return = \Flickerbox\GPC::get_string( 'return' );
 
 $t_access = true;
 $t_revert_vars = explode( ',', $f_revert );
 array_walk( $t_revert_vars, 'trim' );
 foreach ( $t_revert_vars as $t_revert ) {
-	$t_access &= access_has_project_level( config_get_access( $t_revert ), $f_project_id );
+	$t_access &= \Flickerbox\Access::has_project_level( config_get_access( $t_revert ), $f_project_id );
 }
 
 if( !$t_access ) {
-	access_denied();
+	\Flickerbox\Access::denied();
 }
 
 if( '' != $f_revert ) {
 	# Confirm with the user
-	helper_ensure_confirmed( lang_get( 'config_delete_sure' ) . lang_get( 'word_separator' ) .
-		string_html_specialchars( implode( ', ', $t_revert_vars ) ) . lang_get( 'word_separator' ) . lang_get( 'in_project' ) . lang_get( 'word_separator' ) . project_get_name( $f_project_id ),
-		lang_get( 'delete_config_button' ) );
+	helper_ensure_confirmed( \Flickerbox\Lang::get( 'config_delete_sure' ) . \Flickerbox\Lang::get( 'word_separator' ) .
+		\Flickerbox\String::html_specialchars( implode( ', ', $t_revert_vars ) ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'in_project' ) . \Flickerbox\Lang::get( 'word_separator' ) . project_get_name( $f_project_id ),
+		\Flickerbox\Lang::get( 'delete_config_button' ) );
 
 	foreach ( $t_revert_vars as $t_revert ) {
 		config_delete( $t_revert, ALL_USERS, $f_project_id );
 	}
 }
 
-form_security_purge( 'manage_config_revert' );
+\Flickerbox\Form::security_purge( 'manage_config_revert' );
 
 $t_redirect_url = $f_return;
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

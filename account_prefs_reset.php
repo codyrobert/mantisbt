@@ -48,24 +48,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
 require_api( 'user_pref_api.php' );
 
 #============ Parameters ============
-$f_user_id = gpc_get_int( 'user_id' );
-$f_redirect_url	= string_sanitize_url( gpc_get_string( 'redirect_url', 'account_prefs_page.php' ) );
+$f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
+$f_redirect_url	= \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'redirect_url', 'account_prefs_page.php' ) );
 
 #============ Permissions ============
-form_security_validate( 'account_prefs_reset' );
+\Flickerbox\Form::security_validate( 'account_prefs_reset' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
 user_ensure_exists( $f_user_id );
 
@@ -75,8 +70,8 @@ $t_user = user_get_row( $f_user_id );
 # have to allow authorised users to update the accounts of other users.
 # TODO: split this functionality into manage_user_prefs_reset.php
 if( auth_get_current_user_id() != $f_user_id ) {
-	access_ensure_global_level( config_get( 'manage_user_threshold' ) );
-	access_ensure_global_level( $t_user['access_level'] );
+	\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
 } else {
 	# Protected users should not be able to update the preferences of their
 	# user account. The anonymous user is always considered a protected
@@ -86,6 +81,6 @@ if( auth_get_current_user_id() != $f_user_id ) {
 
 user_pref_delete( $f_user_id );
 
-form_security_purge( 'account_prefs_reset' );
+\Flickerbox\Form::security_purge( 'account_prefs_reset' );
 
 print_header_redirect( $f_redirect_url, true, true );

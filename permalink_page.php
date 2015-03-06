@@ -34,34 +34,28 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 
-access_ensure_project_level( config_get( 'create_permalink_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'create_permalink_threshold' ) );
 
-$f_url = string_sanitize_url( gpc_get_string( 'url' ) );
+$f_url = \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'url' ) );
 ?>
 <div>
 	<p>
 <?php
-echo lang_get( 'filter_permalink' ), '<br />';
-$t_safe_url = string_display_line( $f_url );
+echo \Flickerbox\Lang::get( 'filter_permalink' ), '<br />';
+$t_safe_url = \Flickerbox\String::display_line( $f_url );
 echo '<a href="' . $t_safe_url . '">' . $t_safe_url . '</a></p>';
 
 $t_create_short_url = config_get( 'create_short_url' );
 
-if( !is_blank( $t_create_short_url ) ) {
-	print_bracket_link( sprintf( $t_create_short_url, $f_url ), lang_get( 'create_short_link' ), true );
+if( !\Flickerbox\Utility::is_blank( $t_create_short_url ) ) {
+	print_bracket_link( sprintf( $t_create_short_url, $f_url ), \Flickerbox\Lang::get( 'create_short_link' ), true );
 }
 ?>
 </div>
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

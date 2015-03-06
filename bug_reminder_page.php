@@ -37,19 +37,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
 $t_bug = bug_get( $f_bug_id, true );
 if( $t_bug->project_id != helper_get_current_project() ) {
@@ -59,30 +52,30 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 if( bug_is_readonly( $f_bug_id ) ) {
-	error_parameters( $f_bug_id );
+	\Flickerbox\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-access_ensure_bug_level( config_get( 'bug_reminder_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'bug_reminder_threshold' ), $f_bug_id );
 
-html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 ?>
 
 <?php # Send reminder Form BEGIN ?>
 <br />
 <form method="post" action="bug_reminder.php">
-<?php echo form_security_field( 'bug_reminder' ) ?>
+<?php echo \Flickerbox\Form::security_field( 'bug_reminder' ) ?>
 <input type="hidden" name="bug_id" value="<?php echo $f_bug_id ?>" />
 <div class="width75 form-container">
 <table cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
-		<?php echo lang_get( 'bug_reminder' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'bug_reminder' ) ?>
 	</td>
 </tr>
 <tr>
 	<th class="category">
-		<?php echo lang_get( 'to' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'to' ) ?>
 	</th>
 	<td>
 		<select name="to[]" multiple="multiple" size="12" class="width20">
@@ -103,7 +96,7 @@ html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 </tr>
 <tr>
 	<th class="category">
-		<?php echo lang_get( 'reminder' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'reminder' ) ?>
 	</th>
 	<td>
 		<textarea name="body" cols="85" rows="10" class="width100"></textarea>
@@ -111,7 +104,7 @@ html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 </tr>
 </table>
 <div class="center">
-	<input type="submit" class="button" value="<?php echo lang_get( 'bug_send_button' ) ?>" />
+	<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'bug_send_button' ) ?>" />
 </div>
 </div>
 </form>
@@ -120,12 +113,12 @@ html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 <tr>
 	<td>
 		<?php
-			echo lang_get( 'reminder_explain' ) . ' ';
+			echo \Flickerbox\Lang::get( 'reminder_explain' ) . ' ';
 			if( ON == config_get( 'reminder_recipients_monitor_bug' ) ) {
-				echo lang_get( 'reminder_monitor' ) . ' ';
+				echo \Flickerbox\Lang::get( 'reminder_monitor' ) . ' ';
 			}
 			if( ON == config_get( 'store_reminders' ) ) {
-				echo lang_get( 'reminder_store' );
+				echo \Flickerbox\Lang::get( 'reminder_store' );
 			}
 		?>
 	</td>

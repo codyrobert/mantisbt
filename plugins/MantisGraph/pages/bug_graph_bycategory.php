@@ -28,14 +28,14 @@ require_once( 'core.php' );
 plugin_require_api( 'core/Period.php' );
 plugin_require_api( 'core/graph_api.php' );
 
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-$f_width = gpc_get_int( 'width', 600 );
+$f_width = \Flickerbox\GPC::get_int( 'width', 600 );
 $t_ar = plugin_config_get( 'bar_aspect' );
 $t_interval = new Period();
 $t_interval->set_period_from_selector( 'interval' );
-$f_show_as_table = gpc_get_bool( 'show_table', false );
-$f_summary = gpc_get_bool( 'summary', false );
+$f_show_as_table = \Flickerbox\GPC::get_bool( 'show_table', false );
+$f_summary = \Flickerbox\GPC::get_bool( 'summary', false );
 
 $t_interval_days = $t_interval->get_elapsed_days();
 if( $t_interval_days <= 14 ) {
@@ -52,11 +52,11 @@ $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = 0;
 
-$t_filter = current_user_get_bug_filter();
+$t_filter = \Flickerbox\Current_User::get_bug_filter();
 $t_filter['_view_type']	= 'advanced';
 $t_filter[FILTER_PROPERTY_STATUS] = array(META_FILTER_ANY);
 $t_filter[FILTER_PROPERTY_SORT_FIELD_NAME] = '';
-$t_rows = filter_get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, null, null, true );
+$t_rows = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, null, null, true );
 if( count( $t_rows ) == 0 ) {
 	# no data to graph
 	exit();
@@ -80,11 +80,11 @@ $t_marker[$t_ptr] = time();
 $t_data[$t_ptr] = array();
 foreach ( $t_rows as $t_row ) {
 	# the following function can treat the resolved parameter as an array to match
-	$t_cat = category_get_name( $t_row->category_id );
+	$t_cat = \Flickerbox\Category::get_field( $t_row->category_id );
 	if( $t_cat == '' ) {
 		$t_cat = 'none';
 	}
-	if( !access_compare_level( $t_row->status, $t_resolved ) ) {
+	if( !\Flickerbox\Access::compare_level( $t_row->status, $t_resolved ) ) {
 		if( in_array( $t_cat, $t_category ) ) {
 			$t_data[$t_ptr][$t_cat] ++;
 		} else {
@@ -137,9 +137,9 @@ for( $t_now = time() - $t_incr; $t_now >= $t_start; $t_now -= $t_incr ) {
 					# change the category associated with the bug to match in case the bug was
 					#  created during the scan
 					$t_bug_cat[$t_row['bug_id']] = $t_cat;
-				} else { # change of status access_compare_level( $t_row['status'], $t_resolved )
-					if( access_compare_level( $t_row['new_value'], $t_resolved ) &&
-							!access_compare_level( $t_row['old_value'], $t_resolved ) ) {
+				} else { # change of status \Flickerbox\Access::compare_level( $t_row['status'], $t_resolved )
+					if( \Flickerbox\Access::compare_level( $t_row['new_value'], $t_resolved ) &&
+							!\Flickerbox\Access::compare_level( $t_row['old_value'], $t_resolved ) ) {
 						# transition from open to closed
 						$t_cat = $t_bug_cat[$t_row['bug_id']];
 						if( $t_cat == '' ) {
@@ -199,13 +199,13 @@ for( $i=0; $i<$t_count_cat; $i++ ) {
 sort( $t_category );
 if( $f_show_as_table ) {
 	$t_date_format = config_get( 'short_date_format' );
-	html_begin();
-	html_head_begin();
-	html_css();
-	html_content_type();
-	html_title( lang_get( 'by_category' ) );
-	html_head_end();
-	html_body_begin();
+	\Flickerbox\HTML::begin();
+	\Flickerbox\HTML::head_begin();
+	\Flickerbox\HTML::css();
+	\Flickerbox\HTML::content_type();
+	\Flickerbox\HTML::title( \Flickerbox\Lang::get( 'by_category' ) );
+	\Flickerbox\HTML::head_end();
+	\Flickerbox\HTML::body_begin();
 	echo '<table class="width100"><tr><td></td>';
 	foreach ( $t_category as $t_cat ) {
 		echo '<th>'.$t_cat.'</th>';
@@ -219,8 +219,8 @@ if( $f_show_as_table ) {
 		echo '</tr>';
 	}
 	echo '</table>';
-	html_body_end();
-	html_end();
+	\Flickerbox\HTML::body_end();
+	\Flickerbox\HTML::end();
 } else {
 	# reverse the array and reorder the data, if necessary
 	$t_metrics = array();
@@ -233,5 +233,5 @@ if( $f_show_as_table ) {
 		}
 	}
 	array_unshift( $t_category, '' ); # add placeholder
-	graph_bydate( $t_metrics, $t_category, lang_get( 'by_category' ), $f_width, $f_width * $t_ar );
+	graph_bydate( $t_metrics, $t_category, \Flickerbox\Lang::get( 'by_category' ), $f_width, $f_width * $t_ar );
 }

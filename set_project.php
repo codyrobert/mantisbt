@@ -39,23 +39,15 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'filter_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
 
-$f_project_id	= gpc_get_string( 'project_id' );
-$f_make_default	= gpc_get_bool( 'make_default' );
-$f_ref			= gpc_get_string( 'ref', '' );
+$f_project_id	= \Flickerbox\GPC::get_string( 'project_id' );
+$f_make_default	= \Flickerbox\GPC::get_bool( 'make_default' );
+$f_ref			= \Flickerbox\GPC::get_string( 'ref', '' );
 
-$c_ref = string_prepare_header( $f_ref );
+$c_ref = \Flickerbox\String::prepare_header( $f_ref );
 
 $t_project = explode( ';', $f_project_id );
 $t_top     = $t_project[0];
@@ -67,7 +59,7 @@ if( ALL_PROJECTS != $t_bottom ) {
 
 # Set default project
 if( $f_make_default ) {
-	current_user_set_default_project( $t_top );
+	\Flickerbox\Current_User::set_default_project( $t_top );
 }
 
 helper_set_current_project( $f_project_id );
@@ -75,9 +67,9 @@ helper_set_current_project( $f_project_id );
 # redirect to 'same page' when switching projects.
 
 # for proxies that clear out HTTP_REFERER
-if( !is_blank( $c_ref ) ) {
+if( !\Flickerbox\Utility::is_blank( $c_ref ) ) {
 	$t_redirect_url = $c_ref;
-} else if( !isset( $_SERVER['HTTP_REFERER'] ) || is_blank( $_SERVER['HTTP_REFERER'] ) ) {
+} else if( !isset( $_SERVER['HTTP_REFERER'] ) || \Flickerbox\Utility::is_blank( $_SERVER['HTTP_REFERER'] ) ) {
 	$t_redirect_url = config_get( 'default_home_page' );
 } else {
 	$t_home_page = config_get( 'default_home_page' );
@@ -90,7 +82,7 @@ if( !is_blank( $c_ref ) ) {
 
 		# if view_all_bug_page, pass on filter
 		if( strcasecmp( 'view_all_bug_page.php', $t_referrer_page ) == 0 ) {
-			$t_source_filter_id = filter_db_get_project_current( $f_project_id );
+			$t_source_filter_id = \Flickerbox\Filter::db_get_project_current( $f_project_id );
 			$t_redirect_url = 'view_all_set.php?type=4';
 
 			if( $t_source_filter_id !== null ) {
@@ -121,11 +113,11 @@ if( !is_blank( $c_ref ) ) {
 
 print_header_redirect( $t_redirect_url, true, true );
 
-html_page_top1();
-html_meta_redirect( $t_redirect_url );
+\Flickerbox\HTML::page_top1();
+\Flickerbox\HTML::meta_redirect( $t_redirect_url );
 
-html_page_top1();
+\Flickerbox\HTML::page_top1();
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

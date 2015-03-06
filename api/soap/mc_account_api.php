@@ -34,16 +34,16 @@ function mci_account_get_array_by_id( $p_user_id ) {
 
 	if( user_exists( $p_user_id ) ) {
 
-		$t_current_user_id = auth_get_current_user_id();
+		$t_current_user_id = \Flickerbox\Auth::get_current_user_id();
 		$t_access_level = user_get_field ( $t_current_user_id, 'access_level' );
-		$t_can_manage = access_has_global_level( config_get( 'manage_user_threshold' ) ) &&
-			access_has_global_level( $t_access_level );
+		$t_can_manage = \Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) &&
+			\Flickerbox\Access::has_global_level( $t_access_level );
 
 		# this deviates from the behaviour of view_user_page.php, but it is more intuitive
 		$t_is_same_user = $t_current_user_id === $p_user_id;
 
-		$t_can_see_realname = access_has_project_level( config_get( 'show_user_realname_threshold' ) );
-		$t_can_see_email = access_has_project_level( config_get( 'show_user_email_threshold' ) );
+		$t_can_see_realname = \Flickerbox\Access::has_project_level( config_get( 'show_user_realname_threshold' ) );
+		$t_can_see_email = \Flickerbox\Access::has_project_level( config_get( 'show_user_email_threshold' ) );
 
 		$t_result['name'] = user_get_field( $p_user_id, 'username' );
 

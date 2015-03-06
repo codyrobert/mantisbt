@@ -274,27 +274,27 @@ class Period {
 	 */
 	function period_selector( $p_control_name ) {
 		$t_periods = array(
-			0 => plugin_lang_get( 'period_none' ),
-			7 => plugin_lang_get( 'period_this_week' ),
-			8 => plugin_lang_get( 'period_last_week' ),
-			9 => plugin_lang_get( 'period_two_weeks' ),
-			1 => plugin_lang_get( 'period_this_month' ),
-			2 => plugin_lang_get( 'period_last_month' ),
-			3 => plugin_lang_get( 'period_this_quarter' ),
-			4 => plugin_lang_get( 'period_last_quarter' ),
-			5 => plugin_lang_get( 'period_year_to_date' ),
-			6 => plugin_lang_get( 'period_last_year' ),
-			10 => plugin_lang_get( 'period_select' ),
+			0 => plugin_langget( 'period_none' ),
+			7 => plugin_langget( 'period_this_week' ),
+			8 => plugin_langget( 'period_last_week' ),
+			9 => plugin_langget( 'period_two_weeks' ),
+			1 => plugin_langget( 'period_this_month' ),
+			2 => plugin_langget( 'period_last_month' ),
+			3 => plugin_langget( 'period_this_quarter' ),
+			4 => plugin_langget( 'period_last_quarter' ),
+			5 => plugin_langget( 'period_year_to_date' ),
+			6 => plugin_langget( 'period_last_year' ),
+			10 => plugin_langget( 'period_select' ),
 		);
-		$t_default = gpc_get_int( $p_control_name, 0 );
+		$t_default = \Flickerbox\GPC::get_int( $p_control_name, 0 );
 		$t_formatted_start = $this->get_start_formatted();
 		$t_formatted_end = $this->get_end_formatted();
 		$t_ret = '<div id="period_menu">';
 		$t_ret .= get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
 		$t_ret .= "</div>\n";
 		$t_ret .= "<div id=\"dates\">\n";
-		$t_ret .= '<label for="start_date">' . lang_get( 'from_date' ) . '</label><input type="text" id="start_date" name="start_date" size="20" value="' . $t_formatted_start . '" class="datetime" disabled="disabled" />' . "<br />\n";
-		$t_ret .= '<label for="end_date">' . lang_get( 'to_date' ) . '</label><input type="text" id="end_date" name="end_date" size="20" value="' . $t_formatted_end . '" class="datetime" disabled="disabled" />' . "\n";
+		$t_ret .= '<label for="start_date">' . \Flickerbox\Lang::get( 'from_date' ) . '</label><input type="text" id="start_date" name="start_date" size="20" value="' . $t_formatted_start . '" class="datetime" disabled="disabled" />' . "<br />\n";
+		$t_ret .= '<label for="end_date">' . \Flickerbox\Lang::get( 'to_date' ) . '</label><input type="text" id="end_date" name="end_date" size="20" value="' . $t_formatted_end . '" class="datetime" disabled="disabled" />' . "\n";
 		$t_ret .= "</div>\n";
 		return $t_ret;
 	}
@@ -308,7 +308,7 @@ class Period {
 	 * @return void
 	 */
 	function set_period_from_selector( $p_control_name, $p_start_field = 'start_date', $p_end_field = 'end_date' ) {
-		$t_default = gpc_get_int( $p_control_name, 0 );
+		$t_default = \Flickerbox\GPC::get_int( $p_control_name, 0 );
 		switch( $t_default ) {
 			case 1:
 				$this->month_to_date();
@@ -340,13 +340,13 @@ class Period {
 			case 10:
 				$t_today = date( 'Y-m-d' );
 				if( $p_start_field != '' ) {
-					$this->start = gpc_get_string( $p_start_field, '' ) . ' 00:00:00';
+					$this->start = \Flickerbox\GPC::get_string( $p_start_field, '' ) . ' 00:00:00';
 					if( $this->start == '' ) {
 						$this->start = $t_today . ' 00:00:00';
 					}
 				}
 				if( $p_end_field != '' ) {
-					$this->end = gpc_get_string( $p_end_field, '' ) . ' 23:59:59';
+					$this->end = \Flickerbox\GPC::get_string( $p_end_field, '' ) . ' 23:59:59';
 					if( $this->end == '' ) {
 						$this->end = $t_today . ' 23:59:59';
 					}

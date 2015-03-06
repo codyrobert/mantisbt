@@ -33,44 +33,38 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'file_api.php' );
-require_api( 'form_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'utility_api.php' );
 
 # Check if project documentation feature is enabled.
 if( OFF == config_get( 'enable_project_documentation' ) ||
-	!file_is_uploading_enabled() ||
-	!file_allow_project_upload() ) {
-	access_denied();
+	!\Flickerbox\File::is_uploading_enabled() ||
+	!\Flickerbox\File::allow_project_upload() ) {
+	\Flickerbox\Access::denied();
 }
 
-access_ensure_project_level( config_get( 'upload_project_file_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'upload_project_file_threshold' ) );
 
-$t_max_file_size = (int)min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 ?>
 
 <br />
 <div>
 <form method="post" enctype="multipart/form-data" action="proj_doc_add.php">
-<?php echo form_security_field( 'proj_doc_add' ) ?>
+<?php echo \Flickerbox\Form::security_field( 'proj_doc_add' ) ?>
 <table class="width75" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo lang_get( 'upload_file_title' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'upload_file_title' ) ?>
 	</td>
 	<td class="right">
-		<?php print_doc_menu( 'proj_doc_add_page.php' ) ?>
+		<?php \Flickerbox\HTML::print_doc_menu( 'proj_doc_add_page.php' ) ?>
 	</td>
 </tr>
 <tr class="row-1">
 	<th class="category" width="25%">
-		<span class="required">*</span><?php echo lang_get( 'title' ) ?>
+		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'title' ) ?>
 	</th>
 	<td width="75%">
 		<input type="text" name="title" size="70" maxlength="250" />
@@ -78,7 +72,7 @@ html_page_top();
 </tr>
 <tr class="row-2">
 	<th class="category">
-		<?php echo lang_get( 'description' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'description' ) ?>
 	</th>
 	<td>
 		<textarea name="description" cols="60" rows="7"></textarea>
@@ -86,7 +80,7 @@ html_page_top();
 </tr>
 <tr class="row-1">
 	<td class="category">
-		<span class="required">*</span><?php echo lang_get( 'select_file' ); ?>
+		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'select_file' ); ?>
 		<br />
 		<?php print_max_filesize( $t_max_file_size ); ?>
 	</td>
@@ -97,10 +91,10 @@ html_page_top();
 </tr>
 <tr>
 	<td class="left">
-		<span class="required"> * <?php echo lang_get( 'required' ) ?></span>
+		<span class="required"> * <?php echo \Flickerbox\Lang::get( 'required' ) ?></span>
 	</td>
 	<td class="center">
-		<input type="submit" class="button" value="<?php echo lang_get( 'upload_file_button' ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'upload_file_button' ) ?>" />
 	</td>
 </tr>
 </table>
@@ -108,4 +102,4 @@ html_page_top();
 </div>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

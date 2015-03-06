@@ -52,16 +52,16 @@ class IssueTagTimelineEvent extends TimelineEvent {
 	 * @return string
 	 */
 	public function html() {
-		$t_string = $this->tag ? lang_get( 'timeline_issue_tagged' ) : lang_get( 'timeline_issue_untagged' );
-		$t_tag_row = tag_get_by_name( $this->tag_name );
+		$t_string = $this->tag ? \Flickerbox\Lang::get( 'timeline_issue_tagged' ) : \Flickerbox\Lang::get( 'timeline_issue_untagged' );
+		$t_tag_row = \Flickerbox\Tag::get_by_name( $this->tag_name );
 
 		$t_html = $this->html_start();
 		$t_html .= '<div class="action">'
 			. sprintf(
 				$t_string,
 				user_get_name( $this->user_id ),
-				string_get_bug_view_link( $this->issue_id ),
-				$t_tag_row ? tag_get_link( $t_tag_row ) : $this->tag_name
+				\Flickerbox\String::get_bug_view_link( $this->issue_id ),
+				$t_tag_row ? \Flickerbox\Tag::get_link( $t_tag_row ) : $this->tag_name
 			)
 			. '</div>';
 		$t_html .= $this->html_end();

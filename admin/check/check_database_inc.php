@@ -36,7 +36,6 @@ if( !defined( 'CHECK_DATABASE_INC_ALLOW' ) ) {
 require_once( 'check_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'utility_api.php' );
 
 check_print_section_header_row( 'Database' );
 
@@ -105,7 +104,7 @@ if( db_is_mssql() ) {
 		array( false => "'mssql' driver is no longer supported in PHP >= 5.3, please use 'mssqlnative' instead" )
 	);
 
-	$t_mssql_textsize = ini_get_number( 'mssql.textsize' );
+	$t_mssql_textsize = \Flickerbox\Utility::ini_get_number( 'mssql.textsize' );
 	check_print_info_row(
 		'php.ini directive: mssql.textsize',
 		htmlentities( $t_mssql_textsize )
@@ -119,7 +118,7 @@ if( db_is_mssql() ) {
 			. '. You should set this value to -1 to prevent large text fields being truncated upon being read from the database.' )
 	);
 
-	$t_mssql_textlimit = ini_get_number( 'mssql.textlimit' );
+	$t_mssql_textlimit = \Flickerbox\Utility::ini_get_number( 'mssql.textlimit' );
 	check_print_info_row(
 		'php.ini directive: mssql.textlimit',
 		htmlentities( $t_mssql_textlimit )

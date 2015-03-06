@@ -24,14 +24,14 @@
  */
 
 require_once( 'core.php' );
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 ?>
 <br />
 <?php
 
-print_summary_menu( 'summary_jpgraph_page.php' );
+\Flickerbox\HTML::print_summary_menu( 'summary_jpgraph_page.php' );
 
 $t_graphs = array( 'summary_graph_cumulative_bydate', 'summary_graph_bydeveloper', 'summary_graph_byreporter',
 		'summary_graph_byseverity', 'summary_graph_bystatus', 'summary_graph_byresolution',
@@ -40,7 +40,7 @@ $t_wide = plugin_config_get( 'summary_graphs_per_row' );
 $t_width = plugin_config_get( 'window_width' );
 $t_graph_width = (int)( ( $t_width - 50 ) / $t_wide );
 
-token_delete( TOKEN_GRAPH );
+\Flickerbox\Token::delete( TOKEN_GRAPH );
 
 ?>
 
@@ -48,7 +48,7 @@ token_delete( TOKEN_GRAPH );
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
-		<?php echo lang_get( 'summary_title' ) ?>
+		<?php echo \Flickerbox\Lang::get( 'summary_title' ) ?>
 	</td>
 </tr>
 <?php
@@ -68,4 +68,4 @@ token_delete( TOKEN_GRAPH );
 </table>
 
 <?php
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

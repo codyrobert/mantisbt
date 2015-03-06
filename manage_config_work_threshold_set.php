@@ -36,26 +36,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'manage_config_work_threshold_set' );
+\Flickerbox\Form::security_validate( 'manage_config_work_threshold_set' );
 
 auth_reauthenticate();
 
 $t_redirect_url = 'manage_config_work_threshold_page.php';
 
-html_page_top( lang_get( 'manage_threshold_config' ), $t_redirect_url );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_threshold_config' ), $t_redirect_url );
 
-$g_access = current_user_get_access_level();
+$g_access = \Flickerbox\Current_User::get_access_level();
 $g_project = helper_get_current_project();
 
 /**
@@ -69,10 +62,10 @@ function set_capability_row( $p_threshold, $p_all_projects_only = false ) {
 
 	if( ( $g_access >= config_get_access( $p_threshold ) )
 			  && ( ( ALL_PROJECTS == $g_project ) || !$p_all_projects_only ) ) {
-		$f_threshold = gpc_get_int_array( 'flag_thres_' . $p_threshold, array() );
-		$f_access = gpc_get_int( 'access_' . $p_threshold );
+		$f_threshold = \Flickerbox\GPC::get_int_array( 'flag_thres_' . $p_threshold, array() );
+		$f_access = \Flickerbox\GPC::get_int( 'access_' . $p_threshold );
 		# @@debug @@ echo "<br />for $p_threshold "; var_dump($f_threshold, $f_access); echo '<br />';
-		$t_access_levels = MantisEnum::getAssocArrayIndexedByValues( config_get( 'access_levels_enum_string' ) );
+		$t_access_levels = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'access_levels_enum_string' ) );
 		ksort( $t_access_levels );
 		reset( $t_access_levels );
 
@@ -119,8 +112,8 @@ function set_capability_boolean( $p_threshold, $p_all_projects_only = false ) {
 
 	if( ( $g_access >= config_get_access( $p_threshold ) )
 			  && ( ( ALL_PROJECTS == $g_project ) || !$p_all_projects_only ) ) {
-		$f_flag = gpc_get( 'flag_' . $p_threshold, OFF );
-		$f_access = gpc_get_int( 'access_' . $p_threshold );
+		$f_flag = \Flickerbox\GPC::get( 'flag_' . $p_threshold, OFF );
+		$f_access = \Flickerbox\GPC::get_int( 'access_' . $p_threshold );
 		$f_flag = ( OFF == $f_flag ) ? OFF : ON;
 		# @@debug @@ echo "<br />for $p_threshold "; var_dump($f_flag, $f_access); echo '<br />';
 
@@ -141,8 +134,8 @@ function set_capability_enum( $p_threshold, $p_all_projects_only = false ) {
 
 	if( ( $g_access >= config_get_access( $p_threshold ) )
 			  && ( ( ALL_PROJECTS == $g_project ) || !$p_all_projects_only ) ) {
-		$f_flag = gpc_get( 'flag_' . $p_threshold );
-		$f_access = gpc_get_int( 'access_' . $p_threshold );
+		$f_flag = \Flickerbox\GPC::get( 'flag_' . $p_threshold );
+		$f_access = \Flickerbox\GPC::get_int( 'access_' . $p_threshold );
 
 		if( ( $f_flag != config_get( $p_threshold ) ) || ( $f_access != config_get_access( $p_threshold ) ) ) {
 			config_set( $p_threshold, $f_flag, NO_USER, $g_project, $f_access );
@@ -192,8 +185,8 @@ set_capability_row( 'view_history_threshold' );
 set_capability_row( 'bug_reminder_threshold' );
 set_capability_row( 'reminder_receive_threshold' );
 
-form_security_purge( 'manage_config_work_threshold_set' );
+\Flickerbox\Form::security_purge( 'manage_config_work_threshold_set' );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

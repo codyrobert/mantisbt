@@ -31,12 +31,8 @@
  * @uses utility_api.php
  */
 
-require_api( 'authentication_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'error_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'utility_api.php' );
 
 # cache for config variables
 $g_cache_config = array();
@@ -91,12 +87,12 @@ function config_get( $p_option, $p_default = null, $p_user = null, $p_project = 
 
 		if( $g_cache_db_table_exists ) {
 			# @@ debug @@ echo " lu db $p_option ";
-			# @@ debug @@ error_print_stack_trace();
+			# @@ debug @@ \Flickerbox\Error::print_stack_trace();
 			# prepare the user's list
 			$t_users = array();
 			if( null === $p_user ) {
 				if( !isset( $g_cache_config_user ) ) {
-					$t_users[] = auth_is_user_authenticated() ? auth_get_current_user_id() : ALL_USERS;
+					$t_users[] = \Flickerbox\Auth::is_user_authenticated() ? \Flickerbox\Auth::get_current_user_id() : ALL_USERS;
 					if( !in_array( ALL_USERS, $t_users ) ) {
 						$t_users[] = ALL_USERS;
 					}
@@ -115,7 +111,7 @@ function config_get( $p_option, $p_default = null, $p_user = null, $p_project = 
 			$t_projects = array();
 			if( ( null === $p_project ) ) {
 				if( !isset( $g_cache_config_project ) ) {
-					$t_projects[] = auth_is_user_authenticated() ? helper_get_current_project() : ALL_PROJECTS;
+					$t_projects[] = \Flickerbox\Auth::is_user_authenticated() ? helper_get_current_project() : ALL_PROJECTS;
 					if( !in_array( ALL_PROJECTS, $t_projects ) ) {
 						$t_projects[] = ALL_PROJECTS;
 					}
@@ -207,7 +203,7 @@ function config_get_global( $p_option, $p_default = null ) {
 		# unless we were allowing for the option not to exist by passing
 		#  a default, trigger a WARNING
 		if( null === $p_default ) {
-			error_parameters( $p_option );
+			\Flickerbox\Error::parameters( $p_option );
 			trigger_error( ERROR_CONFIG_OPT_NOT_FOUND, WARNING );
 		}
 		return $p_default;
@@ -231,8 +227,8 @@ function config_get_access( $p_option, $p_user = null, $p_project = null ) {
 
 	# prepare the user's list
 	$t_users = array();
-	if( ( null === $p_user ) && ( auth_is_user_authenticated() ) ) {
-		$t_users[] = auth_get_current_user_id();
+	if( ( null === $p_user ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
+		$t_users[] = \Flickerbox\Auth::get_current_user_id();
 	} else if( !in_array( $p_user, $t_users ) ) {
 		$t_users[] = $p_user;
 	}
@@ -240,7 +236,7 @@ function config_get_access( $p_option, $p_user = null, $p_project = null ) {
 
 	# prepare the projects list
 	$t_projects = array();
-	if( ( null === $p_project ) && ( auth_is_user_authenticated() ) ) {
+	if( ( null === $p_project ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
 		$t_selected_project = helper_get_current_project();
 		$t_projects[] = $t_selected_project;
 		if( ALL_PROJECTS <> $t_selected_project ) {
@@ -285,8 +281,8 @@ function config_is_set( $p_option, $p_user = null, $p_project = null ) {
 
 	# prepare the user's list
 	$t_users = array( ALL_USERS );
-	if( ( null === $p_user ) && ( auth_is_user_authenticated() ) ) {
-		$t_users[] = auth_get_current_user_id();
+	if( ( null === $p_user ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
+		$t_users[] = \Flickerbox\Auth::get_current_user_id();
 	} else if( !in_array( $p_user, $t_users ) ) {
 		$t_users[] = $p_user;
 	}
@@ -294,7 +290,7 @@ function config_is_set( $p_option, $p_user = null, $p_project = null ) {
 
 	# prepare the projects list
 	$t_projects = array( ALL_PROJECTS );
-	if( ( null === $p_project ) && ( auth_is_user_authenticated() ) ) {
+	if( ( null === $p_project ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
 		$t_selected_project = helper_get_current_project();
 		if( ALL_PROJECTS <> $t_selected_project ) {
 			$t_projects[] = $t_selected_project;
@@ -593,7 +589,7 @@ function config_obsolete( $p_var, $p_replace = '' ) {
 
 			foreach( $g_cache_config[$p_var] as $t_user_id => $t_user ) {
 				$t_info .= '<li>'
-					. ( ( $t_user_id == 0 ) ? lang_get( 'all_users' ) : user_get_name( $t_user_id ) )
+					. ( ( $t_user_id == 0 ) ? \Flickerbox\Lang::get( 'all_users' ) : user_get_name( $t_user_id ) )
 					. ': ';
 				foreach ( $t_user as $t_project_id => $t_project ) {
 					$t_info .= project_get_name( $t_project_id ) . ', ';
@@ -610,7 +606,7 @@ function config_obsolete( $p_var, $p_replace = '' ) {
 				$t_info .= '<li>' . $t_option . '</li>';
 			}
 			$t_info .= '</ul>';
-		} else if( !is_blank( $p_replace ) ) {
+		} else if( !\Flickerbox\Utility::is_blank( $p_replace ) ) {
 			$t_info .= 'please use ' . $p_replace . ' instead.';
 		}
 

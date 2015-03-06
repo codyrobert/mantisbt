@@ -29,7 +29,6 @@
 # needs MantisBT to be included first to make use of the constants and possibly
 # configuration defined in MantisBT.
 
-require_api( 'filter_constants_inc.php' );
 
 // doesn't contain 'custom_fields' and project_id
 $g_soap_api_to_filter_names = array (
@@ -122,16 +121,16 @@ function mc_filter_get_issues( $p_username, $p_password, $p_project_id, $p_filte
 	$t_orig_page_number = $p_page_number < 1 ? 1 : $p_page_number;
 	$t_page_count = 0;
 	$t_bug_count = 0;
-	$t_filter = filter_db_get_filter( $p_filter_id );
+	$t_filter = \Flickerbox\Filter::db_get_filter( $p_filter_id );
 	$t_filter_detail = explode( '#', $t_filter, 2 );
 	if( !isset( $t_filter_detail[1] ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Server', 'Invalid Filter' );
 	}
 	$t_filter = json_decode( $t_filter_detail[1], true );
-	$t_filter = filter_ensure_valid_filter( $t_filter );
+	$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
 
 	$t_result = array();
-	$t_rows = filter_get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id );
+	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id );
 
 	# the page number was moved back, so we have exceeded the actual page number, see bug #12991
 	if( $t_orig_page_number > $p_page_number ) {
@@ -168,16 +167,16 @@ function mc_filter_get_issue_headers( $p_username, $p_password, $p_project_id, $
 	$t_orig_page_number = $p_page_number < 1 ? 1 : $p_page_number;
 	$t_page_count = 0;
 	$t_bug_count = 0;
-	$t_filter = filter_db_get_filter( $p_filter_id );
+	$t_filter = \Flickerbox\Filter::db_get_filter( $p_filter_id );
 	$t_filter_detail = explode( '#', $t_filter, 2 );
 	if( !isset( $t_filter_detail[1] ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Server', 'Invalid Filter' );
 	}
 	$t_filter = json_decode( $t_filter_detail[1], true );
-	$t_filter = filter_ensure_valid_filter( $t_filter );
+	$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
 
 	$t_result = array();
-	$t_rows = filter_get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id );
+	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id );
 
 	# the page number was moved back, so we have exceeded the actual page number, see bug #12991
 	if( $t_orig_page_number > $p_page_number ) {
@@ -272,13 +271,13 @@ function mci_filter_search_get_rows( $p_user_id, $p_filter_search, $p_page_numbe
         }
     }
 
-    $t_filter = filter_ensure_valid_filter( $t_filter );
+    $t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
 
     $t_result = array();
     $t_page_number = $p_page_number < 1 ? 1 : $p_page_number;
     $t_page_count = 0;
     $t_bug_count = 0;
-    return filter_get_bug_rows( $t_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter );
+    return \Flickerbox\Filter::get_bug_rows( $t_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter );
 }
 
 /**

@@ -38,51 +38,43 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'gpc_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'news_api.php' );
 require_api( 'project_api.php' );
-require_api( 'rss_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 require_lib( 'rssbuilder' . DIRECTORY_SEPARATOR . 'class.RSSBuilder.inc.php' );
 
-$f_username = gpc_get_string( 'username', null );
-$f_key = gpc_get_string( 'key', null );
-$f_project_id = gpc_get_int( 'project_id', ALL_PROJECTS );
+$f_username = \Flickerbox\GPC::get_string( 'username', null );
+$f_key = \Flickerbox\GPC::get_string( 'key', null );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
 
-news_ensure_enabled();
+\Flickerbox\News::ensure_enabled();
 
 # make sure RSS syndication is enabled.
 if( OFF == config_get( 'rss_enabled' ) ) {
-	access_denied();
+	\Flickerbox\Access::denied();
 }
 
 # authenticate the user
 if( $f_username !== null ) {
-	if( !rss_login( $f_username, $f_key ) ) {
-		access_denied();
+	if( !\Flickerbox\RSS::login( $f_username, $f_key ) ) {
+		\Flickerbox\Access::denied();
 	}
 } else {
 	if( OFF == config_get( 'allow_anonymous_login' ) ) {
-		access_denied();
+		\Flickerbox\Access::denied();
 	}
 }
 
 # Make sure that the current user has access to the selected project (if not ALL PROJECTS).
 if( $f_project_id != ALL_PROJECTS ) {
-	access_ensure_project_level( config_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
+	\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
 }
 
 # construct rss file
 
 $t_encoding = 'utf-8';
 $t_about = config_get( 'path' );
-$t_title = string_rss_links( config_get( 'window_title' ) . ' - ' . lang_get( 'news' ) );
+$t_title = string_rss_links( config_get( 'window_title' ) . ' - ' . \Flickerbox\Lang::get( 'news' ) );
 
 if( $f_username !== null ) {
 	$t_title .= ' - (' . $f_username . ')';
@@ -107,7 +99,7 @@ $t_publisher = '';
 $t_creator = '';
 
 $t_date = (string)date( 'r' );
-$t_language = lang_get( 'phpmailer_language' );
+$t_language = \Flickerbox\Lang::get( 'phpmailer_language' );
 $t_rights = '';
 
 # spatial location , temporal period or jurisdiction
@@ -133,7 +125,7 @@ $t_base = utf8_substr( $t_base, 0, 22 ) . ':' . utf8_substr( $t_base, -2 );
 
 $t_rssfile->addSYdata( $t_period, $t_frequency, $t_base );
 
-$t_news_rows = news_get_limited_rows( 0, $f_project_id );
+$t_news_rows = \Flickerbox\News::get_limited_rows( 0, $f_project_id );
 $t_news_count = count( $t_news_rows );
 
 # Loop through results
@@ -162,12 +154,12 @@ for( $i = 0; $i < $t_news_count; $i++ ) {
 
 	# author of item
 	$t_author = '';
-	if( access_has_global_level( config_get( 'show_user_email_threshold' ) ) ) {
+	if( \Flickerbox\Access::has_global_level( config_get( 'show_user_email_threshold' ) ) ) {
 		$t_author_name = string_rss_links( user_get_name( $v_poster_id ) );
 		$t_author_email = user_get_field( $v_poster_id, 'email' );
 
-		if( !is_blank( $t_author_email ) ) {
-			if( !is_blank( $t_author_name ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_author_email ) ) {
+			if( !\Flickerbox\Utility::is_blank( $t_author_name ) ) {
 				$t_author = $t_author_name . ' &lt;' . $t_author_email . '&gt;';
 			} else {
 				$t_author = $t_author_email;

@@ -81,11 +81,11 @@ function mc_issue_get( $p_username, $p_password, $p_issue_id ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	log_event( LOG_WEBSERVICE, 'getting details for issue \'' . $p_issue_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'getting details for issue \'' . $p_issue_id . '\'' );
 
 	$t_bug = bug_get( $p_issue_id, true );
 	$t_issue_data = array();
@@ -115,7 +115,7 @@ function mc_issue_get( $p_username, $p_password, $p_issue_id ) {
 	$t_issue_data['sponsorship_total'] = $t_bug->sponsorship_total;
 
 	if( !empty( $t_bug->handler_id ) ) {
-		if( access_has_bug_level( config_get( 'view_handler_threshold', null, null, $t_project_id ), $p_issue_id, $t_user_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'view_handler_threshold', null, null, $t_project_id ), $p_issue_id, $t_user_id ) ) {
 			$t_issue_data['handler'] = mci_account_get_array_by_id( $t_bug->handler_id );
 		}
 	}
@@ -168,16 +168,16 @@ function mc_issue_get_history( $p_username, $p_password, $p_issue_id ) {
 	}
 	$g_project_override = $t_project_id;
 
-	if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
 	$t_user_access_level = user_get_access_level( $t_user_id, $t_project_id );
-	if( !access_compare_level( $t_user_access_level, config_get( 'view_history_threshold' ) ) ) {
+	if( !\Flickerbox\Access::compare_level( $t_user_access_level, config_get( 'view_history_threshold' ) ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	log_event( LOG_WEBSERVICE, 'retrieving history for issue \'' . $p_issue_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'retrieving history for issue \'' . $p_issue_id . '\'' );
 
 	$t_bug_history = history_get_raw_events_array( $p_issue_id, $t_user_id );
 
@@ -195,7 +195,7 @@ function mci_get_category( $p_category_id ) {
 		return '';
 	}
 
-	return mci_null_if_empty( category_get_name( $p_category_id ) );
+	return mci_null_if_empty( \Flickerbox\Category::get_field( $p_category_id ) );
 }
 
 /**
@@ -206,7 +206,7 @@ function mci_get_category( $p_category_id ) {
 function mci_issue_get_due_date( BugData $p_bug ) {
 	$t_value = null;
 
-	if( access_has_bug_level( config_get( 'due_date_view_threshold' ), $p_bug->id )  && !date_is_null( $p_bug->due_date ) ) {
+	if( \Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $p_bug->id )  && !\Flickerbox\Date::is_null( $p_bug->due_date ) ) {
 		$t_value = $p_bug->due_date;
 	}
 
@@ -324,7 +324,7 @@ function mci_issue_get_attachments( $p_issue_id ) {
 
 	$t_result = array();
 	foreach( $t_attachment_rows as $t_attachment_row ) {
-		if( !file_can_view_bug_attachments( $p_issue_id, (int)$t_attachment_row['user_id'] ) ) {
+		if( !\Flickerbox\File::can_view_bug_attachments( $p_issue_id, (int)$t_attachment_row['user_id'] ) ) {
 			continue;
 		}
 		$t_attachment = array();
@@ -353,7 +353,7 @@ function mci_issue_get_relationships( $p_issue_id, $p_user_id ) {
 
 	$t_src_relationships = relationship_get_all_src( $p_issue_id );
 	foreach( $t_src_relationships as $t_relship_row ) {
-		if( access_has_bug_level( config_get( 'webservice_readonly_access_level_threshold' ), $t_relship_row->dest_bug_id, $p_user_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'webservice_readonly_access_level_threshold' ), $t_relship_row->dest_bug_id, $p_user_id ) ) {
 			$t_relationship = array();
 			$t_reltype = array();
 			$t_relationship['id'] = $t_relship_row->id;
@@ -367,7 +367,7 @@ function mci_issue_get_relationships( $p_issue_id, $p_user_id ) {
 
 	$t_dest_relationships = relationship_get_all_dest( $p_issue_id );
 	foreach( $t_dest_relationships as $t_relship_row ) {
-		if( access_has_bug_level( config_get( 'webservice_readonly_access_level_threshold' ), $t_relship_row->src_bug_id, $p_user_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'webservice_readonly_access_level_threshold' ), $t_relship_row->src_bug_id, $p_user_id ) ) {
 			$t_relationship = array();
 			$t_relationship['id'] = $t_relship_row->id;
 			$t_reltype = array();
@@ -389,11 +389,11 @@ function mci_issue_get_relationships( $p_issue_id, $p_user_id ) {
  * @return array that represents an SOAP IssueNoteData structure
  */
 function mci_issue_get_notes( $p_issue_id ) {
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_lang = mci_get_user_lang( $t_user_id );
 	$t_project_id = bug_get_field( $p_issue_id, 'project_id' );
 	$t_user_bugnote_order = 'ASC'; # always get the notes in ascending order for consistency to the calling application.
-	$t_has_time_tracking_access = access_has_bug_level( config_get( 'time_tracking_view_threshold' ), $p_issue_id );
+	$t_has_time_tracking_access = \Flickerbox\Access::has_bug_level( config_get( 'time_tracking_view_threshold' ), $p_issue_id );
 
 	$t_result = array();
 	foreach( bugnote_get_all_visible_bugnotes( $p_issue_id, $t_user_bugnote_order, 0 ) as $t_value ) {
@@ -444,11 +444,11 @@ function mci_issue_set_monitors( $p_issue_id, $p_requesting_user_id, array $p_mo
 	# 3. for each of the new monitor ids, add it if it does not already exist
 	foreach( $t_new_monitor_ids as $t_user_id ) {
 		if( $p_requesting_user_id == $t_user_id ) {
-			if( ! access_has_bug_level( config_get( 'monitor_bug_threshold' ), $p_issue_id ) ) {
+			if( ! \Flickerbox\Access::has_bug_level( config_get( 'monitor_bug_threshold' ), $p_issue_id ) ) {
 				continue;
 			}
 		} else {
-			if( !access_has_bug_level( config_get( 'monitor_add_others_bug_threshold' ), $p_issue_id ) ) {
+			if( !\Flickerbox\Access::has_bug_level( config_get( 'monitor_add_others_bug_threshold' ), $p_issue_id ) ) {
 				continue;
 			}
 		}
@@ -463,11 +463,11 @@ function mci_issue_set_monitors( $p_issue_id, $p_requesting_user_id, array $p_mo
 	# 4. for each of the existing monitor ids, remove it if it is not found in the new monitor ids
 	foreach ( $t_existing_monitor_ids as $t_user_id ) {
 		if( $p_requesting_user_id == $t_user_id ) {
-			if( ! access_has_bug_level( config_get( 'monitor_bug_threshold' ), $p_issue_id ) ) {
+			if( ! \Flickerbox\Access::has_bug_level( config_get( 'monitor_bug_threshold' ), $p_issue_id ) ) {
 				continue;
 			}
 		} else {
-			if( !access_has_bug_level( config_get( 'monitor_delete_others_bug_threshold' ), $p_issue_id ) ) {
+			if( !\Flickerbox\Access::has_bug_level( config_get( 'monitor_delete_others_bug_threshold' ), $p_issue_id ) ) {
 				continue;
 			}
 		}
@@ -555,7 +555,7 @@ function mc_issue_get_biggest_id( $p_username, $p_password, $p_project_id ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	$t_rows = filter_get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, $t_project_id, $t_user_id );
+	$t_rows = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, $t_project_id, $t_user_id );
 	if( count( $t_rows ) == 0 ) {
 		return 0;
 	} else {
@@ -592,7 +592,7 @@ function mc_issue_get_id_from_summary( $p_username, $p_password, $p_summary ) {
 			$g_project_override = $t_project_id;
 
 			if( mci_has_readonly_access( $t_user_id, $t_project_id ) &&
-				access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_issue_id, $t_user_id ) ) {
+				\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_issue_id, $t_user_id ) ) {
 				return $t_issue_id;
 			}
 		}
@@ -621,13 +621,13 @@ function mci_issue_handler_access_check( $p_user_id, $p_project_id, $p_old_handl
 			return SoapObjectsFactory::newSoapFault( 'Client', 'User \'' . $p_new_handler_id . '\' does not exist.' );
 		}
 
-		if( !access_has_project_level( config_get( 'handle_bug_threshold' ), $p_project_id, $p_new_handler_id ) ) {
+		if( !\Flickerbox\Access::has_project_level( config_get( 'handle_bug_threshold' ), $p_project_id, $p_new_handler_id ) ) {
 			return mci_soap_fault_access_denied( 'User \'' . $p_new_handler_id . '\' does not have access right to handle issues' );
 		}
 	}
 
 	if( $p_old_handler_id != $p_new_handler_id ) {
-		if( !access_has_project_level( config_get( 'update_bug_assign_threshold' ), $p_project_id, $p_user_id ) ) {
+		if( !\Flickerbox\Access::has_project_level( config_get( 'update_bug_assign_threshold' ), $p_project_id, $p_user_id ) ) {
 			return mci_soap_fault_access_denied( 'User \'' . $p_user_id . '\' does not have access right to assign issues' );
 		}
 	}
@@ -681,7 +681,7 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 		if( $t_reporter_id != $t_user_id ) {
 			# Make sure that active user has access level required to specify a different reporter.
 			$t_specify_reporter_access_level = config_get( 'webservice_specify_reporter_on_add_access_level_threshold' );
-			if( !access_has_project_level( $t_specify_reporter_access_level, $t_project_id, $t_user_id ) ) {
+			if( !\Flickerbox\Access::has_project_level( $t_specify_reporter_access_level, $t_project_id, $t_user_id ) ) {
 				return mci_soap_fault_access_denied( $t_user_id, 'Active user does not have access level required to specify a different issue reporter' );
 			}
 		}
@@ -697,7 +697,7 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 		}
 	}
 
-	if( !access_has_project_level( config_get( 'report_bug_threshold' ), $t_project_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_project_level( config_get( 'report_bug_threshold' ), $t_project_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( 'User \'' . $t_user_id . '\' does not have access right to report issues' );
 	}
 
@@ -710,14 +710,14 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 
 	$t_category_id = translate_category_name_to_id( $t_category, $t_project_id );
 	if( $t_category_id == 0 && !config_get( 'allow_no_category' ) ) {
-		if( !isset( $p_issue['category'] ) || is_blank( $p_issue['category'] ) ) {
+		if( !isset( $p_issue['category'] ) || \Flickerbox\Utility::is_blank( $p_issue['category'] ) ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Category field must be supplied.' );
 		} else {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Category \'' . $p_issue['category'] . '\' not found for project \'' . $t_project_id . '\'.' );
 		}
 	}
 
-	if( isset( $p_issue['version'] ) && !is_blank( $p_issue['version'] ) && !version_get_id( $p_issue['version'], $t_project_id ) ) {
+	if( isset( $p_issue['version'] ) && !\Flickerbox\Utility::is_blank( $p_issue['version'] ) && !\Flickerbox\Version::get_id( $p_issue['version'], $t_project_id ) ) {
 		$t_version = $p_issue['version'];
 
 		$t_error_when_version_not_found = config_get( 'webservice_error_when_version_not_found' );
@@ -730,11 +730,11 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 		}
 	}
 
-	if( is_blank( $t_summary ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_summary ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field \'summary\' is missing.' );
 	}
 
-	if( is_blank( $t_description ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_description ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field \'description\' is missing.' );
 	}
 
@@ -764,17 +764,17 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 	$t_bug_data->summary = $t_summary;
 	$t_bug_data->sponsorship_total = isset( $p_issue['sponsorship_total'] ) ? $p_issue['sponsorship_total'] : 0;
 	if( isset( $p_issue['sticky'] ) &&
-		 access_has_project_level( config_get( 'set_bug_sticky_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+		 \Flickerbox\Access::has_project_level( config_get( 'set_bug_sticky_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 		$t_bug_data->sticky = $p_issue['sticky'];
 	}
 
-	if( isset( $p_issue['due_date'] ) && access_has_global_level( config_get( 'due_date_update_threshold' ) ) ) {
+	if( isset( $p_issue['due_date'] ) && \Flickerbox\Access::has_global_level( config_get( 'due_date_update_threshold' ) ) ) {
 		$t_bug_data->due_date = SoapObjectsFactory::parseDateTimeString( $p_issue['due_date'] );
 	} else {
-		$t_bug_data->due_date = date_get_null();
+		$t_bug_data->due_date = \Flickerbox\Date::get_null();
 	}
 
-	if( access_has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id, $t_user_id ) ) {
+	if( \Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id, $t_user_id ) ) {
 		$t_bug_data->target_version = isset( $p_issue['target_version'] ) ? $p_issue['target_version'] : '';
 	}
 
@@ -788,7 +788,7 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 
 	# submit the issue
 	$t_issue_id = $t_bug_data->create();
-	log_event( LOG_WEBSERVICE, 'created new issue id \'' . $t_issue_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'created new issue id \'' . $t_issue_id . '\'' );
 
 	$t_set_custom_field_error = mci_issue_set_custom_fields( $t_issue_id, $p_issue['custom_fields'], false );
 	if( $t_set_custom_field_error != null ) {
@@ -822,7 +822,7 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 				$t_note_attr,
 				$t_user_id,
 				false ); # don't send mail
-			log_event( LOG_WEBSERVICE, 'bugnote id \'' . $t_note_id . '\' added to issue \'' . $t_issue_id . '\'' );
+			\Flickerbox\Log::event( LOG_WEBSERVICE, 'bugnote id \'' . $t_note_id . '\' added to issue \'' . $t_issue_id . '\'' );
 		}
 	}
 
@@ -893,7 +893,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $t_project_id . '\' does not exist.' );
 	}
 
-	if( !access_has_bug_level( config_get( 'update_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id, 'Not enough rights to update issues' );
 	}
 
@@ -901,7 +901,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 
 	$t_category_id = translate_category_name_to_id( $t_category, $t_project_id );
 	if( $t_category_id == 0 && !config_get( 'allow_no_category' ) ) {
-		if( isset( $p_issue['category'] ) && !is_blank( $p_issue['category'] ) ) {
+		if( isset( $p_issue['category'] ) && !\Flickerbox\Utility::is_blank( $p_issue['category'] ) ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Category field must be supplied.' );
 		} else {
 			$t_project_name = project_get_name( $t_project_id );
@@ -909,7 +909,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 		}
 	}
 
-	if( isset( $p_issue['version'] ) && !is_blank( $p_issue['version'] ) && !version_get_id( $p_issue['version'], $t_project_id ) ) {
+	if( isset( $p_issue['version'] ) && !\Flickerbox\Utility::is_blank( $p_issue['version'] ) && !\Flickerbox\Version::get_id( $p_issue['version'], $t_project_id ) ) {
 		$t_error_when_version_not_found = config_get( 'webservice_error_when_version_not_found' );
 		if( $t_error_when_version_not_found == ON ) {
 			$t_project_name = project_get_name( $t_project_id );
@@ -920,11 +920,11 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 		}
 	}
 
-	if( is_blank( $t_summary ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_summary ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field \'summary\' is missing.' );
 	}
 
-	if( is_blank( $t_description ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_description ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field \'description\' is missing.' );
 	}
 
@@ -1002,17 +1002,17 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 	if( isset( $p_issue['fixed_in_version'] ) ) {
 		$t_bug_data->fixed_in_version = $p_issue['fixed_in_version'];
 	}
-	if( isset( $p_issue['sticky'] ) && access_has_bug_level( config_get( 'set_bug_sticky_threshold' ), $t_bug_data->id ) ) {
+	if( isset( $p_issue['sticky'] ) && \Flickerbox\Access::has_bug_level( config_get( 'set_bug_sticky_threshold' ), $t_bug_data->id ) ) {
 		$t_bug_data->sticky = $p_issue['sticky'];
 	}
 
-	if( isset( $p_issue['due_date'] ) && access_has_global_level( config_get( 'due_date_update_threshold' ) ) ) {
+	if( isset( $p_issue['due_date'] ) && \Flickerbox\Access::has_global_level( config_get( 'due_date_update_threshold' ) ) ) {
 		$t_bug_data->due_date = SoapObjectsFactory::parseDateTimeString( $p_issue['due_date'] );
 	} else {
-		$t_bug_data->due_date = date_get_null();
+		$t_bug_data->due_date = \Flickerbox\Date::get_null();
 	}
 
-	if( access_has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id, $t_user_id ) ) {
+	if( \Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold' ), $t_bug_data->project_id, $t_user_id ) ) {
 		$t_bug_data->target_version = isset( $p_issue['target_version'] ) ? $p_issue['target_version'] : '';
 	}
 
@@ -1089,7 +1089,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 	}
 
 	# submit the issue
-	log_event( LOG_WEBSERVICE, 'updating issue \'' . $p_issue_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'updating issue \'' . $p_issue_id . '\'' );
 	return $t_bug_data->update( true, true );
 
 }
@@ -1157,11 +1157,11 @@ function mc_issue_delete( $p_username, $p_password, $p_issue_id ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !access_has_bug_level( config_get( 'delete_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'delete_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	log_event( LOG_WEBSERVICE, 'deleting issue \'' . $p_issue_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'deleting issue \'' . $p_issue_id . '\'' );
 	return bug_delete( $p_issue_id );
 }
 
@@ -1192,7 +1192,7 @@ function mc_issue_note_add( $p_username, $p_password, $p_issue_id, stdClass $p_n
 
 	$p_note = SoapObjectsFactory::unwrapObject( $p_note );
 
-	if( !isset( $p_note['text'] ) || is_blank( $p_note['text'] ) ) {
+	if( !isset( $p_note['text'] ) || \Flickerbox\Utility::is_blank( $p_note['text'] ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Issue note text must not be blank.' );
 	}
 
@@ -1203,7 +1203,7 @@ function mc_issue_note_add( $p_username, $p_password, $p_issue_id, stdClass $p_n
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !access_has_bug_level( config_get( 'add_bugnote_threshold' ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'add_bugnote_threshold' ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id, 'You do not have access rights to add notes to this issue' );
 	}
 
@@ -1226,7 +1226,7 @@ function mc_issue_note_add( $p_username, $p_password, $p_issue_id, stdClass $p_n
 		if( $t_reporter_id != $t_user_id ) {
 			# Make sure that active user has access level required to specify a different reporter.
 			$t_specify_reporter_access_level = config_get( 'webservice_specify_reporter_on_add_access_level_threshold' );
-			if( !access_has_project_level( $t_specify_reporter_access_level, $t_project_id, $t_user_id ) ) {
+			if( !\Flickerbox\Access::has_project_level( $t_specify_reporter_access_level, $t_project_id, $t_user_id ) ) {
 				return mci_soap_fault_access_denied( $t_user_id, "Active user does not have access level required to specify a different issue note reporter" );
 			}
 		}
@@ -1239,7 +1239,7 @@ function mc_issue_note_add( $p_username, $p_password, $p_issue_id, stdClass $p_n
 	$t_note_type = isset( $p_note['note_type'] ) ? (int)$p_note['note_type'] : BUGNOTE;
 	$t_note_attr = isset( $p_note['note_type'] ) ? $p_note['note_attr'] : '';
 
-	log_event( LOG_WEBSERVICE, 'adding bugnote to issue \'' . $p_issue_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'adding bugnote to issue \'' . $p_issue_id . '\'' );
 	return bugnote_add( $p_issue_id, $p_note['text'], mci_get_time_tracking_from_note( $p_issue_id, $p_note ), $t_view_state_id == VS_PRIVATE, $t_note_type, $t_note_attr, $t_reporter_id );
 }
 
@@ -1283,7 +1283,7 @@ function mc_issue_note_delete( $p_username, $p_password, $p_issue_note_id ) {
 		$t_threshold_config_name =  'delete_bugnote_threshold';
 	}
 
-	if( !access_has_bugnote_level( config_get( $t_threshold_config_name ), $p_issue_note_id ) ) {
+	if( !\Flickerbox\Access::has_bugnote_level( config_get( $t_threshold_config_name ), $p_issue_note_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -1291,7 +1291,7 @@ function mc_issue_note_delete( $p_username, $p_password, $p_issue_note_id ) {
 		return mci_soap_fault_access_denied( $t_user_id, 'Issue \'' . $t_issue_id . '\' is readonly' );
 	}
 
-	log_event( LOG_WEBSERVICE, 'deleting bugnote id \'' . $p_issue_note_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'deleting bugnote id \'' . $p_issue_note_id . '\'' );
 	return bugnote_delete( $p_issue_note_id );
 }
 
@@ -1314,11 +1314,11 @@ function mc_issue_note_update( $p_username, $p_password, stdClass $p_note ) {
 
 	$p_note = SoapObjectsFactory::unwrapObject( $p_note );
 
-	if( !isset( $p_note['id'] ) || is_blank( $p_note['id'] ) ) {
+	if( !isset( $p_note['id'] ) || \Flickerbox\Utility::is_blank( $p_note['id'] ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Issue note id must not be blank.' );
 	}
 
-	if( !isset( $p_note['text'] ) || is_blank( $p_note['text'] ) ) {
+	if( !isset( $p_note['text'] ) || \Flickerbox\Utility::is_blank( $p_note['text'] ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Issue note text must not be blank.' );
 	}
 
@@ -1349,7 +1349,7 @@ function mc_issue_note_update( $p_username, $p_password, stdClass $p_note ) {
 	# Check if the user has an access level beyond update_bugnote_threshold for the
 	# project containing the bugnote to update.
 	$t_update_bugnote_threshold = config_get( 'update_bugnote_threshold', null, $t_user_id, $t_project_id );
-	if( !$t_user_owns_the_bugnote && !access_has_bugnote_level( $t_update_bugnote_threshold, $t_issue_note_id, $t_user_id ) ) {
+	if( !$t_user_owns_the_bugnote && !\Flickerbox\Access::has_bugnote_level( $t_update_bugnote_threshold, $t_issue_note_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -1364,7 +1364,7 @@ function mc_issue_note_update( $p_username, $p_password, stdClass $p_note ) {
 		bugnote_set_view_state( $t_issue_note_id, $t_view_state_id == VS_PRIVATE );
 	}
 
-	log_event( LOG_WEBSERVICE, 'updating bugnote id \'' . $t_issue_note_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'updating bugnote id \'' . $t_issue_note_id . '\'' );
 	bugnote_set_text( $t_issue_note_id, $p_note['text'] );
 
 	return bugnote_date_update( $t_issue_note_id );
@@ -1399,7 +1399,7 @@ function mc_issue_relationship_add( $p_username, $p_password, $p_issue_id, stdCl
 	}
 
 	# user has access to update the bug...
-	if( !access_has_bug_level( config_get( 'update_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id, 'Active user does not have access level required to add a relationship to this issue' );
 	}
 
@@ -1419,14 +1419,14 @@ function mc_issue_relationship_add( $p_username, $p_password, $p_issue_id, stdCl
 	}
 
 	# user can access to the related bug at least as viewer...
-	if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_dest_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_dest_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id, 'The issue \'' . $t_dest_issue_id . '\' requires higher access level' );
 	}
 
 	$t_old_id_relationship = relationship_same_type_exists( $p_issue_id, $t_dest_issue_id, $t_rel_type['id'] );
 
 	if( $t_old_id_relationship == 0 ) {
-		log_event( LOG_WEBSERVICE, 'adding relationship type \'' . $t_rel_type['id'] . '\' between \'' . $p_issue_id . '\' and \'' . $t_dest_issue_id . '\'' );
+		\Flickerbox\Log::event( LOG_WEBSERVICE, 'adding relationship type \'' . $t_rel_type['id'] . '\' between \'' . $p_issue_id . '\' and \'' . $t_dest_issue_id . '\'' );
 		relationship_add( $p_issue_id, $t_dest_issue_id, $t_rel_type['id'] );
 
 		# The above function call into MantisBT does not seem to return a valid BugRelationshipData object.
@@ -1476,7 +1476,7 @@ function mc_issue_relationship_delete( $p_username, $p_password, $p_issue_id, $p
 	}
 
 	# user has access to update the bug...
-	if( !access_has_bug_level( config_get( 'update_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id, 'Active user does not have access level required to remove a relationship from this issue.' );
 	}
 
@@ -1490,7 +1490,7 @@ function mc_issue_relationship_delete( $p_username, $p_password, $p_issue_id, $p
 
 	# user can access to the related bug at least as viewer, if it's exist...
 	if( bug_exists( $t_dest_issue_id ) ) {
-		if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_dest_issue_id, $t_user_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_dest_issue_id, $t_user_id ) ) {
 			return mci_soap_fault_access_denied( $t_user_id, 'The issue \'' . $t_dest_issue_id . '\' requires higher access level.' );
 		}
 	}
@@ -1499,7 +1499,7 @@ function mc_issue_relationship_delete( $p_username, $p_password, $p_issue_id, $p
 	$t_rel_type = $t_bug_relationship_data->type;
 
 	# delete relationship from the DB
-	log_event( LOG_WEBSERVICE, 'deleting relationship id \'' . $p_relationship_id . '\'' );
+	\Flickerbox\Log::event( LOG_WEBSERVICE, 'deleting relationship id \'' . $p_relationship_id . '\'' );
 	relationship_delete( $p_relationship_id );
 
 	# update bug last updated
@@ -1601,11 +1601,11 @@ function mci_issue_data_as_array( BugData $p_issue_data, $p_user_id, $p_lang ) {
  * @return array
  */
 function mci_issue_get_tags_for_bug_id( $p_bug_id, $p_user_id ) {
-	if( !access_has_global_level( config_get( 'tag_view_threshold' ), $p_user_id ) ) {
+	if( !\Flickerbox\Access::has_global_level( config_get( 'tag_view_threshold' ), $p_user_id ) ) {
 		return array();
 	}
 
-	$t_tag_rows = tag_bug_get_attached( $p_bug_id );
+	$t_tag_rows = \Flickerbox\Tag::bug_get_attached( $p_bug_id );
 	$t_result = array();
 
 	foreach ( $t_tag_rows as $t_tag_row ) {
@@ -1673,7 +1673,7 @@ function mci_check_access_to_bug( $p_user_id, $p_bug_id ) {
         return false;
     }
 
-    if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $p_bug_id, $p_user_id ) ) {
+    if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $p_bug_id, $p_user_id ) ) {
         return false;
     }
 
@@ -1705,7 +1705,7 @@ function mc_issues_get( $p_username, $p_password, $p_issue_ids ) {
         if( mci_check_access_to_bug( $t_user_id, $t_id ) === false )
             continue;
 
-        log_event( LOG_WEBSERVICE, 'getting details for issue \'' . $t_id . '\'' );
+        \Flickerbox\Log::event( LOG_WEBSERVICE, 'getting details for issue \'' . $t_id . '\'' );
 
         $t_issue_data = bug_get( $t_id, true );
         $t_result[] = mci_issue_data_as_array( $t_issue_data, $t_user_id, $t_lang );
@@ -1739,7 +1739,7 @@ function mc_issues_get_header( $p_username, $p_password, $p_issue_ids ) {
         if( mci_check_access_to_bug( $t_user_id, $t_id ) === false )
             continue;
 
-        log_event( LOG_WEBSERVICE, 'getting details for issue \'' . $t_id . '\'' );
+        \Flickerbox\Log::event( LOG_WEBSERVICE, 'getting details for issue \'' . $t_id . '\'' );
 
         $t_issue_data = bug_get( $t_id, true );
         $t_result[] = mci_issue_data_as_header_array( $t_issue_data, $t_user_id, $t_lang );

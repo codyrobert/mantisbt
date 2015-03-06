@@ -38,19 +38,12 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'database_api.php' );
-require_api( 'filter_constants_inc.php' );
 require_api( 'helper_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * Print row in summary table
@@ -80,7 +73,7 @@ function summary_helper_print_row( $p_label, $p_open, $p_resolved, $p_closed, $p
  * @return string
  */
 function summary_helper_get_developer_label ( $p_user_id ) {
-	$t_user = string_display_line( user_get_name( $p_user_id ) );
+	$t_user = \Flickerbox\String::display_line( user_get_name( $p_user_id ) );
 
 	return '<a class="subtle" href="view_all_set.php?type=1&amp;temporary=y
 			&amp;' . FILTER_PROPERTY_REPORTER_ID . '=' . $p_user_id . '
@@ -143,7 +136,7 @@ function summary_print_by_enum( $p_enum ) {
 					break;
 			}
 
-			if( !is_blank( $t_bug_link ) ) {
+			if( !\Flickerbox\Utility::is_blank( $t_bug_link ) ) {
 				if( 0 < $t_bugs_open ) {
 					$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
 				} else {
@@ -207,7 +200,7 @@ function summary_print_by_enum( $p_enum ) {
 				break;
 		}
 
-		if( !is_blank( $t_bug_link ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_bug_link ) ) {
 			if( 0 < $t_bugs_open ) {
 				$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
 			} else {
@@ -364,7 +357,7 @@ function summary_print_by_activity() {
 	$t_summarybugs = array();
 	while( $t_row = db_fetch_array( $t_result ) ) {
 		# Skip private bugs unless user has proper permissions
-		if( ( VS_PRIVATE == $t_row['view_state'] ) && ( false == access_has_bug_level( $t_private_bug_threshold, $t_row['id'] ) ) ) {
+		if( ( VS_PRIVATE == $t_row['view_state'] ) && ( false == \Flickerbox\Access::has_bug_level( $t_private_bug_threshold, $t_row['id'] ) ) ) {
 			continue;
 		}
 
@@ -383,8 +376,8 @@ function summary_print_by_activity() {
 	bug_cache_array_rows( $t_summarybugs );
 
 	foreach( $t_summarydata as $t_row ) {
-		$t_bugid = string_get_bug_view_link( $t_row['id'] );
-		$t_summary = string_display_line( $t_row['summary'] );
+		$t_bugid = \Flickerbox\String::get_bug_view_link( $t_row['id'] );
+		$t_summary = \Flickerbox\String::display_line( $t_row['summary'] );
 		$t_notescount = $t_row['count'];
 
 		echo '<tr>' . "\n";
@@ -419,7 +412,7 @@ function summary_print_by_age() {
 		bug_cache_database_result( $t_row );
 
 		# Skip private bugs unless user has proper permissions
-		if( ( VS_PRIVATE == bug_get_field( $t_row['id'], 'view_state' ) ) && ( false == access_has_bug_level( $t_private_bug_threshold, $t_row['id'] ) ) ) {
+		if( ( VS_PRIVATE == bug_get_field( $t_row['id'], 'view_state' ) ) && ( false == \Flickerbox\Access::has_bug_level( $t_private_bug_threshold, $t_row['id'] ) ) ) {
 			continue;
 		}
 
@@ -427,8 +420,8 @@ function summary_print_by_age() {
 			break;
 		}
 
-		$t_bugid = string_get_bug_view_link( $t_row['id'] );
-		$t_summary = string_display_line( $t_row['summary'] );
+		$t_bugid = \Flickerbox\String::get_bug_view_link( $t_row['id'] );
+		$t_summary = \Flickerbox\String::display_line( $t_row['summary'] );
 		$t_days_open = intval( ( time() - $t_row['date_submitted'] ) / SECONDS_PER_DAY );
 
 		echo '<tr>' . "\n";
@@ -592,7 +585,7 @@ function summary_print_by_reporter() {
 		}
 
 		if( 0 < $t_bugs_total ) {
-			$t_user = string_display_line( user_get_name( $v_reporter_id ) );
+			$t_user = \Flickerbox\String::display_line( user_get_name( $v_reporter_id ) );
 
 			$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_REPORTER_ID . '=' . $v_reporter_id;
 			if( 0 < $t_bugs_open ) {
@@ -621,7 +614,7 @@ function summary_print_by_category() {
 	$t_summary_category_include_project = config_get( 'summary_category_include_project' );
 
 	$t_project_id = helper_get_current_project();
-	$t_user_id = auth_get_current_user_id();
+	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 	$t_specific_where = trim( helper_project_specific_where( $t_project_id ) );
 	if( '1<>1' == $t_specific_where ) {
@@ -672,7 +665,7 @@ function summary_print_by_category() {
 				$t_bugs_total = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=">' . $t_bugs_total . '</a>';
 			}
 
-			summary_helper_print_row( string_display_line( $t_label ), $t_bugs_open, $t_bugs_resolved, $t_bugs_closed, $t_bugs_total );
+			summary_helper_print_row( \Flickerbox\String::display_line( $t_label ), $t_bugs_open, $t_bugs_resolved, $t_bugs_closed, $t_bugs_total );
 
 			$t_bugs_open = 0;
 			$t_bugs_resolved = 0;
@@ -702,7 +695,7 @@ function summary_print_by_category() {
 		}
 
 		$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_CATEGORY_ID . '=' . urlencode( $t_last_category_name );
-		if( !is_blank( $t_bug_link ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_bug_link ) ) {
 			if( 0 < $t_bugs_open ) {
 				$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
 			}
@@ -717,7 +710,7 @@ function summary_print_by_category() {
 			}
 		}
 
-		summary_helper_print_row( string_display_line( $t_label ), $t_bugs_open, $t_bugs_resolved, $t_bugs_closed, $t_bugs_total );
+		summary_helper_print_row( \Flickerbox\String::display_line( $t_label ), $t_bugs_open, $t_bugs_resolved, $t_bugs_closed, $t_bugs_total );
 	}
 }
 
@@ -735,7 +728,7 @@ function summary_print_by_project( array $p_projects = array(), $p_level = 0, ar
 
 	if( empty( $p_projects ) ) {
 		if( ALL_PROJECTS == $t_project_id ) {
-			$p_projects = current_user_get_accessible_projects();
+			$p_projects = \Flickerbox\Current_User::get_accessible_projects();
 		} else {
 			$p_projects = array(
 				$t_project_id,
@@ -792,10 +785,10 @@ function summary_print_by_project( array $p_projects = array(), $p_level = 0, ar
 		$t_bugs_closed = isset( $t_pdata['closed'] ) ? $t_pdata['closed'] : 0;
 		$t_bugs_total = $t_bugs_open + $t_bugs_resolved + $t_bugs_closed;
 
-		summary_helper_print_row( string_display_line( $t_name ), $t_bugs_open, $t_bugs_resolved, $t_bugs_closed, $t_bugs_total );
+		summary_helper_print_row( \Flickerbox\String::display_line( $t_name ), $t_bugs_open, $t_bugs_resolved, $t_bugs_closed, $t_bugs_total );
 
 		if( count( project_hierarchy_get_subprojects( $t_project ) ) > 0 ) {
-			$t_subprojects = current_user_get_accessible_subprojects( $t_project );
+			$t_subprojects = \Flickerbox\Current_User::get_accessible_subprojects( $t_project );
 
 			if( count( $t_subprojects ) > 0 ) {
 				summary_print_by_project( $t_subprojects, $p_level + 1, $p_cache );
@@ -814,7 +807,7 @@ function summary_print_developer_resolution( $p_resolution_enum_string ) {
 	$t_project_id = helper_get_current_project();
 
 	# Get the resolution values ot use
-	$c_res_s = MantisEnum::getValues( $p_resolution_enum_string );
+	$c_res_s = \MantisEnum::getValues( $p_resolution_enum_string );
 	$t_enum_res_count = count( $c_res_s );
 
 	$t_specific_where = helper_project_specific_where( $t_project_id );
@@ -922,7 +915,7 @@ function summary_print_reporter_resolution( $p_resolution_enum_string ) {
 	$t_project_id = helper_get_current_project();
 
 	# Get the resolution values ot use
-	$c_res_s = MantisEnum::getValues( $p_resolution_enum_string );
+	$c_res_s = \MantisEnum::getValues( $p_resolution_enum_string );
 	$t_enum_res_count = count( $c_res_s );
 
 	# Checking if it's a per project statistic or all projects
@@ -977,7 +970,7 @@ function summary_print_reporter_resolution( $p_resolution_enum_string ) {
 			echo '<tr>';
 			$t_row_count++;
 			echo '<td>';
-			echo string_display_line( user_get_name( $t_reporter_id ) );
+			echo \Flickerbox\String::display_line( user_get_name( $t_reporter_id ) );
 			echo "</td>\n";
 
 			# We need to track the percentage of bugs that are considered fix, as well as
@@ -1041,11 +1034,11 @@ function summary_print_reporter_effectiveness( $p_severity_enum_string, $p_resol
 	$t_resolution_multipliers = config_get( 'resolution_multipliers' );
 
 	# Get the severity values to use
-	$c_sev_s = MantisEnum::getValues( $p_severity_enum_string );
+	$c_sev_s = \MantisEnum::getValues( $p_severity_enum_string );
 	$t_enum_sev_count = count( $c_sev_s );
 
 	# Get the resolution values to use
-	$c_res_s = MantisEnum::getValues( $p_resolution_enum_string );
+	$c_res_s = \MantisEnum::getValues( $p_resolution_enum_string );
 
 	# Checking if it's a per project statistic or all projects
 	$t_specific_where = helper_project_specific_where( $t_project_id );
@@ -1105,7 +1098,7 @@ function summary_print_reporter_effectiveness( $p_severity_enum_string, $p_resol
 			echo '<tr>';
 			$t_row_count++;
 			echo '<td>';
-			echo string_display_line( user_get_name( $t_reporter_id ) );
+			echo \Flickerbox\String::display_line( user_get_name( $t_reporter_id ) );
 			echo '</td>';
 
 			$t_total_severity = 0;

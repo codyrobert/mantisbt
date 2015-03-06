@@ -37,56 +37,48 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'news_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 
-news_ensure_enabled();
+\Flickerbox\News::ensure_enabled();
 
-$f_news_id = gpc_get_int( 'news_id' );
-$f_action = gpc_get_string( 'action', '' );
+$f_news_id = \Flickerbox\GPC::get_int( 'news_id' );
+$f_action = \Flickerbox\GPC::get_string( 'action', '' );
 
 # If deleting item redirect to delete script
 if( 'delete' == $f_action ) {
-	form_security_validate( 'news_delete' );
+	\Flickerbox\Form::security_validate( 'news_delete' );
 
-	$t_row = news_get_row( $f_news_id );
+	$t_row = \Flickerbox\News::get_row( $f_news_id );
 
 	# This check is to allow deleting of news items that were left orphan due to bug #3723
 	if( project_exists( $t_row['project_id'] ) ) {
-		access_ensure_project_level( config_get( 'manage_news_threshold' ), $t_row['project_id'] );
+		\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ), $t_row['project_id'] );
 	}
 
-	helper_ensure_confirmed( lang_get( 'delete_news_sure_msg' ), lang_get( 'delete_news_item_button' ) );
+	helper_ensure_confirmed( \Flickerbox\Lang::get( 'delete_news_sure_msg' ), \Flickerbox\Lang::get( 'delete_news_item_button' ) );
 
-	news_delete( $f_news_id );
+	\Flickerbox\News::delete( $f_news_id );
 
-	form_security_purge( 'news_delete' );
+	\Flickerbox\Form::security_purge( 'news_delete' );
 
 	print_header_redirect( 'news_menu_page.php', true );
 }
 
 # Retrieve news item data and prefix with v_
-$t_row = news_get_row( $f_news_id );
+$t_row = \Flickerbox\News::get_row( $f_news_id );
 if( $t_row ) {
 	extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 }
 
-access_ensure_project_level( config_get( 'manage_news_threshold' ), $v_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ), $v_project_id );
 
-$v_headline = string_attribute( $v_headline );
-$v_body 	= string_textarea( $v_body );
+$v_headline = \Flickerbox\String::attribute( $v_headline );
+$v_body 	= \Flickerbox\String::textarea( $v_body );
 
-html_page_top( lang_get( 'edit_news_title' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'edit_news_title' ) );
 
 # Edit News Form BEGIN
 ?>
@@ -94,26 +86,26 @@ html_page_top( lang_get( 'edit_news_title' ) );
 <div id="news-update-div" class="form-container">
 	<form id="news-update-form" method="post" action="news_update.php">
 		<fieldset class="has-required">
-			<legend><span><?php echo lang_get( 'headline' ) ?></span></legend>
-			<div class="section-link"><?php print_bracket_link( 'news_menu_page.php', lang_get( 'go_back' ) ) ?></div>
-			<?php echo form_security_field( 'news_update' ); ?>
+			<legend><span><?php echo \Flickerbox\Lang::get( 'headline' ) ?></span></legend>
+			<div class="section-link"><?php print_bracket_link( 'news_menu_page.php', \Flickerbox\Lang::get( 'go_back' ) ) ?></div>
+			<?php echo \Flickerbox\Form::security_field( 'news_update' ); ?>
 			<input type="hidden" name="news_id" value="<?php echo $v_id ?>" />
 			<div class="field-container">
-				<label for="news-update-headline" class="required"><span><?php echo lang_get( 'headline' ) ?></span></label>
+				<label for="news-update-headline" class="required"><span><?php echo \Flickerbox\Lang::get( 'headline' ) ?></span></label>
 				<span class="input"><input type="text" id="news-update-headline" name="headline" size="64" maxlength="64" value="<?php echo $v_headline ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="news-update-body" class="required"><span><?php echo lang_get( 'body' ) ?></span></label>
+				<label for="news-update-body" class="required"><span><?php echo \Flickerbox\Lang::get( 'body' ) ?></span></label>
 				<span class="textarea"><textarea id="news-update-body" name="body" cols="60" rows="10"><?php echo $v_body ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for=""><span><?php echo lang_get( 'post_to' ) ?></span></label>
+				<label for=""><span><?php echo \Flickerbox\Lang::get( 'post_to' ) ?></span></label>
 				<span class="select">
 					<select name="project_id"><?php
 						$t_sitewide = false;
-						if( current_user_is_administrator() ) {
+						if( \Flickerbox\Current_User::is_administrator() ) {
 							$t_sitewide = true;
 						}
 						print_project_option_list( $v_project_id, $t_sitewide ); ?>
@@ -122,12 +114,12 @@ html_page_top( lang_get( 'edit_news_title' ) );
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="news-update-announcement"><span><?php echo lang_get( 'announcement' ) ?></span> <span class="help-text"><?php echo lang_get( 'stays_on_top' ) ?></span></label>
+				<label for="news-update-announcement"><span><?php echo \Flickerbox\Lang::get( 'announcement' ) ?></span> <span class="help-text"><?php echo \Flickerbox\Lang::get( 'stays_on_top' ) ?></span></label>
 				<span class="checkbox"><input type="checkbox" id="news-update-announcement" name="announcement" <?php check_checked( (int)$v_announcement, 1 ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for=""><span><?php echo lang_get( 'view_status' ) ?></span></label>
+				<label for=""><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
 				<span class="select">
 					<select name="view_state">
 						<?php print_enum_string_option_list( 'view_state', $v_view_state ) ?>
@@ -135,10 +127,10 @@ html_page_top( lang_get( 'edit_news_title' ) );
 				</span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'update_news_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_news_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div><?php
 # Edit News Form END
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

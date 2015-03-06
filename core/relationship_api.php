@@ -81,23 +81,14 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'collapse_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'database_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'prepare_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
 
-require_css( 'status_config.php' );
+\Flickerbox\HTML::require_css( 'status_config.php' );
 
 /**
  * RelationshipData Structure Definition
@@ -526,7 +517,7 @@ function relationship_get_description_src_side( $p_relationship_type ) {
 	if( !isset( $g_relationships[$p_relationship_type] ) ) {
 		trigger_error( ERROR_RELATIONSHIP_NOT_FOUND, ERROR );
 	}
-	return lang_get( $g_relationships[$p_relationship_type]['#description'] );
+	return \Flickerbox\Lang::get( $g_relationships[$p_relationship_type]['#description'] );
 }
 
 /**
@@ -539,7 +530,7 @@ function relationship_get_description_dest_side( $p_relationship_type ) {
 	if( !isset( $g_relationships[$p_relationship_type] ) || !isset( $g_relationships[$g_relationships[$p_relationship_type]['#complementary']] ) ) {
 		trigger_error( ERROR_RELATIONSHIP_NOT_FOUND, ERROR );
 	}
-	return lang_get( $g_relationships[$g_relationships[$p_relationship_type]['#complementary']]['#description'] );
+	return \Flickerbox\Lang::get( $g_relationships[$g_relationships[$p_relationship_type]['#complementary']]['#description'] );
 }
 
 /**
@@ -615,7 +606,7 @@ function relationship_get_details( $p_bug_id, BugRelationshipData $p_relationshi
 	}
 
 	# user can access to the related bug at least as a viewer
-	if( !access_has_bug_level( config_get( 'view_bug_threshold', null, null, $t_related_project_id ), $t_related_bug_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_related_project_id ), $t_related_bug_id ) ) {
 		return '';
 	}
 
@@ -630,13 +621,13 @@ function relationship_get_details( $p_bug_id, BugRelationshipData $p_relationshi
 	$t_status_string = get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 	$t_resolution_string = get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id );
 
-	$t_relationship_info_html = $t_td . string_no_break( $t_relationship_descr ) . '&#160;</td>';
+	$t_relationship_info_html = $t_td . \Flickerbox\String::no_break( $t_relationship_descr ) . '&#160;</td>';
 	if( $p_html_preview == false ) {
-		$t_relationship_info_html .= '<td><a href="' . string_get_bug_view_url( $t_related_bug_id ) . '">' . string_display_line( bug_format_id( $t_related_bug_id ) ) . '</a></td>';
-		$t_relationship_info_html .= '<td><span class="issue-status" title="' . string_attribute( $t_resolution_string ) . '">' . string_display_line( $t_status_string ) . '</span></td>';
+		$t_relationship_info_html .= '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_related_bug_id ) . '">' . \Flickerbox\String::display_line( bug_format_id( $t_related_bug_id ) ) . '</a></td>';
+		$t_relationship_info_html .= '<td><span class="issue-status" title="' . \Flickerbox\String::attribute( $t_resolution_string ) . '">' . \Flickerbox\String::display_line( $t_status_string ) . '</span></td>';
 	} else {
-		$t_relationship_info_html .= $t_td . string_display_line( bug_format_id( $t_related_bug_id ) ) . '</td>';
-		$t_relationship_info_html .= $t_td . string_display_line( $t_status_string ) . '&#160;</td>';
+		$t_relationship_info_html .= $t_td . \Flickerbox\String::display_line( bug_format_id( $t_related_bug_id ) ) . '</td>';
+		$t_relationship_info_html .= $t_td . \Flickerbox\String::display_line( $t_status_string ) . '&#160;</td>';
 	}
 
 	$t_relationship_info_text = utf8_str_pad( $t_relationship_descr, 20 );
@@ -645,33 +636,33 @@ function relationship_get_details( $p_bug_id, BugRelationshipData $p_relationshi
 	# get the handler name of the related bug
 	$t_relationship_info_html .= $t_td;
 	if( $t_bug->handler_id > 0 ) {
-		$t_relationship_info_html .= string_no_break( prepare_user_name( $t_bug->handler_id ) );
+		$t_relationship_info_html .= \Flickerbox\String::no_break( \Flickerbox\Prepare::user_name( $t_bug->handler_id ) );
 	}
 	$t_relationship_info_html .= '&#160;</td>';
 
 	# add project name
 	if( $p_show_project ) {
-		$t_relationship_info_html .= $t_td . string_display_line( $t_related_project_name ) . '&#160;</td>';
+		$t_relationship_info_html .= $t_td . \Flickerbox\String::display_line( $t_related_project_name ) . '&#160;</td>';
 	}
 
 	# add summary
 	if( $p_html == true ) {
-		$t_relationship_info_html .= $t_td . string_display_line_links( $t_bug->summary );
+		$t_relationship_info_html .= $t_td . \Flickerbox\String::display_line_links( $t_bug->summary );
 		if( VS_PRIVATE == $t_bug->view_state ) {
-			$t_relationship_info_html .= sprintf( ' <img src="%s" alt="(%s)" title="%s" />', $t_icon_path . 'protected.gif', lang_get( 'private' ), lang_get( 'private' ) );
+			$t_relationship_info_html .= sprintf( ' <img src="%s" alt="(%s)" title="%s" />', $t_icon_path . 'protected.gif', \Flickerbox\Lang::get( 'private' ), \Flickerbox\Lang::get( 'private' ) );
 		}
 	} else {
 		if( utf8_strlen( $t_bug->summary ) <= $t_summary_wrap_at ) {
-			$t_relationship_info_text .= string_email_links( $t_bug->summary );
+			$t_relationship_info_text .= \Flickerbox\String::email_links( $t_bug->summary );
 		} else {
-			$t_relationship_info_text .= utf8_substr( string_email_links( $t_bug->summary ), 0, $t_summary_wrap_at - 3 ) . '...';
+			$t_relationship_info_text .= utf8_substr( \Flickerbox\String::email_links( $t_bug->summary ), 0, $t_summary_wrap_at - 3 ) . '...';
 		}
 	}
 
 	# add delete link if bug not read only and user has access level
-	if( !bug_is_readonly( $p_bug_id ) && !current_user_is_anonymous() && ( $p_html_preview == false ) ) {
-		if( access_has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
-			$t_relationship_info_html .= ' [<a class="small" href="bug_relationship_delete.php?bug_id=' . $p_bug_id . '&amp;rel_id=' . $p_relationship->id . htmlspecialchars( form_security_param( 'bug_relationship_delete' ) ) . '">' . lang_get( 'delete_link' ) . '</a>]';
+	if( !bug_is_readonly( $p_bug_id ) && !\Flickerbox\Current_User::is_anonymous() && ( $p_html_preview == false ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
+			$t_relationship_info_html .= ' [<a class="small" href="bug_relationship_delete.php?bug_id=' . $p_bug_id . '&amp;rel_id=' . $p_relationship->id . htmlspecialchars( \Flickerbox\Form::security_param( 'bug_relationship_delete' ) ) . '">' . \Flickerbox\Lang::get( 'delete_link' ) . '</a>]';
 		}
 	}
 
@@ -680,7 +671,7 @@ function relationship_get_details( $p_bug_id, BugRelationshipData $p_relationshi
 
 	if( $p_html_preview == false ) {
 		# choose color based on status
-		$t_status_label = html_get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 
 		$t_relationship_info_html = '<tr class="' . $t_status_label . '">' . $t_relationship_info_html . '</tr>' . "\n";
 	} else {
@@ -711,9 +702,9 @@ function relationship_get_summary_html( $p_bug_id ) {
 		$t_summary .= relationship_get_details( $p_bug_id, $t_relationship_all[$i], true, false, $t_show_project );
 	}
 
-	if( !is_blank( $t_summary ) ) {
+	if( !\Flickerbox\Utility::is_blank( $t_summary ) ) {
 		if( relationship_can_resolve_bug( $p_bug_id ) == false ) {
-			$t_summary .= '<tr class="row-2"><td colspan="' . ( 5 + $t_show_project ) . '"><strong>' . lang_get( 'relationship_warning_blocking_bugs_not_resolved' ) . '</strong></td></tr>';
+			$t_summary .= '<tr class="row-2"><td colspan="' . ( 5 + $t_show_project ) . '"><strong>' . \Flickerbox\Lang::get( 'relationship_warning_blocking_bugs_not_resolved' ) . '</strong></td></tr>';
 		}
 		$t_summary = '<table width="100%" cellpadding="0" cellspacing="1">' . $t_summary . '</table>';
 	}
@@ -738,9 +729,9 @@ function relationship_get_summary_html_preview( $p_bug_id ) {
 		$t_summary .= relationship_get_details( $p_bug_id, $t_relationship_all[$i], true, true, $t_show_project );
 	}
 
-	if( !is_blank( $t_summary ) ) {
+	if( !\Flickerbox\Utility::is_blank( $t_summary ) ) {
 		if( relationship_can_resolve_bug( $p_bug_id ) == false ) {
-			$t_summary .= '<tr class="print"><td class="print" colspan=' . ( 5 + $t_show_project ) . '><strong>' . lang_get( 'relationship_warning_blocking_bugs_not_resolved' ) . '</strong></td></tr>';
+			$t_summary .= '<tr class="print"><td class="print" colspan=' . ( 5 + $t_show_project ) . '><strong>' . \Flickerbox\Lang::get( 'relationship_warning_blocking_bugs_not_resolved' ) . '</strong></td></tr>';
 		}
 		$t_summary = '<table width="100%" cellpadding="0" cellspacing="1">' . $t_summary . '</table>';
 	}
@@ -781,18 +772,18 @@ function relationship_list_box( $p_default_rel_type = BUG_REL_ANY, $p_select_nam
 	?>
 <select name="<?php echo $p_select_name?>">
 <?php if( $p_include_any ) {?>
-<option value="<?php echo BUG_REL_ANY ?>" <?php echo( $p_default_rel_type == BUG_REL_ANY ? ' selected="selected"' : '' )?>>[<?php echo lang_get( 'any' )?>]</option>
+<option value="<?php echo BUG_REL_ANY ?>" <?php echo( $p_default_rel_type == BUG_REL_ANY ? ' selected="selected"' : '' )?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 <?php
 	}
 
 	if( $p_include_none ) {?>
-<option value="<?php echo BUG_REL_NONE ?>" <?php echo( $p_default_rel_type == BUG_REL_NONE ? ' selected="selected"' : '' )?>>[<?php echo lang_get( 'none' )?>]</option>
+<option value="<?php echo BUG_REL_NONE ?>" <?php echo( $p_default_rel_type == BUG_REL_NONE ? ' selected="selected"' : '' )?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
 <?php
 	}
 
 	foreach( $g_relationships as $t_type => $t_relationship ) {
 		?>
-<option value="<?php echo $t_type?>"<?php echo( $p_default_rel_type == $t_type ? ' selected="selected"' : '' )?>><?php echo lang_get( $t_relationship['#description'] )?></option>
+<option value="<?php echo $t_type?>"<?php echo( $p_default_rel_type == $t_type ? ' selected="selected"' : '' )?>><?php echo \Flickerbox\Lang::get( $t_relationship['#description'] )?></option>
 <?php
 	}?>
 </select>
@@ -808,17 +799,17 @@ function relationship_view_box( $p_bug_id ) {
 	?>
 <br/>
 
-<?php collapse_open( 'relationships' );?>
+<?php \Flickerbox\Collapse::open( 'relationships' );?>
 <table class="width100" cellspacing="1">
 <tr class="row-2">
 	<td width="15%" class="form-title" colspan="2">
 		<?php
-			collapse_icon( 'relationships' );
-	echo lang_get( 'bug_relationships' );
+			\Flickerbox\Collapse::icon( 'relationships' );
+	echo \Flickerbox\Lang::get( 'bug_relationships' );
 	if( ON == config_get( 'relationship_graph_enable' ) ) {
 		?>
-		<span class="small"><?php print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=relation', lang_get( 'relation_graph' ) )?></span>
-		<span class="small"><?php print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=dependency', lang_get( 'dependency_graph' ) )?></span>
+		<span class="small"><?php print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=relation', \Flickerbox\Lang::get( 'relation_graph' ) )?></span>
+		<span class="small"><?php print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=dependency', \Flickerbox\Lang::get( 'dependency_graph' ) )?></span>
 		<?php
 	}
 	?>
@@ -828,17 +819,17 @@ function relationship_view_box( $p_bug_id ) {
 	# bug not read-only and user authenticated
 	if( !bug_is_readonly( $p_bug_id ) ) {
 		# user access level at least updater
-		if( access_has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
 			?>
 <tr class="row-1">
-	<th class="category" width="15%"><?php echo lang_get( 'add_new_relationship' )?></th>
-	<td><?php echo lang_get( 'this_bug' )?>
+	<th class="category" width="15%"><?php echo \Flickerbox\Lang::get( 'add_new_relationship' )?></th>
+	<td><?php echo \Flickerbox\Lang::get( 'this_bug' )?>
 		<form method="post" action="bug_relationship_add.php">
-		<?php echo form_security_field( 'bug_relationship_add' ) ?>
+		<?php echo \Flickerbox\Form::security_field( 'bug_relationship_add' ) ?>
 		<input type="hidden" name="src_bug_id" value="<?php echo $p_bug_id?>" size="4" />
 		<?php relationship_list_box( config_get( 'default_bug_relationship' ) )?>
 		<input type="text" name="dest_bug_id" value="" />
-		<input type="submit" name="add_relationship" class="button" value="<?php echo lang_get( 'add_new_relationship_button' )?>" />
+		<input type="submit" name="add_relationship" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_new_relationship_button' )?>" />
 		</form>
 	</td></tr>
 <?php
@@ -850,18 +841,18 @@ function relationship_view_box( $p_bug_id ) {
 </tr>
 </table>
 
-<?php collapse_closed( 'relationships' );?>
+<?php \Flickerbox\Collapse::closed( 'relationships' );?>
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title">
 		<?php
-			collapse_icon( 'relationships' );
-	echo lang_get( 'bug_relationships' );
+			\Flickerbox\Collapse::icon( 'relationships' );
+	echo \Flickerbox\Lang::get( 'bug_relationships' );
 	?>
 	</td>
 </tr>
 </table>
 
 <?php
-	collapse_end( 'relationships' );
+	\Flickerbox\Collapse::end( 'relationships' );
 }

@@ -38,56 +38,48 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'file_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'proj_doc_update' );
+\Flickerbox\Form::security_validate( 'proj_doc_update' );
 
 # Check if project documentation feature is enabled.
 if( OFF == config_get( 'enable_project_documentation' ) ||
-	!file_is_uploading_enabled() ||
-	!file_allow_project_upload() ) {
-	access_denied();
+	!\Flickerbox\File::is_uploading_enabled() ||
+	!\Flickerbox\File::allow_project_upload() ) {
+	\Flickerbox\Access::denied();
 }
 
-$f_file_id = gpc_get_int( 'file_id' );
-$f_title = gpc_get_string( 'title' );
-$f_description	= gpc_get_string( 'description' );
+$f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
+$f_title = \Flickerbox\GPC::get_string( 'title' );
+$f_description	= \Flickerbox\GPC::get_string( 'description' );
 $f_file = gpc_get_file( 'file' );
 
-$t_project_id = file_get_field( $f_file_id, 'project_id', 'project' );
+$t_project_id = \Flickerbox\File::get_field( $f_file_id, 'project_id', 'project' );
 
-access_ensure_project_level( config_get( 'upload_project_file_threshold' ), $t_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'upload_project_file_threshold' ), $t_project_id );
 
-if( is_blank( $f_title ) ) {
-	error_parameters( lang_get( 'title' ) );
+if( \Flickerbox\Utility::is_blank( $f_title ) ) {
+	\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'title' ) );
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
 # @todo (thraxisp) this code should probably be integrated into file_api to share methods used to store files
 
 if( isset( $f_file['tmp_name'] ) && is_uploaded_file( $f_file['tmp_name'] ) ) {
-	file_ensure_uploaded( $f_file );
+	\Flickerbox\File::ensure_uploaded( $f_file );
 
 	$t_project_id = helper_get_current_project();
 
 	# grab the original file path and name
-	$t_disk_file_name = file_get_field( $f_file_id, 'diskfile', 'project' );
+	$t_disk_file_name = \Flickerbox\File::get_field( $f_file_id, 'diskfile', 'project' );
 	$t_file_path = dirname( $t_disk_file_name );
 
 	# prepare variables for insertion
 	$t_file_size = filesize( $f_file['tmp_name'] );
-	$t_max_file_size = (int)min( ini_get_number( 'upload_max_filesize' ), ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+	$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
 	if( $t_file_size > $t_max_file_size ) {
 		trigger_error( ERROR_FILE_TOO_BIG, ERROR );
 	}
@@ -95,10 +87,10 @@ if( isset( $f_file['tmp_name'] ) && is_uploaded_file( $f_file['tmp_name'] ) ) {
 	$t_method = config_get( 'file_upload_method' );
 	switch( $t_method ) {
 		case DISK:
-			file_ensure_valid_upload_path( $t_file_path );
+			\Flickerbox\File::ensure_valid_upload_path( $t_file_path );
 
 			if( file_exists( $t_disk_file_name ) ) {
-				file_delete_local( $t_disk_file_name );
+				\Flickerbox\File::delete_local( $t_disk_file_name );
 			}
 			if( !move_uploaded_file( $f_file['tmp_name'], $t_disk_file_name ) ) {
 				trigger_error( ERROR_FILE_MOVE_FAILED, ERROR );
@@ -130,12 +122,12 @@ if( !$t_result ) {
 	trigger_error( ERROR_GENERIC, ERROR );
 }
 
-form_security_purge( 'proj_doc_update' );
+\Flickerbox\Form::security_purge( 'proj_doc_update' );
 
 $t_redirect_url = 'proj_doc_page.php';
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

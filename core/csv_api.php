@@ -33,11 +33,8 @@
  * @uses user_api.php
  */
 
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'helper_api.php' );
 require_api( 'project_api.php' );
 require_api( 'user_api.php' );
@@ -232,7 +229,7 @@ function csv_format_projection( BugData $p_bug ) {
  * @access public
  */
 function csv_format_category_id( BugData $p_bug ) {
-	return csv_escape_string( category_full_name( $p_bug->category_id, false ) );
+	return csv_escape_string( \Flickerbox\Category::full_name( $p_bug->category_id, false ) );
 }
 
 /**

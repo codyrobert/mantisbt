@@ -27,14 +27,14 @@ require_once( 'core.php' );
 plugin_require_api( 'core/Period.php' );
 plugin_require_api( 'core/graph_api.php' );
 
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-$f_width = gpc_get_int( 'width', 600 );
+$f_width = \Flickerbox\GPC::get_int( 'width', 600 );
 $t_ar = plugin_config_get( 'bar_aspect' );
 $t_interval = new Period();
 $t_interval->set_period_from_selector( 'interval' );
-$f_show_as_table = gpc_get_bool( 'show_table', false );
-$f_summary = gpc_get_bool( 'summary', false );
+$f_show_as_table = \Flickerbox\GPC::get_bool( 'show_table', false );
+$f_summary = \Flickerbox\GPC::get_bool( 'summary', false );
 
 $t_interval_days = $t_interval->get_elapsed_days();
 if( $t_interval_days <= 14 ) {
@@ -51,11 +51,11 @@ $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = 0;
 
-$t_filter = current_user_get_bug_filter();
+$t_filter = \Flickerbox\Current_User::get_bug_filter();
 $t_filter['_view_type']	= 'advanced';
 $t_filter[FILTER_PROPERTY_STATUS] = array( META_FILTER_ANY );
 $t_filter[FILTER_PROPERTY_SORT_FIELD_NAME] = '';
-$t_rows = filter_get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, null, null, true );
+$t_rows = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, null, null, true );
 if( count( $t_rows ) == 0 ) {
 	# no data to graph
 	exit();
@@ -71,8 +71,8 @@ if( $t_end == false || $t_start == false ) {
 	return;
 }
 # grab all status levels
-$t_status_arr  = MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
-$t_status_labels  = MantisEnum::getAssocArrayIndexedByValues( lang_get( 'status_enum_string' ) );
+$t_status_arr  = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
+$t_status_labels  = \MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Lang::get( 'status_enum_string' ) );
 $t_default_bug_status = config_get( 'bug_submit_status' );
 
 $t_bug = array();
@@ -151,19 +151,19 @@ for( $t_now = time() - $t_incr; $t_now >= $t_start; $t_now -= $t_incr ) {
 ksort( $t_view_status );
 # @todo - these should probably be separate strings, but in the summary page context,
 # the string is used as the title for all columns
-$t_label_string = lang_get( 'orct' ); # use the (open/resolved/closed/total) label
+$t_label_string = \Flickerbox\Lang::get( 'orct' ); # use the (open/resolved/closed/total) label
 $t_label_strings = explode( '/', utf8_substr( $t_label_string, 1, strlen( $t_label_string ) - 2 ) );
 
 # add headers for table
 if( $f_show_as_table ) {
 	$t_date_format = config_get( 'short_date_format' );
-	html_begin();
-	html_head_begin();
-	html_css();
-	html_content_type();
-	html_title( lang_get( 'by_status' ) );
-	html_head_end();
-	html_body_begin();
+	\Flickerbox\HTML::begin();
+	\Flickerbox\HTML::head_begin();
+	\Flickerbox\HTML::css();
+	\Flickerbox\HTML::content_type();
+	\Flickerbox\HTML::title( \Flickerbox\Lang::get( 'by_status' ) );
+	\Flickerbox\HTML::head_end();
+	\Flickerbox\HTML::body_begin();
 	echo '<table class="width100"><tr><td></td>';
 	if( $f_summary ) {
 		echo '<th>' . $t_label_strings[0] . '</th>';
@@ -188,7 +188,7 @@ if( $f_summary ) {
 	$t_labels[++$i] = $t_label_strings[2];
 } else {
 	foreach ( $t_view_status as $t_status => $t_label ) {
-		$t_labels[++$i] = isset( $t_status_labels[$t_status] ) ? $t_status_labels[$t_status] : lang_get_defaulted( $t_label );
+		$t_labels[++$i] = isset( $t_status_labels[$t_status] ) ? $t_status_labels[$t_status] : \Flickerbox\Lang::get_defaulted( $t_label );
 	}
 }
 $t_label_count = $i;
@@ -234,8 +234,8 @@ for( $t_ptr=0; $t_ptr<$t_bin_count; $t_ptr++ ) {
 }
 if( $f_show_as_table ) {
 	echo '</table>';
-	html_body_end();
-	html_end();
+	\Flickerbox\HTML::body_end();
+	\Flickerbox\HTML::end();
 } else {
-	graph_bydate( $t_metrics, $t_labels, lang_get( 'by_status' ), $f_width, $f_width * $t_ar );
+	graph_bydate( $t_metrics, $t_labels, \Flickerbox\Lang::get( 'by_status' ), $f_width, $f_width * $t_ar );
 }

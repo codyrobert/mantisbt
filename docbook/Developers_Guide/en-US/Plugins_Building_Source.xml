@@ -106,7 +106,7 @@ $s_plugin_Example_reset = "Reset Value";
 		<programlisting><filename>Example/pages/config_page.php</filename>
 &lt;?php
 
-html_page_top( plugin_lang_get( 'configuration' ) );
+\Flickerbox\HTML::page_top( plugin_langget( 'configuration' ) );
 $t_foo_or_bar = plugin_config_get( 'foo_or_bar' );
 
 ?&gt;
@@ -114,20 +114,20 @@ $t_foo_or_bar = plugin_config_get( 'foo_or_bar' );
 &lt;br/&gt;
 
 &lt;form action="&lt;?php echo plugin_page( 'config_update' ) ?&gt;" method="post"&gt;
-&lt;?php echo form_security_field( 'plugin_Example_config_update' ) ?&gt;
+&lt;?php echo \Flickerbox\Form::security_field( 'plugin_Example_config_update' ) ?&gt;
 &lt;table class="width60"&gt;
 
 &lt;tr&gt;
-    &lt;td class="form-title" rowspan="2"&gt;&lt;?php echo plugin_lang_get( 'configuration' ) ?&gt;&lt;/td&gt;
+    &lt;td class="form-title" rowspan="2"&gt;&lt;?php echo plugin_langget( 'configuration' ) ?&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr &lt;?php echo helper_alternate_class() ?&gt;&gt;
-    &lt;td class="category"&gt;&lt;php echo plugin_lang_get( 'foo_or_bar' ) ?&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;input name="foo_or_bar" value="&lt;?php echo string_attribute( $t_foo_or_bar ) ?&gt;"/&gt;&lt;/td&gt;
+    &lt;td class="category"&gt;&lt;php echo plugin_langget( 'foo_or_bar' ) ?&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;input name="foo_or_bar" value="&lt;?php echo \Flickerbox\String::attribute( $t_foo_or_bar ) ?&gt;"/&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr &lt;?php echo helper_alternate_class() ?&gt;&gt;
-    &lt;td class="category"&gt;&lt;php echo plugin_lang_get( 'reset' ) ?&gt;&lt;/td&gt;
+    &lt;td class="category"&gt;&lt;php echo plugin_langget( 'reset' ) ?&gt;&lt;/td&gt;
     &lt;td&gt;&lt;input type="checkbox" name="reset"/&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
@@ -140,7 +140,7 @@ $t_foo_or_bar = plugin_config_get( 'foo_or_bar' );
 
 &lt;?php
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();
 		</programlisting>
 	</section>
 
@@ -149,10 +149,10 @@ html_page_bottom();
 
 		<programlisting><filename>Example/pages/config_update.php</filename>
 &lt;?php
-form_security_validate( 'plugin_Example_config_update' );
+\Flickerbox\Form::security_validate( 'plugin_Example_config_update' );
 
-$f_foo_or_bar = gpc_get_string( 'foo_or_bar' );
-$f_reset = gpc_get_bool( 'reset', false );
+$f_foo_or_bar = \Flickerbox\GPC::get_string( 'foo_or_bar' );
+$f_reset = \Flickerbox\GPC::get_bool( 'reset', false );
 
 if( $f_reset ) {
     plugin_config_delete( 'foo_or_bar' );
@@ -162,7 +162,7 @@ if( $f_reset ) {
     }
 }
 
-form_security_purge( 'plugin_Example_config_update' );
+\Flickerbox\Form::security_purge( 'plugin_Example_config_update' );
 print_successful_redirect( plugin_page( 'foo', true ) );
 		</programlisting>
 	</section>

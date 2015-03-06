@@ -26,10 +26,10 @@ require_once( 'core.php' );
 
 plugin_require_api( 'core/graph_api.php' );
 
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-$f_width = gpc_get_int( 'width', 300 );
+$f_width = \Flickerbox\GPC::get_int( 'width', 300 );
 $t_ar = plugin_config_get( 'bar_aspect' );
 
 $t_metrics = create_reporter_summary();
-graph_bar( $t_metrics, lang_get( 'by_reporter' ), $f_width, $f_width * $t_ar );
+graph_bar( $t_metrics, \Flickerbox\Lang::get( 'by_reporter' ), $f_width, $f_width * $t_ar );

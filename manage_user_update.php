@@ -42,38 +42,29 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'logging_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
 require_api( 'user_pref_api.php' );
 
-form_security_validate( 'manage_user_update' );
+\Flickerbox\Form::security_validate( 'manage_user_update' );
 
 auth_reauthenticate();
-access_ensure_global_level( config_get( 'manage_user_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
 
-$f_protected	= gpc_get_bool( 'protected' );
-$f_enabled		= gpc_get_bool( 'enabled' );
-$f_email		= gpc_get_string( 'email', '' );
-$f_username		= gpc_get_string( 'username', '' );
-$f_realname		= gpc_get_string( 'realname', '' );
-$f_access_level	= gpc_get_int( 'access_level' );
-$f_user_id		= gpc_get_int( 'user_id' );
+$f_protected	= \Flickerbox\GPC::get_bool( 'protected' );
+$f_enabled		= \Flickerbox\GPC::get_bool( 'enabled' );
+$f_email		= \Flickerbox\GPC::get_string( 'email', '' );
+$f_username		= \Flickerbox\GPC::get_string( 'username', '' );
+$f_realname		= \Flickerbox\GPC::get_string( 'realname', '' );
+$f_access_level	= \Flickerbox\GPC::get_int( 'access_level' );
+$f_user_id		= \Flickerbox\GPC::get_int( 'user_id' );
 
 if( config_get( 'enable_email_notification' ) == ON ) {
-	$f_send_email_notification = gpc_get_bool( 'send_email_notification' );
+	$f_send_email_notification = \Flickerbox\GPC::get_bool( 'send_email_notification' );
 } else {
 	$f_send_email_notification = 0;
 }
@@ -94,7 +85,7 @@ if( $f_send_email_notification ) {
 
 # Ensure that the account to be updated is of equal or lower access to the
 # current user.
-access_ensure_global_level( $t_user['access_level'] );
+\Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
 
 # check that the username is unique
 if( 0 != strcasecmp( $t_old_username, $f_username )
@@ -107,7 +98,7 @@ user_ensure_name_valid( $f_username );
 $t_ldap = ( LDAP == config_get( 'login_method' ) );
 
 if( $t_ldap && config_get( 'use_ldap_realname' ) ) {
-	$t_realname = ldap_realname_from_username( $f_username );
+	$t_realname = \Flickerbox\LDAP::realname_from_username( $f_username );
 } else {
 	# strip extra space from real name
 	$t_realname = string_normalize( $f_realname );
@@ -115,7 +106,7 @@ if( $t_ldap && config_get( 'use_ldap_realname' ) ) {
 }
 
 if( $t_ldap && config_get( 'use_ldap_email' ) ) {
-	$t_email = ldap_email( $f_user_id );
+	$t_email = \Flickerbox\LDAP::email( $f_user_id );
 } else {
 	$t_email = trim( $f_email );
 	email_ensure_valid( $t_email );
@@ -134,7 +125,7 @@ $t_old_protected = $t_user['protected'];
 
 # Ensure that users aren't escalating privileges of accounts beyond their
 # own global access level.
-access_ensure_global_level( $f_access_level );
+\Flickerbox\Access::ensure_global_level( $f_access_level );
 
 # check that we are not downgrading the last administrator
 $t_admin_threshold = config_get_global( 'admin_site_threshold' );
@@ -175,52 +166,52 @@ if( $f_protected && $t_old_protected ) {
 $t_result = db_query( $t_query, $t_query_params );
 
 if( $f_send_email_notification ) {
-	lang_push( user_pref_get_language( $f_user_id ) );
+	\Flickerbox\Lang::push( user_pref_get_language( $f_user_id ) );
 	$t_changes = '';
 	if( strcmp( $f_username, $t_old_username ) ) {
-		$t_changes .= lang_get( 'username_label' ) . lang_get( 'word_separator' ) . $t_old_username . ' => ' . $f_username . "\n";
+		$t_changes .= \Flickerbox\Lang::get( 'username_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_username . ' => ' . $f_username . "\n";
 	}
 	if( strcmp( $t_realname, $t_old_realname ) ) {
-		$t_changes .= lang_get( 'realname_label' ) . lang_get( 'word_separator' ) . $t_old_realname . ' => ' . $t_realname . "\n";
+		$t_changes .= \Flickerbox\Lang::get( 'realname_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_realname . ' => ' . $t_realname . "\n";
 	}
 	if( strcmp( $t_email, $t_old_email ) ) {
-		$t_changes .= lang_get( 'email_label' ) . lang_get( 'word_separator' ) . $t_old_email . ' => ' . $t_email . "\n";
+		$t_changes .= \Flickerbox\Lang::get( 'email_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_email . ' => ' . $t_email . "\n";
 	}
 	if( strcmp( $f_access_level, $t_old_access_level ) ) {
 		$t_old_access_string = get_enum_element( 'access_levels', $t_old_access_level );
 		$t_new_access_string = get_enum_element( 'access_levels', $f_access_level );
-		$t_changes .= lang_get( 'access_level_label' ) . lang_get( 'word_separator' ) . $t_old_access_string . ' => ' . $t_new_access_string . "\n\n";
+		$t_changes .= \Flickerbox\Lang::get( 'access_level_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_access_string . ' => ' . $t_new_access_string . "\n\n";
 	}
 	if( !empty( $t_changes ) ) {
-		$t_subject = '[' . config_get( 'window_title' ) . '] ' . lang_get( 'email_user_updated_subject' );
-		$t_updated_msg = lang_get( 'email_user_updated_msg' );
+		$t_subject = '[' . config_get( 'window_title' ) . '] ' . \Flickerbox\Lang::get( 'email_user_updated_subject' );
+		$t_updated_msg = \Flickerbox\Lang::get( 'email_user_updated_msg' );
 		$t_message = $t_updated_msg . "\n\n" . config_get( 'path' ) . 'account_page.php' . "\n\n" . $t_changes;
 
 		if( null === email_store( $t_email, $t_subject, $t_message ) ) {
-			log_event( LOG_EMAIL, 'Notification was NOT sent to ' . $f_username );
+			\Flickerbox\Log::event( LOG_EMAIL, 'Notification was NOT sent to ' . $f_username );
 		} else {
-			log_event( LOG_EMAIL, 'Account update notification sent to ' . $f_username . ' (' . $t_email . ')' );
+			\Flickerbox\Log::event( LOG_EMAIL, 'Account update notification sent to ' . $f_username . ' (' . $t_email . ')' );
 			if( config_get( 'email_send_using_cronjob' ) == OFF ) {
 				email_send_all();
 			}
 		}
 	}
-	lang_pop();
+	\Flickerbox\Lang::pop();
 }
 
 $t_redirect_url = 'manage_user_edit_page.php?user_id=' . $c_user_id;
 
-form_security_purge( 'manage_user_update' );
+\Flickerbox\Form::security_purge( 'manage_user_update' );
 
-html_page_top( null, $t_result ? $t_redirect_url : null );
+\Flickerbox\HTML::page_top( null, $t_result ? $t_redirect_url : null );
 
 if( $f_protected && $t_old_protected ) {				# PROTECTED
 	echo '<div class="failure-msg">';
-	echo lang_get( 'manage_user_protected_msg' ) . '<br />';
-	print_bracket_link( $t_redirect_url, lang_get( 'proceed' ) );
+	echo \Flickerbox\Lang::get( 'manage_user_protected_msg' ) . '<br />';
+	print_bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
 	echo '</div>';
 } else if( $t_result ) {					# SUCCESS
-	html_operation_successful( $t_redirect_url );
+	\Flickerbox\HTML::operation_successful( $t_redirect_url );
 }
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

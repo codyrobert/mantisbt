@@ -47,28 +47,16 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bugnote_api.php' );
-require_api( 'bug_revision_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'database_api.php' );
-require_api( 'date_api.php' );
 require_api( 'email_api.php' );
-require_api( 'error_api.php' );
 require_api( 'event_api.php' );
-require_api( 'file_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'relationship_api.php' );
-require_api( 'sponsorship_api.php' );
-require_api( 'tag_api.php' );
 require_api( 'user_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * Bug Data Structure Definition
@@ -255,7 +243,7 @@ class BugData {
 	 */
 	public function get_attachment_count() {
 		if( $this->attachment_count === null ) {
-			$this->attachment_count = file_bug_attachment_count( $this->id );
+			$this->attachment_count = \Flickerbox\File::bug_attachment_count( $this->id );
 			return $this->attachment_count;
 		} else {
 			return $this->attachment_count;
@@ -303,7 +291,7 @@ class BugData {
 			case 'target_version':
 				if( !$this->loading && $this->$p_name != $p_value ) {
 					# Only set target_version if user has access to do so
-					if( !access_has_project_level( config_get( 'roadmap_update_threshold' ) ) ) {
+					if( !\Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold' ) ) ) {
 						trigger_error( ERROR_ACCESS_DENIED, ERROR );
 					}
 				}
@@ -400,7 +388,7 @@ class BugData {
 	 * @uses database_api.php
 	 */
 	private function bug_get_bugnote_count() {
-		if( !access_has_project_level( config_get( 'private_bugnote_threshold' ), $this->project_id ) ) {
+		if( !\Flickerbox\Access::has_project_level( config_get( 'private_bugnote_threshold' ), $this->project_id ) ) {
 			$t_restriction = 'AND view_state=' . VS_PUBLIC;
 		} else {
 			$t_restriction = '';
@@ -421,31 +409,31 @@ class BugData {
 	 */
 	function validate( $p_update_extended = true ) {
 		# Summary cannot be blank
-		if( is_blank( $this->summary ) ) {
-			error_parameters( lang_get( 'summary' ) );
+		if( \Flickerbox\Utility::is_blank( $this->summary ) ) {
+			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'summary' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 
 		if( $p_update_extended ) {
 			# Description field cannot be empty
-			if( is_blank( $this->description ) ) {
-				error_parameters( lang_get( 'description' ) );
+			if( \Flickerbox\Utility::is_blank( $this->description ) ) {
+				\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'description' ) );
 				trigger_error( ERROR_EMPTY_FIELD, ERROR );
 			}
 		}
 
 		# Make sure a category is set
 		if( 0 == $this->category_id && !config_get( 'allow_no_category' ) ) {
-			error_parameters( lang_get( 'category' ) );
+			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'category' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 
 		# Ensure that category id is a valid category
 		if( $this->category_id > 0 ) {
-			category_ensure_exists( $this->category_id );
+			\Flickerbox\Category::ensure_exists( $this->category_id );
 		}
 
-		if( !is_blank( $this->duplicate_id ) && ( $this->duplicate_id != 0 ) && ( $this->id == $this->duplicate_id ) ) {
+		if( !\Flickerbox\Utility::is_blank( $this->duplicate_id ) && ( $this->duplicate_id != 0 ) && ( $this->id == $this->duplicate_id ) ) {
 			trigger_error( ERROR_BUG_DUPLICATE_SELF, ERROR );
 			# never returns
 		}
@@ -462,14 +450,14 @@ class BugData {
 		self::validate( true );
 
 		# check due_date format
-		if( is_blank( $this->due_date ) ) {
-			$this->due_date = date_get_null();
+		if( \Flickerbox\Utility::is_blank( $this->due_date ) ) {
+			$this->due_date = \Flickerbox\Date::get_null();
 		}
 		# check date submitted and last modified
-		if( is_blank( $this->date_submitted ) ) {
+		if( \Flickerbox\Utility::is_blank( $this->date_submitted ) ) {
 			$this->date_submitted = db_now();
 		}
-		if( is_blank( $this->last_updated ) ) {
+		if( \Flickerbox\Utility::is_blank( $this->last_updated ) ) {
 			$this->last_updated = db_now();
 		}
 
@@ -557,8 +545,8 @@ class BugData {
 
 		$c_bug_id = $this->id;
 
-		if( is_blank( $this->due_date ) ) {
-			$this->due_date = date_get_null();
+		if( \Flickerbox\Utility::is_blank( $this->due_date ) ) {
+			$this->due_date = \Flickerbox\Date::get_null();
 		}
 
 		$t_old_data = bug_get( $this->id, true );
@@ -591,7 +579,7 @@ class BugData {
 			$this->build, $this->fixed_in_version,
 		);
 		$t_roadmap_updated = false;
-		if( access_has_project_level( config_get( 'roadmap_update_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold' ) ) ) {
 			$t_query .= '
 						target_version=' . db_param() . ',';
 			$t_fields[] = $this->target_version;
@@ -626,7 +614,7 @@ class BugData {
 		history_log_event_direct( $c_bug_id, 'status', $t_old_data->status, $this->status );
 		history_log_event_direct( $c_bug_id, 'resolution', $t_old_data->resolution, $this->resolution );
 		history_log_event_direct( $c_bug_id, 'projection', $t_old_data->projection, $this->projection );
-		history_log_event_direct( $c_bug_id, 'category', category_full_name( $t_old_data->category_id, false ), category_full_name( $this->category_id, false ) );
+		history_log_event_direct( $c_bug_id, 'category', \Flickerbox\Category::full_name( $t_old_data->category_id, false ), \Flickerbox\Category::full_name( $this->category_id, false ) );
 		history_log_event_direct( $c_bug_id, 'eta', $t_old_data->eta, $this->eta );
 		history_log_event_direct( $c_bug_id, 'os', $t_old_data->os, $this->os );
 		history_log_event_direct( $c_bug_id, 'os_build', $t_old_data->os_build, $this->os_build );
@@ -642,7 +630,7 @@ class BugData {
 		history_log_event_direct( $c_bug_id, 'sponsorship_total', $t_old_data->sponsorship_total, $this->sponsorship_total );
 		history_log_event_direct( $c_bug_id, 'sticky', $t_old_data->sticky, $this->sticky );
 
-		history_log_event_direct( $c_bug_id, 'due_date', ( $t_old_data->due_date != date_get_null() ) ? $t_old_data->due_date : null, ( $this->due_date != date_get_null() ) ? $this->due_date : null );
+		history_log_event_direct( $c_bug_id, 'due_date', ( $t_old_data->due_date != \Flickerbox\Date::get_null() ) ? $t_old_data->due_date : null, ( $this->due_date != \Flickerbox\Date::get_null() ) ? $this->due_date : null );
 
 		# Update extended info if requested
 		if( $p_update_extended ) {
@@ -657,10 +645,10 @@ class BugData {
 
 			bug_text_clear_cache( $c_bug_id );
 
-			$t_current_user = auth_get_current_user_id();
+			$t_current_user = \Flickerbox\Auth::get_current_user_id();
 
 			if( $t_old_data->description != $this->description ) {
-				if( bug_revision_count( $c_bug_id, REV_DESCRIPTION ) < 1 ) {
+				if( \Flickerbox\Bug\Revision::count( $c_bug_id, REV_DESCRIPTION ) < 1 ) {
 					bug_revision_add( $c_bug_id, $t_old_data->reporter_id, REV_DESCRIPTION, $t_old_data->description, 0, $t_old_data->date_submitted );
 				}
 				$t_revision_id = bug_revision_add( $c_bug_id, $t_current_user, REV_DESCRIPTION, $this->description );
@@ -668,7 +656,7 @@ class BugData {
 			}
 
 			if( $t_old_data->steps_to_reproduce != $this->steps_to_reproduce ) {
-				if( bug_revision_count( $c_bug_id, REV_STEPS_TO_REPRODUCE ) < 1 ) {
+				if( \Flickerbox\Bug\Revision::count( $c_bug_id, REV_STEPS_TO_REPRODUCE ) < 1 ) {
 					bug_revision_add( $c_bug_id, $t_old_data->reporter_id, REV_STEPS_TO_REPRODUCE, $t_old_data->steps_to_reproduce, 0, $t_old_data->date_submitted );
 				}
 				$t_revision_id = bug_revision_add( $c_bug_id, $t_current_user, REV_STEPS_TO_REPRODUCE, $this->steps_to_reproduce );
@@ -676,7 +664,7 @@ class BugData {
 			}
 
 			if( $t_old_data->additional_information != $this->additional_information ) {
-				if( bug_revision_count( $c_bug_id, REV_ADDITIONAL_INFO ) < 1 ) {
+				if( \Flickerbox\Bug\Revision::count( $c_bug_id, REV_ADDITIONAL_INFO ) < 1 ) {
 					bug_revision_add( $c_bug_id, $t_old_data->reporter_id, REV_ADDITIONAL_INFO, $t_old_data->additional_information, 0, $t_old_data->date_submitted );
 				}
 				$t_revision_id = bug_revision_add( $c_bug_id, $t_current_user, REV_ADDITIONAL_INFO, $this->additional_information );
@@ -697,7 +685,7 @@ class BugData {
 
 			# status changed
 			if( $t_old_data->status != $this->status ) {
-				$t_status = MantisEnum::getLabel( config_get( 'status_enum_string' ), $this->status );
+				$t_status = \MantisEnum::getLabel( config_get( 'status_enum_string' ), $this->status );
 				$t_status = str_replace( ' ', '_', $t_status );
 				email_generic( $c_bug_id, $t_status, 'email_notification_title_for_status_bug_' . $t_status );
 				return true;
@@ -758,7 +746,7 @@ function bug_cache_row( $p_bug_id, $p_trigger_errors = true ) {
 		$g_cache_bug[$c_bug_id] = false;
 
 		if( $p_trigger_errors ) {
-			error_parameters( $p_bug_id );
+			\Flickerbox\Error::parameters( $p_bug_id );
 			trigger_error( ERROR_BUG_NOT_FOUND, ERROR );
 		} else {
 			return false;
@@ -862,7 +850,7 @@ function bug_text_cache_row( $p_bug_id, $p_trigger_errors = true ) {
 		$g_cache_bug_text[$c_bug_id] = false;
 
 		if( $p_trigger_errors ) {
-			error_parameters( $p_bug_id );
+			\Flickerbox\Error::parameters( $p_bug_id );
 			trigger_error( ERROR_BUG_NOT_FOUND, ERROR );
 		} else {
 			return false;
@@ -914,7 +902,7 @@ function bug_exists( $p_bug_id ) {
  */
 function bug_ensure_exists( $p_bug_id ) {
 	if( !bug_exists( $p_bug_id ) ) {
-		error_parameters( $p_bug_id );
+		\Flickerbox\Error::parameters( $p_bug_id );
 		trigger_error( ERROR_BUG_NOT_FOUND, ERROR );
 	}
 }
@@ -965,7 +953,7 @@ function bug_is_readonly( $p_bug_id ) {
 		return false;
 	}
 
-	if( access_has_bug_level( config_get( 'update_readonly_bug_threshold' ), $p_bug_id ) ) {
+	if( \Flickerbox\Access::has_bug_level( config_get( 'update_readonly_bug_threshold' ), $p_bug_id ) ) {
 		return false;
 	}
 
@@ -1005,7 +993,7 @@ function bug_is_closed( $p_bug_id ) {
  */
 function bug_is_overdue( $p_bug_id ) {
 	$t_due_date = bug_get_field( $p_bug_id, 'due_date' );
-	if( !date_is_null( $t_due_date ) ) {
+	if( !\Flickerbox\Date::is_null( $t_due_date ) ) {
 		$t_now = db_now();
 		if( $t_now > $t_due_date ) {
 			if( !bug_is_resolved( $p_bug_id ) ) {
@@ -1046,7 +1034,7 @@ function bug_check_workflow( $p_bug_status, $p_wanted_status ) {
 	# workflow defined - find allowed states
 	$t_allowed_states = $t_status_enum_workflow[$p_bug_status];
 
-	return MantisEnum::hasValue( $t_allowed_states, $p_wanted_status );
+	return \MantisEnum::hasValue( $t_allowed_states, $p_wanted_status );
 }
 
 /**
@@ -1072,12 +1060,12 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 	$t_bug_data = bug_get( $t_bug_id, true );
 
 	# retrieve the project id associated with the bug
-	if( ( $p_target_project_id == null ) || is_blank( $p_target_project_id ) ) {
+	if( ( $p_target_project_id == null ) || \Flickerbox\Utility::is_blank( $p_target_project_id ) ) {
 		$t_target_project_id = $t_bug_data->project_id;
 	}
 
 	$t_bug_data->project_id = $t_target_project_id;
-	$t_bug_data->reporter_id = auth_get_current_user_id();
+	$t_bug_data->reporter_id = \Flickerbox\Auth::get_current_user_id();
 	$t_bug_data->date_submitted = db_now();
 	$t_bug_data->last_updated = db_now();
 
@@ -1155,7 +1143,7 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 
 	# Copy attachments
 	if( $p_copy_attachments ) {
-	    file_copy_attachments( $t_bug_id, $t_new_bug_id );
+	    \Flickerbox\File::copy_attachments( $t_bug_id, $t_new_bug_id );
 	}
 
 	# Copy users monitoring bug
@@ -1202,7 +1190,7 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
  */
 function bug_move( $p_bug_id, $p_target_project_id ) {
 	# Attempt to move disk based attachments to new project file directory.
-	file_move_bug_attachments( $p_bug_id, $p_target_project_id );
+	\Flickerbox\File::move_bug_attachments( $p_bug_id, $p_target_project_id );
 
 	# Move the issue to the new project.
 	bug_set_field( $p_bug_id, 'project_id', $p_target_project_id );
@@ -1218,14 +1206,14 @@ function bug_move( $p_bug_id, $p_target_project_id ) {
 		}
 	} else {
 		# Check if the category is global, and if not attempt mapping it to the new project
-		$t_category_project_id = category_get_field( $t_category_id, 'project_id' );
+		$t_category_project_id = \Flickerbox\Category::get_field( $t_category_id, 'project_id' );
 
 		if( $t_category_project_id != ALL_PROJECTS
 		  && !in_array( $t_category_project_id, project_hierarchy_inheritance( $p_target_project_id ) )
 		) {
 			# Map by name
-			$t_category_name = category_get_field( $t_category_id, 'name' );
-			$t_target_project_category_id = category_get_id_by_name( $t_category_name, $p_target_project_id, false );
+			$t_category_name = \Flickerbox\Category::get_field( $t_category_id, 'name' );
+			$t_target_project_category_id = \Flickerbox\Category::get_id_by_name( $t_category_name, $p_target_project_id, false );
 			if( $t_target_project_category_id === false ) {
 				# Use target project's default category for moves, since there is no match by name.
 				$t_target_project_category_id = config_get( 'default_category_for_moves', null, null, $p_target_project_id );
@@ -1268,7 +1256,7 @@ function bug_delete( $p_bug_id ) {
 	bugnote_delete_all( $p_bug_id );
 
 	# Delete all sponsorships
-	sponsorship_delete_all( $p_bug_id );
+	\Flickerbox\Sponsorship::delete_all( $p_bug_id );
 
 	# MASC RELATIONSHIP
 	# we delete relationships even if the feature is currently off.
@@ -1276,16 +1264,16 @@ function bug_delete( $p_bug_id ) {
 
 	# MASC RELATIONSHIP
 	# Delete files
-	file_delete_attachments( $p_bug_id );
+	\Flickerbox\File::delete_attachments( $p_bug_id );
 
 	# Detach tags
-	tag_bug_detach_all( $p_bug_id, false );
+	\Flickerbox\Tag::bug_detach_all( $p_bug_id, false );
 
 	# Delete the bug history
 	history_delete( $p_bug_id );
 
 	# Delete bug info revisions
-	bug_revision_delete( $p_bug_id );
+	\Flickerbox\Bug\Revision::delete( $p_bug_id );
 
 	# Delete the bugnote text
 	$t_bug_text_id = bug_get_field( $p_bug_id, 'bug_text_id' );
@@ -1395,7 +1383,7 @@ function bug_get_field( $p_bug_id, $p_field_name ) {
 	if( isset( $t_row[$p_field_name] ) ) {
 		return $t_row[$p_field_name];
 	} else {
-		error_parameters( $p_field_name );
+		\Flickerbox\Error::parameters( $p_field_name );
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 		return '';
 	}
@@ -1415,7 +1403,7 @@ function bug_get_text_field( $p_bug_id, $p_field_name ) {
 	if( isset( $t_row[$p_field_name] ) ) {
 		return $t_row[$p_field_name];
 	} else {
-		error_parameters( $p_field_name );
+		\Flickerbox\Error::parameters( $p_field_name );
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 		return '';
 	}
@@ -1607,7 +1595,7 @@ function bug_set_field( $p_bug_id, $p_field_name, $p_value ) {
 			break;
 
 		case 'category_id':
-			history_log_event_direct( $p_bug_id, 'category', category_full_name( $t_current_value, false ), category_full_name( $c_value, false ) );
+			history_log_event_direct( $p_bug_id, 'category', \Flickerbox\Category::full_name( $t_current_value, false ), \Flickerbox\Category::full_name( $c_value, false ) );
 			break;
 
 		default:
@@ -1630,7 +1618,7 @@ function bug_set_field( $p_bug_id, $p_field_name, $p_value ) {
  * @uses database_api.php
  */
 function bug_assign( $p_bug_id, $p_user_id, $p_bugnote_text = '', $p_bugnote_private = false ) {
-	if( ( $p_user_id != NO_USER ) && !access_has_bug_level( config_get( 'handle_bug_threshold' ), $p_bug_id, $p_user_id ) ) {
+	if( ( $p_user_id != NO_USER ) && !\Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $p_bug_id, $p_user_id ) ) {
 		trigger_error( ERROR_USER_DOES_NOT_HAVE_REQ_ACCESS );
 	}
 
@@ -1718,7 +1706,7 @@ function bug_resolve( $p_bug_id, $p_resolution, $p_fixed_in_version = '', $p_bug
 	# Error condition stopped execution but status had already been changed
 	bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', null, false );
 
-	$t_duplicate = !is_blank( $p_duplicate_id ) && ( $p_duplicate_id != 0 );
+	$t_duplicate = !\Flickerbox\Utility::is_blank( $p_duplicate_id ) && ( $p_duplicate_id != 0 );
 	if( $t_duplicate ) {
 		if( $p_bug_id == $p_duplicate_id ) {
 			trigger_error( ERROR_BUG_DUPLICATE_SELF, ERROR );
@@ -1769,7 +1757,7 @@ function bug_resolve( $p_bug_id, $p_resolution, $p_fixed_in_version = '', $p_bug
 	# only set handler if specified explicitly or if bug was not assigned to a handler
 	if( null == $p_handler_id ) {
 		if( bug_get_field( $p_bug_id, 'handler_id' ) == 0 ) {
-			$p_handler_id = auth_get_current_user_id();
+			$p_handler_id = \Flickerbox\Auth::get_current_user_id();
 			bug_set_field( $p_bug_id, 'handler_id', $p_handler_id );
 		}
 	} else {
@@ -1873,7 +1861,7 @@ function bug_monitor( $p_bug_id, $p_user_id ) {
  * @return array
  */
 function bug_get_monitors( $p_bug_id ) {
-	if( ! access_has_bug_level( config_get( 'show_monitor_list_threshold' ), $p_bug_id ) ) {
+	if( ! \Flickerbox\Access::has_bug_level( config_get( 'show_monitor_list_threshold' ), $p_bug_id ) ) {
 		return array();
 	}
 

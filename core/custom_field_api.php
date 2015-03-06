@@ -38,19 +38,13 @@
  * @uses utility_api.php
  */
 
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'error_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
 
 $g_custom_field_types[CUSTOM_FIELD_TYPE_STRING] = 'standard';
 $g_custom_field_types[CUSTOM_FIELD_TYPE_TEXTAREA] = 'standard';
@@ -118,7 +112,7 @@ function custom_field_cache_row( $p_field_id, $p_trigger_errors = true ) {
 
 	if( !$t_row ) {
 		if( $p_trigger_errors ) {
-			error_parameters( 'Custom ' . $p_field_id );
+			\Flickerbox\Error::parameters( 'Custom ' . $p_field_id );
 			trigger_error( ERROR_CUSTOM_FIELD_NOT_FOUND, ERROR );
 		} else {
 			return false;
@@ -252,7 +246,7 @@ function custom_field_ensure_exists( $p_field_id ) {
 	if( custom_field_exists( $p_field_id ) ) {
 		return true;
 	} else {
-		error_parameters( 'Custom ' . $p_field_id );
+		\Flickerbox\Error::parameters( 'Custom ' . $p_field_id );
 		trigger_error( ERROR_CUSTOM_FIELD_NOT_FOUND, ERROR );
 	}
 }
@@ -310,14 +304,14 @@ function custom_field_has_read_access( $p_field_id, $p_bug_id, $p_user_id = null
 	custom_field_ensure_exists( $p_field_id );
 
 	if( null === $p_user_id ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	$t_access_level_r = custom_field_get_field( $p_field_id, 'access_level_r' );
 
 	$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
 
-	return access_has_project_level( $t_access_level_r, $t_project_id, $p_user_id );
+	return \Flickerbox\Access::has_project_level( $t_access_level_r, $t_project_id, $p_user_id );
 }
 
 /**
@@ -333,12 +327,12 @@ function custom_field_has_read_access_by_project_id( $p_field_id, $p_project_id,
 	custom_field_ensure_exists( $p_field_id );
 
 	if( null === $p_user_id ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	$t_access_level_r = custom_field_get_field( $p_field_id, 'access_level_r' );
 
-	return access_has_project_level( $t_access_level_r, $p_project_id, $p_user_id );
+	return \Flickerbox\Access::has_project_level( $t_access_level_r, $p_project_id, $p_user_id );
 }
 
 /**
@@ -354,12 +348,12 @@ function custom_field_has_write_access_to_project( $p_field_id, $p_project_id, $
 	custom_field_ensure_exists( $p_field_id );
 
 	if( null === $p_user_id ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	$t_access_level_rw = custom_field_get_field( $p_field_id, 'access_level_rw' );
 
-	return access_has_project_level( $t_access_level_rw, $p_project_id, $p_user_id );
+	return \Flickerbox\Access::has_project_level( $t_access_level_rw, $p_project_id, $p_user_id );
 }
 
 /**
@@ -387,8 +381,8 @@ function custom_field_has_write_access( $p_field_id, $p_bug_id, $p_user_id = nul
 function custom_field_create( $p_name ) {
 	$c_name = trim( $p_name );
 
-	if( is_blank( $c_name ) ) {
-		error_parameters( 'name' );
+	if( \Flickerbox\Utility::is_blank( $c_name ) ) {
+		\Flickerbox\Error::parameters( 'name' );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 
@@ -411,22 +405,22 @@ function custom_field_create( $p_name ) {
  * @access public
  */
 function custom_field_update( $p_field_id, array $p_def_array ) {
-	if( is_blank( $p_def_array['name'] ) ) {
-		error_parameters( 'name' );
+	if( \Flickerbox\Utility::is_blank( $p_def_array['name'] ) ) {
+		\Flickerbox\Error::parameters( 'name' );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 
 	if( $p_def_array['access_level_rw'] < $p_def_array['access_level_r'] ) {
-		error_parameters(
-			lang_get( 'custom_field_access_level_r' ) . ', ' .
-			lang_get( 'custom_field_access_level_rw' ) );
+		\Flickerbox\Error::parameters(
+			\Flickerbox\Lang::get( 'custom_field_access_level_r' ) . ', ' .
+			\Flickerbox\Lang::get( 'custom_field_access_level_rw' ) );
 		trigger_error( ERROR_CUSTOM_FIELD_INVALID_PROPERTY, ERROR );
 	}
 
 	if( $p_def_array['length_min'] < 0
 		|| ( $p_def_array['length_max'] != 0 && $p_def_array['length_min'] > $p_def_array['length_max'] )
 	) {
-		error_parameters( lang_get( 'custom_field_length_min' ) . ', ' . lang_get( 'custom_field_length_max' ) );
+		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'custom_field_length_min' ) . ', ' . \Flickerbox\Lang::get( 'custom_field_length_max' ) );
 		trigger_error( ERROR_CUSTOM_FIELD_INVALID_PROPERTY, ERROR );
 	}
 
@@ -585,7 +579,7 @@ function custom_field_delete_all_values( $p_bug_id ) {
 function custom_field_get_id_from_name( $p_field_name ) {
 	global $g_cache_name_to_id_map;
 
-	if( is_blank( $p_field_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_field_name ) ) {
 		return false;
 	}
 
@@ -623,7 +617,7 @@ function custom_field_get_linked_ids( $p_project_id = ALL_PROJECTS ) {
 		db_param_push();
 
 		if( ALL_PROJECTS == $p_project_id ) {
-			$t_user_id = auth_get_current_user_id();
+			$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 			# Select only the ids of custom fields in projects the user has access to
 			#  - all custom fields in public projects,
@@ -770,7 +764,7 @@ function custom_field_get_field( $p_field_id, $p_field_name ) {
 	if( isset( $t_row[$p_field_name] ) ) {
 		return $t_row[$p_field_name];
 	} else {
-		error_parameters( $p_field_name );
+		\Flickerbox\Error::parameters( $p_field_name );
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 		return '';
 	}
@@ -784,12 +778,12 @@ function custom_field_get_field( $p_field_id, $p_field_name ) {
  * @access public
  */
 function custom_field_get_display_name( $p_name ) {
-	$t_local_name = lang_get_defaulted( $p_name );
+	$t_local_name = \Flickerbox\Lang::get_defaulted( $p_name );
 	if( $t_local_name != $p_name ) {
 		$p_name .= ' (' . $t_local_name . ')';
 	}
 
-	return string_display( $p_name );
+	return \Flickerbox\String::display( $p_name );
 }
 
 /**
@@ -807,7 +801,7 @@ function custom_field_get_value( $p_field_id, $p_bug_id ) {
 	$t_access_level_r = $t_row['access_level_r'];
 	$t_default_value = $t_row['default_value'];
 
-	if( !custom_field_has_read_access( $p_field_id, $p_bug_id, auth_get_current_user_id() ) ) {
+	if( !custom_field_has_read_access( $p_field_id, $p_bug_id, \Flickerbox\Auth::get_current_user_id() ) ) {
 		return false;
 	}
 
@@ -962,7 +956,7 @@ function custom_field_validate( $p_field_id, $p_value ) {
 				break;
 			}
 			# Regular expression string validation
-			if( !is_blank( $t_valid_regexp ) ) {
+			if( !\Flickerbox\Utility::is_blank( $t_valid_regexp ) ) {
 				$t_valid &= preg_match( '/' . $t_valid_regexp . '/', $p_value );
 			}
 			# Check the length of the string
@@ -1017,7 +1011,7 @@ function custom_field_validate( $p_field_id, $p_value ) {
 		case CUSTOM_FIELD_TYPE_RADIO:
 			# List fields can be empty (when they are not shown on the
 			# form, or shown with no default values and never clicked)
-			if( is_blank( $p_value ) ) {
+			if( \Flickerbox\Utility::is_blank( $p_value ) ) {
 				break;
 			}
 
@@ -1045,7 +1039,7 @@ function custom_field_validate( $p_field_id, $p_value ) {
  * @access public
  */
 function custom_field_prepare_possible_values( $p_possible_values ) {
-	if( !is_blank( $p_possible_values ) && ( $p_possible_values[0] == '=' ) ) {
+	if( !\Flickerbox\Utility::is_blank( $p_possible_values ) && ( $p_possible_values[0] == '=' ) ) {
 		return helper_call_custom_function( 'enum_' . utf8_substr( $p_possible_values, 1 ), array() );
 	}
 
@@ -1087,7 +1081,7 @@ function custom_field_distinct_values( array $p_field_def, $p_project_id = ALL_P
 
 		while( $t_row = db_fetch_array( $t_result ) ) {
 			$t_row_count++;
-			if( !is_blank( trim( $t_row['value'] ) ) ) {
+			if( !\Flickerbox\Utility::is_blank( trim( $t_row['value'] ) ) ) {
 				array_push( $t_return_arr, $t_row['value'] );
 			}
 		}
@@ -1286,7 +1280,7 @@ function string_custom_field_value( array $p_def, $p_field_id, $p_bug_id ) {
 	if( isset( $g_custom_field_type_definition[$p_def['type']]['#function_string_value'] ) ) {
 		return call_user_func( $g_custom_field_type_definition[$p_def['type']]['#function_string_value'], $t_custom_field_value );
 	}
-	return string_display_links( $t_custom_field_value );
+	return \Flickerbox\String::display_links( $t_custom_field_value );
 }
 
 /**

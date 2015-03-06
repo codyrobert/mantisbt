@@ -36,23 +36,16 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'manage_custom_field_create' );
+\Flickerbox\Form::security_validate( 'manage_custom_field_create' );
 
 auth_reauthenticate();
-access_ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
 
-$f_name	= gpc_get_string( 'name' );
+$f_name	= \Flickerbox\GPC::get_string( 'name' );
 
 $t_field_id = custom_field_create( $f_name );
 
@@ -62,10 +55,10 @@ if( ON == config_get( 'custom_field_edit_after_create' ) ) {
 	$t_redirect_url = 'manage_custom_field_page.php';
 }
 
-form_security_purge( 'manage_custom_field_create' );
+\Flickerbox\Form::security_purge( 'manage_custom_field_create' );
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

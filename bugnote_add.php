@@ -37,24 +37,18 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'bugnote_add' );
+\Flickerbox\Form::security_validate( 'bugnote_add' );
 
-$f_bug_id		= gpc_get_int( 'bug_id' );
-$f_private		= gpc_get_bool( 'private' );
-$f_time_tracking	= gpc_get_string( 'time_tracking', '0:00' );
-$f_bugnote_text	= trim( gpc_get_string( 'bugnote_text', '' ) );
+$f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
+$f_private		= \Flickerbox\GPC::get_bool( 'private' );
+$f_time_tracking	= \Flickerbox\GPC::get_string( 'time_tracking', '0:00' );
+$f_bugnote_text	= trim( \Flickerbox\GPC::get_string( 'bugnote_text', '' ) );
 
 $t_bug = bug_get( $f_bug_id, true );
 if( $t_bug->project_id != helper_get_current_project() ) {
@@ -64,21 +58,21 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 }
 
 if( bug_is_readonly( $t_bug->id ) ) {
-	error_parameters( $t_bug->id );
+	\Flickerbox\Error::parameters( $t_bug->id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-access_ensure_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug->id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'add_bugnote_threshold' ), $t_bug->id );
 
 if( $f_private ) {
-	access_ensure_bug_level( config_get( 'set_view_status_threshold' ), $t_bug->id );
+	\Flickerbox\Access::ensure_bug_level( config_get( 'set_view_status_threshold' ), $t_bug->id );
 }
 
 # We always set the note time to BUGNOTE, and the API will overwrite it with TIME_TRACKING
 # if $f_time_tracking is not 0 and the time tracking feature is enabled.
 $t_bugnote_id = bugnote_add( $t_bug->id, $f_bugnote_text, $f_time_tracking, $f_private, BUGNOTE );
 if( !$t_bugnote_id ) {
-	error_parameters( lang_get( 'bugnote' ) );
+	\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'bugnote' ) );
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
@@ -98,6 +92,6 @@ if( config_get( 'reassign_on_feedback' ) &&
 	}
 }
 
-form_security_purge( 'bugnote_add' );
+\Flickerbox\Form::security_purge( 'bugnote_add' );
 
 print_successful_redirect_to_bug( $t_bug->id );

@@ -49,10 +49,10 @@ class IssueMonitorTimelineEvent extends TimelineEvent {
 	 * @return string
 	 */
 	public function html() {
-		$t_string = $this->monitor ? lang_get( 'timeline_issue_monitor' ) : lang_get( 'timeline_issue_unmonitor' );
+		$t_string = $this->monitor ? \Flickerbox\Lang::get( 'timeline_issue_monitor' ) : \Flickerbox\Lang::get( 'timeline_issue_unmonitor' );
 
 		$t_html = $this->html_start();
-		$t_html .= '<div class="action">' . sprintf( $t_string, user_get_name( $this->user_id ), string_get_bug_view_link( $this->issue_id ) ) . '</div>';
+		$t_html .= '<div class="action">' . sprintf( $t_string, user_get_name( $this->user_id ), \Flickerbox\String::get_bug_view_link( $this->issue_id ) ) . '</div>';
 		$t_html .= $this->html_end();
 
 		return $t_html;

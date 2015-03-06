@@ -33,19 +33,16 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'bug_stick' );
+\Flickerbox\Form::security_validate( 'bug_stick' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 $t_bug = bug_get( $f_bug_id, true );
-$f_action = gpc_get_string( 'action' );
+$f_action = \Flickerbox\GPC::get_string( 'action' );
 
 if( $t_bug->project_id != helper_get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
@@ -53,10 +50,10 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 	$g_project_override = $t_bug->project_id;
 }
 
-access_ensure_bug_level( config_get( 'set_bug_sticky_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'set_bug_sticky_threshold' ), $f_bug_id );
 
 bug_set_field( $f_bug_id, 'sticky', 'stick' == $f_action );
 
-form_security_purge( 'bug_stick' );
+\Flickerbox\Form::security_purge( 'bug_stick' );
 
 print_successful_redirect_to_bug( $f_bug_id );

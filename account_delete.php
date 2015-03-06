@@ -52,60 +52,54 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
-form_security_validate( 'account_delete' );
+\Flickerbox\Form::security_validate( 'account_delete' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-current_user_ensure_unprotected();
+\Flickerbox\Current_User::ensure_unprotected();
 
 # Only allow users to delete their own accounts if allow_account_delete = ON or
 # the user has permission to manage user accounts.
 if( OFF == config_get( 'allow_account_delete' ) &&
-	 !access_has_global_level( config_get( 'manage_user_threshold' ) ) ) {
+	 !\Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) ) {
 	print_header_redirect( 'account_page.php' );
 }
 
 # check that we are not deleting the last administrator account
 $t_admin_threshold = config_get_global( 'admin_site_threshold' );
-if( current_user_is_administrator() &&
+if( \Flickerbox\Current_User::is_administrator() &&
 	 user_count_level( $t_admin_threshold ) <= 1 ) {
 	trigger_error( ERROR_USER_CHANGE_LAST_ADMIN, ERROR );
 }
 
-helper_ensure_confirmed( lang_get( 'confirm_delete_msg' ),
-						 lang_get( 'delete_account_button' ) );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_delete_msg' ),
+						 \Flickerbox\Lang::get( 'delete_account_button' ) );
 
-form_security_purge( 'account_delete' );
+\Flickerbox\Form::security_purge( 'account_delete' );
 
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 auth_logout();
 
 user_delete( $t_user_id );
 
-html_page_top1();
-html_page_top2a();
+\Flickerbox\HTML::page_top1();
+\Flickerbox\HTML::page_top2a();
 
 ?>
 
 <br />
 <div>
 <?php
-echo lang_get( 'account_removed_msg' ) . '<br />';
-print_bracket_link( config_get( 'logout_redirect_page' ), lang_get( 'proceed' ) );
+echo \Flickerbox\Lang::get( 'account_removed_msg' ) . '<br />';
+print_bracket_link( config_get( 'logout_redirect_page' ), \Flickerbox\Lang::get( 'proceed' ) );
 ?>
 </div>
 
 <?php
-	html_page_bottom1a();
+	\Flickerbox\HTML::page_bottom1a();

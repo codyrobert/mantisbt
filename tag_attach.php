@@ -40,37 +40,27 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
-require_api( 'tag_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'tag_attach' );
+\Flickerbox\Form::security_validate( 'tag_attach' );
 
-$f_bug_id = gpc_get_int( 'bug_id' );
-$f_tag_select = gpc_get_int( 'tag_select' );
-$f_tag_string = gpc_get_string( 'tag_string' );
+$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
+$f_tag_select = \Flickerbox\GPC::get_int( 'tag_select' );
+$f_tag_string = \Flickerbox\GPC::get_string( 'tag_string' );
 
-$t_user_id = auth_get_current_user_id();
+$t_user_id = \Flickerbox\Auth::get_current_user_id();
 
-access_ensure_bug_level( config_get( 'tag_attach_threshold' ), $f_bug_id, $t_user_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'tag_attach_threshold' ), $f_bug_id, $t_user_id );
 
 # @todo The handling of tag strings which can include multiple tags should be moved
 #     to the APIs.  This is to allow other clients of the API to support such
 #     functionality.  The access level checks should also be moved to the API.
-$t_tags = tag_parse_string( $f_tag_string );
-$t_can_create = access_has_global_level( config_get( 'tag_create_threshold' ) );
+$t_tags = \Flickerbox\Tag::parse_string( $f_tag_string );
+$t_can_create = \Flickerbox\Access::has_global_level( config_get( 'tag_create_threshold' ) );
 
 $t_tags_create = array();
 $t_tags_attach = array();
@@ -90,24 +80,24 @@ foreach ( $t_tags as $t_tag_row ) {
 	}
 }
 
-if( 0 < $f_tag_select && tag_exists( $f_tag_select ) ) {
-	$t_tags_attach[] = tag_get( $f_tag_select );
+if( 0 < $f_tag_select && \Flickerbox\Tag::exists( $f_tag_select ) ) {
+	$t_tags_attach[] = \Flickerbox\Tag::get( $f_tag_select );
 }
 
 # failed to attach at least one tag
 if( count( $t_tags_failed ) > 0 ) {
-	html_page_top( lang_get( 'tag_attach_long' ) . ' ' . bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+	\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'tag_attach_long' ) . ' ' . bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 ?>
 <br/>
 <table class="width75">
 	<tr class="row-category">
-	<td colspan="2"><?php echo lang_get( 'tag_attach_failed' ) ?></td>
+	<td colspan="2"><?php echo \Flickerbox\Lang::get( 'tag_attach_failed' ) ?></td>
 	</tr>
 	<tr class="spacer"><td colspan="2"></td></tr>
 <?php
 	$t_tag_string = '';
 	foreach( $t_tags_attach as $t_tag_row ) {
-		if( !is_blank( $t_tag_string ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_tag_string ) ) {
 			$t_tag_string .= config_get( 'tag_separator' );
 		}
 		$t_tag_string .= $t_tag_row['name'];
@@ -116,13 +106,13 @@ if( count( $t_tags_failed ) > 0 ) {
 	foreach( $t_tags_failed as $t_tag_row ) {
 		echo '<tr>';
 		if( -1 == $t_tag_row['id'] ) {
-			echo '<th class="category">', lang_get( 'tag_create_denied' ), '</th>';
+			echo '<th class="category">', \Flickerbox\Lang::get( 'tag_create_denied' ), '</th>';
 		} else if( -2 == $t_tag_row['id'] ) {
-			echo '<th class="category">', lang_get( 'tag_invalid_name' ), '</th>';
+			echo '<th class="category">', \Flickerbox\Lang::get( 'tag_invalid_name' ), '</th>';
 		}
-		echo '<td>', string_html_specialchars( $t_tag_row['name'] ), '</td></tr>';
+		echo '<td>', \Flickerbox\String::html_specialchars( $t_tag_row['name'] ), '</td></tr>';
 
-		if( !is_blank( $t_tag_string ) ) {
+		if( !\Flickerbox\Utility::is_blank( $t_tag_string ) ) {
 			$t_tag_string .= config_get( 'tag_separator' );
 		}
 		$t_tag_string .= $t_tag_row['name'];
@@ -130,7 +120,7 @@ if( count( $t_tags_failed ) > 0 ) {
 ?>
 	<tr class="spacer"><td colspan="2"></td></tr>
 	<tr>
-	<th class="category"><?php echo lang_get( 'tag_attach_long' ) ?></th>
+	<th class="category"><?php echo \Flickerbox\Lang::get( 'tag_attach_long' ) ?></th>
 	<td>
 <?php
 	print_tag_attach_form( $f_bug_id, $t_tag_string );
@@ -139,23 +129,23 @@ if( count( $t_tags_failed ) > 0 ) {
 	</tr>
 </table>
 <?php
-	html_page_bottom();
+	\Flickerbox\HTML::page_bottom();
 	# end failed to attach tag
 } else {
 	foreach( $t_tags_create as $t_tag_row ) {
-		$t_tag_row['id'] = tag_create( $t_tag_row['name'], $t_user_id );
+		$t_tag_row['id'] = \Flickerbox\Tag::create( $t_tag_row['name'], $t_user_id );
 		$t_tags_attach[] = $t_tag_row;
 	}
 
 	foreach( $t_tags_attach as $t_tag_row ) {
-		if( !tag_bug_is_attached( $t_tag_row['id'], $f_bug_id ) ) {
-			tag_bug_attach( $t_tag_row['id'], $f_bug_id, $t_user_id );
+		if( !\Flickerbox\Tag::bug_is_attached( $t_tag_row['id'], $f_bug_id ) ) {
+			\Flickerbox\Tag::bug_attach( $t_tag_row['id'], $f_bug_id, $t_user_id );
 		}
 	}
 
 	event_signal( 'EVENT_TAG_ATTACHED', array( $f_bug_id, $t_tags_attach ) );
 
-	form_security_purge( 'tag_attach' );
+	\Flickerbox\Form::security_purge( 'tag_attach' );
 
 	print_successful_redirect_to_bug( $f_bug_id );
 }

@@ -37,30 +37,21 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
-require_api( 'category_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'error_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'utility_api.php' );
 
-form_security_validate( 'manage_proj_cat_add' );
+\Flickerbox\Form::security_validate( 'manage_proj_cat_add' );
 
 auth_reauthenticate();
 
-$f_project_id	= gpc_get_int( 'project_id' );
-$f_name			= gpc_get_string( 'name' );
-$f_add_and_edit	= gpc_get_bool( 'add_and_edit_category' );
+$f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
+$f_name			= \Flickerbox\GPC::get_string( 'name' );
+$f_add_and_edit	= \Flickerbox\GPC::get_bool( 'add_and_edit_category' );
 
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 
-if( is_blank( $f_name ) ) {
-	error_parameters( lang_get( 'category' ) );
+if( \Flickerbox\Utility::is_blank( $f_name ) ) {
+	\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'category' ) );
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
@@ -72,13 +63,13 @@ if( $f_add_and_edit ) {
 $t_category_count = count( $t_names );
 
 foreach( $t_names as $t_name ) {
-	if( is_blank( $t_name ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_name ) ) {
 		continue;
 	}
 
 	$t_name = trim( $t_name );
-	if( category_is_unique( $f_project_id, $t_name ) ) {
-		$t_id = category_add( $f_project_id, $t_name );
+	if( \Flickerbox\Category::is_unique( $f_project_id, $t_name ) ) {
+		$t_id = \Flickerbox\Category::add( $f_project_id, $t_name );
 	} else if( 1 == $t_category_count ) {
 		# We only error out on duplicates when a single value was
 		#  given.  If multiple values were given, we just add the
@@ -89,7 +80,7 @@ foreach( $t_names as $t_name ) {
 	}
 }
 
-form_security_purge( 'manage_proj_cat_add' );
+\Flickerbox\Form::security_purge( 'manage_proj_cat_add' );
 
 if( $f_add_and_edit ) {
 	$t_redirect_url = 'manage_proj_cat_edit_page.php?id=' . $t_id . '&project_id=' . $f_project_id;

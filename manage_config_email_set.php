@@ -37,35 +37,27 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 
-form_security_validate( 'manage_config_email_set' );
+\Flickerbox\Form::security_validate( 'manage_config_email_set' );
 
 auth_reauthenticate();
 
 $t_can_change_level = min( config_get_access( 'notify_flags' ), config_get_access( 'default_notify_flags' ) );
-access_ensure_project_level( $t_can_change_level );
+\Flickerbox\Access::ensure_project_level( $t_can_change_level );
 
 $t_redirect_url = 'manage_config_email_page.php';
 $t_project = helper_get_current_project();
 
-$f_flags			= gpc_get( 'flag', array() );
-$f_thresholds		= gpc_get( 'flag_threshold', array() );
-$f_actions_access	= gpc_get_int( 'notify_actions_access' );
+$f_flags			= \Flickerbox\GPC::get( 'flag', array() );
+$f_thresholds		= \Flickerbox\GPC::get( 'flag_threshold', array() );
+$f_actions_access	= \Flickerbox\GPC::get_int( 'notify_actions_access' );
 
-html_page_top( lang_get( 'manage_email_config' ), $t_redirect_url );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_email_config' ), $t_redirect_url );
 
-$t_access = current_user_get_access_level();
+$t_access = \Flickerbox\Current_User::get_access_level();
 $t_can_change_flags = $t_access >= config_get_access( 'notify_flags' );
 $t_can_change_defaults = $t_access >= config_get_access( 'default_notify_flags' );
 
@@ -77,7 +69,7 @@ if( config_get( 'enable_sponsorship' ) == ON ) {
 
 $t_valid_actions[] = 'relation';
 
-$t_statuses = MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
+$t_statuses = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
 ksort( $t_statuses );
 reset( $t_statuses );
 
@@ -174,8 +166,8 @@ if( isset( $t_notify_flags ) ) {
 	}
 }
 
-form_security_purge( 'manage_config_email_set' );
+\Flickerbox\Form::security_purge( 'manage_config_email_set' );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

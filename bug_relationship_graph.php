@@ -37,31 +37,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'compress_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'relationship_graph_api.php' );
 
 # If relationship graphs were made disabled, we disallow any access to
 # this script.
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
 if( ON != config_get( 'relationship_graph_enable' ) ) {
-	access_denied();
+	\Flickerbox\Access::denied();
 }
 
-$f_bug_id		= gpc_get_int( 'bug_id' );
-$f_type			= gpc_get_string( 'graph', 'relation' );
-$f_orientation	= gpc_get_string( 'orientation', config_get( 'relationship_graph_orientation' ) );
+$f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
+$f_type			= \Flickerbox\GPC::get_string( 'graph', 'relation' );
+$f_orientation	= \Flickerbox\GPC::get_string( 'orientation', config_get( 'relationship_graph_orientation' ) );
 
 if( 'relation' == $f_type ) {
 	$t_graph_type = 'relation';
@@ -87,11 +80,11 @@ if( $t_bug->project_id != helper_get_current_project() ) {
 	$g_project_override = $t_bug->project_id;
 }
 
-access_ensure_bug_level( config_get( 'view_bug_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( config_get( 'view_bug_threshold' ), $f_bug_id );
 
-compress_enable();
+\Flickerbox\Compress::enable();
 
-html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 ?>
 <br />
 
@@ -102,24 +95,24 @@ html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 	<td class="form-title">
 		<?php
 		if( $t_graph_relation ) {
-			echo lang_get( 'viewing_bug_relationship_graph_title' );
+			echo \Flickerbox\Lang::get( 'viewing_bug_relationship_graph_title' );
 		} else {
-			echo lang_get( 'viewing_bug_dependency_graph_title' );
+			echo \Flickerbox\Lang::get( 'viewing_bug_dependency_graph_title' );
 		}
 		?>
 	</td>
 	<!-- Links -->
 	<td class="right">
 		<!-- View Issue -->
-		<span class="small"><?php print_bracket_link( 'view.php?id=' . $f_bug_id, lang_get( 'view_issue' ) ) ?></span>
+		<span class="small"><?php print_bracket_link( 'view.php?id=' . $f_bug_id, \Flickerbox\Lang::get( 'view_issue' ) ) ?></span>
 
 		<!-- Relation/Dependency Graph Switch -->
 		<span class="small">
 <?php
 		if( $t_graph_relation ) {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency', lang_get( 'dependency_graph' ) );
+			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency', \Flickerbox\Lang::get( 'dependency_graph' ) );
 		} else {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=relation', lang_get( 'relation_graph' ) );
+			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=relation', \Flickerbox\Lang::get( 'relation_graph' ) );
 		}
 ?>
 		</span>
@@ -130,9 +123,9 @@ html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 		<span class="small">
 <?php
 		if( $t_graph_horizontal ) {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=vertical', lang_get( 'vertical' ) );
+			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=vertical', \Flickerbox\Lang::get( 'vertical' ) );
 		} else {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=horizontal', lang_get( 'horizontal' ) );
+			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=horizontal', \Flickerbox\Lang::get( 'horizontal' ) );
 		}
 ?>
 		</span>
@@ -168,15 +161,15 @@ html_page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 		<tr>
 			<td class="center">
 				<img alt="" src="images/rel_related.png" />
-				<?php echo lang_get( 'related_to' ) ?>
+				<?php echo \Flickerbox\Lang::get( 'related_to' ) ?>
 			</td>
 			<td class="center">
 				<img alt="" src="images/rel_dependant.png" />
-				<?php echo lang_get( 'blocks' ) ?>
+				<?php echo \Flickerbox\Lang::get( 'blocks' ) ?>
 			</td>
 			<td class="center">
 				<img alt="" src="images/rel_duplicate.png" />
-				<?php echo lang_get( 'duplicate_of' ) ?>
+				<?php echo \Flickerbox\Lang::get( 'duplicate_of' ) ?>
 			</td>
 		</tr>
 		</table>

@@ -38,31 +38,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
-require_api( 'string_api.php' );
 require_api( 'user_api.php' );
 
 auth_reauthenticate();
 
-html_page_top( lang_get( 'manage_threshold_config' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_threshold_config' ) );
 
-print_manage_menu( 'adm_permissions_report.php' );
-print_manage_config_menu( 'manage_config_work_threshold_page.php' );
+\Flickerbox\HTML::print_manage_menu( 'adm_permissions_report.php' );
+\Flickerbox\HTML::print_manage_config_menu( 'manage_config_work_threshold_page.php' );
 
-$g_user = auth_get_current_user_id();
+$g_user = \Flickerbox\Auth::get_current_user_id();
 $g_project_id = helper_get_current_project();
 $t_show_submit = false;
 
-$g_access_levels = MantisEnum::getAssocArrayIndexedByValues( config_get( 'access_levels_enum_string' ) );
+$g_access_levels = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'access_levels_enum_string' ) );
 $g_overrides = array();
 
 /**
@@ -90,12 +83,12 @@ function get_section_begin_mcwt( $p_section_name ) {
 	echo '<thead>';
 	echo '<tr><td class="form-title" colspan="' . ( count( $g_access_levels ) + 2 ) . '">' . $p_section_name . '</td></tr>' . "\n";
 	echo '<tr class="row-category2">';
-	echo '<th class="form-title" width="40%" rowspan="2">' . lang_get( 'perm_rpt_capability' ) . '</th>';
-	echo '<th class="form-title" style="text-align:center"  width="40%" colspan="' . count( $g_access_levels ) . '">' . lang_get( 'access_levels' ) . '</th>';
-	echo '<th class="form-title" style="text-align:center" rowspan="2">&#160;' . lang_get( 'alter_level' ) . '&#160;</th>';
+	echo '<th class="form-title" width="40%" rowspan="2">' . \Flickerbox\Lang::get( 'perm_rpt_capability' ) . '</th>';
+	echo '<th class="form-title" style="text-align:center"  width="40%" colspan="' . count( $g_access_levels ) . '">' . \Flickerbox\Lang::get( 'access_levels' ) . '</th>';
+	echo '<th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Flickerbox\Lang::get( 'alter_level' ) . '&#160;</th>';
 	echo '</tr><tr class="row-category2">';
 	foreach( $g_access_levels as $t_access_level => $t_access_label ) {
-		echo '<th class="form-title" style="text-align:center">&#160;' . MantisEnum::getLabel( lang_get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
+		echo '<th class="form-title" style="text-align:center">&#160;' . \MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
 	}
 	echo '</tr>' . "\n";
 	echo '</thead>';
@@ -158,7 +151,7 @@ function print_who_can_change( $p_threshold, $p_can_change ) {
 		print_enum_string_option_list( 'access_levels', $t_project_access );
 		echo '</select>';
 	} else {
-		echo MantisEnum::getLabel( lang_get( 'access_levels_enum_string' ), $t_project_access ) . '&#160;';
+		echo \MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_project_access ) . '&#160;';
 	}
 	echo "</td>\n";
 }
@@ -209,13 +202,13 @@ function get_capability_row( $p_caption, $p_threshold, $p_all_projects_only = fa
 		$t_project_exp = $t_project;
 	}
 
-	$t_can_change = access_has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
+	$t_can_change = \Flickerbox\Access::has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
 			  && ( ( ALL_PROJECTS == $g_project_id ) || !$p_all_projects_only );
 
 	echo "<tr>\n";
 
 	# Access levels
-	echo '  <td>' . string_display( $p_caption ) . "</td>\n";
+	echo '  <td>' . \Flickerbox\String::display( $p_caption ) . "</td>\n";
 	foreach( $g_access_levels as $t_access_level => $t_access_label ) {
 		$t_file = in_array( $t_access_level, $t_file_exp );
 		$t_global = in_array( $t_access_level, $t_global_exp );
@@ -256,10 +249,10 @@ function get_capability_boolean( $p_caption, $p_threshold, $p_all_projects_only 
 	$t_global = config_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
 	$t_project = config_get( $p_threshold );
 
-	$t_can_change = access_has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
+	$t_can_change = \Flickerbox\Access::has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
 			  && ( ( ALL_PROJECTS == $g_project_id ) || !$p_all_projects_only );
 
-	echo "<tr>\n\t<td>" . string_display( $p_caption ) . "</td>\n";
+	echo "<tr>\n\t<td>" . \Flickerbox\String::display( $p_caption ) . "</td>\n";
 
 	# Value
 	$t_color = set_color( $p_threshold, $t_file, $t_global, $t_project, $t_can_change );
@@ -297,11 +290,11 @@ function get_capability_enum( $p_caption, $p_threshold, $p_enum, $p_all_projects
 	$t_global = config_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
 	$t_project = config_get( $p_threshold );
 
-	$t_can_change = access_has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
+	$t_can_change = \Flickerbox\Access::has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
 			  && ( ( ALL_PROJECTS == $g_project_id ) || !$p_all_projects_only );
 
 	echo '<tr>' . "\n";
-	echo "\t" . '<td>' . string_display( $p_caption ) . '</td>' . "\n";
+	echo "\t" . '<td>' . \Flickerbox\String::display( $p_caption ) . '</td>' . "\n";
 
 	# Value
 	$t_color = set_color( $p_threshold, $t_file, $t_global, $t_project, $t_can_change );
@@ -312,7 +305,7 @@ function get_capability_enum( $p_caption, $p_threshold, $p_enum, $p_all_projects
 		echo '</select>';
 		$t_show_submit = true;
 	} else {
-		$t_value = MantisEnum::getLabel( lang_get( $p_enum . '_enum_string' ), config_get( $p_threshold ) ) . '&#160;';
+		$t_value = \MantisEnum::getLabel( \Flickerbox\Lang::get( $p_enum . '_enum_string' ), config_get( $p_threshold ) ) . '&#160;';
 		echo $t_value;
 	}
 	echo '</td>' . "\n\t" . '<td colspan="' . ( count( $g_access_levels ) - 3 ) . '"></td>' . "\n";
@@ -335,89 +328,89 @@ function get_section_end() {
 echo '<br /><br />' . "\n";
 
 if( ALL_PROJECTS == $g_project_id ) {
-	$t_project_title = lang_get( 'config_all_projects' );
+	$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
 } else {
-	$t_project_title = sprintf( lang_get( 'config_project' ), string_display( project_get_name( $g_project_id ) ) );
+	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( project_get_name( $g_project_id ) ) );
 }
 echo '<p class="bold">' . $t_project_title . '</p>' . "\n";
-echo '<p>' . lang_get( 'colour_coding' ) . '<br />';
+echo '<p>' . \Flickerbox\Lang::get( 'colour_coding' ) . '<br />';
 if( ALL_PROJECTS <> $g_project_id ) {
-	echo '<span class="color-project">' . lang_get( 'colour_project' ) .'</span><br />';
+	echo '<span class="color-project">' . \Flickerbox\Lang::get( 'colour_project' ) .'</span><br />';
 }
-echo '<span class="color-global">' . lang_get( 'colour_global' ) . '</span></p>';
+echo '<span class="color-global">' . \Flickerbox\Lang::get( 'colour_global' ) . '</span></p>';
 
 echo '<form id="mail_config_action" method="post" action="manage_config_work_threshold_set.php">' . "\n";
-echo form_security_field( 'manage_config_work_threshold_set' );
+echo \Flickerbox\Form::security_field( 'manage_config_work_threshold_set' );
 
 # Issues
-get_section_begin_mcwt( lang_get( 'issues' ) );
-get_capability_row( lang_get( 'report_issue' ), 'report_bug_threshold' );
-get_capability_enum( lang_get( 'submit_status' ), 'bug_submit_status', 'status' );
-get_capability_row( lang_get( 'update_issue' ), 'update_bug_threshold' );
-get_capability_boolean( lang_get( 'allow_reporter_close' ), 'allow_reporter_close' );
-get_capability_row( lang_get( 'monitor_issue' ), 'monitor_bug_threshold' );
-get_capability_row( lang_get( 'handle_issue' ), 'handle_bug_threshold' );
-get_capability_row( lang_get( 'assign_issue' ), 'update_bug_assign_threshold' );
-get_capability_row( lang_get( 'move_issue' ), 'move_bug_threshold', true );
-get_capability_row( lang_get( 'delete_issue' ), 'delete_bug_threshold' );
-get_capability_row( lang_get( 'reopen_issue' ), 'reopen_bug_threshold' );
-get_capability_boolean( lang_get( 'allow_reporter_reopen' ), 'allow_reporter_reopen' );
-get_capability_enum( lang_get( 'reopen_status' ), 'bug_reopen_status', 'status' );
-get_capability_enum( lang_get( 'reopen_resolution' ), 'bug_reopen_resolution', 'resolution' );
-get_capability_enum( lang_get( 'resolved_status' ), 'bug_resolved_status_threshold', 'status' );
-get_capability_enum( lang_get( 'readonly_status' ), 'bug_readonly_status_threshold', 'status' );
-get_capability_row( lang_get( 'update_readonly_issues' ), 'update_readonly_bug_threshold' );
-get_capability_row( lang_get( 'update_issue_status' ), 'update_bug_status_threshold' );
-get_capability_row( lang_get( 'view_private_issues' ), 'private_bug_threshold' );
-get_capability_row( lang_get( 'set_view_status' ), 'set_view_status_threshold' );
-get_capability_row( lang_get( 'update_view_status' ), 'change_view_status_threshold' );
-get_capability_row( lang_get( 'show_list_of_users_monitoring_issue' ), 'show_monitor_list_threshold' );
-get_capability_boolean( lang_get( 'set_status_assigned' ), 'auto_set_status_to_assigned' );
-get_capability_enum( lang_get( 'assigned_status' ), 'bug_assigned_status', 'status' );
-get_capability_boolean( lang_get( 'limit_access' ), 'limit_reporters', true );
+get_section_begin_mcwt( \Flickerbox\Lang::get( 'issues' ) );
+get_capability_row( \Flickerbox\Lang::get( 'report_issue' ), 'report_bug_threshold' );
+get_capability_enum( \Flickerbox\Lang::get( 'submit_status' ), 'bug_submit_status', 'status' );
+get_capability_row( \Flickerbox\Lang::get( 'update_issue' ), 'update_bug_threshold' );
+get_capability_boolean( \Flickerbox\Lang::get( 'allow_reporter_close' ), 'allow_reporter_close' );
+get_capability_row( \Flickerbox\Lang::get( 'monitor_issue' ), 'monitor_bug_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'handle_issue' ), 'handle_bug_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'assign_issue' ), 'update_bug_assign_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'move_issue' ), 'move_bug_threshold', true );
+get_capability_row( \Flickerbox\Lang::get( 'delete_issue' ), 'delete_bug_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'reopen_issue' ), 'reopen_bug_threshold' );
+get_capability_boolean( \Flickerbox\Lang::get( 'allow_reporter_reopen' ), 'allow_reporter_reopen' );
+get_capability_enum( \Flickerbox\Lang::get( 'reopen_status' ), 'bug_reopen_status', 'status' );
+get_capability_enum( \Flickerbox\Lang::get( 'reopen_resolution' ), 'bug_reopen_resolution', 'resolution' );
+get_capability_enum( \Flickerbox\Lang::get( 'resolved_status' ), 'bug_resolved_status_threshold', 'status' );
+get_capability_enum( \Flickerbox\Lang::get( 'readonly_status' ), 'bug_readonly_status_threshold', 'status' );
+get_capability_row( \Flickerbox\Lang::get( 'update_readonly_issues' ), 'update_readonly_bug_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'update_issue_status' ), 'update_bug_status_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'view_private_issues' ), 'private_bug_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'set_view_status' ), 'set_view_status_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'update_view_status' ), 'change_view_status_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'show_list_of_users_monitoring_issue' ), 'show_monitor_list_threshold' );
+get_capability_boolean( \Flickerbox\Lang::get( 'set_status_assigned' ), 'auto_set_status_to_assigned' );
+get_capability_enum( \Flickerbox\Lang::get( 'assigned_status' ), 'bug_assigned_status', 'status' );
+get_capability_boolean( \Flickerbox\Lang::get( 'limit_access' ), 'limit_reporters', true );
 get_section_end();
 
 # Notes
-get_section_begin_mcwt( lang_get( 'notes' ) );
-get_capability_row( lang_get( 'add_notes' ), 'add_bugnote_threshold' );
-get_capability_row( lang_get( 'edit_others_bugnotes' ), 'update_bugnote_threshold' );
-get_capability_row( lang_get( 'edit_own_bugnotes' ), 'bugnote_user_edit_threshold' );
-get_capability_row( lang_get( 'delete_others_bugnotes' ), 'delete_bugnote_threshold' );
-get_capability_row( lang_get( 'delete_own_bugnotes' ), 'bugnote_user_delete_threshold' );
-get_capability_row( lang_get( 'view_private_notes' ), 'private_bugnote_threshold' );
-get_capability_row( lang_get( 'change_view_state_own_bugnotes' ), 'bugnote_user_change_view_state_threshold' );
+get_section_begin_mcwt( \Flickerbox\Lang::get( 'notes' ) );
+get_capability_row( \Flickerbox\Lang::get( 'add_notes' ), 'add_bugnote_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'edit_others_bugnotes' ), 'update_bugnote_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'edit_own_bugnotes' ), 'bugnote_user_edit_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'delete_others_bugnotes' ), 'delete_bugnote_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'delete_own_bugnotes' ), 'bugnote_user_delete_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'view_private_notes' ), 'private_bugnote_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'change_view_state_own_bugnotes' ), 'bugnote_user_change_view_state_threshold' );
 get_section_end();
 
 # Others
-get_section_begin_mcwt( lang_get( 'others' ) );
-get_capability_row( lang_get( 'view' ) . ' ' . lang_get( 'changelog_link' ), 'view_changelog_threshold' );
-get_capability_row( lang_get( 'view' ) . ' ' . lang_get( 'assigned_to' ), 'view_handler_threshold' );
-get_capability_row( lang_get( 'view' ) . ' ' . lang_get( 'bug_history' ), 'view_history_threshold' );
-get_capability_row( lang_get( 'send_reminders' ), 'bug_reminder_threshold' );
-get_capability_row( lang_get( 'receive_reminders' ), 'reminder_receive_threshold' );
+get_section_begin_mcwt( \Flickerbox\Lang::get( 'others' ) );
+get_capability_row( \Flickerbox\Lang::get( 'view' ) . ' ' . \Flickerbox\Lang::get( 'changelog_link' ), 'view_changelog_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'view' ) . ' ' . \Flickerbox\Lang::get( 'assigned_to' ), 'view_handler_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'view' ) . ' ' . \Flickerbox\Lang::get( 'bug_history' ), 'view_history_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'send_reminders' ), 'bug_reminder_threshold' );
+get_capability_row( \Flickerbox\Lang::get( 'receive_reminders' ), 'reminder_receive_threshold' );
 get_section_end();
 
 
 if( $t_show_submit ) {
-	echo '<input type="submit" class="button" value="' . lang_get( 'change_configuration' ) . '" />' . "\n";
+	echo '<input type="submit" class="button" value="' . \Flickerbox\Lang::get( 'change_configuration' ) . '" />' . "\n";
 }
 
 echo '</form>' . "\n";
 
 if( $t_show_submit && ( 0 < count( $g_overrides ) ) ) {
 	echo '<div class="right"><form id="threshold_config_action" method="post" action="manage_config_revert.php">' . "\n";
-	echo form_security_field( 'manage_config_revert' );
+	echo \Flickerbox\Form::security_field( 'manage_config_revert' );
 	echo '<input name="revert" type="hidden" value="' . implode( ',', $g_overrides ) . '"></input>';
 	echo '<input name="project" type="hidden" value="' . $g_project_id . '"></input>';
-	echo '<input name="return" type="hidden" value="' . string_attribute( form_action_self() ) .'"></input>';
+	echo '<input name="return" type="hidden" value="' . \Flickerbox\String::attribute( \Flickerbox\Form::action_self() ) .'"></input>';
 	echo '<input type="submit" class="button" value="';
 	if( ALL_PROJECTS == $g_project_id ) {
-		echo lang_get( 'revert_to_system' );
+		echo \Flickerbox\Lang::get( 'revert_to_system' );
 	} else {
-		echo lang_get( 'revert_to_all_project' );
+		echo \Flickerbox\Lang::get( 'revert_to_all_project' );
 	}
 	echo '" />' . "\n";
 	echo '</form></div>' . "\n";
 }
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

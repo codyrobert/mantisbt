@@ -39,34 +39,26 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'current_user_api.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
 require_api( 'project_hierarchy_api.php' );
 
-form_security_validate( 'manage_proj_create' );
+\Flickerbox\Form::security_validate( 'manage_proj_create' );
 
 auth_reauthenticate();
-access_ensure_global_level( config_get( 'create_project_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get( 'create_project_threshold' ) );
 
-$f_name 		= gpc_get_string( 'name' );
-$f_description 	= gpc_get_string( 'description' );
-$f_view_state	= gpc_get_int( 'view_state' );
-$f_status		= gpc_get_int( 'status' );
-$f_file_path	= gpc_get_string( 'file_path', '' );
-$f_inherit_global = gpc_get_bool( 'inherit_global', 0 );
-$f_inherit_parent = gpc_get_bool( 'inherit_parent', 0 );
+$f_name 		= \Flickerbox\GPC::get_string( 'name' );
+$f_description 	= \Flickerbox\GPC::get_string( 'description' );
+$f_view_state	= \Flickerbox\GPC::get_int( 'view_state' );
+$f_status		= \Flickerbox\GPC::get_int( 'status' );
+$f_file_path	= \Flickerbox\GPC::get_string( 'file_path', '' );
+$f_inherit_global = \Flickerbox\GPC::get_bool( 'inherit_global', 0 );
+$f_inherit_parent = \Flickerbox\GPC::get_bool( 'inherit_parent', 0 );
 
-$f_parent_id	= gpc_get_int( 'parent_id', 0 );
+$f_parent_id	= \Flickerbox\GPC::get_int( 'parent_id', 0 );
 
 if( 0 != $f_parent_id ) {
 	project_ensure_exists( $f_parent_id );
@@ -74,9 +66,9 @@ if( 0 != $f_parent_id ) {
 
 $t_project_id = project_create( strip_tags( $f_name ), $f_description, $f_status, $f_view_state, $f_file_path, true, $f_inherit_global );
 
-if( ( $f_view_state == VS_PRIVATE ) && ( false === current_user_is_administrator() ) ) {
-	$t_access_level = access_get_global_level();
-	$t_current_user_id = auth_get_current_user_id();
+if( ( $f_view_state == VS_PRIVATE ) && ( false === \Flickerbox\Current_User::is_administrator() ) ) {
+	$t_access_level = \Flickerbox\Access::get_global_level();
+	$t_current_user_id = \Flickerbox\Auth::get_current_user_id();
 	project_add_user( $t_project_id, $t_current_user_id, $t_access_level );
 }
 
@@ -86,12 +78,12 @@ if( 0 != $f_parent_id ) {
 
 event_signal( 'EVENT_MANAGE_PROJECT_CREATE', array( $t_project_id ) );
 
-form_security_purge( 'manage_proj_create' );
+\Flickerbox\Form::security_purge( 'manage_proj_create' );
 
 $t_redirect_url = 'manage_proj_page.php';
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

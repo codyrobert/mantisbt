@@ -222,7 +222,7 @@ function cfdef_prepare_date_value_for_email( $p_value ) {
  * @return string The calculated default date value if $p_value starts with '=', otherwise, returns $p_value.
  */
 function cfdef_prepare_date_default( $p_value ) {
-	if( is_blank( $p_value ) ) {
+	if( \Flickerbox\Utility::is_blank( $p_value ) ) {
 		return '';
 	}
 
@@ -251,7 +251,7 @@ function cfdef_prepare_date_default( $p_value ) {
  */
 function cfdef_prepare_list_value( $p_value ) {
 	# strip start and end markers before converting markers to commas
-	return string_display_line( str_replace( '|', ', ', utf8_substr( str_replace( '||', '|', '|' . $p_value . '|' ), 1, -1 ) ) );
+	return \Flickerbox\String::display_line( str_replace( '|', ', ', utf8_substr( str_replace( '||', '|', '|' . $p_value . '|' ), 1, -1 ) ) );
 }
 
 /**
@@ -260,7 +260,7 @@ function cfdef_prepare_list_value( $p_value ) {
  * @return string
  */
 function cfdef_prepare_email_value( $p_value ) {
-	return '<a href="mailto:' . string_attribute( $p_value ) . '">' . string_display_line( $p_value ) . '</a>';
+	return '<a href="mailto:' . \Flickerbox\String::attribute( $p_value ) . '">' . \Flickerbox\String::display_line( $p_value ) . '</a>';
 }
 
 /**
@@ -301,9 +301,9 @@ function cfdef_input_list( array $p_field_def, $p_custom_field_value ) {
 	$t_selected_values = explode( '|', $p_custom_field_value );
 	foreach( $t_values as $t_option ) {
 		if( in_array( $t_option, $t_selected_values, true ) ) {
-			echo '<option value="' . string_attribute( $t_option ) . '" selected="selected"> ' . string_display_line( $t_option ) . '</option>';
+			echo '<option value="' . \Flickerbox\String::attribute( $t_option ) . '" selected="selected"> ' . \Flickerbox\String::display_line( $t_option ) . '</option>';
 		} else {
-			echo '<option value="' . string_attribute( $t_option ) . '">' . string_display_line( $t_option ) . '</option>';
+			echo '<option value="' . \Flickerbox\String::attribute( $t_option ) . '">' . \Flickerbox\String::display_line( $t_option ) . '</option>';
 		}
 	}
 	echo '</select>';
@@ -321,10 +321,10 @@ function cfdef_input_checkbox( array $p_field_def, $p_custom_field_value ) {
 	for( $i = 0; $i < count( $t_values ); $i++ ) {
 		$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
 		$t_input_name = 'custom_field_' . $p_field_def['id'] . '[]';
-		echo '<input id="$t_input_id" ' . helper_get_tab_index() . ' type="checkbox" name="' . $t_input_name . '" value="' . string_attribute( $t_values[$i] ) . '"';
+		echo '<input id="$t_input_id" ' . helper_get_tab_index() . ' type="checkbox" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
 		check_checked( $t_checked_values, $t_values[$i] );
 		echo " />\n";
-		echo '<label for="' . $t_input_id . '">"' . string_display_line( $t_values[$i] ) . '</label>' . "\n";
+		echo '<label for="' . $t_input_id . '">"' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
 	}
 }
 
@@ -347,10 +347,10 @@ function cfdef_input_radio( array $p_field_def, $p_custom_field_value ) {
 	for( $i = 0; $i < count( $t_values ); $i++ ) {
 		$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
 		$t_input_name = 'custom_field_' . $p_field_def['id'];
-		echo '<input id="' . $t_input_id . '" ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . string_attribute( $t_values[$i] ) . '"';
+		echo '<input id="' . $t_input_id . '" ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
 		check_checked( $t_checked_value, $t_values[$i] );
 		echo " />\n";
-		echo '<label for="' . $t_input_id . '">' . string_display_line( $t_values[$i] ) . '</label>' . "\n";
+		echo '<label for="' . $t_input_id . '">' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
 	}
 }
 
@@ -367,7 +367,7 @@ function cfdef_input_textbox( array $p_field_def, $p_custom_field_value ) {
 	} else {
 		echo ' maxlength="255"';
 	}
-	echo ' value="' . string_attribute( $p_custom_field_value ) .'"></input>';
+	echo ' value="' . \Flickerbox\String::attribute( $p_custom_field_value ) .'"></input>';
 }
 
 /**
@@ -389,7 +389,7 @@ function cfdef_input_textarea( array $p_field_def, $p_custom_field_value ) {
  * @return void
  */
 function cfdef_input_date( $p_field_def, $p_custom_field_value ) {
-	print_date_selection_set( 'custom_field_' . $p_field_def['id'], config_get( 'short_date_format' ), $p_custom_field_value, false, true );
+	\Flickerbox\Date::print_date_selection_set( 'custom_field_' . $p_field_def['id'], config_get( 'short_date_format' ), $p_custom_field_value, false, true );
 }
 
 /**

@@ -26,9 +26,9 @@ require_once( 'core.php' );
 
 plugin_require_api( 'core/graph_api.php' );
 
-access_ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
 
-$f_width = gpc_get_int( 'width', 300 );
+$f_width = \Flickerbox\GPC::get_int( 'width', 300 );
 $t_ar = plugin_config_get( 'bar_aspect' );
 
 $t_metrics = create_cumulative_bydate();

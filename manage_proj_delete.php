@@ -36,34 +36,28 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'project_api.php' );
 
-form_security_validate( 'manage_proj_delete' );
+\Flickerbox\Form::security_validate( 'manage_proj_delete' );
 
 auth_reauthenticate();
 
-$f_project_id = gpc_get_int( 'project_id' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 
-access_ensure_project_level( config_get( 'delete_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'delete_project_threshold' ), $f_project_id );
 
 $t_project_name = project_get_name( $f_project_id );
 
-helper_ensure_confirmed( lang_get( 'project_delete_msg' ) .
-		'<br/>' . lang_get( 'project_name_label' ) . lang_get( 'word_separator' ) . $t_project_name,
-		lang_get( 'project_delete_button' ) );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'project_delete_msg' ) .
+		'<br/>' . \Flickerbox\Lang::get( 'project_name_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_project_name,
+		\Flickerbox\Lang::get( 'project_delete_button' ) );
 
 project_delete( $f_project_id );
 
-form_security_purge( 'manage_proj_delete' );
+\Flickerbox\Form::security_purge( 'manage_proj_delete' );
 
 # Don't leave the current project set to a deleted project -
 #  set it to All Projects

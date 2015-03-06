@@ -26,9 +26,9 @@
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 require_once( 'schema.php' );
 
-access_ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
 
-html_page_top( 'MantisBT Administration' );
+\Flickerbox\HTML::page_top( 'MantisBT Administration' );
 
 /**
  * Print Check result - information only
@@ -61,7 +61,7 @@ function print_info_row( $p_description, $p_value ) {
 	<table>
 		<tr>
 			<td class="form-title" width="30%" colspan="2">
-				<?php echo lang_get( 'install_information' ) ?>
+				<?php echo \Flickerbox\Lang::get( 'install_information' ) ?>
 			</td>
 		</tr>
 <?php
@@ -70,30 +70,30 @@ function print_info_row( $p_description, $p_value ) {
 	} else {
 		$t_version_suffix = '';
 	}
-	print_info_row( lang_get( 'mantis_version' ), MANTIS_VERSION, $t_version_suffix );
-	print_info_row( lang_get( 'php_version' ), phpversion() );
+	print_info_row( \Flickerbox\Lang::get( 'mantis_version' ), MANTIS_VERSION, $t_version_suffix );
+	print_info_row( \Flickerbox\Lang::get( 'php_version' ), phpversion() );
 ?>
 		<tr>
 			<td class="form-title" width="30%" colspan="2">
-				<?php echo lang_get( 'database_information' ) ?>
+				<?php echo \Flickerbox\Lang::get( 'database_information' ) ?>
 			</td>
 		</tr>
 <?php
-	print_info_row( lang_get( 'schema_version' ), config_get( 'database_version' ) );
-	print_info_row( lang_get( 'adodb_version' ), $g_db->Version() );
+	print_info_row( \Flickerbox\Lang::get( 'schema_version' ), config_get( 'database_version' ) );
+	print_info_row( \Flickerbox\Lang::get( 'adodb_version' ), $g_db->Version() );
 ?>
 		<tr>
 			<td class="form-title" width="30%" colspan="2">
-				<?php echo lang_get( 'path_information' ) ?>
+				<?php echo \Flickerbox\Lang::get( 'path_information' ) ?>
 			</td>
 		</tr>
 <?php
-	print_info_row( lang_get( 'site_path' ), config_get( 'absolute_path' ) );
-	print_info_row( lang_get( 'core_path' ), config_get( 'core_path' ) );
-	print_info_row( lang_get( 'plugin_path' ), config_get( 'plugin_path' ) );
+	print_info_row( \Flickerbox\Lang::get( 'site_path' ), config_get( 'absolute_path' ) );
+	print_info_row( \Flickerbox\Lang::get( 'core_path' ), config_get( 'core_path' ) );
+	print_info_row( \Flickerbox\Lang::get( 'plugin_path' ), config_get( 'plugin_path' ) );
 ?>
 	</table>
 </div>
 
 <?php
-	html_page_bottom();
+	\Flickerbox\HTML::page_bottom();

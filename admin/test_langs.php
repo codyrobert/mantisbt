@@ -29,7 +29,7 @@ $t_mantis_dir = dirname( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR;
 
 require_once( $t_mantis_dir . 'core.php' );
 
-access_ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
 
 if( function_exists( 'xdebug_disable' ) ) {
 	xdebug_disable();
@@ -46,11 +46,11 @@ if( !checkfile( $t_mantis_dir . 'lang' . DIRECTORY_SEPARATOR, STRINGS_ENGLISH, t
 	die;
 }
 
-lang_push( 'english' );
+\Flickerbox\Lang::push( 'english' );
 
 set_time_limit( 0 );
 
-html_page_top();
+\Flickerbox\HTML::page_top();
 
 # check core language files
 if( function_exists( 'scandir' ) ) {
@@ -409,4 +409,4 @@ function print_error( $p_string, $p_type = 'ERROR' ) {
 	echo '<p class="error-msg">', $p_type . ': ' . $p_string, '</p>';
 }
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

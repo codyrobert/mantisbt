@@ -44,21 +44,12 @@
 
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
-require_api( 'category_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'history_api.php' );
-require_api( 'html_api.php' );
-require_api( 'icon_api.php' );
-require_api( 'lang_api.php' );
-require_api( 'prepare_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
-require_api( 'utility_api.php' );
-require_api( 'version_api.php' );
 
 /**
  * Custom Function API
@@ -94,8 +85,8 @@ function custom_function_default_changelog_print_issue( $p_issue_id, $p_issue_le
 		$t_category_name = '';
 	}
 
-	$t_category = is_blank( $t_category_name ) ? '' : '<strong>[' . string_display_line( $t_category_name ) . ']</strong> ';
-	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', string_get_bug_view_link( $p_issue_id ), ': ', $t_category, string_display_line_links( $t_bug->summary );
+	$t_category = \Flickerbox\Utility::is_blank( $t_category_name ) ? '' : '<strong>[' . \Flickerbox\String::display_line( $t_category_name ) . ']</strong> ';
+	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', \Flickerbox\String::get_bug_view_link( $p_issue_id ), ': ', $t_category, \Flickerbox\String::display_line_links( $t_bug->summary );
 
 	if( $t_bug->handler_id != 0 ) {
 		echo ' (', prepare_user_name( $t_bug->handler_id ), ')';
@@ -143,9 +134,9 @@ function custom_function_default_roadmap_print_issue( $p_issue_id, $p_issue_leve
 		$t_category_name = '';
 	}
 
-	$t_category = is_blank( $t_category_name ) ? '' : '<strong>[' . string_display_line( $t_category_name ) . ']</strong> ';
+	$t_category = \Flickerbox\Utility::is_blank( $t_category_name ) ? '' : '<strong>[' . \Flickerbox\String::display_line( $t_category_name ) . ']</strong> ';
 
-	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', $t_strike_start, string_get_bug_view_link( $p_issue_id ), ': ', $t_category, string_display_line_links( $t_bug->summary );
+	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', $t_strike_start, \Flickerbox\String::get_bug_view_link( $p_issue_id ), ': ', $t_category, \Flickerbox\String::display_line_links( $t_bug->summary );
 
 	if( $t_bug->handler_id != 0 ) {
 		echo ' (', prepare_user_name( $t_bug->handler_id ), ')';
@@ -167,16 +158,16 @@ function custom_function_default_roadmap_print_issue( $p_issue_id, $p_issue_leve
 function custom_function_default_format_issue_summary( $p_issue_id, $p_context = 0 ) {
 	switch( $p_context ) {
 		case SUMMARY_CAPTION:
-			$t_string = bug_format_id( $p_issue_id ) . ': ' . string_attribute( bug_get_field( $p_issue_id, 'summary' ) );
+			$t_string = bug_format_id( $p_issue_id ) . ': ' . \Flickerbox\String::attribute( bug_get_field( $p_issue_id, 'summary' ) );
 			break;
 		case SUMMARY_FIELD:
-			$t_string = bug_format_id( $p_issue_id ) . ': ' . string_display_line_links( bug_get_field( $p_issue_id, 'summary' ) );
+			$t_string = bug_format_id( $p_issue_id ) . ': ' . \Flickerbox\String::display_line_links( bug_get_field( $p_issue_id, 'summary' ) );
 			break;
 		case SUMMARY_EMAIL:
-			$t_string = bug_format_id( $p_issue_id ) . ': ' . string_attribute( bug_get_field( $p_issue_id, 'summary' ) );
+			$t_string = bug_format_id( $p_issue_id ) . ': ' . \Flickerbox\String::attribute( bug_get_field( $p_issue_id, 'summary' ) );
 			break;
 		default:
-			$t_string = string_attribute( bug_get_field( $p_issue_id, 'summary' ) );
+			$t_string = \Flickerbox\String::attribute( bug_get_field( $p_issue_id, 'summary' ) );
 			break;
 	}
 	return $t_string;
@@ -418,7 +409,7 @@ function custom_function_default_print_column_value( $p_column, BugData $p_bug, 
 		} else {
 			printf( $t_column_start, $p_column );
 			if( isset( $p_bug->$p_column ) ) {
-				echo string_display_line( $p_bug->$p_column ) . $t_column_end;
+				echo \Flickerbox\String::display_line( $p_bug->$p_column ) . $t_column_end;
 			} else {
 				echo '@' . $p_column . '@' . $t_column_end;
 			}
@@ -434,7 +425,7 @@ function custom_function_default_print_column_value( $p_column, BugData $p_bug, 
  * @return string
  */
 function custom_function_default_enum_versions() {
-	$t_versions = version_get_all_rows( helper_get_current_project() );
+	$t_versions = \Flickerbox\Version::get_all_rows( helper_get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -454,7 +445,7 @@ function custom_function_default_enum_versions() {
  * @return string
  */
 function custom_function_default_enum_released_versions() {
-	$t_versions = version_get_all_rows( helper_get_current_project() );
+	$t_versions = \Flickerbox\Version::get_all_rows( helper_get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -476,7 +467,7 @@ function custom_function_default_enum_released_versions() {
  * @return string
  */
 function custom_function_default_enum_future_versions() {
-	$t_versions = version_get_all_rows( helper_get_current_project() );
+	$t_versions = \Flickerbox\Version::get_all_rows( helper_get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -512,7 +503,7 @@ function custom_function_default_enum_categories() {
 
 /**
  * This function prints the custom buttons on the current view page based on specified bug id
- * and the context.  The printing of the buttons will typically call html_button() from
+ * and the context.  The printing of the buttons will typically call \Flickerbox\HTML::button() from
  * html_api.php.  For each button, this function needs to generate the enclosing '<td>' and '</td>'.
  *
  * @param integer $p_bug_id A bug identifier.

@@ -37,24 +37,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'excel_api.php' );
-require_api( 'file_api.php' );
-require_api( 'filter_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'utility_api.php' );
 
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'print_all_bug_options_inc.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-$f_export = gpc_get_string( 'export', '' );
+$f_export = \Flickerbox\GPC::get_string( 'export', '' );
 
 helper_begin_long_process();
 
@@ -63,17 +58,17 @@ $t_export_title = excel_get_default_filename();
 $t_short_date_format = config_get( 'short_date_format' );
 
 # This is where we used to do the entire actual filter ourselves
-$t_page_number = gpc_get_int( 'page_number', 1 );
+$t_page_number = \Flickerbox\GPC::get_int( 'page_number', 1 );
 $t_per_page = 100;
 
-$t_result = filter_get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_result = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 if( $t_result === false ) {
 	print_header_redirect( 'view_all_set.php?type=0&print=1' );
 }
 
 header( 'Content-Type: application/vnd.ms-excel; charset=UTF-8' );
 header( 'Pragma: public' );
-header( 'Content-Disposition: attachment; filename="' . urlencode( file_clean_name( $t_export_title ) ) . '.xml"' ) ;
+header( 'Content-Disposition: attachment; filename="' . urlencode( \Flickerbox\File::clean_name( $t_export_title ) ) . '.xml"' ) ;
 
 echo excel_get_header( $t_export_title );
 echo excel_get_titles_row();
@@ -87,7 +82,7 @@ do {
 	columns_plugin_cache_issue_data( $t_result );
 
 	foreach( $t_result as $t_row ) {
-		if( is_blank( $f_export ) || in_array( $t_row->id, $f_bug_arr ) ) {
+		if( \Flickerbox\Utility::is_blank( $f_export ) || in_array( $t_row->id, $f_bug_arr ) ) {
 			echo excel_get_start_row();
 
 			foreach ( $t_columns as $t_column ) {
@@ -112,7 +107,7 @@ do {
 	$t_more = ( $t_page_number < $t_page_count );
 	if( $t_more ) {
 		$t_page_number++;
-		$t_result = filter_get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+		$t_result = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 	}
 } while( $t_more );
 

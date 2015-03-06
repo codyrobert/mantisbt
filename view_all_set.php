@@ -40,27 +40,17 @@
  */
 
 require_once( 'core.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'error_api.php' );
-require_api( 'filter_api.php' );
-require_api( 'filter_constants_inc.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'logging_api.php' );
 require_api( 'print_api.php' );
-require_api( 'tokens_api.php' );
-require_api( 'utility_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-$f_type					= gpc_get_int( 'type', -1 );
-$f_source_query_id		= gpc_get_int( 'source_query_id', -1 );
-$f_print				= gpc_get_bool( 'print' );
-$f_temp_filter			= gpc_get_bool( 'temporary' );
+$f_type					= \Flickerbox\GPC::get_int( 'type', -1 );
+$f_source_query_id		= \Flickerbox\GPC::get_int( 'source_query_id', -1 );
+$f_print				= \Flickerbox\GPC::get_bool( 'print' );
+$f_temp_filter			= \Flickerbox\GPC::get_bool( 'temporary' );
 
 # validate filter type
 $f_default_view_type = 'simple';
@@ -68,7 +58,7 @@ if( ADVANCED_DEFAULT == config_get( 'view_filters' ) ) {
 	$f_default_view_type = 'advanced';
 }
 
-$f_view_type = gpc_get_string( 'view_type', $f_default_view_type );
+$f_view_type = \Flickerbox\GPC::get_string( 'view_type', $f_default_view_type );
 if( ADVANCED_ONLY == config_get( 'view_filters' ) ) {
 	$f_view_type = 'advanced';
 }
@@ -84,210 +74,210 @@ $t_meta_filter_any_array = array( META_FILTER_ANY );
 
 # these are all possibly multiple selections for advanced filtering
 $f_show_category = array();
-if( is_array( gpc_get( FILTER_PROPERTY_CATEGORY_ID, null ) ) ) {
-	$f_show_category = gpc_get_string_array( FILTER_PROPERTY_CATEGORY_ID, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_CATEGORY_ID, null ) ) ) {
+	$f_show_category = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_CATEGORY_ID, $t_meta_filter_any_array );
 } else {
-	$f_show_category = gpc_get_string( FILTER_PROPERTY_CATEGORY_ID, META_FILTER_ANY );
+	$f_show_category = \Flickerbox\GPC::get_string( FILTER_PROPERTY_CATEGORY_ID, META_FILTER_ANY );
 	$f_show_category = array( $f_show_category );
 }
 
 $f_platform = array();
-if( is_array( gpc_get( FILTER_PROPERTY_PLATFORM, null ) ) ) {
-	$f_platform = gpc_get_string_array( FILTER_PROPERTY_PLATFORM, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_PLATFORM, null ) ) ) {
+	$f_platform = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_PLATFORM, $t_meta_filter_any_array );
 } else {
-	$f_platform = gpc_get_string( FILTER_PROPERTY_PLATFORM, META_FILTER_ANY );
+	$f_platform = \Flickerbox\GPC::get_string( FILTER_PROPERTY_PLATFORM, META_FILTER_ANY );
 	$f_platform = array( $f_platform );
 }
 
 $f_os = array();
-if( is_array( gpc_get( FILTER_PROPERTY_OS, null ) ) ) {
-	$f_os = gpc_get_string_array( FILTER_PROPERTY_OS, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_OS, null ) ) ) {
+	$f_os = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_OS, $t_meta_filter_any_array );
 } else {
-	$f_os = gpc_get_string( FILTER_PROPERTY_OS, META_FILTER_ANY );
+	$f_os = \Flickerbox\GPC::get_string( FILTER_PROPERTY_OS, META_FILTER_ANY );
 	$f_os = array( $f_os );
 }
 
 $f_os_build = array();
-if( is_array( gpc_get( FILTER_PROPERTY_OS_BUILD, null ) ) ) {
-	$f_os_build = gpc_get_string_array( FILTER_PROPERTY_OS_BUILD, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_OS_BUILD, null ) ) ) {
+	$f_os_build = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_OS_BUILD, $t_meta_filter_any_array );
 } else {
-	$f_os_build = gpc_get_string( FILTER_PROPERTY_OS_BUILD, META_FILTER_ANY );
+	$f_os_build = \Flickerbox\GPC::get_string( FILTER_PROPERTY_OS_BUILD, META_FILTER_ANY );
 	$f_os_build = array( $f_os_build );
 }
 
 $f_show_severity = array();
-if( is_array( gpc_get( FILTER_PROPERTY_SEVERITY, null ) ) ) {
-	$f_show_severity = gpc_get_string_array( FILTER_PROPERTY_SEVERITY, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_SEVERITY, null ) ) ) {
+	$f_show_severity = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_SEVERITY, $t_meta_filter_any_array );
 } else {
-	$f_show_severity = gpc_get_string( FILTER_PROPERTY_SEVERITY, META_FILTER_ANY );
+	$f_show_severity = \Flickerbox\GPC::get_string( FILTER_PROPERTY_SEVERITY, META_FILTER_ANY );
 	$f_show_severity = array( $f_show_severity );
 }
 
 $f_show_status = array();
-if( is_array( gpc_get( FILTER_PROPERTY_STATUS, null ) ) ) {
-	$f_show_status = gpc_get_string_array( FILTER_PROPERTY_STATUS, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_STATUS, null ) ) ) {
+	$f_show_status = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_STATUS, $t_meta_filter_any_array );
 } else {
-	$f_show_status = gpc_get_string( FILTER_PROPERTY_STATUS, META_FILTER_ANY );
+	$f_show_status = \Flickerbox\GPC::get_string( FILTER_PROPERTY_STATUS, META_FILTER_ANY );
 	$f_show_status = array( $f_show_status );
 }
 
 $f_hide_status = array();
-if( is_array( gpc_get( FILTER_PROPERTY_HIDE_STATUS, null ) ) ) {
-	$f_hide_status = gpc_get_string_array( FILTER_PROPERTY_HIDE_STATUS, array( META_FILTER_NONE ) );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_HIDE_STATUS, null ) ) ) {
+	$f_hide_status = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_HIDE_STATUS, array( META_FILTER_NONE ) );
 } else {
-	$f_hide_status = gpc_get_string( FILTER_PROPERTY_HIDE_STATUS, META_FILTER_NONE );
+	$f_hide_status = \Flickerbox\GPC::get_string( FILTER_PROPERTY_HIDE_STATUS, META_FILTER_NONE );
 	$f_hide_status = array( $f_hide_status );
 }
 
 $f_reporter_id = array();
-if( is_array( gpc_get( FILTER_PROPERTY_REPORTER_ID, null ) ) ) {
-	$f_reporter_id = gpc_get_string_array( FILTER_PROPERTY_REPORTER_ID, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_REPORTER_ID, null ) ) ) {
+	$f_reporter_id = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_REPORTER_ID, $t_meta_filter_any_array );
 } else {
-	$f_reporter_id = gpc_get_string( FILTER_PROPERTY_REPORTER_ID, META_FILTER_ANY );
+	$f_reporter_id = \Flickerbox\GPC::get_string( FILTER_PROPERTY_REPORTER_ID, META_FILTER_ANY );
 	$f_reporter_id = array( $f_reporter_id );
 }
 
 $f_handler_id = array();
-if( is_array( gpc_get( FILTER_PROPERTY_HANDLER_ID, null ) ) ) {
-	$f_handler_id = gpc_get_string_array( FILTER_PROPERTY_HANDLER_ID, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_HANDLER_ID, null ) ) ) {
+	$f_handler_id = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_HANDLER_ID, $t_meta_filter_any_array );
 } else {
-	$f_handler_id = gpc_get_string( FILTER_PROPERTY_HANDLER_ID, META_FILTER_ANY );
+	$f_handler_id = \Flickerbox\GPC::get_string( FILTER_PROPERTY_HANDLER_ID, META_FILTER_ANY );
 	$f_handler_id = array( $f_handler_id );
 }
 
 $f_project_id = array();
-if( is_array( gpc_get( FILTER_PROPERTY_PROJECT_ID, null ) ) ) {
-	$f_project_id = gpc_get_int_array( FILTER_PROPERTY_PROJECT_ID, array( META_FILTER_CURRENT ) );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_PROJECT_ID, null ) ) ) {
+	$f_project_id = \Flickerbox\GPC::get_int_array( FILTER_PROPERTY_PROJECT_ID, array( META_FILTER_CURRENT ) );
 } else {
-	$f_project_id = gpc_get_int( FILTER_PROPERTY_PROJECT_ID, META_FILTER_CURRENT );
+	$f_project_id = \Flickerbox\GPC::get_int( FILTER_PROPERTY_PROJECT_ID, META_FILTER_CURRENT );
 	$f_project_id = array( $f_project_id );
 }
 
 $f_show_resolution = array();
-if( is_array( gpc_get( FILTER_PROPERTY_RESOLUTION, null ) ) ) {
-	$f_show_resolution = gpc_get_string_array( FILTER_PROPERTY_RESOLUTION, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_RESOLUTION, null ) ) ) {
+	$f_show_resolution = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_RESOLUTION, $t_meta_filter_any_array );
 } else {
-	$f_show_resolution = gpc_get_string( FILTER_PROPERTY_RESOLUTION, META_FILTER_ANY );
+	$f_show_resolution = \Flickerbox\GPC::get_string( FILTER_PROPERTY_RESOLUTION, META_FILTER_ANY );
 	$f_show_resolution = array( $f_show_resolution );
 }
 
 $f_show_build = array();
-if( is_array( gpc_get( FILTER_PROPERTY_BUILD, null ) ) ) {
-	$f_show_build = gpc_get_string_array( FILTER_PROPERTY_BUILD, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_BUILD, null ) ) ) {
+	$f_show_build = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_BUILD, $t_meta_filter_any_array );
 } else {
-	$f_show_build = gpc_get_string( FILTER_PROPERTY_BUILD, META_FILTER_ANY );
+	$f_show_build = \Flickerbox\GPC::get_string( FILTER_PROPERTY_BUILD, META_FILTER_ANY );
 	$f_show_build = array( $f_show_build );
 }
 
 $f_show_version = array();
-if( is_array( gpc_get( FILTER_PROPERTY_VERSION, null ) ) ) {
-	$f_show_version = gpc_get_string_array( FILTER_PROPERTY_VERSION, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_VERSION, null ) ) ) {
+	$f_show_version = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_VERSION, $t_meta_filter_any_array );
 } else {
-	$f_show_version = gpc_get_string( FILTER_PROPERTY_VERSION, META_FILTER_ANY );
+	$f_show_version = \Flickerbox\GPC::get_string( FILTER_PROPERTY_VERSION, META_FILTER_ANY );
 	$f_show_version = array( $f_show_version );
 }
 
 $f_fixed_in_version = array();
-if( is_array( gpc_get( FILTER_PROPERTY_FIXED_IN_VERSION, null ) ) ) {
-	$f_fixed_in_version = gpc_get_string_array( FILTER_PROPERTY_FIXED_IN_VERSION, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_FIXED_IN_VERSION, null ) ) ) {
+	$f_fixed_in_version = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_FIXED_IN_VERSION, $t_meta_filter_any_array );
 } else {
-	$f_fixed_in_version = gpc_get_string( FILTER_PROPERTY_FIXED_IN_VERSION, META_FILTER_ANY );
+	$f_fixed_in_version = \Flickerbox\GPC::get_string( FILTER_PROPERTY_FIXED_IN_VERSION, META_FILTER_ANY );
 	$f_fixed_in_version = array( $f_fixed_in_version );
 }
 
 $f_target_version = array();
-if( is_array( gpc_get( FILTER_PROPERTY_TARGET_VERSION, null ) ) ) {
-	$f_target_version = gpc_get_string_array( FILTER_PROPERTY_TARGET_VERSION, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_TARGET_VERSION, null ) ) ) {
+	$f_target_version = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_TARGET_VERSION, $t_meta_filter_any_array );
 } else {
-	$f_target_version = gpc_get_string( FILTER_PROPERTY_TARGET_VERSION, META_FILTER_ANY );
+	$f_target_version = \Flickerbox\GPC::get_string( FILTER_PROPERTY_TARGET_VERSION, META_FILTER_ANY );
 	$f_target_version = array( $f_target_version );
 }
 
 $f_show_profile = array();
-if( is_array( gpc_get( FILTER_PROPERTY_PROFILE_ID, null ) ) ) {
-	$f_show_profile = gpc_get_string_array( FILTER_PROPERTY_PROFILE_ID, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_PROFILE_ID, null ) ) ) {
+	$f_show_profile = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_PROFILE_ID, $t_meta_filter_any_array );
 } else {
-	$f_show_profile = gpc_get_string( FILTER_PROPERTY_PROFILE_ID, META_FILTER_ANY );
+	$f_show_profile = \Flickerbox\GPC::get_string( FILTER_PROPERTY_PROFILE_ID, META_FILTER_ANY );
 	$f_show_profile = array( $f_show_profile );
 }
 
 $f_show_priority = array();
-if( is_array( gpc_get( FILTER_PROPERTY_PRIORITY, null ) ) ) {
-	$f_show_priority = gpc_get_string_array( FILTER_PROPERTY_PRIORITY, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_PRIORITY, null ) ) ) {
+	$f_show_priority = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_PRIORITY, $t_meta_filter_any_array );
 } else {
-	$f_show_priority = gpc_get_string( FILTER_PROPERTY_PRIORITY, META_FILTER_ANY );
+	$f_show_priority = \Flickerbox\GPC::get_string( FILTER_PROPERTY_PRIORITY, META_FILTER_ANY );
 	$f_show_priority = array( $f_show_priority );
 }
 
 $f_user_monitor = array();
-if( is_array( gpc_get( FILTER_PROPERTY_MONITOR_USER_ID, null ) ) ) {
-	$f_user_monitor = gpc_get_string_array( FILTER_PROPERTY_MONITOR_USER_ID, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_MONITOR_USER_ID, null ) ) ) {
+	$f_user_monitor = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_MONITOR_USER_ID, $t_meta_filter_any_array );
 } else {
-	$f_user_monitor = gpc_get_string( FILTER_PROPERTY_MONITOR_USER_ID, META_FILTER_ANY );
+	$f_user_monitor = \Flickerbox\GPC::get_string( FILTER_PROPERTY_MONITOR_USER_ID, META_FILTER_ANY );
 	$f_user_monitor = array( $f_user_monitor );
 }
 
 $f_note_user_id = array();
-if( is_array( gpc_get( FILTER_PROPERTY_NOTE_USER_ID, null ) ) ) {
-	$f_note_user_id = gpc_get_string_array( FILTER_PROPERTY_NOTE_USER_ID, $t_meta_filter_any_array );
+if( is_array( \Flickerbox\GPC::get( FILTER_PROPERTY_NOTE_USER_ID, null ) ) ) {
+	$f_note_user_id = \Flickerbox\GPC::get_string_array( FILTER_PROPERTY_NOTE_USER_ID, $t_meta_filter_any_array );
 } else {
-	$f_note_user_id = gpc_get_string( FILTER_PROPERTY_NOTE_USER_ID, META_FILTER_ANY );
+	$f_note_user_id = \Flickerbox\GPC::get_string( FILTER_PROPERTY_NOTE_USER_ID, META_FILTER_ANY );
 	$f_note_user_id = array( $f_note_user_id );
 }
 
-$f_match_type = gpc_get_int( FILTER_PROPERTY_MATCH_TYPE, FILTER_MATCH_ALL );
+$f_match_type = \Flickerbox\GPC::get_int( FILTER_PROPERTY_MATCH_TYPE, FILTER_MATCH_ALL );
 
 # these are only single values, even when doing advanced filtering
-$f_per_page				= gpc_get_int( FILTER_PROPERTY_ISSUES_PER_PAGE, -1 );
-$f_highlight_changed	= gpc_get_int( FILTER_PROPERTY_HIGHLIGHT_CHANGED, config_get( 'default_show_changed' ) );
-$f_sticky_issues		= gpc_get_bool( FILTER_PROPERTY_STICKY );
+$f_per_page				= \Flickerbox\GPC::get_int( FILTER_PROPERTY_ISSUES_PER_PAGE, -1 );
+$f_highlight_changed	= \Flickerbox\GPC::get_int( FILTER_PROPERTY_HIGHLIGHT_CHANGED, config_get( 'default_show_changed' ) );
+$f_sticky_issues		= \Flickerbox\GPC::get_bool( FILTER_PROPERTY_STICKY );
 
 # sort direction
-$f_sort_d				= gpc_get_string( FILTER_PROPERTY_SORT_FIELD_NAME, '' );
-$f_dir_d				= gpc_get_string( FILTER_PROPERTY_SORT_DIRECTION, '' );
-$f_sort_0				= gpc_get_string( FILTER_PROPERTY_SORT_FIELD_NAME . '_0', 'last_updated' );
-$f_dir_0				= gpc_get_string( FILTER_PROPERTY_SORT_DIRECTION . '_0', 'DESC' );
-$f_sort_1				= gpc_get_string( FILTER_PROPERTY_SORT_FIELD_NAME . '_1', '' );
-$f_dir_1				= gpc_get_string( FILTER_PROPERTY_SORT_DIRECTION . '_1', '' );
+$f_sort_d				= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_FIELD_NAME, '' );
+$f_dir_d				= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_DIRECTION, '' );
+$f_sort_0				= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_FIELD_NAME . '_0', 'last_updated' );
+$f_dir_0				= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_DIRECTION . '_0', 'DESC' );
+$f_sort_1				= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_FIELD_NAME . '_1', '' );
+$f_dir_1				= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_DIRECTION . '_1', '' );
 
 # date values
-$f_do_filter_by_date	= gpc_get_bool( FILTER_PROPERTY_FILTER_BY_DATE );
-$f_start_month			= gpc_get_int( FILTER_PROPERTY_START_MONTH, date( 'm' ) );
-$f_end_month			= gpc_get_int( FILTER_PROPERTY_END_MONTH, date( 'm' ) );
-$f_start_day			= gpc_get_int( FILTER_PROPERTY_START_DAY, 1 );
-$f_end_day				= gpc_get_int( FILTER_PROPERTY_END_DAY, date( 'd' ) );
-$f_start_year			= gpc_get_int( FILTER_PROPERTY_START_YEAR, date( 'Y' ) );
-$f_end_year				= gpc_get_int( FILTER_PROPERTY_END_YEAR, date( 'Y' ) );
-$f_search				= gpc_get_string( FILTER_PROPERTY_SEARCH, '' );
-$f_view_state			= gpc_get_int( FILTER_PROPERTY_VIEW_STATE, META_FILTER_ANY );
+$f_do_filter_by_date	= \Flickerbox\GPC::get_bool( FILTER_PROPERTY_FILTER_BY_DATE );
+$f_start_month			= \Flickerbox\GPC::get_int( FILTER_PROPERTY_START_MONTH, date( 'm' ) );
+$f_end_month			= \Flickerbox\GPC::get_int( FILTER_PROPERTY_END_MONTH, date( 'm' ) );
+$f_start_day			= \Flickerbox\GPC::get_int( FILTER_PROPERTY_START_DAY, 1 );
+$f_end_day				= \Flickerbox\GPC::get_int( FILTER_PROPERTY_END_DAY, date( 'd' ) );
+$f_start_year			= \Flickerbox\GPC::get_int( FILTER_PROPERTY_START_YEAR, date( 'Y' ) );
+$f_end_year				= \Flickerbox\GPC::get_int( FILTER_PROPERTY_END_YEAR, date( 'Y' ) );
+$f_search				= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SEARCH, '' );
+$f_view_state			= \Flickerbox\GPC::get_int( FILTER_PROPERTY_VIEW_STATE, META_FILTER_ANY );
 
-$f_tag_string			= gpc_get_string( FILTER_PROPERTY_TAG_STRING, '' );
-$f_tag_select			= gpc_get_int( FILTER_PROPERTY_TAG_SELECT, '0' );
+$f_tag_string			= \Flickerbox\GPC::get_string( FILTER_PROPERTY_TAG_STRING, '' );
+$f_tag_select			= \Flickerbox\GPC::get_int( FILTER_PROPERTY_TAG_SELECT, '0' );
 
 # plugin filter updates
-$t_plugin_filters = filter_get_plugin_filters();
+$t_plugin_filters = \Flickerbox\Filter::get_plugin_filters();
 $f_filter_input = array();
 
 foreach( $t_plugin_filters as $t_field_name => $t_filter_object ) {
 	switch( $t_filter_object->type ) {
 		case FILTER_TYPE_STRING:
-			$f_filter_input[$t_field_name] = gpc_get_string( $t_field_name, $t_filter_object->default );
+			$f_filter_input[$t_field_name] = \Flickerbox\GPC::get_string( $t_field_name, $t_filter_object->default );
 			break;
 
 		case FILTER_TYPE_INT:
-			$f_filter_input[$t_field_name] = gpc_get_int( $t_field_name, $t_filter_object->default );
+			$f_filter_input[$t_field_name] = \Flickerbox\GPC::get_int( $t_field_name, $t_filter_object->default );
 			break;
 
 		case FILTER_TYPE_BOOLEAN:
-			$f_filter_input[$t_field_name] = gpc_get_bool( $t_field_name, OFF );
+			$f_filter_input[$t_field_name] = \Flickerbox\GPC::get_bool( $t_field_name, OFF );
 			break;
 
 		case FILTER_TYPE_MULTI_STRING:
-			$f_filter_input[$t_field_name] = gpc_get_string_array( $t_field_name, $t_filter_object->default );
+			$f_filter_input[$t_field_name] = \Flickerbox\GPC::get_string_array( $t_field_name, $t_filter_object->default );
 			break;
 
 		case FILTER_TYPE_MULTI_INT:
-			$f_filter_input[$t_field_name] = gpc_get_int_array( $t_field_name, $t_filter_object->default );
+			$f_filter_input[$t_field_name] = \Flickerbox\GPC::get_int_array( $t_field_name, $t_filter_object->default );
 			break;
 	}
 }
@@ -298,16 +288,16 @@ $f_custom_fields_data 	= array();
 if( is_array( $t_custom_fields ) && ( count( $t_custom_fields ) > 0 ) ) {
 	foreach( $t_custom_fields as $t_cfid ) {
 		if( custom_field_type( $t_cfid ) == CUSTOM_FIELD_TYPE_DATE ) {
-			$t_control = gpc_get_string( 'custom_field_' . $t_cfid . '_control', null );
+			$t_control = \Flickerbox\GPC::get_string( 'custom_field_' . $t_cfid . '_control', null );
 
-			$t_year = gpc_get_int( 'custom_field_' . $t_cfid . '_start_year', null );
-			$t_month = gpc_get_int( 'custom_field_' . $t_cfid . '_start_month', null );
-			$t_day = gpc_get_int( 'custom_field_' . $t_cfid . '_start_day', null );
+			$t_year = \Flickerbox\GPC::get_int( 'custom_field_' . $t_cfid . '_start_year', null );
+			$t_month = \Flickerbox\GPC::get_int( 'custom_field_' . $t_cfid . '_start_month', null );
+			$t_day = \Flickerbox\GPC::get_int( 'custom_field_' . $t_cfid . '_start_day', null );
 			$t_start_date = mktime( 0, 0, 0, $t_month, $t_day, $t_year );
 
-			$t_year = gpc_get_int( 'custom_field_' . $t_cfid . '_end_year', null );
-			$t_month = gpc_get_int( 'custom_field_' . $t_cfid . '_end_month', null );
-			$t_day = gpc_get_int( 'custom_field_' . $t_cfid . '_end_day', null );
+			$t_year = \Flickerbox\GPC::get_int( 'custom_field_' . $t_cfid . '_end_year', null );
+			$t_month = \Flickerbox\GPC::get_int( 'custom_field_' . $t_cfid . '_end_month', null );
+			$t_day = \Flickerbox\GPC::get_int( 'custom_field_' . $t_cfid . '_end_day', null );
 			$t_end_date = mktime( 0, 0, 0, $t_month, $t_day, $t_year );
 
 			$f_custom_fields_data[$t_cfid] = array();
@@ -346,18 +336,18 @@ if( is_array( $t_custom_fields ) && ( count( $t_custom_fields ) > 0 ) ) {
 			$f_custom_fields_data[$t_cfid][1] = $t_start;
 			$f_custom_fields_data[$t_cfid][2] = $t_end;
 		} else {
-			if( is_array( gpc_get( 'custom_field_' . $t_cfid, null ) ) ) {
-				$f_custom_fields_data[$t_cfid] = gpc_get_string_array( 'custom_field_' . $t_cfid, $t_meta_filter_any_array );
+			if( is_array( \Flickerbox\GPC::get( 'custom_field_' . $t_cfid, null ) ) ) {
+				$f_custom_fields_data[$t_cfid] = \Flickerbox\GPC::get_string_array( 'custom_field_' . $t_cfid, $t_meta_filter_any_array );
 			} else {
-				$f_custom_fields_data[$t_cfid] = gpc_get_string( 'custom_field_' . $t_cfid, META_FILTER_ANY );
+				$f_custom_fields_data[$t_cfid] = \Flickerbox\GPC::get_string( 'custom_field_' . $t_cfid, META_FILTER_ANY );
 				$f_custom_fields_data[$t_cfid] = array( $f_custom_fields_data[$t_cfid] );
 			}
 		}
 	}
 }
 
-$f_relationship_type = gpc_get_int( FILTER_PROPERTY_RELATIONSHIP_TYPE, -1 );
-$f_relationship_bug = gpc_get_int( FILTER_PROPERTY_RELATIONSHIP_BUG, 0 );
+$f_relationship_type = \Flickerbox\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_TYPE, -1 );
+$f_relationship_bug = \Flickerbox\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_BUG, 0 );
 
 if( $f_temp_filter ) {
 	$f_type = 1;
@@ -415,18 +405,18 @@ if( ( $f_type == 3 ) && ( $f_source_query_id == -1 ) ) {
 # 	26: $f_show_profile
 
 # Set new filter values.  These are stored in a cookie
-$t_view_all_cookie_id = gpc_get_cookie( config_get( 'view_all_cookie' ), '' );
-$t_view_all_cookie = filter_db_get_filter( $t_view_all_cookie_id );
+$t_view_all_cookie_id = \Flickerbox\GPC::get_cookie( config_get( 'view_all_cookie' ), '' );
+$t_view_all_cookie = \Flickerbox\Filter::db_get_filter( $t_view_all_cookie_id );
 
 # process the cookie if it exists, it may be blank in a new install
-if( !is_blank( $t_view_all_cookie ) ) {
-	$t_setting_arr = filter_deserialize( $t_view_all_cookie );
+if( !\Flickerbox\Utility::is_blank( $t_view_all_cookie ) ) {
+	$t_setting_arr = \Flickerbox\Filter::deserialize( $t_view_all_cookie );
 	if( false === $t_setting_arr ) {
 		# couldn't deserialize, if we were trying to use the filter, clear it and reload
 		# for ftype = 0, 1, or 3, we are going to re-write the filter anyways
 		if( !in_array( $f_type, array( 0, 1, 3 ) ) ) {
-			gpc_clear_cookie( 'view_all_cookie' );
-			error_proceed_url( 'view_all_set.php?type=0' );
+			\Flickerbox\GPC::clear_cookie( 'view_all_cookie' );
+			\Flickerbox\Error::proceed_url( 'view_all_set.php?type=0' );
 			trigger_error( ERROR_FILTER_TOO_OLD, ERROR );
 			exit; # stop here
 		}
@@ -444,12 +434,12 @@ $t_setting_arr['_source_query_id'] = '';
 switch( $f_type ) {
 	# New cookie
 	case '0':
-		log_event( LOG_FILTERING, 'view_all_set.php: New cookie' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: New cookie' );
 		$t_setting_arr = array();
 		break;
 	# Update filters
 	case '1':
-		log_event( LOG_FILTERING, 'view_all_set.php: Update filters' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: Update filters' );
 		$t_setting_arr['_version'] 								= $t_cookie_version;
 		$t_setting_arr['_view_type'] 							= $f_view_type;
 		$t_setting_arr[FILTER_PROPERTY_CATEGORY_ID] 			= $f_show_category;
@@ -495,7 +485,7 @@ switch( $f_type ) {
 		break;
 	# Set the sort order and direction
 	case '2':
-		log_event( LOG_FILTERING, 'view_all_set.php: Set the sort order and direction.' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: Set the sort order and direction.' );
 
 		# We only need to set those fields that we are overriding
 		$t_setting_arr[FILTER_PROPERTY_SORT_FIELD_NAME] = $f_sort;
@@ -505,17 +495,17 @@ switch( $f_type ) {
 	# This is when we want to copy another query from the
 	# database over the top of our current one
 	case '3':
-		log_event( LOG_FILTERING, 'view_all_set.php: Copy another query from database' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: Copy another query from database' );
 
-		$t_filter_string = filter_db_get_filter( $f_source_query_id );
+		$t_filter_string = \Flickerbox\Filter::db_get_filter( $f_source_query_id );
 		# If we can use the query that we've requested,
 		# grab it. We will overwrite the current one at the
 		# bottom of this page
-		$t_setting_arr = filter_deserialize( $t_filter_string );
+		$t_setting_arr = \Flickerbox\Filter::deserialize( $t_filter_string );
 		if( false === $t_setting_arr ) {
 			# couldn't deserialize, if we were trying to use the filter, clear it and reload
-			gpc_clear_cookie( 'view_all_cookie' );
-			error_proceed_url( 'view_all_set.php?type=0' );
+			\Flickerbox\GPC::clear_cookie( 'view_all_cookie' );
+			\Flickerbox\Error::proceed_url( 'view_all_set.php?type=0' );
 			trigger_error( ERROR_FILTER_TOO_OLD, ERROR );
 			exit; # stop here
 		}
@@ -524,7 +514,7 @@ switch( $f_type ) {
 		break;
 	case '4':
 		# Generalise the filter
-		log_event( LOG_FILTERING, 'view_all_set.php: Generalise the filter' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: Generalise the filter' );
 
 		$t_setting_arr[FILTER_PROPERTY_CATEGORY_ID]			= array( META_FILTER_ANY );
 		$t_setting_arr[FILTER_PROPERTY_REPORTER_ID] 		= array( META_FILTER_ANY );
@@ -551,27 +541,27 @@ switch( $f_type ) {
 		break;
 	case '5':
 		# Just set the search string value
-		log_event( LOG_FILTERING, 'view_all_set.php: Search Text' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: Search Text' );
 		$t_setting_arr[FILTER_PROPERTY_SEARCH] = $f_search;
 		break;
 	case '6':
 		# Just set the view_state (simple / advanced) value
-		log_event( LOG_FILTERING, 'view_all_set.php: View state (simple/advanced)' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: View state (simple/advanced)' );
 		$t_setting_arr['_view_type'] = $f_view_type;
 
 		break;
 	default:
 		# does nothing. catch all case
-		log_event( LOG_FILTERING, 'view_all_set.php: default - do nothing' );
+		\Flickerbox\Log::event( LOG_FILTERING, 'view_all_set.php: default - do nothing' );
 		break;
 }
 
-$t_setting_arr = filter_ensure_valid_filter( $t_setting_arr );
+$t_setting_arr = \Flickerbox\Filter::ensure_valid_filter( $t_setting_arr );
 
 # Remove any statuses that should be excluded by the hide_status field
 if( $f_view_type == 'advanced' ) {
 	if( $t_setting_arr[FILTER_PROPERTY_HIDE_STATUS][0] > 0 ) {
-		$t_statuses = MantisEnum::getValues( config_get( 'status_enum_string' ) );
+		$t_statuses = \MantisEnum::getValues( config_get( 'status_enum_string' ) );
 		foreach( $t_statuses as $t_key=>$t_val ) {
 			if( $t_val < $t_setting_arr[FILTER_PROPERTY_HIDE_STATUS][0] ) {
 				$t_keep_statuses[$t_key] = $t_val;
@@ -599,10 +589,10 @@ if( !$f_temp_filter ) {
 	# Store the filter string in the database: its the current filter, so some values won't change
 	$t_project_id = helper_get_current_project();
 	$t_project_id = ( $t_project_id * -1 );
-	$t_row_id = filter_db_set_for_current_user( $t_project_id, false, '', $t_settings_string );
+	$t_row_id = \Flickerbox\Filter::db_set_for_current_user( $t_project_id, false, '', $t_settings_string );
 
 	# set cookie values
-	gpc_set_cookie( config_get( 'view_all_cookie' ), $t_row_id, time()+config_get( 'cookie_time_length' ), config_get( 'cookie_path' ) );
+	\Flickerbox\GPC::set_cookie( config_get( 'view_all_cookie' ), $t_row_id, time()+config_get( 'cookie_time_length' ), config_get( 'cookie_path' ) );
 }
 
 # redirect to print_all or view_all page
@@ -613,7 +603,7 @@ if( $f_print ) {
 }
 
 if( $f_temp_filter ) {
-	$t_token_id = token_set( TOKEN_FILTER, $t_settings_serialized );
+	$t_token_id = \Flickerbox\Token::set( TOKEN_FILTER, $t_settings_serialized );
 	$t_redirect_url = $t_redirect_url . '?filter=' . $t_token_id;
 }
 print_header_redirect( $t_redirect_url );

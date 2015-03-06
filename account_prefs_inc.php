@@ -40,18 +40,12 @@ if( !defined( 'ACCOUNT_PREFS_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 require_api( 'user_pref_api.php' );
-require_api( 'utility_api.php' );
 
 /**
  * Display html form to edit account preferences
@@ -64,11 +58,11 @@ require_api( 'utility_api.php' );
  */
 function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p_accounts_menu = true, $p_redirect_url = '' ) {
 	if( null === $p_user_id ) {
-		$p_user_id = auth_get_current_user_id();
+		$p_user_id = \Flickerbox\Auth::get_current_user_id();
 	}
 
 	$t_redirect_url = $p_redirect_url;
-	if( is_blank( $t_redirect_url ) ) {
+	if( \Flickerbox\Utility::is_blank( $t_redirect_url ) ) {
 		$t_redirect_url = 'account_prefs_page.php';
 	}
 
@@ -89,25 +83,25 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 <div id="account-prefs-update-div" class="form-container">
 	<form id="account-prefs-update-form" method="post" action="account_prefs_update.php">
 		<fieldset>
-			<legend><span><?php echo lang_get( 'default_account_preferences_title' ) ?></span></legend>
-			<?php echo form_security_field( 'account_prefs_update' ) ?>
+			<legend><span><?php echo \Flickerbox\Lang::get( 'default_account_preferences_title' ) ?></span></legend>
+			<?php echo \Flickerbox\Form::security_field( 'account_prefs_update' ) ?>
 			<input type="hidden" name="user_id" value="<?php echo $p_user_id ?>" />
 			<input type="hidden" name="redirect_url" value="<?php echo $t_redirect_url ?>" />
 		<?php
 			if( $p_accounts_menu ) {
-				print_account_menu( 'account_prefs_page.php' );
+				\Flickerbox\HTML::print_account_menu( 'account_prefs_page.php' );
 			}
 		?>
 			<div class="field-container">
-				<label for="default-project-id"><span><?php echo lang_get( 'default_project' ) ?></span></label>
+				<label for="default-project-id"><span><?php echo \Flickerbox\Lang::get( 'default_project' ) ?></span></label>
 				<span class="select">
 					<select id="default-project-id" name="default_project">
 <?php
 	# Count number of available projects
-	$t_projects = current_user_get_accessible_projects();
+	$t_projects = \Flickerbox\Current_User::get_accessible_projects();
 	$t_num_proj = count( $t_projects );
 	if( $t_num_proj == 1 ) {
-		$t_num_proj += count( current_user_get_accessible_subprojects( $t_projects[0] ) );
+		$t_num_proj += count( \Flickerbox\Current_User::get_accessible_subprojects( $t_projects[0] ) );
 	}
 	# Don't display "All projects" in selection list if there is only 1
 	print_project_option_list( (int)$t_pref->default_project, $t_num_proj != 1 );
@@ -117,31 +111,31 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="refresh-delay"><span><?php echo lang_get( 'refresh_delay' ) ?></span></label>
-				<span class="input"><input id="refresh-delay" type="text" name="refresh_delay" size="4" maxlength="4" value="<?php echo $t_pref->refresh_delay ?>" /> <?php echo lang_get( 'minutes' ) ?></span>
+				<label for="refresh-delay"><span><?php echo \Flickerbox\Lang::get( 'refresh_delay' ) ?></span></label>
+				<span class="input"><input id="refresh-delay" type="text" name="refresh_delay" size="4" maxlength="4" value="<?php echo $t_pref->refresh_delay ?>" /> <?php echo \Flickerbox\Lang::get( 'minutes' ) ?></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="redirect-delay"><span><?php echo lang_get( 'redirect_delay' ) ?></span></label>
-				<span class="input"><input id="redirect-delay" type="text" name="redirect_delay" size="4" maxlength="3" value="<?php echo $t_pref->redirect_delay ?>" /> <?php echo lang_get( 'seconds' ) ?></span>
+				<label for="redirect-delay"><span><?php echo \Flickerbox\Lang::get( 'redirect_delay' ) ?></span></label>
+				<span class="input"><input id="redirect-delay" type="text" name="redirect_delay" size="4" maxlength="3" value="<?php echo $t_pref->redirect_delay ?>" /> <?php echo \Flickerbox\Lang::get( 'seconds' ) ?></span>
 				<span class="label-style"></span>
 			</div>
 			<fieldset class="field-container">
-				<legend><span><?php echo lang_get( 'bugnote_order' ) ?></span></legend>
+				<legend><span><?php echo \Flickerbox\Lang::get( 'bugnote_order' ) ?></span></legend>
 				<span class="radio"><input id="bugnote-order-desc" type="radio" name="bugnote_order" value="DESC" <?php check_checked( $t_pref->bugnote_order, 'DESC' ); ?> /></span>
-				<label for="bugnote-order-desc"><span><?php echo lang_get( 'bugnote_order_desc' ) ?></span></label>
+				<label for="bugnote-order-desc"><span><?php echo \Flickerbox\Lang::get( 'bugnote_order_desc' ) ?></span></label>
 				<span class="radio"><input id="bugnote-order-asc" type="radio" name="bugnote_order" value="ASC" <?php check_checked( $t_pref->bugnote_order, 'ASC' ); ?> /></span>
-				<label for="bugnote-order-asc"><span><?php echo lang_get( 'bugnote_order_asc' ) ?></span></label>
+				<label for="bugnote-order-asc"><span><?php echo \Flickerbox\Lang::get( 'bugnote_order_asc' ) ?></span></label>
 				<span class="label-style"></span>
 			</fieldset>
 			<?php if( ON == config_get( 'enable_email_notification' ) ) { ?>
 			<fieldset class="field-container">
-				<legend><label for="email-on-new"><?php echo lang_get( 'email_on_new' ) ?></label></legend>
+				<legend><label for="email-on-new"><?php echo \Flickerbox\Lang::get( 'email_on_new' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-new" type="checkbox" name="email_on_new" <?php check_checked( (int)$t_pref->email_on_new, ON ); ?> /></span>
-				<label for="email-on-new-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-new-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-new-min-severity" name="email_on_new_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_new_min_severity ) ?>
 					</select>
@@ -149,12 +143,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-assigned"><?php echo lang_get( 'email_on_assigned' ) ?></label></legend>
+				<legend><label for="email-on-assigned"><?php echo \Flickerbox\Lang::get( 'email_on_assigned' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-assigned" type="checkbox" name="email_on_assigned" <?php check_checked( (int)$t_pref->email_on_assigned, ON ); ?> /></span>
-				<label for="email-on-assigned-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-assigned-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-assigned-min-severity" name="email_on_assigned_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_assigned_min_severity ) ?>
 					</select>
@@ -162,12 +156,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-feedback"><?php echo lang_get( 'email_on_feedback' ) ?></label></legend>
+				<legend><label for="email-on-feedback"><?php echo \Flickerbox\Lang::get( 'email_on_feedback' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-feedback" type="checkbox" name="email_on_feedback" <?php check_checked( (int)$t_pref->email_on_feedback, ON ); ?> /></span>
-				<label for="email-on-feedback-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-feedback-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-feedback-min-severity" name="email_on_feedback_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_feedback_min_severity ) ?>
 					</select>
@@ -175,12 +169,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-resolved"><?php echo lang_get( 'email_on_resolved' ) ?></label></legend>
+				<legend><label for="email-on-resolved"><?php echo \Flickerbox\Lang::get( 'email_on_resolved' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-resolved" type="checkbox" name="email_on_resolved" <?php check_checked( (int)$t_pref->email_on_resolved, ON ); ?> /></span>
-				<label for="email-on-resolved-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-resolved-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-resolved-min-severity" name="email_on_resolved_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_resolved_min_severity ) ?>
 					</select>
@@ -188,12 +182,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-closed"><?php echo lang_get( 'email_on_closed' ) ?></label></legend>
+				<legend><label for="email-on-closed"><?php echo \Flickerbox\Lang::get( 'email_on_closed' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-closed" type="checkbox" name="email_on_closed" <?php check_checked( (int)$t_pref->email_on_closed, ON ); ?> /></span>
-				<label for="email-on-closed-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-closed-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-closed-min-severity" name="email_on_closed_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_closed_min_severity ) ?>
 					</select>
@@ -201,12 +195,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-reopened"><?php echo lang_get( 'email_on_reopened' ) ?></label></legend>
+				<legend><label for="email-on-reopened"><?php echo \Flickerbox\Lang::get( 'email_on_reopened' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-reopened" type="checkbox" name="email_on_reopened" <?php check_checked( (int)$t_pref->email_on_reopened, ON ); ?> /></span>
-				<label for="email-on-reopened-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-reopened-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-reopened-min-severity" name="email_on_reopened_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_reopened_min_severity ) ?>
 					</select>
@@ -214,12 +208,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-bugnote-added"><?php echo lang_get( 'email_on_bugnote_added' ) ?></label></legend>
+				<legend><label for="email-on-bugnote-added"><?php echo \Flickerbox\Lang::get( 'email_on_bugnote_added' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-bugnote-added" type="checkbox" name="email_on_bugnote" <?php check_checked( (int)$t_pref->email_on_bugnote, ON ); ?> /></span>
-				<label for="email-on-bugnote-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-bugnote-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-bugnote-min-severity" name="email_on_bugnote_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_bugnote_min_severity ) ?>
 					</select>
@@ -227,12 +221,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-status"><?php echo lang_get( 'email_on_status_change' ) ?></label></legend>
+				<legend><label for="email-on-status"><?php echo \Flickerbox\Lang::get( 'email_on_status_change' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-status" type="checkbox" name="email_on_status" <?php check_checked( (int)$t_pref->email_on_status, ON ); ?> /></span>
-				<label for="email-on-status-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-status-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-status-min-severity" name="email_on_status_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_status_min_severity ) ?>
 					</select>
@@ -240,12 +234,12 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<fieldset class="field-container">
-				<legend><label for="email-on-priority-change"><?php echo lang_get( 'email_on_priority_change' ) ?></label></legend>
+				<legend><label for="email-on-priority-change"><?php echo \Flickerbox\Lang::get( 'email_on_priority_change' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-priority-change" type="checkbox" name="email_on_priority" <?php check_checked( (int)$t_pref->email_on_priority, ON ); ?> /></span>
-				<label for="email-on-priority-min-severity" class="email-on-severity-label"><span><?php echo lang_get( 'with_minimum_severity' ) ?></span></label>
+				<label for="email-on-priority-min-severity" class="email-on-severity-label"><span><?php echo \Flickerbox\Lang::get( 'with_minimum_severity' ) ?></span></label>
 				<span class="select email-on-severity">
 					<select id="email-on-priority-min-severity" name="email_on_priority_min_severity">
-						<option value="<?php echo OFF ?>"><?php echo lang_get( 'any' ) ?></option>
+						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
 						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_priority_min_severity ) ?>
 					</select>
@@ -253,7 +247,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</fieldset>
 			<div class="field-container">
-				<label for="email-bugnote-limit"><span><?php echo lang_get( 'email_bugnote_limit' ) ?></span></label>
+				<label for="email-bugnote-limit"><span><?php echo \Flickerbox\Lang::get( 'email_bugnote_limit' ) ?></span></label>
 				<span class="input"><input id="email-bugnote-limit" type="text" name="email_bugnote_limit" maxlength="2" size="2" value="<?php echo $t_pref->email_bugnote_limit ?>" /></span>
 				<span class="label-style"></span>
 			</div>
@@ -279,7 +273,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 			<input type="hidden" name="email_bugnote_limit" value="<?php echo $t_pref->email_bugnote_limit ?>" />
 <?php } ?>
 			<div class="field-container">
-				<label for="timezone"><span><?php echo lang_get( 'timezone' ) ?></span></label>
+				<label for="timezone"><span><?php echo \Flickerbox\Lang::get( 'timezone' ) ?></span></label>
 				<span class="select">
 					<select id="timezone" name="timezone">
 						<?php print_timezone_option_list( $t_pref->timezone ?  $t_pref->timezone  : config_get_global( 'default_timezone' ) ) ?>
@@ -288,7 +282,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="language"><span><?php echo lang_get( 'language' ) ?></span></label>
+				<label for="language"><span><?php echo \Flickerbox\Lang::get( 'language' ) ?></span></label>
 				<span class="select">
 					<select id="language" name="language">
 						<?php print_language_option_list( $t_pref->language ) ?>
@@ -298,7 +292,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 			</div>
 
 			<?php event_signal( 'EVENT_ACCOUNT_PREF_UPDATE_FORM', array( $p_user_id ) ); ?>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'update_prefs_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_prefs_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -306,10 +300,10 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 <div id="account-prefs-reset-div" class="form-container">
 	<form id="account-prefs-reset-form" method="post" action="account_prefs_reset.php">
 		<fieldset>
-			<?php echo form_security_field( 'account_prefs_reset' ) ?>
+			<?php echo \Flickerbox\Form::security_field( 'account_prefs_reset' ) ?>
 			<input type="hidden" name="user_id" value="<?php echo $p_user_id ?>" />
 			<input type="hidden" name="redirect_url" value="<?php echo $t_redirect_url ?>" />
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo lang_get( 'reset_prefs_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'reset_prefs_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>

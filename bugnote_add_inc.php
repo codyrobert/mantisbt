@@ -38,36 +38,30 @@ if( !defined( 'BUGNOTE_ADD_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'access_api.php' );
 require_api( 'bug_api.php' );
-require_api( 'collapse_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'event_api.php' );
-require_api( 'form_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 
 ?>
 <?php if( ( !bug_is_readonly( $f_bug_id ) ) &&
-		( access_has_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id ) ) ) { ?>
+		( \Flickerbox\Access::has_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id ) ) ) { ?>
 <?php # Bugnote Add Form BEGIN ?>
 <a id="addbugnote"></a> <br />
 
 <?php
-	collapse_open( 'bugnote_add', '', 'form-container' );
+	\Flickerbox\Collapse::open( 'bugnote_add', '', 'form-container' );
 ?>
 <form id="bugnoteadd" method="post" action="bugnote_add.php">
-	<?php echo form_security_field( 'bugnote_add' ) ?>
+	<?php echo \Flickerbox\Form::security_field( 'bugnote_add' ) ?>
 	<input type="hidden" name="bug_id" value="<?php echo $f_bug_id ?>" />
 	<table>
 		<thead>
 			<tr>
 				<td class="form-title" colspan="2">
 			<?php
-				collapse_icon( 'bugnote_add' );
-				echo lang_get( 'add_bugnote_title' ) ?>
+				\Flickerbox\Collapse::icon( 'bugnote_add' );
+				echo \Flickerbox\Lang::get( 'add_bugnote_title' ) ?>
 				</td>
 			</tr>
 		</thead>
@@ -75,7 +69,7 @@ require_api( 'lang_api.php' );
 		<tbody>
 			<tr class="row-2">
 				<th class="category" width="25%">
-					<?php echo lang_get( 'bugnote' ) ?>
+					<?php echo \Flickerbox\Lang::get( 'bugnote' ) ?>
 				</th>
 				<td width="75%">
 					<textarea name="bugnote_text" cols="80" rows="10"></textarea>
@@ -83,19 +77,19 @@ require_api( 'lang_api.php' );
 			</tr>
 
 <?php
-	if( access_has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
+	if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
 ?>
 			<tr class="row-1">
 				<th class="category">
-					<?php echo lang_get( 'view_status' ) ?>
+					<?php echo \Flickerbox\Lang::get( 'view_status' ) ?>
 				</th>
 				<td>
 <?php
 		$t_default_bugnote_view_status = config_get( 'default_bugnote_view_status' );
-		if( access_has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
 ?>
 					<input type="checkbox" id="bugnote_add_view_status" name="private" <?php check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
-					<label for="bugnote_add_view_status"><?php echo lang_get( 'private' ) ?></label>
+					<label for="bugnote_add_view_status"><?php echo \Flickerbox\Lang::get( 'private' ) ?></label>
 <?php
 		} else {
 			echo get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
@@ -107,17 +101,17 @@ require_api( 'lang_api.php' );
 	}
 
 	if( config_get( 'time_tracking_enabled' ) ) {
-		if( access_has_bug_level( config_get( 'time_tracking_edit_threshold' ), $f_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( config_get( 'time_tracking_edit_threshold' ), $f_bug_id ) ) {
 ?>
 			<tr>
 				<th class="category">
-					<?php echo lang_get( 'time_tracking' ) ?>
+					<?php echo \Flickerbox\Lang::get( 'time_tracking' ) ?>
 				</th>
 				<td>
 					<?php if( config_get( 'time_tracking_stopwatch' ) ) { ?>
 					<input type="text" name="time_tracking" class="stopwatch_time" size="8" placeholder="hh:mm:ss" />
-					<input type="button" name="time_tracking_toggle" class="stopwatch_toggle" value="<?php echo lang_get( 'time_tracking_stopwatch_start' ) ?>" />
-					<input type="button" name="time_tracking_reset" class="stopwatch_reset" value="<?php echo lang_get( 'time_tracking_stopwatch_reset' ) ?>" />
+					<input type="button" name="time_tracking_toggle" class="stopwatch_toggle" value="<?php echo \Flickerbox\Lang::get( 'time_tracking_stopwatch_start' ) ?>" />
+					<input type="button" name="time_tracking_reset" class="stopwatch_reset" value="<?php echo \Flickerbox\Lang::get( 'time_tracking_stopwatch_reset' ) ?>" />
 					<?php } else { ?>
 					<input type="text" name="time_tracking" size="5" placeholder="hh:mm" />
 					<?php } ?>
@@ -134,25 +128,25 @@ require_api( 'lang_api.php' );
 		<tfoot>
 			<tr>
 				<td class="center" colspan="2">
-					<input type="submit" class="button" value="<?php echo lang_get( 'add_bugnote_button' ) ?>" />
+					<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_bugnote_button' ) ?>" />
 				</td>
 			</tr>
 		</tfoot>
 	</table>
 </form>
 <?php
-	collapse_closed( 'bugnote_add' );
+	\Flickerbox\Collapse::closed( 'bugnote_add' );
 ?>
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
-	<?php	collapse_icon( 'bugnote_add' );
-		echo lang_get( 'add_bugnote_title' ) ?>
+	<?php	\Flickerbox\Collapse::icon( 'bugnote_add' );
+		echo \Flickerbox\Lang::get( 'add_bugnote_title' ) ?>
 	</td>
 </tr>
 </table>
 <?php
-	collapse_end( 'bugnote_add' );
+	\Flickerbox\Collapse::end( 'bugnote_add' );
 ?>
 
 <?php # Bugnote Add Form END ?>

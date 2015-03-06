@@ -37,38 +37,31 @@
  */
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'form_api.php' );
-require_api( 'gpc_api.php' );
 require_api( 'helper_api.php' );
-require_api( 'html_api.php' );
-require_api( 'lang_api.php' );
 require_api( 'print_api.php' );
-require_api( 'string_api.php' );
 
-form_security_validate( 'manage_proj_custom_field_remove' );
+\Flickerbox\Form::security_validate( 'manage_proj_custom_field_remove' );
 
 auth_reauthenticate();
 
-$f_field_id = gpc_get_int( 'field_id' );
-$f_project_id = gpc_get_int( 'project_id' );
-$f_return = gpc_get_string( 'return', '' );
+$f_field_id = \Flickerbox\GPC::get_int( 'field_id' );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+$f_return = \Flickerbox\GPC::get_string( 'return', '' );
 
 # We should check both since we are in the project section and an
 # admin might raise the first threshold and not realize they need
 # to raise the second
-access_ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
-access_ensure_project_level( config_get( 'custom_field_link_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( config_get( 'custom_field_link_threshold' ), $f_project_id );
 
 $t_definition = custom_field_get_definition( $f_field_id );
 
 # Confirm with the user
-helper_ensure_confirmed( lang_get( 'confirm_custom_field_unlinking' ) .
-	'<br/>' . lang_get( 'custom_field_label' ) . lang_get( 'word_separator' ) . string_attribute( $t_definition['name'] ),
-	lang_get( 'field_remove_button' ) );
+helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_unlinking' ) .
+	'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
+	\Flickerbox\Lang::get( 'field_remove_button' ) );
 
 if( $f_return == 'custom_field' ) {
 	$t_redirect_url = 'manage_custom_field_edit_page.php?field_id=' . $f_field_id;
@@ -78,10 +71,10 @@ if( $f_return == 'custom_field' ) {
 
 custom_field_unlink( $f_field_id, $f_project_id );
 
-form_security_purge( 'manage_proj_custom_field_remove' );
+\Flickerbox\Form::security_purge( 'manage_proj_custom_field_remove' );
 
-html_page_top( null, $t_redirect_url );
+\Flickerbox\HTML::page_top( null, $t_redirect_url );
 
-html_operation_successful( $t_redirect_url );
+\Flickerbox\HTML::operation_successful( $t_redirect_url );
 
-html_page_bottom();
+\Flickerbox\HTML::page_bottom();

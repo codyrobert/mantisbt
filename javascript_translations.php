@@ -26,7 +26,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'lang_api.php' );
 
 /**
  * Print Language translation for javascript
@@ -34,7 +33,7 @@ require_api( 'lang_api.php' );
  * @return void
  */
 function print_translation( $p_lang_key ) {
-	echo "translations['" . $p_lang_key . "'] = '" . addslashes( lang_get( $p_lang_key ) ) . "';\n";
+	echo "translations['" . $p_lang_key . "'] = '" . addslashes( \Flickerbox\Lang::get( $p_lang_key ) ) . "';\n";
 }
 
 # Send correct MIME Content-Type header for JavaScript content.

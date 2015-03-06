@@ -39,20 +39,13 @@ $g_bypass_headers = true; # suppress headers as we will send our own later
 define( 'COMPRESSION_DISABLED', true );
 
 require_once( 'core.php' );
-require_api( 'access_api.php' );
-require_api( 'authentication_api.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'constant_inc.php' );
 require_api( 'database_api.php' );
-require_api( 'file_api.php' );
-require_api( 'gpc_api.php' );
-require_api( 'http_api.php' );
-require_api( 'utility_api.php' );
 
-auth_ensure_user_authenticated();
+\Flickerbox\Auth::ensure_user_authenticated();
 
-$f_show_inline = gpc_get_bool( 'show_inline', false );
+$f_show_inline = \Flickerbox\GPC::get_bool( 'show_inline', false );
 
 # To prevent cross-domain inline hotlinking to attachments we require a CSRF
 # token from the user to show any attachment inline within the browser.
@@ -65,14 +58,14 @@ if( $f_show_inline ) {
 	# headers prior to raising an error (the error handler
 	# doesn't check that headers have been sent, it just
 	# makes the assumption that they've been sent already).
-	if( !@form_security_validate( 'file_show_inline' ) ) {
-		http_all_headers();
+	if( !@\Flickerbox\Form::security_validate( 'file_show_inline' ) ) {
+		\Flickerbox\HTTP::all_headers();
 		trigger_error( ERROR_FORM_TOKEN_INVALID, ERROR );
 	}
 }
 
-$f_file_id = gpc_get_int( 'file_id' );
-$f_type	= gpc_get_string( 'type' );
+$f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
+$f_type	= \Flickerbox\GPC::get_string( 'type' );
 
 $c_file_id = (integer)$f_file_id;
 
@@ -87,7 +80,7 @@ switch( $f_type ) {
 		$t_query = 'SELECT * FROM {project_file} WHERE id=' . db_param();
 		break;
 	default:
-		access_denied();
+		\Flickerbox\Access::denied();
 }
 $t_result = db_query( $t_query, array( $c_file_id ) );
 $t_row = db_fetch_array( $t_result );
@@ -102,17 +95,17 @@ if( $f_type == 'bug' ) {
 # Check access rights
 switch( $f_type ) {
 	case 'bug':
-		if( !file_can_download_bug_attachments( $v_bug_id, (int)$v_user_id ) ) {
-			access_denied();
+		if( !\Flickerbox\File::can_download_bug_attachments( $v_bug_id, (int)$v_user_id ) ) {
+			\Flickerbox\Access::denied();
 		}
 		break;
 	case 'doc':
 		# Check if project documentation feature is enabled.
 		if( OFF == config_get( 'enable_project_documentation' ) ) {
-			access_denied();
+			\Flickerbox\Access::denied();
 		}
 
-		access_ensure_project_level( config_get( 'view_proj_doc_threshold' ), $v_project_id );
+		\Flickerbox\Access::ensure_project_level( config_get( 'view_proj_doc_threshold' ), $v_project_id );
 		break;
 }
 
@@ -124,7 +117,7 @@ if( ini_get( 'zlib.output_compression' ) && function_exists( 'ini_set' ) ) {
 	ini_set( 'zlib.output_compression', false );
 }
 
-http_security_headers();
+\Flickerbox\HTTP::security_headers();
 
 # Make sure that IE can download the attachments under https.
 header( 'Pragma: public' );
@@ -133,7 +126,7 @@ header( 'Pragma: public' );
 # attached files via HTTPS, we disable the "Pragma: no-cache"
 # command when IE is used over HTTPS.
 global $g_allow_file_cache;
-if( http_is_protocol_https() && is_browser_internet_explorer() ) {
+if( \Flickerbox\HTTP::is_protocol_https() && \Flickerbox\HTTP::is_browser_internet_explorer() ) {
 	# Suppress "Pragma: no-cache" header.
 } else {
 	if( !isset( $g_allow_file_cache ) ) {
@@ -145,21 +138,21 @@ header( 'Expires: ' . gmdate( 'D, d M Y H:i:s \G\M\T', time() ) );
 header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s \G\M\T', $v_date_added ) );
 
 $t_upload_method = config_get( 'file_upload_method' );
-$t_filename = file_get_display_name( $v_filename );
+$t_filename = \Flickerbox\File::get_display_name( $v_filename );
 
 # Content headers
 
 # If finfo is available (always true for PHP >= 5.3.0) we can use it to determine the MIME type of files
-$t_finfo = finfo_get_if_available();
+$t_finfo = \Flickerbox\Utility::finfo_get_if_available();
 
 $t_content_type = $v_file_type;
 
-$t_content_type_override = file_get_content_type_override( $t_filename );
+$t_content_type_override = \Flickerbox\File::get_content_type_override( $t_filename );
 $t_file_info_type = false;
 
 switch( $t_upload_method ) {
 	case DISK:
-		$t_local_disk_file = file_normalize_attachment_path( $v_diskfile, $t_project_id );
+		$t_local_disk_file = \Flickerbox\File::normalize_attachment_path( $v_diskfile, $t_project_id );
 		if( file_exists( $t_local_disk_file ) && $t_finfo ) {
 			$t_file_info_type = $t_finfo->file( $t_local_disk_file );
 		}
@@ -184,9 +177,9 @@ if( $t_content_type_override ) {
 
 # Don't allow inline flash
 if( false !== strpos( $t_content_type, 'application/x-shockwave-flash' ) ) {
-	http_content_disposition_header( $t_filename );
+	\Flickerbox\HTTP::content_disposition_header( $t_filename );
 } else {
-	http_content_disposition_header( $t_filename, $f_show_inline );
+	\Flickerbox\HTTP::content_disposition_header( $t_filename, $f_show_inline );
 }
 
 header( 'Content-Type: ' . $t_content_type );
