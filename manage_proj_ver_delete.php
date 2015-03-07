@@ -37,7 +37,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_ver_delete' );
@@ -52,7 +51,7 @@ $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $t_version_info->pro
 \Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_version_info->project_id );
 
 # Confirm with the user
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'version_delete_sure' ) .
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'version_delete_sure' ) .
 	'<br/>' . \Flickerbox\Lang::get( 'version_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::display_line( $t_version_info->version ),
 	\Flickerbox\Lang::get( 'delete_version_button' ) );
 

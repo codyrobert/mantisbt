@@ -41,7 +41,6 @@ require_once( 'core.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_config_columns_set' );
 
@@ -53,7 +52,7 @@ $f_excel_columns = \Flickerbox\GPC::get_string( 'excel_columns' );
 $f_form_page = \Flickerbox\GPC::get_string( 'form_page' );
 
 if( $f_project_id != ALL_PROJECTS ) {
-	project_ensure_exists( $f_project_id );
+	\Flickerbox\Project::ensure_exists( $f_project_id );
 }
 
 $g_project_override = $f_project_id;

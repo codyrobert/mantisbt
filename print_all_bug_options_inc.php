@@ -36,7 +36,6 @@ if( !defined( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW' ) ) {
 }
 
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'user_api.php' );
 
 /**

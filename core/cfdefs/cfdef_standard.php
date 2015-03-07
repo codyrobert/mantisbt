@@ -293,9 +293,9 @@ function cfdef_input_list( array $p_field_def, $p_custom_field_value ) {
 	}
 
 	if( $p_field_def['type'] == CUSTOM_FIELD_TYPE_MULTILIST ) {
-		echo '<select ' . helper_get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '[]" size="' . $t_list_size . '" multiple="multiple">';
+		echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '[]" size="' . $t_list_size . '" multiple="multiple">';
 	} else {
-		echo '<select ' . helper_get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="' . $t_list_size . '">';
+		echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="' . $t_list_size . '">';
 	}
 
 	$t_selected_values = explode( '|', $p_custom_field_value );
@@ -321,8 +321,8 @@ function cfdef_input_checkbox( array $p_field_def, $p_custom_field_value ) {
 	for( $i = 0; $i < count( $t_values ); $i++ ) {
 		$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
 		$t_input_name = 'custom_field_' . $p_field_def['id'] . '[]';
-		echo '<input id="$t_input_id" ' . helper_get_tab_index() . ' type="checkbox" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
-		check_checked( $t_checked_values, $t_values[$i] );
+		echo '<input id="$t_input_id" ' . \Flickerbox\Helper::get_tab_index() . ' type="checkbox" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
+		\Flickerbox\Helper::check_checked( $t_checked_values, $t_values[$i] );
 		echo " />\n";
 		echo '<label for="' . $t_input_id . '">"' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
 	}
@@ -347,8 +347,8 @@ function cfdef_input_radio( array $p_field_def, $p_custom_field_value ) {
 	for( $i = 0; $i < count( $t_values ); $i++ ) {
 		$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
 		$t_input_name = 'custom_field_' . $p_field_def['id'];
-		echo '<input id="' . $t_input_id . '" ' . helper_get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
-		check_checked( $t_checked_value, $t_values[$i] );
+		echo '<input id="' . $t_input_id . '" ' . \Flickerbox\Helper::get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
+		\Flickerbox\Helper::check_checked( $t_checked_value, $t_values[$i] );
 		echo " />\n";
 		echo '<label for="' . $t_input_id . '">' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
 	}
@@ -361,7 +361,7 @@ function cfdef_input_radio( array $p_field_def, $p_custom_field_value ) {
  * @return void
  */
 function cfdef_input_textbox( array $p_field_def, $p_custom_field_value ) {
-	echo '<input ' . helper_get_tab_index() . ' type="text" id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="80"';
+	echo '<input ' . \Flickerbox\Helper::get_tab_index() . ' type="text" id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="80"';
 	if( 0 < $p_field_def['length_max'] ) {
 		echo ' maxlength="' . $p_field_def['length_max'] . '"';
 	} else {
@@ -377,7 +377,7 @@ function cfdef_input_textbox( array $p_field_def, $p_custom_field_value ) {
  * @return void
  */
 function cfdef_input_textarea( array $p_field_def, $p_custom_field_value ) {
-	echo '<textarea ' . helper_get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '"';
+	echo '<textarea ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '"';
 	echo ' cols="70" rows="8">' . $p_custom_field_value .'</textarea>';
 }
 

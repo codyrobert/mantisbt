@@ -38,9 +38,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\News::ensure_enabled();
 
@@ -54,11 +52,11 @@ if( 'delete' == $f_action ) {
 	$t_row = \Flickerbox\News::get_row( $f_news_id );
 
 	# This check is to allow deleting of news items that were left orphan due to bug #3723
-	if( project_exists( $t_row['project_id'] ) ) {
+	if( \Flickerbox\Project::exists( $t_row['project_id'] ) ) {
 		\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ), $t_row['project_id'] );
 	}
 
-	helper_ensure_confirmed( \Flickerbox\Lang::get( 'delete_news_sure_msg' ), \Flickerbox\Lang::get( 'delete_news_item_button' ) );
+	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_news_sure_msg' ), \Flickerbox\Lang::get( 'delete_news_item_button' ) );
 
 	\Flickerbox\News::delete( $f_news_id );
 
@@ -115,7 +113,7 @@ $v_body 	= \Flickerbox\String::textarea( $v_body );
 			</div>
 			<div class="field-container">
 				<label for="news-update-announcement"><span><?php echo \Flickerbox\Lang::get( 'announcement' ) ?></span> <span class="help-text"><?php echo \Flickerbox\Lang::get( 'stays_on_top' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="news-update-announcement" name="announcement" <?php check_checked( (int)$v_announcement, 1 ); ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="news-update-announcement" name="announcement" <?php \Flickerbox\Helper::check_checked( (int)$v_announcement, 1 ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">

@@ -40,10 +40,9 @@
 require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
-helper_begin_long_process();
+\Flickerbox\Helper::begin_long_process();
 
 $f_bug_id	= \Flickerbox\GPC::get_int( 'bug_id', -1 );
 $f_files		= gpc_get_file( 'ufile', -1 );
@@ -56,7 +55,7 @@ if( $f_bug_id == -1 && $f_files	== -1 ) {
 \Flickerbox\Form::security_validate( 'bug_file_add(' );
 
 $t_bug = bug_get( $f_bug_id, true );
-if( $t_bug->project_id != helper_get_current_project() ) {
+if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
@@ -70,7 +69,7 @@ if( !\Flickerbox\File::allow_bug_upload( $f_bug_id ) ) {
 
 # Process array of files to upload
 if( -1 != $f_files ) {
-	$t_files = helper_array_transpose( $f_files );
+	$t_files = \Flickerbox\Helper::array_transpose( $f_files );
 	foreach( $t_files as $t_file ) {
 		if( !empty( $t_file['name'] ) ) {
 			\Flickerbox\File::add( $f_bug_id, $t_file, 'bug' );

@@ -153,7 +153,7 @@ function mci_user_get( $p_username, $p_password, $p_user_id ) {
 	# if user doesn't exist, then mci_account_get_array_by_id() will throw.
 	$t_user_data['account_data'] = mci_account_get_array_by_id( $p_user_id );
 	$t_user_data['access_level'] = \Flickerbox\Access::get_global_level( $p_user_id );
-	$t_user_data['timezone'] = user_pref_get_pref( $p_user_id, 'timezone' );
+	$t_user_data['timezone'] = \Flickerbox\User\Pref::get_pref( $p_user_id, 'timezone' );
 
 	return $t_user_data;
 }
@@ -246,7 +246,7 @@ function mci_get_project_id( $p_project ) {
 	if( isset( $p_project['id'] ) && (int)$p_project['id'] != 0 ) {
 		$t_project_id = (int)$p_project['id'];
 	} else if( isset( $p_project['name'] ) && !\Flickerbox\Utility::is_blank( $p_project['name'] ) ) {
-		$t_project_id = project_get_id_by_name( $p_project['name'] );
+		$t_project_id = \Flickerbox\Project::get_id_by_name( $p_project['name'] );
 	} else {
 		$t_project_id = ALL_PROJECTS;
 	}
@@ -299,7 +299,7 @@ function mci_get_user_id( stdClass $p_user ) {
  * @return string language string
  */
 function mci_get_user_lang( $p_user_id ) {
-	$t_lang = user_pref_get_pref( $p_user_id, 'language' );
+	$t_lang = \Flickerbox\User\Pref::get_pref( $p_user_id, 'language' );
 	if( $t_lang == 'auto' ) {
 		$t_lang = config_get( 'fallback_language' );
 	}
@@ -418,7 +418,7 @@ function mci_get_mantis_path() {
  * @param string $p_lang      Language string.
  * @return string
  */
-function mci_get_enum_element( $p_enum_name, $p_val, $p_lang ) {
+function mci_helper_get_enum_element( $p_enum_name, $p_val, $p_lang ) {
 	$t_enum_string = config_get( $p_enum_name . '_enum_string' );
 	$t_localized_enum_string = \Flickerbox\Lang::get( $p_enum_name . '_enum_string', $p_lang );
 
@@ -441,7 +441,7 @@ function mci_user_get_accessible_subprojects( $p_user_id, $p_parent_project_id, 
 
 	$t_result = array();
 	foreach( user_get_accessible_subprojects( $p_user_id, $p_parent_project_id ) as $t_subproject_id ) {
-		$t_subproject_row = project_cache_row( $t_subproject_id );
+		$t_subproject_row = \Flickerbox\Project::cache_row( $t_subproject_id );
 		$t_subproject = array();
 		$t_subproject['id'] = $t_subproject_id;
 		$t_subproject['name'] = $t_subproject_row['name'];
@@ -490,7 +490,7 @@ function mci_filter_db_get_available_queries( $p_project_id = null, $p_user_id =
 	$t_overall_query_arr = array();
 
 	if( null === $p_project_id ) {
-		$t_project_id = helper_get_current_project();
+		$t_project_id = \Flickerbox\Helper::get_current_project();
 	} else {
 		$t_project_id = (int)$p_project_id;
 	}

@@ -39,7 +39,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_ver_add' );

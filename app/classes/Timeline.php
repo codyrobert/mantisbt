@@ -31,7 +31,6 @@ namespace Flickerbox;
  */
 
 require_api( 'bug_api.php' );
-require_api( 'history_api.php' );
 
 
 class Timeline
@@ -47,7 +46,7 @@ class Timeline
 		$t_query = 'SELECT DISTINCT(bug_id) from {bug_history} WHERE date_modified >= ' . db_param() . ' AND date_modified < ' . db_param();
 		$t_result = db_query( $t_query, array( $p_start_time, $p_end_time ) );
 	
-		$t_current_project = helper_get_current_project();
+		$t_current_project = \Flickerbox\Helper::get_current_project();
 	
 		$t_all_issue_ids = array();
 		while( ( $t_row = db_fetch_array( $t_result ) ) !== false ) {
@@ -85,7 +84,7 @@ class Timeline
 		$t_timeline_events = array();
 	
 		foreach ( $t_issue_ids as $t_issue_id ) {
-			$t_history_events_array = history_get_raw_events_array( $t_issue_id, null, $p_start_time, $p_end_time );
+			$t_history_events_array = \Flickerbox\History::get_raw_events_array( $t_issue_id, null, $p_start_time, $p_end_time );
 			$t_history_events_array = array_reverse( $t_history_events_array );
 	
 			foreach ( $t_history_events_array as $t_history_event ) {

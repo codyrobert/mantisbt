@@ -40,7 +40,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_cat_delete' );
@@ -69,7 +68,7 @@ $t_query = 'SELECT COUNT(id) FROM {bug} WHERE category_id=' . db_param();
 $t_bug_count = db_result( db_query( $t_query, array( $f_category_id ) ) );
 
 # Confirm with the user
-helper_ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'category_delete_sure_msg' ), \Flickerbox\String::display_line( $t_name ), $t_bug_count ),
+\Flickerbox\Helper::ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'category_delete_sure_msg' ), \Flickerbox\String::display_line( $t_name ), $t_bug_count ),
 	\Flickerbox\Lang::get( 'delete_category_button' ) );
 
 \Flickerbox\Category::remove( $f_category_id );

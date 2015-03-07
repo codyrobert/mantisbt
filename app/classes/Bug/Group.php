@@ -37,7 +37,6 @@ namespace Flickerbox\Bug;
 
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 
 \Flickerbox\HTML::require_css( 'status_config.php' );
 

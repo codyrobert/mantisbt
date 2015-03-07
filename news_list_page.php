@@ -36,7 +36,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
@@ -49,7 +48,7 @@ require_api( 'print_api.php' );
 <br />
 <?php
 # Select the news posts
-$t_rows = \Flickerbox\News::get_rows( helper_get_current_project() );
+$t_rows = \Flickerbox\News::get_rows( \Flickerbox\Helper::get_current_project() );
 $t_count = count( $t_rows );
 
 if( $t_count > 0 ) { ?>

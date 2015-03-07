@@ -37,7 +37,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'plugin_api.php' );
 require_api( 'print_api.php' );
 
@@ -171,12 +170,12 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 	} else {
 		echo '<td class="center">',
 			'<select name="priority_' . $t_basename . '"',
-				check_disabled( $t_protected ), '>',
+				\Flickerbox\Helper::check_disabled( $t_protected ), '>',
 				print_plugin_priority_list( $t_priority ),
 			'</select>','</td>';
 		echo '<td class="center">',
 			'<input type="checkbox" name="protected_' . $t_basename . '"',
-				check_disabled( $t_protected ), check_checked( $t_protected ), ' />',
+				\Flickerbox\Helper::check_disabled( $t_protected ), \Flickerbox\Helper::check_checked( $t_protected ), ' />',
 			'</select>','</td>';
 	}
 	echo '<td class="center">';

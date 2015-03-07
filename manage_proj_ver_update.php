@@ -39,7 +39,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_ver_update' );
@@ -71,7 +70,7 @@ $t_version->obsolete = $f_obsolete;
 $t_version->date_order = $f_date_order;
 
 \Flickerbox\Version::update( $t_version );
-event_signal( 'EVENT_MANAGE_VERSION_UPDATE', array( $t_version->id ) );
+\Flickerbox\Event::signal( 'EVENT_MANAGE_VERSION_UPDATE', array( $t_version->id ) );
 
 \Flickerbox\Form::security_purge( 'manage_proj_ver_update' );
 

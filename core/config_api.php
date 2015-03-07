@@ -32,7 +32,6 @@
  */
 
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 
 # cache for config variables
 $g_cache_config = array();
@@ -111,7 +110,7 @@ function config_get( $p_option, $p_default = null, $p_user = null, $p_project = 
 			$t_projects = array();
 			if( ( null === $p_project ) ) {
 				if( !isset( $g_cache_config_project ) ) {
-					$t_projects[] = \Flickerbox\Auth::is_user_authenticated() ? helper_get_current_project() : ALL_PROJECTS;
+					$t_projects[] = \Flickerbox\Auth::is_user_authenticated() ? \Flickerbox\Helper::get_current_project() : ALL_PROJECTS;
 					if( !in_array( ALL_PROJECTS, $t_projects ) ) {
 						$t_projects[] = ALL_PROJECTS;
 					}
@@ -237,7 +236,7 @@ function config_get_access( $p_option, $p_user = null, $p_project = null ) {
 	# prepare the projects list
 	$t_projects = array();
 	if( ( null === $p_project ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
-		$t_selected_project = helper_get_current_project();
+		$t_selected_project = \Flickerbox\Helper::get_current_project();
 		$t_projects[] = $t_selected_project;
 		if( ALL_PROJECTS <> $t_selected_project ) {
 			$t_projects[] = ALL_PROJECTS;
@@ -291,7 +290,7 @@ function config_is_set( $p_option, $p_user = null, $p_project = null ) {
 	# prepare the projects list
 	$t_projects = array( ALL_PROJECTS );
 	if( ( null === $p_project ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
-		$t_selected_project = helper_get_current_project();
+		$t_selected_project = \Flickerbox\Helper::get_current_project();
 		if( ALL_PROJECTS <> $t_selected_project ) {
 			$t_projects[] = $t_selected_project;
 		}
@@ -349,7 +348,7 @@ function config_set( $p_option, $p_value, $p_user = NO_USER, $p_project = ALL_PR
 	if( config_can_set_in_database( $p_option ) ) {
 		# before we set in the database, ensure that the user and project id exist
 		if( $p_project !== ALL_PROJECTS ) {
-			project_ensure_exists( $p_project );
+			\Flickerbox\Project::ensure_exists( $p_project );
 		}
 		if( $p_user !== NO_USER ) {
 			user_ensure_exists( $p_user );
@@ -592,7 +591,7 @@ function config_obsolete( $p_var, $p_replace = '' ) {
 					. ( ( $t_user_id == 0 ) ? \Flickerbox\Lang::get( 'all_users' ) : user_get_name( $t_user_id ) )
 					. ': ';
 				foreach ( $t_user as $t_project_id => $t_project ) {
-					$t_info .= project_get_name( $t_project_id ) . ', ';
+					$t_info .= \Flickerbox\Project::get_name( $t_project_id ) . ', ';
 				}
 				$t_info = rtrim( $t_info, ', ' ) . '</li>';
 			}

@@ -244,8 +244,7 @@ if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
 
 	if( \Flickerbox\Auth::is_user_authenticated() ) {
 		# Determine the current timezone according to user's preferences
-		require_api( 'user_pref_api.php' );
-		$t_tz = user_pref_get_pref( \Flickerbox\Auth::get_current_user_id(), 'timezone' );
+				$t_tz = \Flickerbox\User\Pref::get_pref( \Flickerbox\Auth::get_current_user_id(), 'timezone' );
 		@date_default_timezone_set( $t_tz );
 	}
 	unset( $t_tz );
@@ -273,6 +272,5 @@ if( !defined( 'LANG_LOAD_DISABLED' ) ) {
 
 # Signal plugins that the core system is loaded
 if( !defined( 'PLUGINS_DISABLED' ) && !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
-	require_api( 'event_api.php' );
-	event_signal( 'EVENT_CORE_READY' );
+		\Flickerbox\Event::signal( 'EVENT_CORE_READY' );
 }

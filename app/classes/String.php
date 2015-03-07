@@ -44,8 +44,6 @@ require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'email_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'user_api.php' );
 
 
@@ -142,7 +140,7 @@ class String
 	 * @return string
 	 */
 	static function display( $p_string ) {
-		$t_data = event_signal( 'EVENT_DISPLAY_TEXT', $p_string, true );
+		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_TEXT', $p_string, true );
 		return $t_data;
 	}
 	
@@ -152,7 +150,7 @@ class String
 	 * @return string
 	 */
 	static function display_line( $p_string ) {
-		$t_data = event_signal( 'EVENT_DISPLAY_TEXT', $p_string, false );
+		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_TEXT', $p_string, false );
 		return $t_data;
 	}
 	
@@ -163,7 +161,7 @@ class String
 	 * @return string
 	 */
 	static function display_links( $p_string ) {
-		$t_data = event_signal( 'EVENT_DISPLAY_FORMATTED', $p_string, true );
+		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_FORMATTED', $p_string, true );
 		return $t_data;
 	}
 	
@@ -174,7 +172,7 @@ class String
 	 * @return string
 	 */
 	static function display_line_links( $p_string ) {
-		$t_data = event_signal( 'EVENT_DISPLAY_FORMATTED', $p_string, false );
+		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_FORMATTED', $p_string, false );
 		return $t_data;
 	}
 	
@@ -187,7 +185,7 @@ class String
 		# rss can not start with &#160; which spaces will be replaced into by \Flickerbox\String::display().
 		$t_string = trim( $p_string );
 	
-		$t_string = event_signal( 'EVENT_DISPLAY_RSS', $t_string );
+		$t_string = \Flickerbox\Event::signal( 'EVENT_DISPLAY_RSS', $t_string );
 	
 		# another escaping to escape the special characters created by the generated links
 		return \Flickerbox\String::html_specialchars( $t_string );
@@ -209,7 +207,7 @@ class String
 	 * @return string
 	 */
 	static function email_links( $p_string ) {
-		return event_signal( 'EVENT_DISPLAY_EMAIL', $p_string );
+		return \Flickerbox\Event::signal( 'EVENT_DISPLAY_EMAIL', $p_string );
 	}
 	
 	/**
@@ -617,7 +615,7 @@ class String
 			if( $p_detail_info ) {
 				$t_summary = \Flickerbox\String::attribute( bug_get_field( $p_bug_id, 'summary' ) );
 				$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
-				$t_status = \Flickerbox\String::attribute( get_enum_element( 'status', bug_get_field( $p_bug_id, 'status' ), $t_project_id ) );
+				$t_status = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'status', bug_get_field( $p_bug_id, 'status' ), $t_project_id ) );
 				$t_link .= ' title="[' . $t_status . '] ' . $t_summary . '"';
 	
 				$t_resolved = bug_get_field( $p_bug_id, 'status' ) >= config_get( 'bug_resolved_status_threshold', null, null, $t_project_id );
@@ -733,7 +731,7 @@ class String
 	 */
 	static function get_bug_update_link( $p_bug_id, $p_user_id = null ) {
 		$t_summary = \Flickerbox\String::attribute( bug_get_field( $p_bug_id, 'summary' ) );
-		return '<a href="' . helper_mantis_url( \Flickerbox\String::get_bug_update_url( $p_bug_id, $p_user_id ) ) . '" title="' . $t_summary . '">' . bug_format_id( $p_bug_id ) . '</a>';
+		return '<a href="' . \Flickerbox\Helper::mantis_url( \Flickerbox\String::get_bug_update_url( $p_bug_id, $p_user_id ) ) . '" title="' . $t_summary . '">' . bug_format_id( $p_bug_id ) . '</a>';
 	}
 	
 	/**
@@ -764,7 +762,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_report_link( $p_user_id = null ) {
-		return '<a href="' . helper_mantis_url( \Flickerbox\String::get_bug_report_url( $p_user_id ) ) . '">' . \Flickerbox\Lang::get( 'report_bug_link' ) . '</a>';
+		return '<a href="' . \Flickerbox\Helper::mantis_url( \Flickerbox\String::get_bug_report_url( $p_user_id ) ) . '">' . \Flickerbox\Lang::get( 'report_bug_link' ) . '</a>';
 	}
 	
 	/**

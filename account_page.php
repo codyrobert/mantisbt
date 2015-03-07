@@ -60,7 +60,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -99,7 +98,7 @@ $t_verify = \Flickerbox\Utility::is_page_name( 'verify.php' );
 $t_force_pw_reset = false;
 
 if( $t_verify || $t_reset_password ) {
-	$t_can_change_password = helper_call_custom_function( '\Flickerbox\Auth::can_change_password', array() );
+	$t_can_change_password = \Flickerbox\Helper::call_custom_function( '\Flickerbox\Auth::can_change_password', array() );
 
 	echo '<div id="reset-passwd-msg" class="important-msg">';
 	echo '<ul>';
@@ -133,7 +132,7 @@ if( $t_force_pw_reset ) {
 			<?php echo \Flickerbox\Form::security_field( 'account_update' );
 			\Flickerbox\HTML::print_account_menu( 'account_page.php' );
 
-			if( !helper_call_custom_function( '\Flickerbox\Auth::can_change_password', array() ) ) {
+			if( !\Flickerbox\Helper::call_custom_function( '\Flickerbox\Auth::can_change_password', array() ) ) {
 				# With LDAP -->
 			?>
 			<div class="field-container">
@@ -212,12 +211,12 @@ if( $t_force_pw_reset ) {
 			</div>
 			<div class="field-container">
 				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'access_level' ) ?></span></span>
-				<span class="input"><span class="field-value"><?php echo get_enum_element( 'access_levels', $u_access_level ); ?></span></span>
+				<span class="input"><span class="field-value"><?php echo \Flickerbox\Helper::get_enum_element( 'access_levels', $u_access_level ); ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'access_level_project' ) ?></span></span>
-				<span class="input"><span class="field-value"><?php echo get_enum_element( 'access_levels', \Flickerbox\Current_User::get_access_level() ); ?></span></span>
+				<span class="input"><span class="field-value"><?php echo \Flickerbox\Helper::get_enum_element( 'access_levels', \Flickerbox\Current_User::get_access_level() ); ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<?php
@@ -231,8 +230,8 @@ if( $t_force_pw_reset ) {
 					$t_project_name = \Flickerbox\String::attribute( $t_project['name'] );
 					$t_view_state = $t_project['view_state'];
 					$t_access_level = $t_project['access_level'];
-					$t_access_level = get_enum_element( 'access_levels', $t_access_level );
-					$t_view_state = get_enum_element( 'project_view_state', $t_view_state );
+					$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $t_access_level );
+					$t_view_state = \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_view_state );
 
 					echo '<li><span class="project-name">' . $t_project_name . '</span> <span class="access-level">' . $t_access_level . '</span> <span class="view-state">' . $t_view_state . '</span></li>';
 				}

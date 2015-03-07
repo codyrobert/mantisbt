@@ -41,7 +41,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -142,13 +141,13 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 			<!-- Enabled Checkbox -->
 			<div class="field-container">
 				<label for="edit-enabled"><span><?php echo \Flickerbox\Lang::get( 'enabled_label' ) ?></span></label>
-				<span class="checkbox"><input id="edit-enabled" type="checkbox" name="enabled" <?php check_checked( (int)$t_user['enabled'], ON ); ?> /></span>
+				<span class="checkbox"><input id="edit-enabled" type="checkbox" name="enabled" <?php \Flickerbox\Helper::check_checked( (int)$t_user['enabled'], ON ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<!-- Protected Checkbox -->
 			<div class="field-container">
 				<label for="edit-protected"><span><?php echo \Flickerbox\Lang::get( 'protected_label' ) ?></span></label>
-				<span class="checkbox"><input id="edit-protected" type="checkbox" name="protected" <?php check_checked( (int)$t_user['protected'], ON ); ?> /></span>
+				<span class="checkbox"><input id="edit-protected" type="checkbox" name="protected" <?php \Flickerbox\Helper::check_checked( (int)$t_user['protected'], ON ); ?> /></span>
 				<span class="label-style"></span>
 			</div><?php
 			if( config_get( 'enable_email_notification' ) == ON ) {
@@ -168,7 +167,7 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 # User action buttons: RESET/UNLOCK and DELETE
 
 $t_reset = $t_user['id'] != auth_get_current_user_id()
-	&& helper_call_custom_function( 'auth_can_change_password', array() );
+	&& \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
 $t_unlock = OFF != config_get( 'max_failed_login_count' ) && $t_user['failed_login_count'] > 0;
 $t_delete = !( ( user_is_administrator( $t_user_id ) && ( user_count_level( config_get_global( 'admin_site_threshold' ) ) <= 1 ) ) );
 

@@ -35,7 +35,6 @@ namespace Flickerbox;
 
 require_api( 'config_api.php' );
 require_api( 'plugin_api.php' );
-require_api( 'user_pref_api.php' );
 
 
 class Lang
@@ -104,7 +103,7 @@ class Lang
 	
 		# Confirm that the user's language can be determined
 		if( function_exists( 'auth_is_user_authenticated' ) && auth_is_user_authenticated() ) {
-			$t_lang = user_pref_get_language( auth_get_current_user_id() );
+			$t_lang = \Flickerbox\User\Pref::get_language( auth_get_current_user_id() );
 		}
 	
 		# Otherwise fall back to default

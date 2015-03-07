@@ -40,14 +40,13 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold' ) );
 
 $f_offset = \Flickerbox\GPC::get_int( 'offset', 0 );
 
-$t_project_id = helper_get_current_project();
+$t_project_id = \Flickerbox\Helper::get_current_project();
 
 $t_rss_enabled = config_get( 'rss_enabled' );
 

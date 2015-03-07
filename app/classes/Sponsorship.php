@@ -40,7 +40,6 @@ require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'history_api.php' );
 
 
 class Sponsorship
@@ -283,7 +282,7 @@ class Sponsorship
 	
 			$t_sponsorship_id = db_insert_id( db_get_table( 'sponsorship' ) );
 	
-			history_log_event_special( $c_bug_id, BUG_ADD_SPONSORSHIP, $c_user_id, $c_amount );
+			\Flickerbox\History::log_event_special( $c_bug_id, BUG_ADD_SPONSORSHIP, $c_user_id, $c_amount );
 		} else {
 			$t_old_amount = \Flickerbox\Sponsorship::get_amount( $c_id );
 			$t_sponsorship_id = $c_id;
@@ -306,7 +305,7 @@ class Sponsorship
 	
 			db_query( $t_query, array( $c_bug_id, $c_user_id, $c_amount, $c_logo, $c_url, $c_now, $c_id ) );
 	
-			history_log_event_special( $c_bug_id, BUG_UPDATE_SPONSORSHIP, $c_user_id, $c_amount );
+			\Flickerbox\History::log_event_special( $c_bug_id, BUG_UPDATE_SPONSORSHIP, $c_user_id, $c_amount );
 		}
 	
 		\Flickerbox\Sponsorship::update_bug( $c_bug_id );
@@ -356,7 +355,7 @@ class Sponsorship
 	
 		\Flickerbox\Sponsorship::clear_cache( $p_sponsorship_id );
 	
-		history_log_event_special( $t_sponsorship->bug_id, BUG_DELETE_SPONSORSHIP, $t_sponsorship->user_id, $t_sponsorship->amount );
+		\Flickerbox\History::log_event_special( $t_sponsorship->bug_id, BUG_DELETE_SPONSORSHIP, $t_sponsorship->user_id, $t_sponsorship->amount );
 		\Flickerbox\Sponsorship::update_bug( $t_sponsorship->bug_id );
 	
 		email_generic( $t_sponsorship->bug_id, 'sponsor', 'A sponsorship of the following issue was withdrawn.' );
@@ -374,7 +373,7 @@ class Sponsorship
 		$t_query = 'UPDATE {sponsorship} SET last_updated=' . db_param() . ', paid=' . db_param() . ' WHERE id=' . db_param();
 		db_query( $t_query, array( db_now(), (int)$p_paid, (int)$p_sponsorship_id ) );
 	
-		history_log_event_special( $t_sponsorship->bug_id, BUG_PAID_SPONSORSHIP, $t_sponsorship->user_id, $p_paid );
+		\Flickerbox\History::log_event_special( $t_sponsorship->bug_id, BUG_PAID_SPONSORSHIP, $t_sponsorship->user_id, $p_paid );
 		\Flickerbox\Sponsorship::clear_cache( $p_sponsorship_id );
 	
 		return true;

@@ -634,3 +634,28 @@ define( 'FILTER_PROPERTY_OS_BUILD', 'os_build' );
  * Constant for our minimum required PHP version
  */
 define( 'PHP_MIN_VERSION', '5.3.2' );
+
+
+
+# constant(s) defining the output formats supported by dot and neato.
+define( 'GRAPHVIZ_ATTRIBUTED_DOT', 0 );
+define( 'GRAPHVIZ_PS', 1 );
+define( 'GRAPHVIZ_HPGL', 2 );
+define( 'GRAPHVIZ_PCL', 3 );
+define( 'GRAPHVIZ_MIF', 4 );
+define( 'GRAPHVIZ_PLAIN', 6 );
+define( 'GRAPHVIZ_PLAIN_EXT', 7 );
+define( 'GRAPHVIZ_GIF', 11 );
+define( 'GRAPHVIZ_JPEG', 12 );
+define( 'GRAPHVIZ_PNG', 13 );
+define( 'GRAPHVIZ_WBMP', 14 );
+define( 'GRAPHVIZ_XBM', 15 );
+define( 'GRAPHVIZ_ISMAP', 16 );
+define( 'GRAPHVIZ_IMAP', 17 );
+define( 'GRAPHVIZ_CMAP', 18 );
+define( 'GRAPHVIZ_CMAPX', 19 );
+define( 'GRAPHVIZ_VRML', 20 );
+define( 'GRAPHVIZ_SVG', 25 );
+define( 'GRAPHVIZ_SVGZ', 26 );
+define( 'GRAPHVIZ_CANONICAL_DOT', 27 );
+define( 'GRAPHVIZ_PDF', 28 );

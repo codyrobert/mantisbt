@@ -35,7 +35,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_user_add' );
 
@@ -53,7 +52,7 @@ $f_access_level	= \Flickerbox\GPC::get_int( 'access_level' );
 
 # Add user(s) to the current project
 foreach( $f_user_id as $t_user_id ) {
-	project_add_user( $f_project_id, $t_user_id, $f_access_level );
+	\Flickerbox\Project::add_user( $f_project_id, $t_user_id, $f_access_level );
 }
 
 \Flickerbox\Form::security_purge( 'manage_proj_user_add' );

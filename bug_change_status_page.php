@@ -47,10 +47,7 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'relationship_api.php' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'id' );
 $t_bug = bug_get( $f_bug_id );
@@ -61,7 +58,7 @@ $t_show_page_header = false;
 $t_force_readonly = true;
 $t_fields_config_option = 'bug_change_status_page_fields';
 
-if( $t_bug->project_id != helper_get_current_project() ) {
+if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
@@ -143,7 +140,7 @@ print_recently_visited();
 			</tr>
 <?php
 	if( $f_new_status >= $t_resolved ) {
-		if( relationship_can_resolve_bug( $f_bug_id ) == false ) {
+		if( \Flickerbox\Relationship::can_resolve_bug( $f_bug_id ) == false ) {
 			echo '<tr><td colspan="2">' . \Flickerbox\Lang::get( 'relationship_warning_blocking_bugs_not_resolved_2' ) . '</td></tr>';
 		}
 	}
@@ -164,7 +161,7 @@ if( ( $f_new_status >= $t_resolved ) && ( ( $f_new_status < $t_closed ) || ( $t_
 			<?php
 				$t_resolution = $t_bug_is_open ? config_get( 'bug_resolution_fixed_threshold' ) : $t_current_resolution;
 
-				$t_relationships = relationship_get_all_src( $f_bug_id );
+				$t_relationships = \Flickerbox\Relationship::get_all_src( $f_bug_id );
 				foreach( $t_relationships as $t_relationship ) {
 					if( $t_relationship->type == BUG_DUPLICATE ) {
 						$t_resolution = config_get( 'bug_duplicate_resolution' );
@@ -228,7 +225,7 @@ if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_assign_threshold'
 					<?php print_documentation_link( 'due_date' ) ?>
 				</th>
 				<td>
-					<?php echo '<input ' . helper_get_tab_index() . ' type="text" id="due_date" name="due_date" class="datetime" size="20" maxlength="16" value="' . $t_date_to_display . '" />' ?>
+					<?php echo '<input ' . \Flickerbox\Helper::get_tab_index() . ' type="text" id="due_date" name="due_date" class="datetime" size="20" maxlength="16" value="' . $t_date_to_display . '" />' ?>
 				</td>
 			</tr>
 <?php } ?>
@@ -316,7 +313,7 @@ if( ( $f_new_status >= $t_resolved ) ) {
 	}
 }
 ?>
-<?php event_signal( 'EVENT_UPDATE_BUG_STATUS_FORM', array( $f_bug_id ) ); ?>
+<?php \Flickerbox\Event::signal( 'EVENT_UPDATE_BUG_STATUS_FORM', array( $f_bug_id ) ); ?>
 <?php if( ON == $f_reopen_flag ) { ?>
 <!-- Bug was re-opened -->
 <?php
@@ -342,11 +339,11 @@ if( ( $f_new_status >= $t_resolved ) ) {
 		$t_default_bugnote_view_status = config_get( 'default_bugnote_view_status' );
 		if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
 ?>
-			<input type="checkbox" name="private" <?php check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
+			<input type="checkbox" name="private" <?php \Flickerbox\Helper::check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
 <?php
 			echo \Flickerbox\Lang::get( 'private' );
 		} else {
-			echo get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
+			echo \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
 		}
 ?>
 				</td>
@@ -368,7 +365,7 @@ if( ( $f_new_status >= $t_resolved ) ) {
 <?php 	} ?>
 <?php } ?>
 
-<?php event_signal( 'EVENT_BUGNOTE_ADD_FORM', array( $f_bug_id ) ); ?>
+<?php \Flickerbox\Event::signal( 'EVENT_BUGNOTE_ADD_FORM', array( $f_bug_id ) ); ?>
 
 			<!-- Submit Button -->
 			<tr>

@@ -27,7 +27,7 @@ require_once( 'core.php' );
 \Flickerbox\Access::ensure_project_level( plugin_config_get( 'export_threshold' ) );
 
 auth_ensure_user_authenticated( );
-helper_begin_long_process( );
+\Flickerbox\Helper::begin_long_process( );
 
 $t_page_number = 1;
 $t_per_page = -1;
@@ -123,7 +123,7 @@ foreach( $t_result as $t_row ) {
 
 			case 'project_id':
 				$t_element_name = 'project';
-				$t_element_data = project_get_name( $t_value );
+				$t_element_data = \Flickerbox\Project::get_name( $t_value );
 
 				$t_writer->startElement( $t_element_name );
 				$t_writer->writeAttribute( 'id', $t_value );
@@ -140,7 +140,7 @@ foreach( $t_result as $t_row ) {
 			case 'severity':
 			case 'status':
 			case 'view_state':
-				$t_element_data = get_enum_element( $t_element, $t_value );
+				$t_element_data = \Flickerbox\Helper::get_enum_element( $t_element, $t_value );
 
 				$t_writer->startElement( $t_element );
 				$t_writer->writeAttribute( 'id', $t_value );
@@ -193,7 +193,7 @@ foreach( $t_result as $t_row ) {
 			# view state
 			$t_writer->startElement( 'view_state' );
 			$t_writer->writeAttribute( 'id', $t_bugnote->view_state );
-			$t_writer->text( get_enum_element( 'view_state', $t_bugnote->view_state ) );
+			$t_writer->text( \Flickerbox\Helper::get_enum_element( 'view_state', $t_bugnote->view_state ) );
 			$t_writer->endElement( );
 			# date submitted
 			$t_writer->writeElement( 'date_submitted', $t_bugnote->date_submitted );

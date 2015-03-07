@@ -38,9 +38,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 $f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
 
@@ -54,11 +52,11 @@ if( $f_project_id == ALL_PROJECTS ) {
 # Override the current page to make sure we get the appropriate project-specific configuration
 $g_project_override = $f_project_id;
 
-\Flickerbox\HTML::page_top( project_get_field( $f_project_id, 'name' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Project::get_field( $f_project_id, 'name' ) );
 
 print_recently_visited();
 
-echo '<h1>', \Flickerbox\String::display( project_get_field( $f_project_id, 'name' ) ), '</h1>';
+echo '<h1>', \Flickerbox\String::display( \Flickerbox\Project::get_field( $f_project_id, 'name' ) ), '</h1>';
 
 echo '<p>';
 
@@ -96,7 +94,7 @@ echo '</p>';
 # @todo Add status, view state, versions, sub-projects, parent projects, and news.
 # @todo Schema change: add home page, license,
 
-$t_description = project_get_field( $f_project_id, 'description' );
+$t_description = \Flickerbox\Project::get_field( $f_project_id, 'description' );
 
 if( !\Flickerbox\Utility::is_blank( $t_description ) ) {
 	echo '<h2>', \Flickerbox\Lang::get( 'description' ), '</h2>';
@@ -105,7 +103,7 @@ if( !\Flickerbox\Utility::is_blank( $t_description ) ) {
 
 $t_access_level_for_dev_team = config_get( 'development_team_threshold' );
 
-$t_users = project_get_all_user_rows( $f_project_id, $t_access_level_for_dev_team );
+$t_users = \Flickerbox\Project::get_all_user_rows( $f_project_id, $t_access_level_for_dev_team );
 $t_show_real_names = config_get( 'show_realname' ) == ON;
 
 if( count( $t_users ) > 0 ) {
@@ -121,7 +119,7 @@ if( count( $t_users ) > 0 ) {
 			$t_user_name = $t_user_data['username'];
 		}
 
-		echo $t_user_name, ' (', get_enum_element( 'access_levels', $t_user_data['access_level'] ), ')<br />';
+		echo $t_user_name, ' (', \Flickerbox\Helper::get_enum_element( 'access_levels', $t_user_data['access_level'] ), ')<br />';
 	}
 }
 

@@ -33,7 +33,6 @@ namespace Flickerbox;
  */
 
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'plugin_api.php' );
 
 
@@ -77,7 +76,7 @@ class Wiki
 					break;
 			}
 	
-			if( is_null( event_signal( 'EVENT_WIKI_INIT' ) ) ) {
+			if( is_null( \Flickerbox\Event::signal( 'EVENT_WIKI_INIT' ) ) ) {
 				config_set_global( 'wiki_enable', OFF );
 			}
 		}
@@ -90,7 +89,7 @@ class Wiki
 	 * @access public
 	 */
 	static function link_bug( $p_bug_id ) {
-		return event_signal( 'EVENT_WIKI_LINK_BUG', $p_bug_id );
+		return \Flickerbox\Event::signal( 'EVENT_WIKI_LINK_BUG', $p_bug_id );
 	}
 	
 	/**
@@ -100,7 +99,7 @@ class Wiki
 	 * @access public
 	 */
 	static function link_project( $p_project_id ) {
-		return event_signal( 'EVENT_WIKI_LINK_PROJECT', $p_project_id );
+		return \Flickerbox\Event::signal( 'EVENT_WIKI_LINK_PROJECT', $p_project_id );
 	}
 
 

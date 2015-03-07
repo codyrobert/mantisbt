@@ -48,11 +48,7 @@ require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'email_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'print_api.php' );
-require_api( 'relationship_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_update' );
 
@@ -60,7 +56,7 @@ $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 $t_existing_bug = bug_get( $f_bug_id, true );
 $f_update_type = \Flickerbox\GPC::get_string( 'action_type', BUG_UPDATE_TYPE_NORMAL );
 
-if( helper_get_current_project() !== $t_existing_bug->project_id ) {
+if( \Flickerbox\Helper::get_current_project() !== $t_existing_bug->project_id ) {
 	$g_project_override = $t_existing_bug->project_id;
 }
 
@@ -143,7 +139,7 @@ if( $t_existing_bug->status < $t_resolved_status &&
 
 # If resolving or closing, ensure that all dependant issues have been resolved.
 if( ( $t_resolve_issue || $t_close_issue ) &&
-	 !relationship_can_resolve_bug( $f_bug_id ) ) {
+	 !\Flickerbox\Relationship::can_resolve_bug( $f_bug_id ) ) {
 	trigger_error( ERROR_BUG_RESOLVE_DEPENDANTS_BLOCKING, ERROR );
 }
 
@@ -224,8 +220,8 @@ if( $t_existing_bug->resolution != $t_updated_bug->resolution && (
 	   )
 ) ) {
 	\Flickerbox\Error::parameters(
-		get_enum_element( 'resolution', $t_updated_bug->resolution ),
-		get_enum_element( 'status', $t_updated_bug->status )
+		\Flickerbox\Helper::get_enum_element( 'resolution', $t_updated_bug->resolution ),
+		\Flickerbox\Helper::get_enum_element( 'status', $t_updated_bug->status )
 	);
 	trigger_error( ERROR_INVALID_RESOLUTION, ERROR );
 }
@@ -301,7 +297,7 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 	if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_updated_bug->duplicate_id ) ) {
 		trigger_error( ERROR_RELATIONSHIP_ACCESS_LEVEL_TO_DEST_BUG_TOO_LOW, ERROR );
 	}
-	if( relationship_exists( $f_bug_id, $t_updated_bug->duplicate_id ) ) {
+	if( \Flickerbox\Relationship::exists( $f_bug_id, $t_updated_bug->duplicate_id ) ) {
 		trigger_error( ERROR_RELATIONSHIP_ALREADY_EXISTS, ERROR );
 	}
 }
@@ -309,7 +305,7 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 # Validate the new bug note (if any is provided).
 if( $t_bug_note->note ||
 	 ( config_get( 'time_tracking_enabled' ) &&
-	   helper_duration_to_minutes( $t_bug_note->time_tracking ) > 0 ) ) {
+	   \Flickerbox\Helper::duration_to_minutes( $t_bug_note->time_tracking ) > 0 ) ) {
 	\Flickerbox\Access::ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
 	if( !$t_bug_note->note &&
 	     !config_get( 'time_tracking_without_note' ) ) {
@@ -350,10 +346,10 @@ if( $t_existing_bug->handler_id === NO_USER &&
 # Allow a custom function to validate the proposed bug updates. Note that
 # custom functions are being deprecated in MantisBT. You should migrate to
 # the new plugin system instead.
-helper_call_custom_function( 'issue_update_validate', array( $f_bug_id, $t_updated_bug, $t_bug_note->note ) );
+\Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $f_bug_id, $t_updated_bug, $t_bug_note->note ) );
 
 # Allow plugins to validate/modify the update prior to it being committed.
-$t_updated_bug = event_signal( 'EVENT_UPDATE_BUG_DATA', $t_updated_bug, $t_existing_bug );
+$t_updated_bug = \Flickerbox\Event::signal( 'EVENT_UPDATE_BUG_DATA', $t_updated_bug, $t_existing_bug );
 
 # Commit the bug updates to the database.
 $t_text_field_update_required = ( $t_existing_bug->description !== $t_updated_bug->description ) ||
@@ -367,15 +363,15 @@ foreach ( $t_custom_fields_to_set as $t_custom_field_to_set ) {
 }
 
 # Add a bug note if there is one.
-if( $t_bug_note->note || helper_duration_to_minutes( $t_bug_note->time_tracking ) > 0 ) {
+if( $t_bug_note->note || \Flickerbox\Helper::duration_to_minutes( $t_bug_note->time_tracking ) > 0 ) {
 	bugnote_add( $f_bug_id, $t_bug_note->note, $t_bug_note->time_tracking, $t_bug_note->view_state == VS_PRIVATE, 0, '', null, false );
 }
 
 # Add a duplicate relationship if requested.
 if( $t_updated_bug->duplicate_id !== 0 ) {
-	relationship_add( $f_bug_id, $t_updated_bug->duplicate_id, BUG_DUPLICATE );
-	history_log_event_special( $f_bug_id, BUG_ADD_RELATIONSHIP, BUG_DUPLICATE, $t_updated_bug->duplicate_id );
-	history_log_event_special( $t_updated_bug->duplicate_id, BUG_ADD_RELATIONSHIP, BUG_HAS_DUPLICATE, $f_bug_id );
+	\Flickerbox\Relationship::add( $f_bug_id, $t_updated_bug->duplicate_id, BUG_DUPLICATE );
+	\Flickerbox\History::log_event_special( $f_bug_id, BUG_ADD_RELATIONSHIP, BUG_DUPLICATE, $t_updated_bug->duplicate_id );
+	\Flickerbox\History::log_event_special( $t_updated_bug->duplicate_id, BUG_ADD_RELATIONSHIP, BUG_HAS_DUPLICATE, $f_bug_id );
 	if( user_exists( $t_existing_bug->reporter_id ) ) {
 		bug_monitor( $f_bug_id, $t_existing_bug->reporter_id );
 	}
@@ -385,12 +381,12 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 	bug_monitor_copy( $f_bug_id, $t_updated_bug->duplicate_id );
 }
 
-event_signal( 'EVENT_UPDATE_BUG', array( $t_existing_bug, $t_updated_bug ) );
+\Flickerbox\Event::signal( 'EVENT_UPDATE_BUG', array( $t_existing_bug, $t_updated_bug ) );
 
 # Allow a custom function to respond to the modifications made to the bug. Note
 # that custom functions are being deprecated in MantisBT. You should migrate to
 # the new plugin system instead.
-helper_call_custom_function( 'issue_update_notify', array( $f_bug_id ) );
+\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $f_bug_id ) );
 
 # Send a notification of changes via email.
 if( $t_resolve_issue ) {

@@ -36,8 +36,6 @@ namespace Flickerbox;
  */
 
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'user_pref_api.php' );
 
 
 class Date
@@ -238,25 +236,25 @@ class Date
 	
 		foreach( $t_chars as $t_char ) {
 			if( strcmp( $t_char, 'M' ) == 0 ) {
-				echo '<select ' . helper_get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
+				echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
 				echo $t_blank_line;
 				\Flickerbox\Date::print_month_option_list( $t_date[1] );
 				echo "</select>\n";
 			}
 			if( strcmp( $t_char, 'm' ) == 0 ) {
-				echo '<select ' . helper_get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
+				echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
 				echo $t_blank_line;
 				\Flickerbox\Date::print_month_option_list( $t_date[1] );
 				echo '</select>' . "\n";
 			}
 			if( strcasecmp( $t_char, 'D' ) == 0 ) {
-				echo '<select ' . helper_get_tab_index() . ' name="' . $p_name . '_day"' . $t_disable . '>';
+				echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_day"' . $t_disable . '>';
 				echo $t_blank_line;
 				\Flickerbox\Date::print_day_option_list( $t_date[2] );
 				echo '</select>' . "\n";
 			}
 			if( strcasecmp( $t_char, 'Y' ) == 0 ) {
-				echo '<select ' .  helper_get_tab_index() . ' name="' . $p_name . '_year"' . $t_disable . '>';
+				echo '<select ' .  \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_year"' . $t_disable . '>';
 				echo $t_blank_line;
 				\Flickerbox\Date::print_year_range_option_list( $t_date[0], $p_year_start, $p_year_end );
 				echo '</select>' . "\n";

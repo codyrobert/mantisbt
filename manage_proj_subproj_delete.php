@@ -37,7 +37,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_hierarchy_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_subproj_delete' );
 
@@ -48,7 +47,7 @@ $f_subproject_id = \Flickerbox\GPC::get_int( 'subproject_id' );
 
 \Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 
-project_hierarchy_remove( $f_subproject_id, $f_project_id );
+\Flickerbox\Project\Hierarchy::remove( $f_subproject_id, $f_project_id );
 
 \Flickerbox\Form::security_purge( 'manage_proj_subproj_delete' );
 

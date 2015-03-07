@@ -8,9 +8,9 @@ require_once( 'core.php' );
 
 $f_page_number		= \Flickerbox\GPC::get_int( 'page_number', 1 );
 # Get Project Id and set it as current
-$t_project_id = \Flickerbox\GPC::get_int( 'project_id', helper_get_current_project() );
-if( ( ALL_PROJECTS == $t_project_id || project_exists( $t_project_id ) ) && $t_project_id != helper_get_current_project() ) {
-	helper_set_current_project( $t_project_id );
+$t_project_id = \Flickerbox\GPC::get_int( 'project_id', \Flickerbox\Helper::get_current_project() );
+if( ( ALL_PROJECTS == $t_project_id || \Flickerbox\Project::exists( $t_project_id ) ) && $t_project_id != \Flickerbox\Helper::get_current_project() ) {
+	\Flickerbox\Helper::set_current_project( $t_project_id );
 	# Reloading the page is required so that the project browser
 	# reflects the new current project
 	print_header_redirect( $_SERVER['REQUEST_URI'], true, false, true );
@@ -37,7 +37,7 @@ for( $i=0; $i < $t_row_count; $i++ ) {
 $t_unique_users_handlers = array_unique( $t_users_handlers );
 $t_unique_project_ids = array_unique( $t_project_ids );
 user_cache_array_rows( $t_unique_users_handlers );
-project_cache_array_rows( $t_unique_project_ids );
+\Flickerbox\Project::cache_array_rows( $t_unique_project_ids );
 
 \Flickerbox\GPC::set_cookie( \Flickerbox\Config::get( 'bug_list_cookie' ), implode( ',', $t_bugslist ) );
 

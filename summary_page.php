@@ -40,12 +40,10 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'summary_api.php' );
 require_api( 'user_api.php' );
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id', helper_get_current_project() );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id', \Flickerbox\Helper::get_current_project() );
 
 # Override the current page to make sure we get the appropriate project-specific configuration
 $g_project_override = $f_project_id;
@@ -55,7 +53,7 @@ $g_project_override = $f_project_id;
 $t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 $t_project_ids = user_get_all_accessible_projects( $t_user_id, $f_project_id );
-$t_specific_where = helper_project_specific_where( $f_project_id, $t_user_id );
+$t_specific_where = \Flickerbox\Helper::project_specific_where( $f_project_id, $t_user_id );
 
 $t_resolved = config_get( 'bug_resolved_status_threshold' );
 # the issue may have passed through the status we consider resolved
@@ -140,7 +138,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_project(); ?>
+		<?php \Flickerbox\Summary::print_by_project(); ?>
 	</table>
 	<?php } ?>
 
@@ -152,7 +150,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_enum( 'status' ) ?>
+		<?php \Flickerbox\Summary::print_by_enum( 'status' ) ?>
 	</table>
 
 	<!-- BY SEVERITY -->
@@ -163,7 +161,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_enum( 'severity' ) ?>
+		<?php \Flickerbox\Summary::print_by_enum( 'severity' ) ?>
 	</table>
 
 	<!-- BY CATEGORY -->
@@ -174,7 +172,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_category() ?>
+		<?php \Flickerbox\Summary::print_by_category() ?>
 	</table>
 
 	<!-- TIME STATS -->
@@ -214,7 +212,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_developer() ?>
+		<?php \Flickerbox\Summary::print_by_developer() ?>
 	</table>
 
 </div>
@@ -232,7 +230,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<td class="right"><?php echo \Flickerbox\Lang::get( 'balance' ); ?></td>
 			</tr>
 		</thead>
-		<?php summary_print_by_date( config_get( 'date_partitions' ) ) ?>
+		<?php \Flickerbox\Summary::print_by_date( config_get( 'date_partitions' ) ) ?>
 	</table>
 
 	<!-- MOST ACTIVE -->
@@ -243,7 +241,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<td class="right"><?php echo \Flickerbox\Lang::get( 'score' ); ?></td>
 			</tr>
 		</thead>
-		<?php summary_print_by_activity() ?>
+		<?php \Flickerbox\Summary::print_by_activity() ?>
 	</table>
 
 	<!-- LONGEST OPEN -->
@@ -254,7 +252,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<td class="right"><?php echo \Flickerbox\Lang::get( 'days' ); ?></td>
 			</tr>
 		</thead>
-		<?php summary_print_by_age() ?>
+		<?php \Flickerbox\Summary::print_by_age() ?>
 	</table>
 
 	<!-- BY RESOLUTION -->
@@ -265,7 +263,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_enum( 'resolution' ) ?>
+		<?php \Flickerbox\Summary::print_by_enum( 'resolution' ) ?>
 	</table>
 
 	<!-- BY PRIORITY -->
@@ -276,7 +274,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_enum( 'priority' ) ?>
+		<?php \Flickerbox\Summary::print_by_enum( 'priority' ) ?>
 	</table>
 
 	<!-- REPORTER STATS -->
@@ -287,7 +285,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php summary_print_by_reporter() ?>
+		<?php \Flickerbox\Summary::print_by_reporter() ?>
 	</table>
 
 	<!-- REPORTER EFFECTIVENESS -->
@@ -300,7 +298,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<td class="right"><?php echo \Flickerbox\Lang::get( 'total' ); ?></td>
 			</tr>
 		</thead>
-		<?php summary_print_reporter_effectiveness( config_get( 'severity_enum_string' ), config_get( 'resolution_enum_string' ) ) ?>
+		<?php \Flickerbox\Summary::print_reporter_effectiveness( config_get( 'severity_enum_string' ), config_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 </div>
@@ -317,14 +315,14 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 					$t_resolutions = \MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
-						echo '<td class="right">', get_enum_element( 'resolution', $t_resolution ), "</td>\n";
+						echo '<td class="right">', \Flickerbox\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
 					}
 
 					echo '<td class="right">', \Flickerbox\Lang::get( 'percentage_errors' ), "</td>\n";
 				?>
 			</tr>
 		</thead>
-		<?php summary_print_reporter_resolution( config_get( 'resolution_enum_string' ) ) ?>
+		<?php \Flickerbox\Summary::print_reporter_resolution( config_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 	<!-- DEVELOPER BY RESOLUTION -->
@@ -336,14 +334,14 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 					$t_resolutions = \MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
-						echo '<td class="right">', get_enum_element( 'resolution', $t_resolution ), "</td>\n";
+						echo '<td class="right">', \Flickerbox\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
 					}
 
 					echo '<td class="right">', \Flickerbox\Lang::get( 'percentage_fixed' ), "</td>\n";
 				?>
 			</tr>
 		</thead>
-		<?php summary_print_developer_resolution( config_get( 'resolution_enum_string' ) ) ?>
+		<?php \Flickerbox\Summary::print_developer_resolution( config_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 </div>

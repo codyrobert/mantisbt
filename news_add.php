@@ -37,7 +37,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
@@ -51,7 +50,7 @@ $f_headline		= \Flickerbox\GPC::get_string( 'headline' );
 $f_announcement	= \Flickerbox\GPC::get_bool( 'announcement' );
 $f_body			= \Flickerbox\GPC::get_string( 'body' );
 
-$t_news_id = \Flickerbox\News::create( helper_get_current_project(), auth_get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
+$t_news_id = \Flickerbox\News::create( \Flickerbox\Helper::get_current_project(), auth_get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
 
 \Flickerbox\Form::security_purge( 'news_add' );
 

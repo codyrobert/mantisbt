@@ -35,9 +35,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_update' );
 
@@ -54,8 +52,8 @@ $f_inherit_global = \Flickerbox\GPC::get_bool( 'inherit_global', 0 );
 
 \Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 
-project_update( $f_project_id, $f_name, $f_description, $f_status, $f_view_state, $f_file_path, $f_enabled, $f_inherit_global );
-event_signal( 'EVENT_MANAGE_PROJECT_UPDATE', array( $f_project_id ) );
+\Flickerbox\Project::update( $f_project_id, $f_name, $f_description, $f_status, $f_view_state, $f_file_path, $f_enabled, $f_inherit_global );
+\Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_UPDATE', array( $f_project_id ) );
 
 \Flickerbox\Form::security_purge( 'manage_proj_update' );
 

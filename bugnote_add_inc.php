@@ -40,8 +40,6 @@ if( !defined( 'BUGNOTE_ADD_INC_ALLOW' ) ) {
 
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 
 ?>
 <?php if( ( !bug_is_readonly( $f_bug_id ) ) &&
@@ -88,11 +86,11 @@ require_api( 'helper_api.php' );
 		$t_default_bugnote_view_status = config_get( 'default_bugnote_view_status' );
 		if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
 ?>
-					<input type="checkbox" id="bugnote_add_view_status" name="private" <?php check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
+					<input type="checkbox" id="bugnote_add_view_status" name="private" <?php \Flickerbox\Helper::check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
 					<label for="bugnote_add_view_status"><?php echo \Flickerbox\Lang::get( 'private' ) ?></label>
 <?php
 		} else {
-			echo get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
+			echo \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
 		}
 ?>
 				</td>
@@ -121,7 +119,7 @@ require_api( 'helper_api.php' );
 		}
 	}
 
-	event_signal( 'EVENT_BUGNOTE_ADD_FORM', array( $f_bug_id ) );
+	\Flickerbox\Event::signal( 'EVENT_BUGNOTE_ADD_FORM', array( $f_bug_id ) );
 ?>
 		</tbody>
 

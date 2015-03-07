@@ -47,10 +47,7 @@ require_api( 'bug_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 /**
  * Filters an array of columns based on configuration options.  The filtering can remove
@@ -162,7 +159,7 @@ function columns_get_plugin_columns() {
 	if( is_null( $s_column_array ) ) {
 		$s_column_array = array();
 
-		$t_all_plugin_columns = event_signal( 'EVENT_FILTER_COLUMNS' );
+		$t_all_plugin_columns = \Flickerbox\Event::signal( 'EVENT_FILTER_COLUMNS' );
 		foreach( $t_all_plugin_columns as $t_plugin => $t_plugin_columns ) {
 			foreach( $t_plugin_columns as $t_callback => $t_plugin_column_array ) {
 				if( is_array( $t_plugin_column_array ) ) {
@@ -219,7 +216,7 @@ function columns_get_all( $p_project_id = null ) {
 
 	# Add project custom fields to the array.  Only add the ones for which the current user has at least read access.
 	if( $p_project_id === null ) {
-		$t_project_id = helper_get_current_project();
+		$t_project_id = \Flickerbox\Helper::get_current_project();
 	} else {
 		$t_project_id = $p_project_id;
 	}
@@ -1181,12 +1178,12 @@ function print_column_category_id( BugData $p_bug, $p_columns_target = COLUMNS_T
 	global $t_sort, $t_dir;
 
 	# grab the project name
-	$t_project_name = project_get_field( $p_bug->project_id, 'name' );
+	$t_project_name = \Flickerbox\Project::get_field( $p_bug->project_id, 'name' );
 
 	echo '<td class="column-category">';
 
 	# type project name if viewing 'all projects' or if issue is in a subproject
-	if( ON == config_get( 'show_bug_project_links' ) && helper_get_current_project() != $p_bug->project_id ) {
+	if( ON == config_get( 'show_bug_project_links' ) && \Flickerbox\Helper::get_current_project() != $p_bug->project_id ) {
 		echo '<small class="project">[';
 		print_view_bug_sort_link( \Flickerbox\String::display_line( $t_project_name ), 'project_id', $t_sort, $t_dir, $p_columns_target );
 		echo ']</small><br />';
@@ -1220,7 +1217,7 @@ function print_column_severity( BugData $p_bug, $p_columns_target = COLUMNS_TARG
  * @access public
  */
 function print_column_eta( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	echo '<td class="column-eta">', get_enum_element( 'eta', $p_bug->eta, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
+	echo '<td class="column-eta">', \Flickerbox\Helper::get_enum_element( 'eta', $p_bug->eta, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
 }
 
 /**
@@ -1232,7 +1229,7 @@ function print_column_eta( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VI
  * @access public
  */
 function print_column_projection( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	echo '<td class="column-projection">', get_enum_element( 'projection', $p_bug->projection, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
+	echo '<td class="column-projection">', \Flickerbox\Helper::get_enum_element( 'projection', $p_bug->projection, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
 }
 
 /**
@@ -1244,7 +1241,7 @@ function print_column_projection( BugData $p_bug, $p_columns_target = COLUMNS_TA
  * @access public
  */
 function print_column_reproducibility( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
-	echo '<td class="column-reproducibility">', get_enum_element( 'reproducibility', $p_bug->reproducibility, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
+	echo '<td class="column-reproducibility">', \Flickerbox\Helper::get_enum_element( 'reproducibility', $p_bug->reproducibility, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ), '</td>';
 }
 
 /**
@@ -1257,7 +1254,7 @@ function print_column_reproducibility( BugData $p_bug, $p_columns_target = COLUM
  */
 function print_column_resolution( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<td class="column-resolution">',
-		get_enum_element( 'resolution', $p_bug->resolution, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ),
+		\Flickerbox\Helper::get_enum_element( 'resolution', $p_bug->resolution, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ),
 		'</td>';
 }
 
@@ -1272,8 +1269,8 @@ function print_column_resolution( BugData $p_bug, $p_columns_target = COLUMNS_TA
 function print_column_status( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<td class="column-status">';
 	printf( '<span class="issue-status" title="%s">%s</span>',
-		get_enum_element( 'resolution', $p_bug->resolution, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ),
-		get_enum_element( 'status', $p_bug->status, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id )
+		\Flickerbox\Helper::get_enum_element( 'resolution', $p_bug->resolution, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id ),
+		\Flickerbox\Helper::get_enum_element( 'status', $p_bug->status, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id )
 	);
 
 	# print username instead of status
@@ -1296,7 +1293,7 @@ function print_column_handler_id( BugData $p_bug, $p_columns_target = COLUMNS_TA
 
 	# In case of a specific project, if the current user has no access to the field, then it would have been excluded from the
 	# list of columns to view.  In case of ALL_PROJECTS, then we need to check the access per row.
-	if( $p_bug->handler_id > 0 && ( helper_get_current_project() != ALL_PROJECTS || \Flickerbox\Access::has_project_level( config_get( 'view_handler_threshold' ), $p_bug->project_id ) ) ) {
+	if( $p_bug->handler_id > 0 && ( \Flickerbox\Helper::get_current_project() != ALL_PROJECTS || \Flickerbox\Access::has_project_level( config_get( 'view_handler_threshold' ), $p_bug->project_id ) ) ) {
 		echo \Flickerbox\Prepare::user_name( $p_bug->handler_id );
 	}
 
@@ -1327,7 +1324,7 @@ function print_column_reporter_id( BugData $p_bug, $p_columns_target = COLUMNS_T
  */
 function print_column_project_id( BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	echo '<td class="column-project-id">';
-	echo \Flickerbox\String::display_line( project_get_name( $p_bug->project_id ) );
+	echo \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $p_bug->project_id ) );
 	echo '</td>';
 }
 
@@ -1440,7 +1437,7 @@ function print_column_target_version( BugData $p_bug, $p_columns_target = COLUMN
 
 	# In case of a specific project, if the current user has no access to the field, then it would have been excluded from the
 	# list of columns to view.  In case of ALL_PROJECTS, then we need to check the access per row.
-	if( helper_get_current_project() != ALL_PROJECTS || \Flickerbox\Access::has_project_level( config_get( 'roadmap_view_threshold' ), $p_bug->project_id ) ) {
+	if( \Flickerbox\Helper::get_current_project() != ALL_PROJECTS || \Flickerbox\Access::has_project_level( config_get( 'roadmap_view_threshold' ), $p_bug->project_id ) ) {
 		echo \Flickerbox\String::display_line( $p_bug->target_version );
 	}
 

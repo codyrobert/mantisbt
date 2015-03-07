@@ -57,9 +57,6 @@ require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'project_api.php' );
-require_api( 'project_hierarchy_api.php' );
 require_api( 'user_api.php' );
 
 /**
@@ -146,7 +143,7 @@ function print_successful_redirect_to_bug( $p_bug_id ) {
  * @return void
  */
 function print_successful_redirect( $p_redirect_to ) {
-	if( helper_log_to_page() ) {
+	if( \Flickerbox\Helper::log_to_page() ) {
 		\Flickerbox\HTML::page_top( null, $p_redirect_to );
 		echo '<br /><div class="center">';
 		echo \Flickerbox\Lang::get( 'operation_successful' ) . '<br />';
@@ -251,7 +248,7 @@ function print_user_option_list( $p_user_id, $p_project_id = null, $p_access = A
 	$t_current_user = \Flickerbox\Auth::get_current_user_id();
 
 	if( null === $p_project_id ) {
-		$p_project_id = helper_get_current_project();
+		$p_project_id = \Flickerbox\Helper::get_current_project();
 	}
 
 	if( $p_project_id === ALL_PROJECTS ) {
@@ -260,7 +257,7 @@ function print_user_option_list( $p_user_id, $p_project_id = null, $p_access = A
 		# Get list of users having access level for all accessible projects
 		$t_users = array();
 		foreach( $t_projects as $t_project_id ) {
-			$t_project_users_list = project_get_all_user_rows( $t_project_id, $p_access );
+			$t_project_users_list = \Flickerbox\Project::get_all_user_rows( $t_project_id, $p_access );
 			# Do a 'smart' merge of the project's user list, into an
 			# associative array (to remove duplicates)
 			# Use a while loop for better performance
@@ -273,7 +270,7 @@ function print_user_option_list( $p_user_id, $p_project_id = null, $p_access = A
 		}
 		unset( $t_projects );
 	} else {
-		$t_users = project_get_all_user_rows( $p_project_id, $p_access );
+		$t_users = \Flickerbox\Project::get_all_user_rows( $p_project_id, $p_access );
 	}
 
 	$t_display = array();
@@ -301,7 +298,7 @@ function print_user_option_list( $p_user_id, $p_project_id = null, $p_access = A
 	for( $i = 0;$i < $t_count;$i++ ) {
 		$t_row = $t_users[$i];
 		echo '<option value="' . $t_row['id'] . '" ';
-		check_selected( $p_user_id, (int)$t_row['id'] );
+		\Flickerbox\Helper::check_selected( $p_user_id, (int)$t_row['id'] );
 		echo '>' . $t_display[$i] . '</option>';
 	}
 }
@@ -353,7 +350,7 @@ function print_tag_input( $p_bug_id = 0, $p_string = '' ) {
 ?>
 	<input type="hidden" id="tag_separator" value="<?php echo config_get( 'tag_separator' )?>" />
 	<input type="text" name="tag_string" id="tag_string" size="40" value="<?php echo \Flickerbox\String::attribute( $p_string )?>" />
-	<select <?php echo helper_get_tab_index()?> name="tag_select" id="tag_select">
+	<select <?php echo \Flickerbox\Helper::get_tab_index()?> name="tag_select" id="tag_select">
 		<?php print_tag_option_list( $p_bug_id );?>
 	</select>
 <?php
@@ -383,7 +380,7 @@ function print_tag_option_list( $p_bug_id = 0 ) {
  * @return void
  */
 function print_news_item_option_list() {
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 
 	$t_global = \Flickerbox\Access::has_global_level( config_get_global( 'admin_site_threshold' ) );
 	if( $t_global ) {
@@ -537,12 +534,12 @@ function print_project_option_list( $p_project_id = null, $p_include_all_project
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_project_ids = user_get_accessible_projects( $t_user_id );
 	$t_can_report = true;
-	project_cache_array_rows( $t_project_ids );
+	\Flickerbox\Project::cache_array_rows( $t_project_ids );
 
 	if( $p_include_all_projects && $p_filter_project_id !== ALL_PROJECTS ) {
 		echo '<option value="' . ALL_PROJECTS . '"';
 		if( $p_project_id !== null ) {
-			check_selected( $p_project_id, ALL_PROJECTS, false );
+			\Flickerbox\Helper::check_selected( $p_project_id, ALL_PROJECTS, false );
 		}
 		echo '>' . \Flickerbox\Lang::get( 'all_projects' ) . '</option>' . "\n";
 	}
@@ -554,9 +551,9 @@ function print_project_option_list( $p_project_id = null, $p_include_all_project
 		}
 
 		echo '<option value="' . $t_id . '"';
-		check_selected( $p_project_id, $t_id, false );
-		check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
-		echo '>' . \Flickerbox\String::attribute( project_get_field( $t_id, 'name' ) ) . '</option>' . "\n";
+		\Flickerbox\Helper::check_selected( $p_project_id, $t_id, false );
+		\Flickerbox\Helper::check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
+		echo '>' . \Flickerbox\String::attribute( \Flickerbox\Project::get_field( $t_id, 'name' ) ) . '</option>' . "\n";
 		print_subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only );
 	}
 }
@@ -590,12 +587,12 @@ function print_subproject_option_list( $p_parent_id, $p_project_id = null, $p_fi
 		}
 
 		echo '<option value="' . $t_full_id . '"';
-		check_selected( $p_project_id, $t_full_id, false );
-		check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
+		\Flickerbox\Helper::check_selected( $p_project_id, $t_full_id, false );
+		\Flickerbox\Helper::check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
 		echo '>'
 			. str_repeat( '&#160;', count( $p_parents ) )
 			. str_repeat( '&raquo;', count( $p_parents ) ) . ' '
-			. \Flickerbox\String::attribute( project_get_field( $t_id, 'name' ) )
+			. \Flickerbox\String::attribute( \Flickerbox\Project::get_field( $t_id, 'name' ) )
 			. '</option>' . "\n";
 		print_subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only, $p_parents );
 	}
@@ -657,7 +654,7 @@ function print_profile_option_list_from_profiles( array $p_profiles, $p_select_i
 
 		echo '<option value="' . $t_profile['id'] . '"';
 		if( $p_select_id !== false ) {
-			check_selected( $p_select_id, (int)$t_profile['id'] );
+			\Flickerbox\Helper::check_selected( $p_select_id, (int)$t_profile['id'] );
 		}
 		echo '>' . $t_platform . ' ' . $t_os . ' ' . $t_os_build . '</option>';
 	}
@@ -674,7 +671,7 @@ function print_profile_option_list_from_profiles( array $p_profiles, $p_select_i
  */
 function print_category_option_list( $p_category_id = 0, $p_project_id = null ) {
 	if( null === $p_project_id ) {
-		$t_project_id = helper_get_current_project();
+		$t_project_id = \Flickerbox\Helper::get_current_project();
 	} else {
 		$t_project_id = $p_project_id;
 	}
@@ -683,7 +680,7 @@ function print_category_option_list( $p_category_id = 0, $p_project_id = null ) 
 
 	if( config_get( 'allow_no_category' ) ) {
 		echo '<option value="0"';
-		check_selected( $p_category_id, 0 );
+		\Flickerbox\Helper::check_selected( $p_category_id, 0 );
 		echo '>';
 		echo \Flickerbox\Category::full_name( 0, false ), '</option>';
 	} else {
@@ -692,7 +689,7 @@ function print_category_option_list( $p_category_id = 0, $p_project_id = null ) 
 				$p_category_id = (int) $t_cat_arr[0]['id'];
 			} else {
 				echo '<option value="0"';
-				echo check_selected( $p_category_id, 0 );
+				echo \Flickerbox\Helper::check_selected( $p_category_id, 0 );
 				echo '>';
 				echo \Flickerbox\String::attribute( \Flickerbox\Lang::get( 'select_option' ) ) . '</option>';
 			}
@@ -702,7 +699,7 @@ function print_category_option_list( $p_category_id = 0, $p_project_id = null ) 
 	foreach( $t_cat_arr as $t_category_row ) {
 		$t_category_id = (int)$t_category_row['id'];
 		echo '<option value="' . $t_category_id . '"';
-		check_selected( $p_category_id, $t_category_id );
+		\Flickerbox\Helper::check_selected( $p_category_id, $t_category_id );
 		echo '>' . \Flickerbox\String::attribute( \Flickerbox\Category::full_name( $t_category_id, $t_category_row['project_id'] != $t_project_id ) ) . '</option>';
 	}
 }
@@ -721,7 +718,7 @@ function print_category_filter_option_list( $p_category_name = '', $p_project_id
 	foreach( $t_cat_arr as $t_cat ) {
 		$t_name = \Flickerbox\String::attribute( $t_cat );
 		echo '<option value="' . $t_name . '"';
-		check_selected( $p_category_name, $t_cat );
+		\Flickerbox\Helper::check_selected( $p_category_name, $t_cat );
 		echo '>' . $t_name . '</option>';
 	}
 }
@@ -738,7 +735,7 @@ function print_platform_option_list( $p_platform, $p_user_id = null ) {
 	foreach( $t_platforms_array as $t_platform_unescaped ) {
 		$t_platform = \Flickerbox\String::attribute( $t_platform_unescaped );
 		echo '<option value="' . $t_platform . '"';
-		check_selected( $p_platform, $t_platform_unescaped );
+		\Flickerbox\Helper::check_selected( $p_platform, $t_platform_unescaped );
 		echo '>' . $t_platform . '</option>';
 	}
 }
@@ -755,7 +752,7 @@ function print_os_option_list( $p_os, $p_user_id = null ) {
 	foreach( $t_os_array as $t_os_unescaped ) {
 		$t_os = \Flickerbox\String::attribute( $t_os_unescaped );
 		echo '<option value="' . $t_os . '"';
-		check_selected( $p_os, $t_os_unescaped );
+		\Flickerbox\Helper::check_selected( $p_os, $t_os_unescaped );
 		echo '>' . $t_os . '</option>';
 	}
 }
@@ -772,7 +769,7 @@ function print_os_build_option_list( $p_os_build, $p_user_id = null ) {
 	foreach( $t_os_build_array as $t_os_build_unescaped ) {
 		$t_os_build = \Flickerbox\String::attribute( $t_os_build_unescaped );
 		echo '<option value="' . $t_os_build . '"';
-		check_selected( $p_os_build, $t_os_build_unescaped );
+		\Flickerbox\Helper::check_selected( $p_os_build, $t_os_build_unescaped );
 		echo '>' . $t_os_build . '</option>';
 	}
 }
@@ -788,7 +785,7 @@ function print_os_build_option_list( $p_os_build, $p_user_id = null ) {
  */
 function print_version_option_list( $p_version = '', $p_project_id = null, $p_released = null, $p_leading_blank = true, $p_with_subs = false ) {
 	if( null === $p_project_id ) {
-		$c_project_id = helper_get_current_project();
+		$c_project_id = \Flickerbox\Helper::get_current_project();
 	} else {
 		$c_project_id = (int)$p_project_id;
 	}
@@ -833,7 +830,7 @@ function print_version_option_list( $p_version = '', $p_project_id = null, $p_re
 		if( !in_array( $t_version_version, $t_listed, true ) ) {
 			$t_listed[] = $t_version_version;
 			echo '<option value="' . $t_version_version . '"';
-			check_selected( $p_version, $t_version['version'] );
+			\Flickerbox\Helper::check_selected( $p_version, $t_version['version'] );
 
 			$t_version_string = \Flickerbox\String::attribute( \Flickerbox\Prepare::version_string( $c_project_id, $t_version['id'] ) );
 
@@ -850,9 +847,9 @@ function print_version_option_list( $p_version = '', $p_project_id = null, $p_re
 function print_build_option_list( $p_build = '' ) {
 	$t_overall_build_arr = array();
 
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 
-	$t_project_where = helper_project_specific_where( $t_project_id );
+	$t_project_where = \Flickerbox\Helper::project_specific_where( $t_project_id );
 
 	# Get the "found in" build list
 	$t_query = 'SELECT DISTINCT build
@@ -870,7 +867,7 @@ function print_build_option_list( $p_build = '' ) {
 	foreach( $t_overall_build_arr as $t_build_unescaped ) {
 		$t_build = \Flickerbox\String::attribute( $t_build_unescaped );
 		echo '<option value="' . $t_build . '"';
-		check_selected( $p_build, $t_build_unescaped );
+		\Flickerbox\Helper::check_selected( $p_build, $t_build_unescaped );
 		echo '>' . \Flickerbox\String::shorten( $t_build, $t_max_length ) . '</option>';
 	}
 }
@@ -888,10 +885,10 @@ function print_enum_string_option_list( $p_enum_name, $p_val = 0 ) {
 	$t_enum_values = \MantisEnum::getValues( $t_config_var_value );
 
 	foreach ( $t_enum_values as $t_key ) {
-		$t_elem2 = get_enum_element( $p_enum_name, $t_key );
+		$t_elem2 = \Flickerbox\Helper::get_enum_element( $p_enum_name, $t_key );
 
 		echo '<option value="' . $t_key . '"';
-		check_selected( (int)$p_val, $t_key );
+		\Flickerbox\Helper::check_selected( (int)$p_val, $t_key );
 		echo '>' . \Flickerbox\String::html_specialchars( $t_elem2 ) . '</option>';
 	}
 }
@@ -929,18 +926,18 @@ function get_status_option_list( $p_user_auth = 0, $p_current_value = 0, $p_show
 		if( ( $p_show_current || $p_current_value != $t_enum_value )
 			&& \Flickerbox\Access::compare_level( $p_user_auth, \Flickerbox\Access::get_status_threshold( $t_enum_value, $p_project_id ) )
 		) {
-			$t_enum_list[$t_enum_value] = get_enum_element( 'status', $t_enum_value );
+			$t_enum_list[$t_enum_value] = \Flickerbox\Helper::get_enum_element( 'status', $t_enum_value );
 		}
 	}
 
 	if( $p_show_current ) {
-		$t_enum_list[$p_current_value] = get_enum_element( 'status', $p_current_value );
+		$t_enum_list[$p_current_value] = \Flickerbox\Helper::get_enum_element( 'status', $p_current_value );
 	}
 
 	if( $p_add_close && \Flickerbox\Access::compare_level( $p_current_value, config_get( 'bug_resolved_status_threshold', null, null, $p_project_id ) ) ) {
 		$t_closed = config_get( 'bug_closed_status_threshold', null, null, $p_project_id );
 		if( $p_show_current || $p_current_value != $t_closed ) {
-			$t_enum_list[$t_closed] = get_enum_element( 'status', $t_closed );
+			$t_enum_list[$t_closed] = \Flickerbox\Helper::get_enum_element( 'status', $t_closed );
 		}
 	}
 
@@ -964,10 +961,10 @@ function print_status_option_list( $p_select_label, $p_current_value = 0, $p_all
 		# resort the list into ascending order
 		ksort( $t_enum_list );
 		reset( $t_enum_list );
-		echo '<select ' . helper_get_tab_index() . ' id="' . $p_select_label . '" name="' . $p_select_label . '">';
+		echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="' . $p_select_label . '" name="' . $p_select_label . '">';
 		foreach( $t_enum_list as $t_key => $t_val ) {
 			echo '<option value="' . $t_key . '"';
-			check_selected( $t_key, $p_current_value );
+			\Flickerbox\Helper::check_selected( $t_key, $p_current_value );
 			echo '>' . \Flickerbox\String::html_specialchars( $t_val ) . '</option>';
 		}
 		echo '</select>';
@@ -1004,9 +1001,9 @@ function print_project_access_levels_option_list( $p_val, $p_project_id = null )
 		if( $t_enum_value > $t_current_user_access_level ) {
 			continue;
 		}
-		$t_access_level = get_enum_element( 'access_levels', $t_enum_value );
+		$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $t_enum_value );
 		echo '<option value="' . $t_enum_value . '"';
-		check_selected( $p_val, $t_enum_value );
+		\Flickerbox\Helper::check_selected( $p_val, $t_enum_value );
 		echo '>' . \Flickerbox\String::html_specialchars( $t_access_level ) . '</option>';
 	}
 }
@@ -1022,7 +1019,7 @@ function print_language_option_list( $p_language ) {
 	for( $i = 0;$i < $t_enum_count;$i++ ) {
 		$t_language = \Flickerbox\String::attribute( $t_arr[$i] );
 		echo '<option value="' . $t_language . '"';
-		check_selected( $t_language, $p_language );
+		\Flickerbox\Helper::check_selected( $t_language, $p_language );
 		echo '>' . $t_language . '</option>';
 	}
 }
@@ -1089,8 +1086,8 @@ function print_project_user_list( $p_user_id, $p_include_remove_link = true ) {
 		$t_project_name = \Flickerbox\String::attribute( $t_project['name'] );
 		$t_view_state = $t_project['view_state'];
 		$t_access_level = $t_project['access_level'];
-		$t_access_level = get_enum_element( 'access_levels', $t_access_level );
-		$t_view_state = get_enum_element( 'project_view_state', $t_view_state );
+		$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $t_access_level );
+		$t_view_state = \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_view_state );
 
 		echo $t_project_name . ' [' . $t_access_level . '] (' . $t_view_state . ')';
 		if( $p_include_remove_link && \Flickerbox\Access::has_project_level( config_get( 'project_user_threshold' ), $t_project_id ) ) {
@@ -1116,7 +1113,7 @@ function print_custom_field_projects_list( $p_field_id ) {
 	$t_security_token = \Flickerbox\Form::security_param( 'manage_proj_custom_field_remove' );
 
 	foreach( $t_project_ids as $t_project_id ) {
-		$t_project_name = project_get_field( $t_project_id, 'name' );
+		$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
 		$t_sequence = custom_field_get_sequence( $p_field_id, $t_project_id );
 		echo '<strong>', \Flickerbox\String::display_line( $t_project_name ), '</strong>: ';
 		print_bracket_link( 'manage_proj_custom_field_remove.php?field_id=' . $c_field_id . '&project_id=' . $t_project_id . '&return=custom_field' . $t_security_token, \Flickerbox\Lang::get( 'remove_link' ) );
@@ -1159,7 +1156,7 @@ function print_plugin_priority_list( $p_priority ) {
 	}
 
 	for( $i = 5;$i >= 1;$i-- ) {
-		echo '<option value="', $i, '" ', check_selected( $p_priority, $i ), ' >', $i, '</option>';
+		echo '<option value="', $i, '" ', \Flickerbox\Helper::check_selected( $p_priority, $i ), ' >', $i, '</option>';
 	}
 }
 
@@ -1181,7 +1178,7 @@ function print_bug_link( $p_bug_id, $p_detail_info = true ) {
  * @return void
  */
 function print_formatted_priority_string( BugData $p_bug ) {
-	$t_pri_str = get_enum_element( 'priority', $p_bug->priority, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id );
+	$t_pri_str = \Flickerbox\Helper::get_enum_element( 'priority', $p_bug->priority, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id );
 	$t_priority_threshold = config_get( 'priority_significant_threshold' );
 
 	if( $t_priority_threshold >= 0 &&
@@ -1200,7 +1197,7 @@ function print_formatted_priority_string( BugData $p_bug ) {
  * @return void
  */
 function print_formatted_severity_string( BugData $p_bug ) {
-	$t_sev_str = get_enum_element( 'severity', $p_bug->severity, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id );
+	$t_sev_str = \Flickerbox\Helper::get_enum_element( 'severity', $p_bug->severity, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id );
 	$t_severity_threshold = config_get( 'severity_significant_threshold' );
 
 	if( $t_severity_threshold >= 0 &&
@@ -1822,7 +1819,7 @@ function print_bug_attachment_header( array $p_attachment ) {
 		}
 		echo \Flickerbox\Lang::get( 'word_separator' ) . '(' . number_format( $p_attachment['size'] ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'bytes' ) . ')';
 		echo \Flickerbox\Lang::get( 'word_separator' ) . '<span class="italic">' . date( config_get( 'normal_date_format' ), $p_attachment['date_added'] ) . '</span>';
-		event_signal( 'EVENT_VIEW_BUG_ATTACHMENT', array( $p_attachment ) );
+		\Flickerbox\Event::signal( 'EVENT_VIEW_BUG_ATTACHMENT', array( $p_attachment ) );
 	} else {
 		print_file_icon( $p_attachment['display_name'] );
 		echo \Flickerbox\Lang::get( 'word_separator' ) . '<span class="strike">' . \Flickerbox\String::display_line( $p_attachment['display_name'] ) . '</span>' . \Flickerbox\Lang::get( 'word_separator' ) . '(' . \Flickerbox\Lang::get( 'attachment_missing' ) . ')';
@@ -1915,7 +1912,7 @@ function print_timezone_option_list( $p_timezone ) {
 		echo "\t" . '<optgroup label="' . $t_continent . '">' . "\n";
 		foreach ( $t_locations as $t_location ) {
 			echo "\t\t" . '<option value="' . $t_location[1] . '"';
-			check_selected( $p_timezone, $t_location[1] );
+			\Flickerbox\Helper::check_selected( $p_timezone, $t_location[1] );
 			echo '>' . $t_location[0] . '</option>' . "\n";
 		}
 		echo "\t" . '</optgroup>' . "\n";

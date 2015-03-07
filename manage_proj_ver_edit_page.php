@@ -39,8 +39,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 
 \Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
 \Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
@@ -82,16 +80,16 @@ $t_version = \Flickerbox\Version::get( $f_version_id );
 			</div>
 			<div class="field-container">
 				<label for="proj-version-released"><span><?php echo \Flickerbox\Lang::get( 'released' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="proj-version-released" name="released" <?php check_checked( (boolean)$t_version->released, VERSION_RELEASED ); ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="proj-version-released" name="released" <?php \Flickerbox\Helper::check_checked( (boolean)$t_version->released, VERSION_RELEASED ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="proj-version-obsolete"><span><?php echo \Flickerbox\Lang::get( 'obsolete' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="proj-version-obsolete" name="obsolete" <?php check_checked( (boolean)$t_version->obsolete, true ); ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="proj-version-obsolete" name="obsolete" <?php \Flickerbox\Helper::check_checked( (boolean)$t_version->obsolete, true ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 
-			<?php event_signal( 'EVENT_MANAGE_VERSION_UPDATE_FORM', array( $t_version->id ) ); ?>
+			<?php \Flickerbox\Event::signal( 'EVENT_MANAGE_VERSION_UPDATE_FORM', array( $t_version->id ) ); ?>
 			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_version_button' ) ?>" /></span>
 		</fieldset>
 	</form>

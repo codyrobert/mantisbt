@@ -45,7 +45,6 @@ namespace Flickerbox;
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'history_api.php' );
 require_api( 'user_api.php' );
 
 
@@ -413,7 +412,7 @@ class Tag
 			$t_bugs = \Flickerbox\Tag::get_bugs_attached( $p_tag_id );
 	
 			foreach( $t_bugs as $t_bug_id ) {
-				history_log_event_special( $t_bug_id, TAG_RENAMED, $t_tag_name, $p_name );
+				\Flickerbox\History::log_event_special( $t_bug_id, TAG_RENAMED, $t_tag_name, $p_name );
 			}
 		}
 	
@@ -592,7 +591,7 @@ class Tag
 		db_query( $t_query, array( $p_tag_id, $p_bug_id, $p_user_id, db_now() ) );
 	
 		$t_tag_name = \Flickerbox\Tag::get_field( $p_tag_id, 'name' );
-		history_log_event_special( $p_bug_id, TAG_ATTACHED, $t_tag_name );
+		\Flickerbox\History::log_event_special( $p_bug_id, TAG_ATTACHED, $t_tag_name );
 	
 		# updated the last_updated date
 		bug_update_date( $p_bug_id );
@@ -633,7 +632,7 @@ class Tag
 	
 		if( $p_add_history ) {
 			$t_tag_name = \Flickerbox\Tag::get_field( $p_tag_id, 'name' );
-			history_log_event_special( $p_bug_id, TAG_DETACHED, $t_tag_name );
+			\Flickerbox\History::log_event_special( $p_bug_id, TAG_DETACHED, $t_tag_name );
 		}
 	
 		# updated the last_updated date

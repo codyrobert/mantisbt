@@ -37,7 +37,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'adm_config_set' );
 
@@ -55,7 +54,7 @@ if( \Flickerbox\Utility::is_blank( $f_config_option ) ) {
 \Flickerbox\Access::ensure_global_level( config_get( 'set_configuration_threshold' ) );
 
 if( $f_project_id != ALL_PROJECTS ) {
-	project_ensure_exists( $f_project_id );
+	\Flickerbox\Project::ensure_exists( $f_project_id );
 }
 
 # make sure that configuration option specified is a valid one.

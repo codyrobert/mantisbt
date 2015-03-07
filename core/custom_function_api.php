@@ -47,8 +47,6 @@ require_api( 'bugnote_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'print_api.php' );
 
 /**
@@ -93,7 +91,7 @@ function custom_function_default_changelog_print_issue( $p_issue_id, $p_issue_le
 	}
 
 	if( !isset( $s_status[$t_bug->status] ) ) {
-		$s_status[$t_bug->status] = get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$s_status[$t_bug->status] = \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 	}
 	echo ' - ', $s_status[$t_bug->status], '.<br />';
 }
@@ -143,7 +141,7 @@ function custom_function_default_roadmap_print_issue( $p_issue_id, $p_issue_leve
 	}
 
 	if( !isset( $s_status[$t_bug->status] ) ) {
-		$s_status[$t_bug->status] = get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$s_status[$t_bug->status] = \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 	}
 	echo ' - ', $s_status[$t_bug->status], $t_strike_end, '.<br />';
 }
@@ -275,7 +273,7 @@ function custom_function_default_auth_can_change_password() {
  * @return array
  */
 function custom_function_default_get_columns_to_view( $p_columns_target = COLUMNS_TARGET_VIEW_PAGE, $p_user_id = null ) {
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 
 	if( $p_columns_target == COLUMNS_TARGET_CSV_PAGE ) {
 		$t_columns = config_get( 'csv_columns', '', $p_user_id, $t_project_id );
@@ -392,7 +390,7 @@ function custom_function_default_print_column_value( $p_column, BugData $p_bug, 
 		if( $p_columns_target != COLUMNS_TARGET_CSV_PAGE ) {
 			$t_function = 'print_column_' . $p_column;
 		} else {
-			$t_function = 'csv_format_' . $p_column;
+			$t_function = '\Flickerbox\CSV::format_' . $p_column;
 		}
 
 		if( function_exists( $t_function ) ) {
@@ -425,7 +423,7 @@ function custom_function_default_print_column_value( $p_column, BugData $p_bug, 
  * @return string
  */
 function custom_function_default_enum_versions() {
-	$t_versions = \Flickerbox\Version::get_all_rows( helper_get_current_project() );
+	$t_versions = \Flickerbox\Version::get_all_rows( \Flickerbox\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -445,7 +443,7 @@ function custom_function_default_enum_versions() {
  * @return string
  */
 function custom_function_default_enum_released_versions() {
-	$t_versions = \Flickerbox\Version::get_all_rows( helper_get_current_project() );
+	$t_versions = \Flickerbox\Version::get_all_rows( \Flickerbox\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -467,7 +465,7 @@ function custom_function_default_enum_released_versions() {
  * @return string
  */
 function custom_function_default_enum_future_versions() {
-	$t_versions = \Flickerbox\Version::get_all_rows( helper_get_current_project() );
+	$t_versions = \Flickerbox\Version::get_all_rows( \Flickerbox\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -489,7 +487,7 @@ function custom_function_default_enum_future_versions() {
  * @return string
  */
 function custom_function_default_enum_categories() {
-	$t_categories = category_get_all_rows( helper_get_current_project() );
+	$t_categories = category_get_all_rows( \Flickerbox\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_categories as $t_category ) {

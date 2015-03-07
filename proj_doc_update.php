@@ -40,7 +40,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'proj_doc_update' );
@@ -71,7 +70,7 @@ if( \Flickerbox\Utility::is_blank( $f_title ) ) {
 if( isset( $f_file['tmp_name'] ) && is_uploaded_file( $f_file['tmp_name'] ) ) {
 	\Flickerbox\File::ensure_uploaded( $f_file );
 
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 
 	# grab the original file path and name
 	$t_disk_file_name = \Flickerbox\File::get_field( $f_file_id, 'diskfile', 'project' );

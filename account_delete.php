@@ -53,7 +53,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -77,7 +76,7 @@ if( \Flickerbox\Current_User::is_administrator() &&
 	trigger_error( ERROR_USER_CHANGE_LAST_ADMIN, ERROR );
 }
 
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_delete_msg' ),
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_delete_msg' ),
 						 \Flickerbox\Lang::get( 'delete_account_button' ) );
 
 \Flickerbox\Form::security_purge( 'account_delete' );

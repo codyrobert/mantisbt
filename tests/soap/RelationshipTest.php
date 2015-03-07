@@ -57,7 +57,7 @@ class RelationshipTest extends SoapBase {
 		    'target_id' => $t_second_issue_id
 		);
 
-		$this->client->mc_issue_relationship_add( $this->userName, $this->password, $t_first_issue_id, $t_relationship );
+		$this->client->mc_issue_\Flickerbox\Relationship::add( $this->userName, $this->password, $t_first_issue_id, $t_relationship );
 
 		$t_retrieved_first_issue = $this->client->mc_issue_get( $this->userName, $this->password, $t_first_issue_id );
 		$t_retrieved_second_issue = $this->client->mc_issue_get( $this->userName, $this->password, $t_second_issue_id );
@@ -98,8 +98,8 @@ class RelationshipTest extends SoapBase {
 		    'target_id' => $t_second_issue_id
 		);
 
-		$t_relationship_id = $this->client->mc_issue_relationship_add( $this->userName, $this->password, $t_first_issue_id, $t_relationship );
-		$this->client->mc_issue_relationship_delete( $this->userName, $this->password, $t_first_issue_id, $t_relationship_id );
+		$t_relationship_id = $this->client->mc_issue_\Flickerbox\Relationship::add( $this->userName, $this->password, $t_first_issue_id, $t_relationship );
+		$this->client->mc_issue_\Flickerbox\Relationship::delete( $this->userName, $this->password, $t_first_issue_id, $t_relationship_id );
 
 		$t_retrieved_first_issue = $this->client->mc_issue_get( $this->userName, $this->password, $t_first_issue_id );
 		$t_retrieved_second_issue = $this->client->mc_issue_get( $this->userName, $this->password, $t_second_issue_id );

@@ -38,8 +38,6 @@ if( !defined( 'HISTORY_INC_ALLOW' ) ) {
 }
 
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'print_api.php' );
 
 $t_access_level_needed = config_get( 'view_history_threshold' );
@@ -52,7 +50,7 @@ if( !\Flickerbox\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
 
 <?php
 	\Flickerbox\Collapse::open( 'history', '', 'table-container' );
-	$t_history = history_get_events_array( $f_bug_id );
+	$t_history = \Flickerbox\History::get_events_array( $f_bug_id );
 ?>
 <table>
 	<thead>

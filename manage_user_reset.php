@@ -57,7 +57,7 @@ $t_user = user_get_row( $f_user_id );
 
 # If the password can be changed, we reset it, otherwise we unlock
 # the account (i.e. reset failed login count)
-$t_reset = helper_call_custom_function( 'auth_can_change_password', array() );
+$t_reset = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
 if( $t_reset ) {
 	$t_result = user_reset_password( $f_user_id );
 } else {

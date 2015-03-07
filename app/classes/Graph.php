@@ -1,4 +1,6 @@
 <?php
+namespace Flickerbox;
+
 # MantisBT - A PHP based bugtracking system
 
 # MantisBT is free software: you can redistribute it and/or modify
@@ -38,28 +40,7 @@
  */
 
 
-# constant(s) defining the output formats supported by dot and neato.
-define( 'GRAPHVIZ_ATTRIBUTED_DOT', 0 );
-define( 'GRAPHVIZ_PS', 1 );
-define( 'GRAPHVIZ_HPGL', 2 );
-define( 'GRAPHVIZ_PCL', 3 );
-define( 'GRAPHVIZ_MIF', 4 );
-define( 'GRAPHVIZ_PLAIN', 6 );
-define( 'GRAPHVIZ_PLAIN_EXT', 7 );
-define( 'GRAPHVIZ_GIF', 11 );
-define( 'GRAPHVIZ_JPEG', 12 );
-define( 'GRAPHVIZ_PNG', 13 );
-define( 'GRAPHVIZ_WBMP', 14 );
-define( 'GRAPHVIZ_XBM', 15 );
-define( 'GRAPHVIZ_ISMAP', 16 );
-define( 'GRAPHVIZ_IMAP', 17 );
-define( 'GRAPHVIZ_CMAP', 18 );
-define( 'GRAPHVIZ_CMAPX', 19 );
-define( 'GRAPHVIZ_VRML', 20 );
-define( 'GRAPHVIZ_SVG', 25 );
-define( 'GRAPHVIZ_SVGZ', 26 );
-define( 'GRAPHVIZ_CANONICAL_DOT', 27 );
-define( 'GRAPHVIZ_PDF', 28 );
+
 
 /**
  * Base class for graph creation and manipulation. By default,
@@ -447,46 +428,5 @@ class Graph {
 			$t_attr = $this->_build_attribute_list( $this->default_edge );
 			echo "\t" . 'edge ' . $t_attr . ";\n";
 		}
-	}
-}
-
-/**
- * Directed graph creation and manipulation.
- */
-class Digraph extends Graph {
-	/**
-	 * Constructor for Digraph objects.
-	 * @param string $p_name       Name of the graph.
-	 * @param array  $p_attributes Attributes.
-	 * @param string $p_tool       Graphviz tool.
-	 */
-	function Digraph( $p_name = 'G', array $p_attributes = array(), $p_tool = 'dot' ) {
-		parent::Graph( $p_name, $p_attributes, $p_tool );
-	}
-
-	/**
-	 * Generates a directed graph representation (suitable for dot).
-	 * @return void
-	 */
-	function generate() {
-		echo 'digraph ' . $this->name . ' {' . "\n";
-
-		$this->_print_graph_defaults();
-
-		foreach( $this->nodes as $t_name => $t_attr ) {
-			$t_name = '"' . addcslashes( $t_name, "\0..\37\"\\" ) . '"';
-			$t_attr = $this->_build_attribute_list( $t_attr );
-			echo "\t" . $t_name . ' ' . $t_attr . ";\n";
-		}
-
-		foreach( $this->edges as $t_edge ) {
-			$t_src = '"' . addcslashes( $t_edge['src'], "\0..\37\"\\" ) . '"';
-			$t_dst = '"' . addcslashes( $t_edge['dst'], "\0..\37\"\\" ) . '"';
-			$t_attr = $t_edge['attributes'];
-			$t_attr = $this->_build_attribute_list( $t_attr );
-			echo "\t" . $t_src . ' -> ' . $t_dst . ' ' . $t_attr . ";\n";
-		}
-
-		echo "};\n";
 	}
 }

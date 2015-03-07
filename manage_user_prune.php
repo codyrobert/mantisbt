@@ -38,7 +38,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -63,7 +62,7 @@ if( !$t_result ) {
 $t_count = db_num_rows( $t_result );
 
 if( $t_count > 0 ) {
-	helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_account_pruning' ),
+	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_account_pruning' ),
 							 \Flickerbox\Lang::get( 'prune_accounts_button' ) );
 }
 

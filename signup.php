@@ -39,7 +39,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -65,7 +64,7 @@ if( OFF == config_get_global( 'allow_signup' ) ) {
 }
 
 if( ON == config_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 	&&
-			helper_call_custom_function( 'auth_can_change_password', array() ) ) {
+			\Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() ) ) {
 	# captcha image requires GD library and related option to ON
 	require_lib( 'securimage/securimage.php' );
 

@@ -39,7 +39,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 auth_reauthenticate();
@@ -138,42 +137,42 @@ $t_definition = custom_field_get_definition( $f_field_id );
 			</div>
 			<div class="field-container">
 				<label for="custom-field-display-report"><span><?php echo \Flickerbox\Lang::get( 'custom_field_display_report' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-display-report" name="display_report" value="1" <?php check_checked( (bool)$t_definition['display_report'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-display-report" name="display_report" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['display_report'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="custom-field-display-update"><span><?php echo \Flickerbox\Lang::get( 'custom_field_display_update' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-display-update" name="display_update" value="1" <?php check_checked( (bool)$t_definition['display_update'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-display-update" name="display_update" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['display_update'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="custom-field-display-resolved"><span><?php echo \Flickerbox\Lang::get( 'custom_field_display_resolved' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-display-resolved" name="display_resolved" value="1" <?php check_checked( (bool)$t_definition['display_resolved'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-display-resolved" name="display_resolved" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['display_resolved'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="custom-field-display-closed"><span><?php echo \Flickerbox\Lang::get( 'custom_field_display_closed' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-display-closed" name="display_closed" value="1" <?php check_checked( (bool)$t_definition['display_closed'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-display-closed" name="display_closed" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['display_closed'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="custom-field-require-report"><span><?php echo \Flickerbox\Lang::get( 'custom_field_require_report' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-require-report" name="require_report" value="1" <?php check_checked( (bool)$t_definition['require_report'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-require-report" name="require_report" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['require_report'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="custom-field-require-update"><span><?php echo \Flickerbox\Lang::get( 'custom_field_require_update' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-require-update" name="require_update" value="1" <?php check_checked( (bool)$t_definition['require_update'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-require-update" name="require_update" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['require_update'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="custom-field-require-resolved"><span><?php echo \Flickerbox\Lang::get( 'custom_field_require_resolved' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-require-resolved" name="require_resolved" value="1" <?php check_checked( (bool)$t_definition['require_resolved'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-require-resolved" name="require_resolved" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['require_resolved'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="custom-field-require-closed"><span><?php echo \Flickerbox\Lang::get( 'custom_field_require_closed' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="custom-field-require-closed" name="require_closed" value="1" <?php check_checked( (bool)$t_definition['require_closed'] ) ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="custom-field-require-closed" name="require_closed" value="1" <?php \Flickerbox\Helper::check_checked( (bool)$t_definition['require_closed'] ) ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_custom_field_button' ) ?>" /></span>

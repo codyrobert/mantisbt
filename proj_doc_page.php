@@ -42,12 +42,10 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id', helper_get_current_project() );
+$f_project_id = \Flickerbox\GPC::get_int( 'project_id', \Flickerbox\Helper::get_current_project() );
 
 # Check if project documentation feature is enabled.
 if( OFF == config_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
@@ -144,7 +142,7 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 	if( $v_project_id == ALL_PROJECTS ) {
 		echo \Flickerbox\Lang::get( 'all_projects' ) . '<br/>';
 	} else if( $v_project_id != $f_project_id ) {
-		$t_project_name = project_get_name( $v_project_id );
+		$t_project_name = \Flickerbox\Project::get_name( $v_project_id );
 		echo $t_project_name . '<br/>';
 	}
 	echo '(' . $v_date_added . ')';

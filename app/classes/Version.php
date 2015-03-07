@@ -38,9 +38,6 @@ namespace Flickerbox;
 
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'project_api.php' );
-require_api( 'project_hierarchy_api.php' );
 
 
 class Version
@@ -164,7 +161,7 @@ class Version
 	
 		$t_version_id = db_insert_id( db_get_table( 'project_version' ) );
 	
-		event_signal( 'EVENT_MANAGE_VERSION_CREATE', array( $t_version_id ) );
+		\Flickerbox\Event::signal( 'EVENT_MANAGE_VERSION_CREATE', array( $t_version_id ) );
 	
 		return $t_version_id;
 	}
@@ -205,7 +202,7 @@ class Version
 		if( $c_version_name != $c_old_version_name ) {
 			$t_project_list = array( $c_project_id );
 			if( config_get( 'subprojects_inherit_versions' ) ) {
-				$t_project_list = array_merge( $t_project_list, project_hierarchy_get_all_subprojects( $c_project_id, true ) );
+				$t_project_list = array_merge( $t_project_list, \Flickerbox\Project\Hierarchy::get_all_subprojects( $c_project_id, true ) );
 			}
 			$t_project_list = implode( ',', $t_project_list );
 	
@@ -251,7 +248,7 @@ class Version
 	static function remove( $p_version_id, $p_new_version = '' ) {
 		\Flickerbox\Version::ensure_exists( $p_version_id );
 	
-		event_signal( 'EVENT_MANAGE_VERSION_DELETE', array( $p_version_id, $p_new_version ) );
+		\Flickerbox\Event::signal( 'EVENT_MANAGE_VERSION_DELETE', array( $p_version_id, $p_new_version ) );
 	
 		$t_old_version = \Flickerbox\Version::get_field( $p_version_id, 'version' );
 		$t_project_id = \Flickerbox\Version::get_field( $p_version_id, 'project_id' );
@@ -261,7 +258,7 @@ class Version
 	
 		$t_project_list = array( $t_project_id );
 		if( config_get( 'subprojects_inherit_versions' ) ) {
-			$t_project_list = array_merge( $t_project_list, project_hierarchy_get_all_subprojects( $t_project_id, true ) );
+			$t_project_list = array_merge( $t_project_list, \Flickerbox\Project\Hierarchy::get_all_subprojects( $t_project_id, true ) );
 		}
 		$t_project_list = implode( ',', $t_project_list );
 	
@@ -355,7 +352,7 @@ class Version
 		}
 	
 		if( $t_inherit ) {
-			$t_project_ids = project_hierarchy_inheritance( $p_project_id );
+			$t_project_ids = \Flickerbox\Project\Hierarchy::inheritance( $p_project_id );
 		} else {
 			$t_project_ids[] = $p_project_id;
 		}
@@ -415,7 +412,7 @@ class Version
 	 * @return array
 	 */
 	static function get_all_rows_with_subs( $p_project_id, $p_released = null, $p_obsolete = false ) {
-		$t_project_where = helper_project_specific_where( $p_project_id );
+		$t_project_where = \Flickerbox\Helper::project_specific_where( $p_project_id );
 	
 		$t_query_params = array();
 	
@@ -457,7 +454,7 @@ class Version
 		global $g_cache_versions;
 	
 		if( $p_project_id === null ) {
-			$c_project_id = helper_get_current_project();
+			$c_project_id = \Flickerbox\Helper::get_current_project();
 		} else {
 			$c_project_id = (int)$p_project_id;
 		}
@@ -521,7 +518,7 @@ class Version
 			$t_row = \Flickerbox\Version::cache_row( $p_version_id );
 			$t_project_id = $t_row['project_id'];
 	
-			$t_current_project_id = is_null( $p_current_project_id ) ? helper_get_current_project() : $p_current_project_id;
+			$t_current_project_id = is_null( $p_current_project_id ) ? \Flickerbox\Helper::get_current_project() : $p_current_project_id;
 	
 			if( $p_show_project === null ) {
 				$t_show_project = $t_project_id != $t_current_project_id;
@@ -530,7 +527,7 @@ class Version
 			}
 	
 			if( $t_show_project && $t_project_id != $t_current_project_id ) {
-				return '[' . project_get_name( $t_project_id ) . '] ' . $t_row['version'];
+				return '[' . \Flickerbox\Project::get_name( $t_project_id ) . '] ' . $t_row['version'];
 			}
 	
 			return $t_row['version'];
@@ -614,7 +611,7 @@ class Version
 		$c_project_id = (int)$p_project_id;
 	
 		if( $t_inherit ) {
-			$t_project_ids = project_hierarchy_inheritance( $p_project_id );
+			$t_project_ids = \Flickerbox\Project\Hierarchy::inheritance( $p_project_id );
 	
 			$t_project_where = ' project_id IN ( ' . implode( ', ', $t_project_ids ) . ' ) ';
 		} else {

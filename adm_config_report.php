@@ -40,9 +40,7 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
 \Flickerbox\Access::ensure_global_level( config_get( 'view_configuration_threshold' ) );
@@ -136,7 +134,7 @@ function print_config_value_as_string( $p_type, $p_value, $p_for_display = true 
 function print_option_list_from_array( array $p_array, $p_filter_value ) {
 	foreach( $p_array as $t_key => $t_value ) {
 		echo '<option value="' . $t_key . '"';
-		check_selected( (string)$p_filter_value, (string)$t_key );
+		\Flickerbox\Helper::check_selected( (string)$p_filter_value, (string)$t_key );
 		echo '>' . \Flickerbox\String::attribute( $t_value ) . '</option>' . "\n";
 	}
 }
@@ -198,7 +196,7 @@ if( $t_filter_save ) {
 		$t_filter_project_value = $t_cookie_contents[1];
 		$t_filter_config_value  = check_config_value( $t_cookie_contents[2] );
 
-		if( $t_filter_project_value != META_FILTER_NONE && !project_exists( $t_filter_project_value ) ) {
+		if( $t_filter_project_value != META_FILTER_NONE && !\Flickerbox\Project::exists( $t_filter_project_value ) ) {
 			$t_filter_project_value = ALL_PROJECTS;
 		}
 	}
@@ -384,11 +382,11 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 				<td>
 					<?php echo ($v_user_id == 0) ? \Flickerbox\Lang::get( 'all_users' ) : \Flickerbox\String::display_line( user_get_name( $v_user_id ) ) ?>
 				</td>
-				<td><?php echo \Flickerbox\String::display_line( project_get_name( $v_project_id, false ) ) ?></td>
+				<td><?php echo \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $v_project_id, false ) ) ?></td>
 				<td><?php echo \Flickerbox\String::display_line( $v_config_id ) ?></td>
 				<td><?php echo \Flickerbox\String::display_line( get_config_type( $v_type ) ) ?></td>
 				<td style="overflow-x:auto;"><?php print_config_value_as_string( $v_type, $v_value ) ?></td>
-				<td><?php echo get_enum_element( 'access_levels', $v_access_reqd ) ?></td>
+				<td><?php echo \Flickerbox\Helper::get_enum_element( 'access_levels', $v_access_reqd ) ?></td>
 <?php
 	if( $t_read_write_access ) {
 ?>
@@ -458,7 +456,7 @@ if( $t_read_write_access ) {
 			<span class="select">
 				<select id="config-user-id" name="user_id">
 					<option value="<?php echo ALL_USERS; ?>"
-						<?php check_selected( $t_edit_user_id, ALL_USERS ) ?>>
+						<?php \Flickerbox\Helper::check_selected( $t_edit_user_id, ALL_USERS ) ?>>
 						<?php echo \Flickerbox\Lang::get( 'all_users' ); ?>
 					</option>
 					<?php print_user_option_list( $t_edit_user_id ) ?>
@@ -473,7 +471,7 @@ if( $t_read_write_access ) {
 				<span class="select">
 					<select id="config-project-id" name="project_id">
 						<option value="<?php echo ALL_PROJECTS; ?>"
-							<?php check_selected( $t_edit_project_id, ALL_PROJECTS ); ?>>
+							<?php \Flickerbox\Helper::check_selected( $t_edit_project_id, ALL_PROJECTS ); ?>>
 							<?php echo \Flickerbox\Lang::get( 'all_projects' ); ?>
 						</option>
 						<?php print_project_option_list( $t_edit_project_id, false ) ?>

@@ -38,7 +38,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -70,7 +69,7 @@ if( auth_get_current_user_id() == $f_user_id ) {
 	print_header_redirect( 'account_delete.php?account_delete_token=' . \Flickerbox\Form::security_token( 'account_delete' ), true, false );
 }
 
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'delete_account_sure_msg' ) .
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_account_sure_msg' ) .
 	'<br/>' . \Flickerbox\Lang::get( 'username_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_user['username'],
 	\Flickerbox\Lang::get( 'delete_account_button' ) );
 

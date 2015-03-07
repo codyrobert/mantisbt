@@ -37,9 +37,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_ver_copy' );
 
@@ -50,8 +48,8 @@ $f_other_project_id	= \Flickerbox\GPC::get_int( 'other_project_id' );
 $f_copy_from		= \Flickerbox\GPC::get_bool( 'copy_from' );
 $f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
 
-project_ensure_exists( $f_project_id );
-project_ensure_exists( $f_other_project_id );
+\Flickerbox\Project::ensure_exists( $f_project_id );
+\Flickerbox\Project::ensure_exists( $f_other_project_id );
 
 \Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 \Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_other_project_id );

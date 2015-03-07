@@ -37,7 +37,6 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 }
 
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 /**

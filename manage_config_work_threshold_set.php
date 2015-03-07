@@ -37,7 +37,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_config_work_threshold_set' );
@@ -49,7 +48,7 @@ $t_redirect_url = 'manage_config_work_threshold_page.php';
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_threshold_config' ), $t_redirect_url );
 
 $g_access = \Flickerbox\Current_User::get_access_level();
-$g_project = helper_get_current_project();
+$g_project = \Flickerbox\Helper::get_current_project();
 
 /**
  * set row

@@ -42,8 +42,6 @@ if( !defined( 'VIEW_ALL_INC_ALLOW' ) ) {
 
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 $t_filter = \Flickerbox\Current_User::get_bug_filter();
@@ -57,8 +55,8 @@ $g_checkboxes_exist = false;
 $t_icon_path = config_get( 'icon_path' );
 
 # Improve performance by caching category data in one pass
-if( helper_get_current_project() > 0 ) {
-	\Flickerbox\Category::get_all_rows( helper_get_current_project() );
+if( \Flickerbox\Helper::get_current_project() > 0 ) {
+	\Flickerbox\Category::get_all_rows( \Flickerbox\Helper::get_current_project() );
 } else {
 	$t_categories = array();
 	foreach ( $t_rows as $t_row ) {
@@ -66,7 +64,7 @@ if( helper_get_current_project() > 0 ) {
 	}
 	\Flickerbox\Category::cache_array_rows( array_unique( $t_categories ) );
 }
-$g_columns = helper_get_columns_to_view( COLUMNS_TARGET_VIEW_PAGE );
+$g_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_VIEW_PAGE );
 
 $t_col_count = count( $g_columns );
 
@@ -119,7 +117,7 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 			echo '&#160;';
 			print_bracket_link( 'excel_xml_export.php', \Flickerbox\Lang::get( 'excel_export' ) );
 
-			$t_event_menu_options = $t_links = event_signal( 'EVENT_MENU_FILTER' );
+			$t_event_menu_options = $t_links = \Flickerbox\Event::signal( 'EVENT_MENU_FILTER' );
 
 			foreach ( $t_event_menu_options as $t_plugin => $t_plugin_menu_options ) {
 				foreach ( $t_plugin_menu_options as $t_callback => $t_callback_menu_options ) {
@@ -148,7 +146,7 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 <?php
 	$t_title_function = 'print_column_title';
 	foreach( $g_columns as $t_column ) {
-		helper_call_custom_function( $t_title_function, array( $t_column ) );
+		\Flickerbox\Helper::call_custom_function( $t_title_function, array( $t_column ) );
 	}
 ?>
 </tr>
@@ -199,7 +197,7 @@ function write_bug_rows( array $p_rows ) {
 
 		$t_column_value_function = 'print_column_value';
 		foreach( $g_columns as $t_column ) {
-			helper_call_custom_function( $t_column_value_function, array( $t_column, $t_row ) );
+			\Flickerbox\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row ) );
 		}
 
 		echo '</tr>';

@@ -30,7 +30,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_detach' );
@@ -40,7 +39,7 @@ $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
 \Flickerbox\Tag::bug_detach( $f_tag_id, $f_bug_id );
 
-event_signal( 'EVENT_TAG_DETACHED', array( $f_bug_id, array( $f_tag_id ) ) );
+\Flickerbox\Event::signal( 'EVENT_TAG_DETACHED', array( $f_bug_id, array( $f_tag_id ) ) );
 
 \Flickerbox\Form::security_purge( 'tag_detach' );
 

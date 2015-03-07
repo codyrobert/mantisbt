@@ -36,9 +36,7 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'helper_api.php' );
 require_api( 'user_api.php' );
-require_api( 'user_pref_api.php' );
 
 
 class Current_User
@@ -76,7 +74,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_access_level() {
-		return user_get_access_level( \Flickerbox\Auth::get_current_user_id(), helper_get_current_project() );
+		return user_get_access_level( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
 	}
 	
 	/**
@@ -87,7 +85,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_assigned_open_bug_count() {
-		return user_get_assigned_open_bug_count( \Flickerbox\Auth::get_current_user_id(), helper_get_current_project() );
+		return user_get_assigned_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
 	}
 	
 	/**
@@ -98,7 +96,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_reported_open_bug_count() {
-		return user_get_reported_open_bug_count( \Flickerbox\Auth::get_current_user_id(), helper_get_current_project() );
+		return user_get_reported_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
 	}
 	
 	/**
@@ -120,7 +118,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_pref( $p_pref_name ) {
-		return user_pref_get_pref( \Flickerbox\Auth::get_current_user_id(), $p_pref_name );
+		return \Flickerbox\User\Pref::get_pref( \Flickerbox\Auth::get_current_user_id(), $p_pref_name );
 	}
 	
 	/**
@@ -132,7 +130,7 @@ class Current_User
 	 * @return boolean
 	 */
 	static function set_pref( $p_pref_name, $p_pref_value ) {
-		return user_pref_set_pref( \Flickerbox\Auth::get_current_user_id(), $p_pref_name, $p_pref_value );
+		return \Flickerbox\User\Pref::set_pref( \Flickerbox\Auth::get_current_user_id(), $p_pref_name, $p_pref_value );
 	}
 	
 	/**

@@ -36,7 +36,6 @@
 require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'relationship_graph_api.php' );
 
 # If relationship graphs were made disabled, we disallow any access to
 # this script.

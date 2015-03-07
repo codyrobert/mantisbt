@@ -48,12 +48,10 @@ require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
-helper_begin_long_process();
+\Flickerbox\Helper::begin_long_process();
 
 $f_action	= \Flickerbox\GPC::get_string( 'action' );
 $f_custom_field_id = \Flickerbox\GPC::get_int( 'custom_field_id', 0 );
@@ -82,7 +80,7 @@ foreach( $f_bug_arr as $t_bug_id ) {
 	bug_ensure_exists( $t_bug_id );
 	$t_bug = bug_get( $t_bug_id, true );
 
-	if( $t_bug->project_id != helper_get_current_project() ) {
+	if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 		# in case the current project is not the same project of the bug we are viewing...
 		# ... override the current project. This to avoid problems with categories and handlers lists etc.
 		$g_project_override = $t_bug->project_id;
@@ -99,9 +97,9 @@ foreach( $f_bug_arr as $t_bug_id ) {
 				if( ( $t_status < $t_closed ) &&
 					bug_check_workflow( $t_status, $t_closed ) ) {
 
-				# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $f_bug_id, $t_bug_data, $f_bugnote_text ) );
+				# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $f_bug_id, $t_bug_data, $f_bugnote_text ) );
 				bug_close( $t_bug_id, $f_bug_notetext, $f_bug_noteprivate );
-				helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+				\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 			} else {
 					$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_status' );
 				}
@@ -111,7 +109,7 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			break;
 		case 'DELETE':
 			if( \Flickerbox\Access::has_bug_level( config_get( 'delete_bug_threshold' ), $t_bug_id ) ) {
-				event_signal( 'EVENT_BUG_DELETED', array( $t_bug_id ) );
+				\Flickerbox\Event::signal( 'EVENT_BUG_DELETED', array( $t_bug_id ) );
 				bug_delete( $t_bug_id );
 			} else {
 				$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_access' );
@@ -121,9 +119,9 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 			if( \Flickerbox\Access::has_bug_level( config_get( 'move_bug_threshold' ), $t_bug_id ) &&
 				\Flickerbox\Access::has_project_level( config_get( 'report_bug_threshold', null, null, $f_project_id ), $f_project_id ) ) {
-				# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+				# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 				bug_move( $t_bug_id, $f_project_id );
-				helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+				\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 			} else {
 				$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_access' );
 			}
@@ -151,9 +149,9 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_assign_threshold', config_get( 'update_bug_threshold' ) ), $t_bug_id ) ) {
 				if( \Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $t_bug_id, $f_assign ) ) {
 					if( bug_check_workflow( $t_status, $t_assign_status ) ) {
-						# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+						# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 						bug_assign( $t_bug_id, $f_assign, $f_bug_notetext, $f_bug_noteprivate );
-						helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+						\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 					} else {
 						$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_status' );
 					}
@@ -171,9 +169,9 @@ foreach( $f_bug_arr as $t_bug_id ) {
 						bug_check_workflow( $t_status, $t_resolved_status ) ) {
 				$f_resolution = \Flickerbox\GPC::get_int( 'resolution' );
 				$f_fixed_in_version = \Flickerbox\GPC::get_string( 'fixed_in_version', '' );
-				# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+				# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 				bug_resolve( $t_bug_id, $f_resolution, $f_fixed_in_version, $f_bug_notetext, null, null, $f_bug_noteprivate );
-				helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+				\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 			} else {
 					$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_status' );
 				}
@@ -184,10 +182,10 @@ foreach( $f_bug_arr as $t_bug_id ) {
 		case 'UP_PRIOR':
 			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_bug_id ) ) {
 				$f_priority = \Flickerbox\GPC::get_int( 'priority' );
-				# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+				# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 				bug_set_field( $t_bug_id, 'priority', $f_priority );
 				email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
-				helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+				\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 			} else {
 				$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_access' );
 			}
@@ -196,7 +194,7 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			$f_status = \Flickerbox\GPC::get_int( 'status' );
 			if( \Flickerbox\Access::has_bug_level( \Flickerbox\Access::get_status_threshold( $f_status, $t_bug->project_id ), $t_bug_id ) ) {
 				if( true == bug_check_workflow( $t_status, $f_status ) ) {
-					# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+					# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 					bug_set_field( $t_bug_id, 'status', $f_status );
 
 					# Add bugnote if supplied
@@ -207,7 +205,7 @@ foreach( $f_bug_arr as $t_bug_id ) {
 						email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
 					}
 
-					helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+					\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 				} else {
 					$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_status' );
 				}
@@ -219,10 +217,10 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			$f_category_id = \Flickerbox\GPC::get_int( 'category' );
 			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_bug_id ) ) {
 				if( \Flickerbox\Category::exists( $f_category_id ) ) {
-					# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+					# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 					bug_set_field( $t_bug_id, 'category_id', $f_category_id );
 					email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
-					helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+					\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 				} else {
 					$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_category' );
 				}
@@ -234,10 +232,10 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			$f_product_version = \Flickerbox\GPC::get_string( 'product_version' );
 			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_bug_id ) ) {
 				if( $f_product_version === '' || \Flickerbox\Version::get_id( $f_product_version, $t_bug->project_id ) !== false ) {
-					/** @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) ); */
+					/** @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) ); */
 					bug_set_field( $t_bug_id, 'version', $f_product_version );
 					email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
-					helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+					\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 				} else {
 					$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_version' );
 				}
@@ -249,10 +247,10 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			$f_fixed_in_version = \Flickerbox\GPC::get_string( 'fixed_in_version' );
 			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_bug_id ) ) {
 				if( $f_fixed_in_version === '' || \Flickerbox\Version::get_id( $f_fixed_in_version, $t_bug->project_id ) !== false ) {
-					# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+					# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 					bug_set_field( $t_bug_id, 'fixed_in_version', $f_fixed_in_version );
 					email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
-					helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+					\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 					} else {
 						$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_version' );
 				}
@@ -264,10 +262,10 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			$f_target_version = \Flickerbox\GPC::get_string( 'target_version' );
 			if( \Flickerbox\Access::has_bug_level( config_get( 'roadmap_update_threshold' ), $t_bug_id ) ) {
 				if( $f_target_version === '' || \Flickerbox\Version::get_id( $f_target_version, $t_bug->project_id ) !== false ) {
-					# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+					# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 					bug_set_field( $t_bug_id, 'target_version', $f_target_version );
 					email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
-					helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+					\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 				} else {
 					$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_version' );
 				}
@@ -278,10 +276,10 @@ foreach( $f_bug_arr as $t_bug_id ) {
 		case 'VIEW_STATUS':
 			if( \Flickerbox\Access::has_bug_level( config_get( 'change_view_status_threshold' ), $t_bug_id ) ) {
 				$f_view_status = \Flickerbox\GPC::get_int( 'view_status' );
-				# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+				# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 				bug_set_field( $t_bug_id, 'view_state', $f_view_status );
 				email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
-				helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+				\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 			} else {
 				$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_access' );
 			}
@@ -290,9 +288,9 @@ foreach( $f_bug_arr as $t_bug_id ) {
 			if( \Flickerbox\Access::has_bug_level( config_get( 'set_bug_sticky_threshold' ), $t_bug_id ) ) {
 				$f_sticky = bug_get_field( $t_bug_id, 'sticky' );
 				# The new value is the inverted old value
-				# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+				# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 				bug_set_field( $t_bug_id, 'sticky', intval( !$f_sticky ) );
-				helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+				\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 			} else {
 				$t_failed_ids[$t_bug_id] = \Flickerbox\Lang::get( 'bug_actiongroup_access' );
 			}
@@ -302,20 +300,20 @@ foreach( $f_bug_arr as $t_bug_id ) {
 				trigger_error( ERROR_GENERIC, ERROR );
 			}
 
-			# @todo we need to issue a helper_call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
+			# @todo we need to issue a \Flickerbox\Helper::call_custom_function( 'issue_update_validate', array( $t_bug_id, $t_bug_data, $f_bugnote_text ) );
 			$t_form_var = 'custom_field_' . $f_custom_field_id;
 			$t_custom_field_value = \Flickerbox\GPC::get_custom_field( $t_form_var, $t_custom_field_def['type'], null );
 			custom_field_set_value( $f_custom_field_id, $t_bug_id, $t_custom_field_value );
 			bug_update_date( $t_bug_id );
 			email_generic( $t_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
-			helper_call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
+			\Flickerbox\Helper::call_custom_function( 'issue_update_notify', array( $t_bug_id ) );
 			break;
 		default:
 			trigger_error( ERROR_GENERIC, ERROR );
 	}
 
 	# Bug Action Event
-	event_signal( 'EVENT_BUG_ACTION', array( $f_action, $t_bug_id ) );
+	\Flickerbox\Event::signal( 'EVENT_BUG_ACTION', array( $f_action, $t_bug_id ) );
 }
 
 \Flickerbox\Form::security_purge( $t_form_name );

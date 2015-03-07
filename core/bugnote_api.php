@@ -44,9 +44,6 @@ require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'user_api.php' );
 
 /**
@@ -176,7 +173,7 @@ function bugnote_is_user_reporter( $p_bugnote_id, $p_user_id ) {
  */
 function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_private = false, $p_type = BUGNOTE, $p_attr = '', $p_user_id = null, $p_send_email = true, $p_date_submitted = 0, $p_last_modified = 0, $p_skip_bug_update = false, $p_log_history = true ) {
 	$c_bug_id = (int)$p_bug_id;
-	$c_time_tracking = helper_duration_to_minutes( $p_time_tracking );
+	$c_time_tracking = \Flickerbox\Helper::duration_to_minutes( $p_time_tracking );
 	$c_type = (int)$p_type;
 	$c_date_submitted = $p_date_submitted <= 0 ? db_now() : (int)$p_date_submitted;
 	$c_last_modified = $p_last_modified <= 0 ? db_now() : (int)$p_last_modified;
@@ -199,7 +196,7 @@ function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_
 	}
 
 	# Event integration
-	$t_bugnote_text = event_signal( 'EVENT_BUGNOTE_DATA', $p_bugnote_text, $c_bug_id );
+	$t_bugnote_text = \Flickerbox\Event::signal( 'EVENT_BUGNOTE_DATA', $p_bugnote_text, $c_bug_id );
 
 	# insert bugnote text
 	$t_query = 'INSERT INTO {bugnote_text} ( note ) VALUES ( ' . db_param() . ' )';
@@ -243,11 +240,11 @@ function bugnote_add( $p_bug_id, $p_bugnote_text, $p_time_tracking = '0:00', $p_
 
 	# log new bug
 	if( true == $p_log_history ) {
-		history_log_event_special( $p_bug_id, BUGNOTE_ADDED, bugnote_format_id( $t_bugnote_id ) );
+		\Flickerbox\History::log_event_special( $p_bug_id, BUGNOTE_ADDED, bugnote_format_id( $t_bugnote_id ) );
 	}
 
 	# Event integration
-	event_signal( 'EVENT_BUGNOTE_ADD', array( $p_bug_id, $t_bugnote_id ) );
+	\Flickerbox\Event::signal( 'EVENT_BUGNOTE_ADD', array( $p_bug_id, $t_bugnote_id ) );
 
 	# only send email if the text is not blank, otherwise, it is just recording of time without a comment.
 	if( true == $p_send_email && !\Flickerbox\Utility::is_blank( $t_bugnote_text ) ) {
@@ -276,10 +273,10 @@ function bugnote_delete( $p_bugnote_id ) {
 	db_query( $t_query, array( $t_bugnote_text_id ) );
 
 	# log deletion of bug
-	history_log_event_special( $t_bug_id, BUGNOTE_DELETED, bugnote_format_id( $p_bugnote_id ) );
+	\Flickerbox\History::log_event_special( $t_bug_id, BUGNOTE_DELETED, bugnote_format_id( $p_bugnote_id ) );
 
 	# Event integration
-	event_signal( 'EVENT_BUGNOTE_DELETED', array( $t_bug_id, $p_bugnote_id ) );
+	\Flickerbox\Event::signal( 'EVENT_BUGNOTE_DELETED', array( $t_bug_id, $p_bugnote_id ) );
 
 	return true;
 }
@@ -494,7 +491,7 @@ function bugnote_get_all_bugnotes( $p_bug_id ) {
  * @access public
  */
 function bugnote_set_time_tracking( $p_bugnote_id, $p_time_tracking ) {
-	$c_bugnote_time_tracking = helper_duration_to_minutes( $p_time_tracking );
+	$c_bugnote_time_tracking = \Flickerbox\Helper::duration_to_minutes( $p_time_tracking );
 
 	$t_query = 'UPDATE {bugnote} SET time_tracking = ' . db_param() . ' WHERE id=' . db_param();
 	db_query( $t_query, array( $c_bugnote_time_tracking, $p_bugnote_id ) );
@@ -547,7 +544,7 @@ function bugnote_set_text( $p_bugnote_id, $p_bugnote_text ) {
 	$t_revision_id = bug_revision_add( $t_bug_id, $t_user_id, REV_BUGNOTE, $p_bugnote_text, $p_bugnote_id );
 
 	# log new bugnote
-	history_log_event_special( $t_bug_id, BUGNOTE_UPDATED, bugnote_format_id( $p_bugnote_id ), $t_revision_id );
+	\Flickerbox\History::log_event_special( $t_bug_id, BUGNOTE_UPDATED, bugnote_format_id( $p_bugnote_id ), $t_revision_id );
 
 	return true;
 }
@@ -571,7 +568,7 @@ function bugnote_set_view_state( $p_bugnote_id, $p_private ) {
 	$t_query = 'UPDATE {bugnote} SET view_state=' . db_param() . ' WHERE id=' . db_param();
 	db_query( $t_query, array( $t_view_state, $p_bugnote_id ) );
 
-	history_log_event_special( $t_bug_id, BUGNOTE_STATE_CHANGED, $t_view_state, bugnote_format_id( $p_bugnote_id ) );
+	\Flickerbox\History::log_event_special( $t_bug_id, BUGNOTE_STATE_CHANGED, $t_view_state, bugnote_format_id( $p_bugnote_id ) );
 
 	return true;
 }

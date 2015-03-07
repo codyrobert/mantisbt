@@ -53,9 +53,7 @@ require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -65,11 +63,11 @@ $f_offset		= \Flickerbox\GPC::get_int( 'offset', 0 );
 $f_export		= \Flickerbox\GPC::get_string( 'export' );
 $f_show_flag	= \Flickerbox\GPC::get_bool( 'show_flag' );
 
-helper_begin_long_process();
+\Flickerbox\Helper::begin_long_process();
 
 # word or html export
 if( $f_type_page != 'html' ) {
-	$t_export_title = helper_get_default_export_filename( '' );
+	$t_export_title = \Flickerbox\Helper::get_default_export_filename( '' );
 	$t_export_title = preg_replace( '/[\/:*?"<>|]/', '', $t_export_title );
 	$t_export_title .= '.doc';
 
@@ -139,7 +137,7 @@ $t_lang_system_profile = \Flickerbox\Lang::get( 'system_profile' );
 $t_lang_attached_files = \Flickerbox\Lang::get( 'attached_files' );
 
 $t_current_user_id = \Flickerbox\Auth::get_current_user_id();
-$t_user_bugnote_order = user_pref_get_pref( $t_current_user_id, 'bugnote_order' );
+$t_user_bugnote_order = \Flickerbox\User\Pref::get_pref( $t_current_user_id, 'bugnote_order' );
 
 for( $j=0; $j < $t_row_count; $j++ ) {
 	$t_bug = $t_result[$j];
@@ -163,7 +161,7 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		$t_last_updated = date( $g_short_date_format, $t_bug->last_updated );
 
 		# grab the project name
-		$t_project_name = project_get_field( $t_bug->project_id, 'name' );
+		$t_project_name = \Flickerbox\Project::get_field( $t_bug->project_id, 'name' );
 		$t_category_name = \Flickerbox\Category::full_name( $t_bug->category_id, false );
 ?>
 <br />
@@ -206,10 +204,10 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo '[' . \Flickerbox\String::display_line( $t_project_name ) . '] ' . \Flickerbox\String::display_line( $t_category_name ) ?>
 	</td>
 	<td class="print">
-		<?php echo get_enum_element( 'severity', $t_bug->severity, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Flickerbox\Helper::get_enum_element( 'severity', $t_bug->severity, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print">
-		<?php echo get_enum_element( 'reproducibility', $t_bug->reproducibility, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Flickerbox\Helper::get_enum_element( 'reproducibility', $t_bug->reproducibility, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print">
 		<?php echo date( $t_date_format, $t_bug->date_submitted ) ?>
@@ -281,7 +279,7 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_priority ) ?>
 	</td>
 	<td class="print">
-		<?php echo get_enum_element( 'priority', $t_bug->priority, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Flickerbox\Helper::get_enum_element( 'priority', $t_bug->priority, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_os_version ) ?>
@@ -296,7 +294,7 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_status ) ?>
 	</td>
 	<td class="print">
-		<?php echo get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_product_version ) ?>
@@ -317,7 +315,7 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_resolution ) ?>
 	</td>
 	<td class="print">
-		<?php echo get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print" colspan="2">&#160;</td>
 </tr>
@@ -326,7 +324,7 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_projection ) ?>
 	</td>
 	<td class="print">
-		<?php echo get_enum_element( 'projection', $t_bug->projection, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Flickerbox\Helper::get_enum_element( 'projection', $t_bug->projection, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
 		&#160;
@@ -341,7 +339,7 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_eta ) ?>
 	</td>
 	<td class="print">
-		<?php echo get_enum_element( 'eta', $t_bug->eta, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Flickerbox\Helper::get_enum_element( 'eta', $t_bug->eta, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_fixed_in_version ) ?>

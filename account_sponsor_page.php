@@ -61,9 +61,7 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\HTML::require_css( 'status_config.php' );
 
@@ -81,7 +79,7 @@ $t_show_all = \Flickerbox\GPC::get_bool( 'show_all', false );
 # start the page
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'my_sponsorship' ) );
 
-$t_project = helper_get_current_project();
+$t_project = \Flickerbox\Helper::get_current_project();
 ?>
 <br />
 <table class="width100" cellspacing="1">
@@ -100,7 +98,7 @@ $t_user = \Flickerbox\Auth::get_current_user_id();
 $t_resolved = config_get( 'bug_resolved_status_threshold' );
 $t_payment = config_get( 'payment_enable', 0 );
 
-$t_project_clause = helper_project_specific_where( $t_project );
+$t_project_clause = \Flickerbox\Helper::project_specific_where( $t_project );
 
 $t_query = 'SELECT b.id as bug, s.id as sponsor, s.paid, b.project_id, b.fixed_in_version, b.status
 	FROM {bug} b, {sponsorship} s
@@ -163,8 +161,8 @@ if( $t_sponsor_count === 0 ) {
 		$t_sponsor = \Flickerbox\Sponsorship::get( $t_sponsor_row['sponsor'] );
 
 		# describe bug
-		$t_status = \Flickerbox\String::attribute( get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_resolution = \Flickerbox\String::attribute( get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_status = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_resolution = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
 		$t_version_id = \Flickerbox\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
 		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Flickerbox\Version::get_field( $t_version_id, 'released' ) ) ) {
 			$t_released_label = '<a title="' . \Flickerbox\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
@@ -177,7 +175,7 @@ if( $t_sponsor_count === 0 ) {
 
 		echo '<tr class="' . $t_status_label .  '">';
 		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . bug_format_id( $t_sponsor_row['bug'] ) . '</a></td>';
-		echo '<td>' . \Flickerbox\String::display_line( project_get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
+		echo '<td>' . \Flickerbox\String::display_line( \Flickerbox\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
 		echo '<td class="right">' . $t_released_label . '&#160;</td>';
 		echo '<td><span class="issue-status" title="' . $t_resolution . '">' . $t_status . '</span></td>';
 		echo '<td>';
@@ -193,7 +191,7 @@ if( $t_sponsor_count === 0 ) {
 
 		# describe sponsorship amount
 		echo '<td class="right">' . \Flickerbox\Sponsorship::format_amount( $t_sponsor->amount ) . '</td>';
-		echo '<td>' . get_enum_element( 'sponsorship', $t_sponsor->paid ) . '</td>';
+		echo '<td>' . \Flickerbox\Helper::get_enum_element( 'sponsorship', $t_sponsor->paid ) . '</td>';
 
 		if( SPONSORSHIP_PAID == $t_sponsor->paid ) {
 			$t_total_paid += $t_sponsor->amount;
@@ -291,8 +289,8 @@ if( $t_sponsor_count === 0 ) {
 		$t_buglist[] = $t_sponsor_row['bug'] . ':' . $t_sponsor_row['sponsor'];
 
 		# describe bug
-		$t_status = \Flickerbox\String::attribute( get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_resolution = \Flickerbox\String::attribute( get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_status = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_resolution = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
 		$t_version_id = \Flickerbox\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
 		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Flickerbox\Version::get_field( $t_version_id, 'released' ) ) ) {
 			$t_released_label = '<a title="' . \Flickerbox\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
@@ -305,7 +303,7 @@ if( $t_sponsor_count === 0 ) {
 
 		echo '<tr class="' . $t_status_label .  '">';
 		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . bug_format_id( $t_sponsor_row['bug'] ) . '</a></td>';
-		echo '<td>' . \Flickerbox\String::display_line( project_get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
+		echo '<td>' . \Flickerbox\String::display_line( \Flickerbox\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
 		echo '<td class="right">' . $t_released_label . '&#160;</td>';
 		echo '<td><a title="' . $t_resolution . '"><span class="underline">' . $t_status . '</span>&#160;</a></td>';
 

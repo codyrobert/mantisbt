@@ -38,7 +38,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_config_email_set' );
@@ -49,7 +48,7 @@ $t_can_change_level = min( config_get_access( 'notify_flags' ), config_get_acces
 \Flickerbox\Access::ensure_project_level( $t_can_change_level );
 
 $t_redirect_url = 'manage_config_email_page.php';
-$t_project = helper_get_current_project();
+$t_project = \Flickerbox\Helper::get_current_project();
 
 $f_flags			= \Flickerbox\GPC::get( 'flag', array() );
 $f_thresholds		= \Flickerbox\GPC::get( 'flag_threshold', array() );

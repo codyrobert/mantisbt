@@ -22,7 +22,7 @@
 
 	$t_favicon_image = \Flickerbox\Config::get( 'favicon_image' );
 	if( !\Flickerbox\Utility::is_blank( $t_favicon_image ) ) {
-		echo "\t", '<link rel="shortcut icon" href="', helper_mantis_url( $t_favicon_image ), '" type="image/x-icon" />', "\n";
+		echo "\t", '<link rel="shortcut icon" href="', \Flickerbox\Helper::mantis_url( $t_favicon_image ), '" type="image/x-icon" />', "\n";
 	}
 
 	# Advertise the availability of the browser search plug-ins.
@@ -52,7 +52,7 @@
 	
 	\Flickerbox\HTML::print_menu();
 	echo '<div id="content">', "\n";
-	event_signal( 'EVENT_LAYOUT_CONTENT_BEGIN' );
+	\Flickerbox\Event::signal( 'EVENT_LAYOUT_CONTENT_BEGIN' );
 	?>
 	
 	<?php echo $this->section('content'); ?>

@@ -42,8 +42,6 @@
 require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_attach' );
@@ -143,7 +141,7 @@ if( count( $t_tags_failed ) > 0 ) {
 		}
 	}
 
-	event_signal( 'EVENT_TAG_ATTACHED', array( $f_bug_id, $t_tags_attach ) );
+	\Flickerbox\Event::signal( 'EVENT_TAG_ATTACHED', array( $f_bug_id, $t_tags_attach ) );
 
 	\Flickerbox\Form::security_purge( 'tag_attach' );
 

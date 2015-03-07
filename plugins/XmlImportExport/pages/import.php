@@ -38,7 +38,7 @@ $t_max_file_size = (int)min(
 );
 
 # We need a project to import into
-$t_project_id = helper_get_current_project( );
+$t_project_id = \Flickerbox\Helper::get_current_project( );
 if( ALL_PROJECTS == $t_project_id ) {
 	print_header_redirect( 'login_select_proj_page.php?ref=' . $t_this_page );
 }
@@ -52,7 +52,7 @@ if( ALL_PROJECTS == $t_project_id ) {
 				<span>
 					<?php printf(
 						plugin_langget( 'importing_in_project' ),
-						\Flickerbox\String::display( project_get_field( $t_project_id, 'name' ) )
+						\Flickerbox\String::display( \Flickerbox\Project::get_field( $t_project_id, 'name' ) )
 					); ?>
 				</span>
 			</legend>

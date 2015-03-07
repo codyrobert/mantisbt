@@ -30,7 +30,7 @@ require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 # Page header, menu
 \Flickerbox\HTML::page_top( 'MantisBT Administration - Moving Attachments' );
 echo '<div align="center"><p>';
-print_bracket_link( helper_mantis_url( 'admin/system_utils.php' ), 'Back to System Utilities' );
+print_bracket_link( \Flickerbox\Helper::mantis_url( 'admin/system_utils.php' ), 'Back to System Utilities' );
 echo '</p></div>';
 
 
@@ -86,7 +86,7 @@ switch( $f_file_type ) {
 # Build list, excluding projects having upload method other than DISK
 $t_db_stats = get_attachment_stats( $f_file_type, true );
 $t_disk_stats = get_attachment_stats( $f_file_type, false );
-$t_projects = project_get_all_rows();
+$t_projects = \Flickerbox\Project::get_all_rows();
 
 # Display name for All Projects
 if( isset( $t_projects[ALL_PROJECTS] ) ) {

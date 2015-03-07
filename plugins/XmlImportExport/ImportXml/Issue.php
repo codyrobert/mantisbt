@@ -74,7 +74,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 	 */
 	public function process( XMLreader $t_reader ) {
 		# print "\nImportIssue process()\n";
-		$t_project_id = helper_get_current_project(); # TODO: category_get_id_by_name could work by default on current project
+		$t_project_id = \Flickerbox\Helper::get_current_project(); # TODO: category_get_id_by_name could work by default on current project
 		$t_user_id = auth_get_current_user_id( );
 
 		$t_custom_fields = array();
@@ -112,7 +112,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 							if( $this->keepCategory_ ) {
 								# Check for the category's existence in the current project
 								# well as its parents (if any)
-								$t_projects_hierarchy = project_hierarchy_inheritance( $t_project_id );
+								$t_projects_hierarchy = \Flickerbox\Project\Hierarchy::inheritance( $t_project_id );
 								foreach( $t_projects_hierarchy as $t_project ) {
 									$t_category_id = \Flickerbox\Category::get_id_by_name( $t_reader->value, $t_project, false );
 									if( $t_category_id !== false ) {

@@ -33,14 +33,13 @@
 require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 $f_id = \Flickerbox\GPC::get_int( 'id' );
 $f_type = \Flickerbox\GPC::get_string( 'type', 'issue' );
 
 if( $f_type == 'project' ) {
 	if( $f_id !== 0 ) {
-		project_ensure_exists( $f_id );
+		\Flickerbox\Project::ensure_exists( $f_id );
 	}
 
 	$t_url = \Flickerbox\Wiki::link_project( $f_id );

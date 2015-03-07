@@ -141,7 +141,7 @@ function graph_bar( array $p_metrics, $p_title = '', $p_graph_width = 350, $p_gr
 
 		$t_graph->renderToOutput( $p_graph_width, $p_graph_height );
 	} else {
-		$t_graph = new Graph( $p_graph_width, $p_graph_height );
+		$t_graph = new \Flickerbox\Graph( $p_graph_width, $p_graph_height );
 		$t_graph->img->SetMargin( 40, 40, 40, 170 );
 		if( ON == plugin_config_get( 'jpgraph_antialias' ) ) {
 			$t_graph->img->SetAntiAliasing();
@@ -169,7 +169,7 @@ function graph_bar( array $p_metrics, $p_title = '', $p_graph_width = 350, $p_gr
 		$t_plot1->SetFillColor( 'yellow' );
 		$t_plot1->SetWidth( 0.8 );
 		$t_graph->Add( $t_plot1 );
-		if( helper_show_query_count() ) {
+		if( \Flickerbox\Helper::show_query_count() ) {
 			$t_graph->subtitle->Set( db_count_queries() . ' queries (' . db_time_queries() . 'sec)' );
 			$t_graph->subtitle->SetFont( $t_graph_font, FS_NORMAL, 8 );
 		}
@@ -237,7 +237,7 @@ function graph_group( array $p_metrics, $p_title = '', $p_graph_width = 350, $p_
 		$t_graph->renderToOutput( $p_graph_width, $p_graph_height );
 	} else {
 		# defines margin according to height
-		$t_graph = new Graph( $p_graph_width, $p_graph_height );
+		$t_graph = new \Flickerbox\Graph( $p_graph_width, $p_graph_height );
 		$t_graph->img->SetMargin( 45, 35, 35, $p_baseline );
 		if( ON == plugin_config_get( 'jpgraph_antialias' ) ) {
 			$t_graph->img->SetAntiAliasing();
@@ -287,7 +287,7 @@ function graph_group( array $p_metrics, $p_title = '', $p_graph_width = 350, $p_
 		$t_gbplot = new GroupBarPlot( array( $t_plot1, $t_plot3, $t_plot2 ) );
 		$t_graph->Add( $t_gbplot );
 
-		if( helper_show_query_count() ) {
+		if( \Flickerbox\Helper::show_query_count() ) {
 			$t_graph->subtitle->Set( db_count_queries() . ' queries (' . db_time_queries() . 'sec)' );
 			$t_graph->subtitle->SetFont( $t_graph_font, FS_NORMAL, 8 );
 		}
@@ -366,7 +366,7 @@ function graph_pie( array $p_metrics, $p_title = '', $p_graph_width = 500, $p_gr
 		$t_plot1->value->SetFont( $t_graph_font );
 
 		$t_graph->Add( $t_plot1 );
-		if( helper_show_query_count() ) {
+		if( \Flickerbox\Helper::show_query_count() ) {
 			$t_graph->subtitle->Set( db_count_queries() . ' queries (' . db_time_queries() . 'sec)' );
 			$t_graph->subtitle->SetFont( $t_graph_font, FS_NORMAL, 8 );
 		}
@@ -438,7 +438,7 @@ function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_gra
 			}
 		}
 
-		$t_graph = new Graph( $p_graph_width, $p_graph_height );
+		$t_graph = new \Flickerbox\Graph( $p_graph_width, $p_graph_height );
 		$t_graph->img->SetMargin( 40, 40, 40, 170 );
 		if( ON == plugin_config_get( 'jpgraph_antialias' ) ) {
 			$t_graph->img->SetAntiAliasing();
@@ -488,7 +488,7 @@ function graph_cumulative_bydate( array $p_metrics, $p_graph_width = 300, $p_gra
 		$t_plot2->SetLegend( plugin_langget( 'legend_resolved' ) );
 		$t_graph->AddY2( $t_plot2 );
 
-		if( helper_show_query_count() ) {
+		if( \Flickerbox\Helper::show_query_count() ) {
 			$t_graph->subtitle->Set( db_count_queries() . ' queries (' . db_time_queries() . 'sec)' );
 			$t_graph->subtitle->SetFont( $t_graph_font, FS_NORMAL, 8 );
 		}
@@ -549,7 +549,7 @@ function graph_bydate( array $p_metrics, array $p_labels, $p_title, $p_graph_wid
 
 		$t_graph->renderToOutput( $p_graph_width, $p_graph_height );
 	} else {
-		$t_graph = new Graph( $p_graph_width, $p_graph_height );
+		$t_graph = new \Flickerbox\Graph( $p_graph_width, $p_graph_height );
 		$t_graph->img->SetMargin( 40, 140, 40, 100 );
 		if( ON == plugin_config_get( 'jpgraph_antialias' ) ) {
 			$t_graph->img->SetAntiAliasing();
@@ -591,7 +591,7 @@ function graph_bydate( array $p_metrics, array $p_labels, $p_title, $p_graph_wid
 			$t_graph->Add( $t_line[$i] );
 		}
 
-		if( helper_show_query_count() ) {
+		if( \Flickerbox\Helper::show_query_count() ) {
 			$t_graph->subtitle->Set( db_count_queries() . ' queries (' . db_time_queries() . 'sec)' );
 			$t_graph->subtitle->SetFont( $t_graph_font, FS_NORMAL, 8 );
 		}
@@ -620,9 +620,9 @@ function graph_total_metrics( array $p_metrics ) {
  * @return array
  */
 function create_bug_enum_summary( $p_enum_string, $p_enum ) {
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
-	$t_specific_where = ' AND ' . helper_project_specific_where( $t_project_id, $t_user_id );
+	$t_specific_where = ' AND ' . \Flickerbox\Helper::project_specific_where( $t_project_id, $t_user_id );
 
 	$t_metrics = array();
 	$t_assoc_array = \MantisEnum::getAssocArrayIndexedByValues( $p_enum_string );
@@ -648,11 +648,11 @@ function create_bug_enum_summary( $p_enum_string, $p_enum ) {
  * @return array
  */
 function enum_bug_group( $p_enum_string, $p_enum ) {
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 	$t_res_val = config_get( 'bug_resolved_status_threshold' );
 	$t_clo_val = config_get( 'bug_closed_status_threshold' );
-	$t_specific_where = ' AND ' . helper_project_specific_where( $t_project_id, $t_user_id );
+	$t_specific_where = ' AND ' . \Flickerbox\Helper::project_specific_where( $t_project_id, $t_user_id );
 
 	if( !db_field_exists( $p_enum, db_get_table( 'bug' ) ) ) {
 		trigger_error( ERROR_DB_FIELD_NOT_FOUND, ERROR );
@@ -691,9 +691,9 @@ function enum_bug_group( $p_enum_string, $p_enum ) {
  * @return array
  */
 function create_developer_summary() {
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
-	$t_specific_where = ' AND ' . helper_project_specific_where( $t_project_id, $t_user_id );
+	$t_specific_where = ' AND ' . \Flickerbox\Helper::project_specific_where( $t_project_id, $t_user_id );
 
 	$t_res_val = config_get( 'bug_resolved_status_threshold' );
 	$t_clo_val = config_get( 'bug_closed_status_threshold' );
@@ -744,9 +744,9 @@ function create_developer_summary() {
  * @return array
  */
 function create_reporter_summary() {
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
-	$t_specific_where = helper_project_specific_where( $t_project_id, $t_user_id );
+	$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id, $t_user_id );
 
 	$t_query = 'SELECT reporter_id FROM {bug} WHERE ' . $t_specific_where;
 	$t_result = db_query( $t_query );
@@ -781,9 +781,9 @@ function create_reporter_summary() {
  * @return array
  */
 function create_category_summary() {
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
-	$t_specific_where = helper_project_specific_where( $t_project_id, $t_user_id );
+	$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id, $t_user_id );
 
 	$t_query = 'SELECT id, name FROM {category}
 				WHERE ' . $t_specific_where . ' OR project_id=' . ALL_PROJECTS . '
@@ -817,9 +817,9 @@ function create_cumulative_bydate() {
 	$t_clo_val = config_get( 'bug_closed_status_threshold' );
 	$t_res_val = config_get( 'bug_resolved_status_threshold' );
 
-	$t_project_id = helper_get_current_project();
+	$t_project_id = \Flickerbox\Helper::get_current_project();
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
-	$t_specific_where = helper_project_specific_where( $t_project_id, $t_user_id );
+	$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id, $t_user_id );
 
 	# Get all the submitted dates
 	$t_query = 'SELECT date_submitted FROM {bug} WHERE ' . $t_specific_where . ' ORDER BY date_submitted';

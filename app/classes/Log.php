@@ -35,7 +35,6 @@ namespace Flickerbox;
  */
 
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 
 
 class Log
@@ -103,7 +102,7 @@ class Log
 	
 		$t_plugin_event = '[' . $t_level . '] ' . $t_msg;
 		if( function_exists( 'event_signal' ) ) {
-			event_signal( 'EVENT_LOG', array( $t_plugin_event ) );
+			\Flickerbox\Event::signal( 'EVENT_LOG', array( $t_plugin_event ) );
 		}
 	
 		$t_log_destination = config_get_global( 'log_destination' );

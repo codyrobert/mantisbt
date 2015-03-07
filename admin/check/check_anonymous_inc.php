@@ -85,7 +85,7 @@ check_print_test_row(
 	'anonymous_account user does not have administrator permissions',
 	!user_is_administrator( $t_anonymous_user_id ),
 	array(
-		true => 'The anonymous user account currently has an access level of: ' . htmlentities( get_enum_element( 'access_levels', user_get_access_level( $t_anonymous_user_id ) ) ),
+		true => 'The anonymous user account currently has an access level of: ' . htmlentities( \Flickerbox\Helper::get_enum_element( 'access_levels', user_get_access_level( $t_anonymous_user_id ) ) ),
 		false => 'The anonymous user account should not have administrator level permissions.'
 	)
 );

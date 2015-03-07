@@ -52,10 +52,6 @@ require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
-require_api( 'relationship_api.php' );
 require_api( 'user_api.php' );
 
 /**
@@ -522,11 +518,11 @@ class BugData {
 		$this->id = db_insert_id( db_get_table( 'bug' ) );
 
 		# log new bug
-		history_log_event_special( $this->id, NEW_BUG );
+		\Flickerbox\History::log_event_special( $this->id, NEW_BUG );
 
 		# log changes, if any (compare happens in history_log_event_direct)
-		history_log_event_direct( $this->id, 'status', $t_original_status, $t_status );
-		history_log_event_direct( $this->id, 'handler_id', 0, $this->handler_id );
+		\Flickerbox\History::log_event_direct( $this->id, 'status', $t_original_status, $t_status );
+		\Flickerbox\History::log_event_direct( $this->id, 'handler_id', 0, $this->handler_id );
 
 		return $this->id;
 	}
@@ -605,32 +601,32 @@ class BugData {
 		bug_clear_cache( $this->id );
 
 		# log changes
-		history_log_event_direct( $c_bug_id, 'project_id', $t_old_data->project_id, $this->project_id );
-		history_log_event_direct( $c_bug_id, 'reporter_id', $t_old_data->reporter_id, $this->reporter_id );
-		history_log_event_direct( $c_bug_id, 'handler_id', $t_old_data->handler_id, $this->handler_id );
-		history_log_event_direct( $c_bug_id, 'priority', $t_old_data->priority, $this->priority );
-		history_log_event_direct( $c_bug_id, 'severity', $t_old_data->severity, $this->severity );
-		history_log_event_direct( $c_bug_id, 'reproducibility', $t_old_data->reproducibility, $this->reproducibility );
-		history_log_event_direct( $c_bug_id, 'status', $t_old_data->status, $this->status );
-		history_log_event_direct( $c_bug_id, 'resolution', $t_old_data->resolution, $this->resolution );
-		history_log_event_direct( $c_bug_id, 'projection', $t_old_data->projection, $this->projection );
-		history_log_event_direct( $c_bug_id, 'category', \Flickerbox\Category::full_name( $t_old_data->category_id, false ), \Flickerbox\Category::full_name( $this->category_id, false ) );
-		history_log_event_direct( $c_bug_id, 'eta', $t_old_data->eta, $this->eta );
-		history_log_event_direct( $c_bug_id, 'os', $t_old_data->os, $this->os );
-		history_log_event_direct( $c_bug_id, 'os_build', $t_old_data->os_build, $this->os_build );
-		history_log_event_direct( $c_bug_id, 'platform', $t_old_data->platform, $this->platform );
-		history_log_event_direct( $c_bug_id, 'version', $t_old_data->version, $this->version );
-		history_log_event_direct( $c_bug_id, 'build', $t_old_data->build, $this->build );
-		history_log_event_direct( $c_bug_id, 'fixed_in_version', $t_old_data->fixed_in_version, $this->fixed_in_version );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'project_id', $t_old_data->project_id, $this->project_id );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'reporter_id', $t_old_data->reporter_id, $this->reporter_id );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'handler_id', $t_old_data->handler_id, $this->handler_id );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'priority', $t_old_data->priority, $this->priority );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'severity', $t_old_data->severity, $this->severity );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'reproducibility', $t_old_data->reproducibility, $this->reproducibility );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'status', $t_old_data->status, $this->status );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'resolution', $t_old_data->resolution, $this->resolution );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'projection', $t_old_data->projection, $this->projection );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'category', \Flickerbox\Category::full_name( $t_old_data->category_id, false ), \Flickerbox\Category::full_name( $this->category_id, false ) );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'eta', $t_old_data->eta, $this->eta );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'os', $t_old_data->os, $this->os );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'os_build', $t_old_data->os_build, $this->os_build );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'platform', $t_old_data->platform, $this->platform );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'version', $t_old_data->version, $this->version );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'build', $t_old_data->build, $this->build );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'fixed_in_version', $t_old_data->fixed_in_version, $this->fixed_in_version );
 		if( $t_roadmap_updated ) {
-			history_log_event_direct( $c_bug_id, 'target_version', $t_old_data->target_version, $this->target_version );
+			\Flickerbox\History::log_event_direct( $c_bug_id, 'target_version', $t_old_data->target_version, $this->target_version );
 		}
-		history_log_event_direct( $c_bug_id, 'view_state', $t_old_data->view_state, $this->view_state );
-		history_log_event_direct( $c_bug_id, 'summary', $t_old_data->summary, $this->summary );
-		history_log_event_direct( $c_bug_id, 'sponsorship_total', $t_old_data->sponsorship_total, $this->sponsorship_total );
-		history_log_event_direct( $c_bug_id, 'sticky', $t_old_data->sticky, $this->sticky );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'view_state', $t_old_data->view_state, $this->view_state );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'summary', $t_old_data->summary, $this->summary );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'sponsorship_total', $t_old_data->sponsorship_total, $this->sponsorship_total );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'sticky', $t_old_data->sticky, $this->sticky );
 
-		history_log_event_direct( $c_bug_id, 'due_date', ( $t_old_data->due_date != \Flickerbox\Date::get_null() ) ? $t_old_data->due_date : null, ( $this->due_date != \Flickerbox\Date::get_null() ) ? $this->due_date : null );
+		\Flickerbox\History::log_event_direct( $c_bug_id, 'due_date', ( $t_old_data->due_date != \Flickerbox\Date::get_null() ) ? $t_old_data->due_date : null, ( $this->due_date != \Flickerbox\Date::get_null() ) ? $this->due_date : null );
 
 		# Update extended info if requested
 		if( $p_update_extended ) {
@@ -652,7 +648,7 @@ class BugData {
 					bug_revision_add( $c_bug_id, $t_old_data->reporter_id, REV_DESCRIPTION, $t_old_data->description, 0, $t_old_data->date_submitted );
 				}
 				$t_revision_id = bug_revision_add( $c_bug_id, $t_current_user, REV_DESCRIPTION, $this->description );
-				history_log_event_special( $c_bug_id, DESCRIPTION_UPDATED, $t_revision_id );
+				\Flickerbox\History::log_event_special( $c_bug_id, DESCRIPTION_UPDATED, $t_revision_id );
 			}
 
 			if( $t_old_data->steps_to_reproduce != $this->steps_to_reproduce ) {
@@ -660,7 +656,7 @@ class BugData {
 					bug_revision_add( $c_bug_id, $t_old_data->reporter_id, REV_STEPS_TO_REPRODUCE, $t_old_data->steps_to_reproduce, 0, $t_old_data->date_submitted );
 				}
 				$t_revision_id = bug_revision_add( $c_bug_id, $t_current_user, REV_STEPS_TO_REPRODUCE, $this->steps_to_reproduce );
-				history_log_event_special( $c_bug_id, STEP_TO_REPRODUCE_UPDATED, $t_revision_id );
+				\Flickerbox\History::log_event_special( $c_bug_id, STEP_TO_REPRODUCE_UPDATED, $t_revision_id );
 			}
 
 			if( $t_old_data->additional_information != $this->additional_information ) {
@@ -668,7 +664,7 @@ class BugData {
 					bug_revision_add( $c_bug_id, $t_old_data->reporter_id, REV_ADDITIONAL_INFO, $t_old_data->additional_information, 0, $t_old_data->date_submitted );
 				}
 				$t_revision_id = bug_revision_add( $c_bug_id, $t_current_user, REV_ADDITIONAL_INFO, $this->additional_information );
-				history_log_event_special( $c_bug_id, ADDITIONAL_INFO_UPDATED, $t_revision_id );
+				\Flickerbox\History::log_event_special( $c_bug_id, ADDITIONAL_INFO_UPDATED, $t_revision_id );
 			}
 		}
 
@@ -1106,7 +1102,7 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 
 	# Copy Relationships
 	if( $p_copy_relationships ) {
-		relationship_copy_all( $t_bug_id, $t_new_bug_id );
+		\Flickerbox\Relationship::copy_all( $t_bug_id, $t_new_bug_id );
 	}
 
 	# Copy bugnotes
@@ -1152,7 +1148,7 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 	}
 
 	# COPY HISTORY
-	history_delete( $t_new_bug_id );	# should history only be deleted inside the if statement below?
+	\Flickerbox\History::delete( $t_new_bug_id );	# should history only be deleted inside the if statement below?
 	if( $p_copy_history ) {
 		# @todo problem with this code: the generated history trail is incorrect because the note IDs are those of the original bug, not the copied ones
 		# @todo actually, does it even make sense to copy the history ?
@@ -1169,12 +1165,12 @@ function bug_copy( $p_bug_id, $p_target_project_id = null, $p_copy_custom_fields
 		}
 	} else {
 		# Create a "New Issue" history entry
-		history_log_event_special( $t_new_bug_id, NEW_BUG );
+		\Flickerbox\History::log_event_special( $t_new_bug_id, NEW_BUG );
 	}
 
 	# Create history entries to reflect the copy operation
-	history_log_event_special( $t_new_bug_id, BUG_CREATED_FROM, '', $t_bug_id );
-	history_log_event_special( $t_bug_id, BUG_CLONED_TO, '', $t_new_bug_id );
+	\Flickerbox\History::log_event_special( $t_new_bug_id, BUG_CREATED_FROM, '', $t_bug_id );
+	\Flickerbox\History::log_event_special( $t_bug_id, BUG_CLONED_TO, '', $t_new_bug_id );
 
 	return $t_new_bug_id;
 }
@@ -1209,7 +1205,7 @@ function bug_move( $p_bug_id, $p_target_project_id ) {
 		$t_category_project_id = \Flickerbox\Category::get_field( $t_category_id, 'project_id' );
 
 		if( $t_category_project_id != ALL_PROJECTS
-		  && !in_array( $t_category_project_id, project_hierarchy_inheritance( $p_target_project_id ) )
+		  && !in_array( $t_category_project_id, \Flickerbox\Project\Hierarchy::inheritance( $p_target_project_id ) )
 		) {
 			# Map by name
 			$t_category_name = \Flickerbox\Category::get_field( $t_category_id, 'name' );
@@ -1234,17 +1230,17 @@ function bug_delete( $p_bug_id ) {
 	$c_bug_id = (int)$p_bug_id;
 
 	# call pre-deletion custom function
-	helper_call_custom_function( 'issue_delete_validate', array( $p_bug_id ) );
+	\Flickerbox\Helper::call_custom_function( 'issue_delete_validate', array( $p_bug_id ) );
 
 	# log deletion of bug
-	history_log_event_special( $p_bug_id, BUG_DELETED, bug_format_id( $p_bug_id ) );
+	\Flickerbox\History::log_event_special( $p_bug_id, BUG_DELETED, bug_format_id( $p_bug_id ) );
 
 	email_generic( $p_bug_id, 'deleted', 'email_notification_title_for_action_bug_deleted' );
 
 	# call post-deletion custom function.  We call this here to allow the custom function to access the details of the bug before
 	# they are deleted from the database given it's id.  The other option would be to move this to the end of the function and
 	# provide it with bug data rather than an id, but this will break backward compatibility.
-	helper_call_custom_function( 'issue_delete_notify', array( $p_bug_id ) );
+	\Flickerbox\Helper::call_custom_function( 'issue_delete_notify', array( $p_bug_id ) );
 
 	# Unmonitor bug for all users
 	bug_unmonitor( $p_bug_id, null );
@@ -1260,7 +1256,7 @@ function bug_delete( $p_bug_id ) {
 
 	# MASC RELATIONSHIP
 	# we delete relationships even if the feature is currently off.
-	relationship_delete_all( $p_bug_id );
+	\Flickerbox\Relationship::delete_all( $p_bug_id );
 
 	# MASC RELATIONSHIP
 	# Delete files
@@ -1270,7 +1266,7 @@ function bug_delete( $p_bug_id ) {
 	\Flickerbox\Tag::bug_detach_all( $p_bug_id, false );
 
 	# Delete the bug history
-	history_delete( $p_bug_id );
+	\Flickerbox\History::delete( $p_bug_id );
 
 	# Delete bug info revisions
 	\Flickerbox\Bug\Revision::delete( $p_bug_id );
@@ -1419,7 +1415,7 @@ function bug_get_text_field( $p_bug_id, $p_field_name ) {
  * @uses helper_api.php
  */
 function bug_format_summary( $p_bug_id, $p_context ) {
-	return helper_call_custom_function( 'format_issue_summary', array( $p_bug_id, $p_context ) );
+	return \Flickerbox\Helper::call_custom_function( 'format_issue_summary', array( $p_bug_id, $p_context ) );
 }
 
 /**
@@ -1595,11 +1591,11 @@ function bug_set_field( $p_bug_id, $p_field_name, $p_value ) {
 			break;
 
 		case 'category_id':
-			history_log_event_direct( $p_bug_id, 'category', \Flickerbox\Category::full_name( $t_current_value, false ), \Flickerbox\Category::full_name( $c_value, false ) );
+			\Flickerbox\History::log_event_direct( $p_bug_id, 'category', \Flickerbox\Category::full_name( $t_current_value, false ), \Flickerbox\Category::full_name( $c_value, false ) );
 			break;
 
 		default:
-			history_log_event_direct( $p_bug_id, $p_field_name, $t_current_value, $c_value );
+			\Flickerbox\History::log_event_direct( $p_bug_id, $p_field_name, $t_current_value, $c_value );
 	}
 
 	bug_clear_cache( $p_bug_id );
@@ -1641,8 +1637,8 @@ function bug_assign( $p_bug_id, $p_user_id, $p_bugnote_text = '', $p_bugnote_pri
 		db_query( $t_query, array( $p_user_id, $t_ass_val, $p_bug_id ) );
 
 		# log changes
-		history_log_event_direct( $p_bug_id, 'status', $h_status, $t_ass_val );
-		history_log_event_direct( $p_bug_id, 'handler_id', $h_handler_id, $p_user_id );
+		\Flickerbox\History::log_event_direct( $p_bug_id, 'status', $h_status, $t_ass_val );
+		\Flickerbox\History::log_event_direct( $p_bug_id, 'handler_id', $h_handler_id, $p_user_id );
 
 		# Add bugnote if supplied ignore false return
 		bugnote_add( $p_bug_id, $p_bugnote_text, 0, $p_bugnote_private, 0, '', null, false );
@@ -1718,22 +1714,22 @@ function bug_resolve( $p_bug_id, $p_resolution, $p_fixed_in_version = '', $p_bug
 		bug_ensure_exists( $p_duplicate_id );
 
 		# check if there is other relationship between the bugs...
-		$t_id_relationship = relationship_same_type_exists( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
+		$t_id_relationship = \Flickerbox\Relationship::same_type_exists( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
 
 		 if( $t_id_relationship > 0 ) {
 			# Update the relationship
-			relationship_update( $t_id_relationship, $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
+			\Flickerbox\Relationship::update( $t_id_relationship, $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
 
 			# Add log line to the history (both bugs)
-			history_log_event_special( $p_bug_id, BUG_REPLACE_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
-			history_log_event_special( $p_duplicate_id, BUG_REPLACE_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
+			\Flickerbox\History::log_event_special( $p_bug_id, BUG_REPLACE_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
+			\Flickerbox\History::log_event_special( $p_duplicate_id, BUG_REPLACE_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
 		} else if( $t_id_relationship != -1 ) {
 			# Add the new relationship
-			relationship_add( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
+			\Flickerbox\Relationship::add( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
 
 			# Add log line to the history (both bugs)
-			history_log_event_special( $p_bug_id, BUG_ADD_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
-			history_log_event_special( $p_duplicate_id, BUG_ADD_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
+			\Flickerbox\History::log_event_special( $p_bug_id, BUG_ADD_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
+			\Flickerbox\History::log_event_special( $p_duplicate_id, BUG_ADD_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
 		} # else relationship is -1 - same type exists, do nothing
 
 		# Copy list of users monitoring the duplicate bug to the original bug
@@ -1844,7 +1840,7 @@ function bug_monitor( $p_bug_id, $p_user_id ) {
 	db_query( $t_query, array( $c_user_id, $c_bug_id ) );
 
 	# log new monitoring action
-	history_log_event_special( $c_bug_id, BUG_MONITOR, $c_user_id );
+	\Flickerbox\History::log_event_special( $c_bug_id, BUG_MONITOR, $c_user_id );
 
 	# updated the last_updated date
 	bug_update_date( $p_bug_id );
@@ -1905,7 +1901,7 @@ function bug_monitor_copy( $p_source_bug_id, $p_dest_bug_id ) {
 			$t_query = 'INSERT INTO {bug_monitor} ( user_id, bug_id )
 				VALUES ( ' . db_param() . ', ' . db_param() . ' )';
 			db_query( $t_query, array( $t_bug_monitor['user_id'], $c_dest_bug_id ) );
-			history_log_event_special( $c_dest_bug_id, BUG_MONITOR, $t_bug_monitor['user_id'] );
+			\Flickerbox\History::log_event_special( $c_dest_bug_id, BUG_MONITOR, $t_bug_monitor['user_id'] );
 		}
 	}
 }
@@ -1933,7 +1929,7 @@ function bug_unmonitor( $p_bug_id, $p_user_id ) {
 	db_query( $t_query, $t_db_query_params );
 
 	# log new un-monitor action
-	history_log_event_special( $p_bug_id, BUG_UNMONITOR, (int)$p_user_id );
+	\Flickerbox\History::log_event_special( $p_bug_id, BUG_UNMONITOR, (int)$p_user_id );
 
 	# updated the last_updated date
 	bug_update_date( $p_bug_id );
@@ -1952,5 +1948,5 @@ function bug_format_id( $p_bug_id ) {
 	$t_padding = config_get( 'display_bug_padding' );
 	$t_string = sprintf( '%0' . (int)$t_padding . 'd', $p_bug_id );
 
-	return event_signal( 'EVENT_DISPLAY_BUG_ID', $t_string, array( $p_bug_id ) );
+	return \Flickerbox\Event::signal( 'EVENT_DISPLAY_BUG_ID', $t_string, array( $p_bug_id ) );
 }

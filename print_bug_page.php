@@ -54,11 +54,7 @@ require_api( 'bug_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
-require_api( 'relationship_api.php' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
@@ -66,7 +62,7 @@ bug_ensure_exists( $f_bug_id );
 
 $t_bug = bug_get( $f_bug_id, true );
 
-$t_selected_project = helper_get_current_project();
+$t_selected_project = \Flickerbox\Helper::get_current_project();
 if( $t_bug->project_id != $t_selected_project ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
@@ -113,28 +109,28 @@ $t_show_attachments = in_array( 'attachments', $t_fields );
 $t_show_history = \Flickerbox\Access::has_bug_level( config_get( 'view_history_threshold' ), $f_bug_id );
 
 $t_window_title = \Flickerbox\String::display_line( config_get( 'window_title' ) );
-$t_project_name = $t_show_project ? \Flickerbox\String::display_line( project_get_name( $t_bug->project_id ) ) : '';
+$t_project_name = $t_show_project ? \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $t_bug->project_id ) ) : '';
 $t_formatted_bug_id = $t_show_id ? bug_format_id( $f_bug_id ) : '';
 $t_category_name = $t_show_category ? \Flickerbox\String::display_line( \Flickerbox\Category::full_name( $t_bug->category_id ) ) : '';
-$t_severity = \Flickerbox\String::display_line( get_enum_element( 'severity', $t_bug->severity ) );
-$t_reproducibility = \Flickerbox\String::display_line( get_enum_element( 'reproducibility', $t_bug->reproducibility ) );
+$t_severity = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'severity', $t_bug->severity ) );
+$t_reproducibility = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'reproducibility', $t_bug->reproducibility ) );
 $t_date_submitted = $t_show_date_submitted ? \Flickerbox\String::display_line( date( config_get( 'normal_date_format' ), $t_bug->date_submitted ) ) : '';
 $t_last_updated = $t_show_last_updated ? \Flickerbox\String::display_line( date( config_get( 'normal_date_format' ), $t_bug->last_updated ) ) : '';
 $t_platform = \Flickerbox\String::display_line( $t_bug->platform );
 $t_os = \Flickerbox\String::display_line( $t_bug->os );
 $t_os_version = \Flickerbox\String::display_line( $t_bug->os_build );
 $t_is = \Flickerbox\String::display_line( $t_bug->os );
-$t_status = \Flickerbox\String::display_line( get_enum_element( 'status', $t_bug->status ) );
-$t_priority = \Flickerbox\String::display_line( get_enum_element( 'priority', $t_bug->priority ) );
-$t_resolution = \Flickerbox\String::display_line( get_enum_element( 'resolution', $t_bug->resolution ) );
+$t_status = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status ) );
+$t_priority = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'priority', $t_bug->priority ) );
+$t_resolution = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution ) );
 $t_product_build = \Flickerbox\String::display_line( $t_bug->build );
-$t_projection = \Flickerbox\String::display_line( get_enum_element( 'projection', $t_bug->projection ) );
-$t_eta = \Flickerbox\String::display_line( get_enum_element( 'eta', $t_bug->eta ) );
+$t_projection = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'projection', $t_bug->projection ) );
+$t_eta = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'eta', $t_bug->eta ) );
 $t_summary = \Flickerbox\String::display_line_links( bug_format_summary( $f_bug_id, SUMMARY_FIELD ) );
 $t_description = \Flickerbox\String::display_links( $t_bug->description );
 $t_steps_to_reproduce = \Flickerbox\String::display_links( $t_bug->steps_to_reproduce );
 $t_additional_information = \Flickerbox\String::display_links( $t_bug->additional_information );
-$t_view_state = $t_show_view_state ? get_enum_element( 'view_state', $t_bug->view_state ) : '';
+$t_view_state = $t_show_view_state ? \Flickerbox\Helper::get_enum_element( 'view_state', $t_bug->view_state ) : '';
 
 if( $t_show_due_date ) {
 	if( !\Flickerbox\Date::is_null( $t_bug->due_date ) ) {
@@ -490,7 +486,7 @@ if( $t_show_tags ) {
 
 echo '<tr class="print">';
 echo '<td class="print-category">' . \Flickerbox\Lang::get( 'bug_relationships' ) . '</td>';
-echo '<td class="print" colspan="5">' . relationship_get_summary_html_preview( $f_bug_id ) . '</td></tr>';
+echo '<td class="print" colspan="5">' . \Flickerbox\Relationship::get_summary_html_preview( $f_bug_id ) . '</td></tr>';
 
 if( $t_show_attachments ) {
 	echo '<tr class="print">';
@@ -542,7 +538,7 @@ if( $t_show_history ) {
 	echo '<th class="row-category-history">', \Flickerbox\Lang::get( 'change' ), '</th>';
 	echo '</tr>';
 
-	$t_history = history_get_events_array( $f_bug_id );
+	$t_history = \Flickerbox\History::get_events_array( $f_bug_id );
 
 	foreach ( $t_history as $t_item ) {
 		echo '<tr class="print">';

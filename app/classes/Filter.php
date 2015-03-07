@@ -60,11 +60,7 @@ require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'database_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
-require_api( 'relationship_api.php' );
 require_api( 'user_api.php' );
 
 
@@ -91,7 +87,7 @@ class Filter
 		if( is_null( $s_field_array ) ) {
 			$s_field_array = array();
 	
-			$t_all_plugin_filters = event_signal( 'EVENT_FILTER_FIELDS' );
+			$t_all_plugin_filters = \Flickerbox\Event::signal( 'EVENT_FILTER_FIELDS' );
 			foreach( $t_all_plugin_filters as $t_plugin => $t_plugin_filters ) {
 				foreach( $t_plugin_filters as $t_callback => $t_plugin_filter_array ) {
 					if( is_array( $t_plugin_filter_array ) ) {
@@ -125,7 +121,7 @@ class Filter
 	
 			if( count( $t_project_id ) == 1 && $t_project_id[0] == META_FILTER_CURRENT ) {
 				$t_project_id = array(
-					helper_get_current_project(),
+					\Flickerbox\Helper::get_current_project(),
 				);
 			}
 	
@@ -622,7 +618,7 @@ class Filter
 		}
 	
 		# validate sorting
-		$t_fields = helper_get_columns_to_view();
+		$t_fields = \Flickerbox\Helper::get_columns_to_view();
 		$t_n_fields = count( $t_fields );
 		for( $i = 0;$i < $t_n_fields;$i++ ) {
 			if( isset( $t_fields[$i] ) && in_array( $t_fields[$i], array( 'selection', 'edit', 'bugnotes_count', 'attachment_count' ) ) ) {
@@ -1080,7 +1076,7 @@ class Filter
 	
 		if( null === $p_project_id ) {
 			# @@@ If project_id is not specified, then use the project id(s) in the filter if set, otherwise, use current project.
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 		} else {
 			$t_project_id = $p_project_id;
 		}
@@ -1165,7 +1161,7 @@ class Filter
 			}
 	
 			# filter out inaccessible projects.
-			if( !project_exists( $t_pid ) || !\Flickerbox\Access::has_project_level( config_get( 'view_bug_threshold', null, $t_user_id, $t_pid ), $t_pid, $t_user_id ) ) {
+			if( !\Flickerbox\Project::exists( $t_pid ) || !\Flickerbox\Access::has_project_level( config_get( 'view_bug_threshold', null, $t_user_id, $t_pid ), $t_pid, $t_user_id ) ) {
 				\Flickerbox\Log::event( LOG_FILTERING, 'Invalid or inaccessible project: ' . $t_pid );
 				continue;
 			}
@@ -1746,7 +1742,7 @@ class Filter
 		}
 		if( !$t_any_found ) {
 			# use the complementary type
-			$t_comp_type = relationship_get_complementary_type( $c_rel_type );
+			$t_comp_type = \Flickerbox\Relationship::get_complementary_type( $c_rel_type );
 			$t_clauses = array();
 			$t_table_dst = 'rel_dst';
 			$t_table_src = 'rel_src';
@@ -2142,7 +2138,7 @@ class Filter
 	
 		$t_filter = \Flickerbox\Current_User::get_bug_filter();
 		$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter === false ? array() : $t_filter );
-		$t_project_id = helper_get_current_project();
+		$t_project_id = \Flickerbox\Helper::get_current_project();
 		$t_page_number = (int)$p_page_number;
 	
 		$t_view_type = $t_filter['_view_type'];
@@ -2413,7 +2409,7 @@ class Filter
 					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = get_enum_element( 'severity', $t_current );
+						$t_this_string = \Flickerbox\Helper::get_enum_element( 'severity', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
@@ -2444,7 +2440,7 @@ class Filter
 					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = get_enum_element( 'resolution', $t_current );
+						$t_this_string = \Flickerbox\Helper::get_enum_element( 'resolution', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
@@ -2564,7 +2560,7 @@ class Filter
 					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = get_enum_element( 'status', $t_current );
+						$t_this_string = \Flickerbox\Helper::get_enum_element( 'status', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
@@ -2596,7 +2592,7 @@ class Filter
 						if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
 							$t_none_found = true;
 						} else {
-							$t_this_string = get_enum_element( 'status', $t_current );
+							$t_this_string = \Flickerbox\Helper::get_enum_element( 'status', $t_current );
 						}
 						if( $t_first_flag != true ) {
 							$t_output = $t_output . '<br />';
@@ -2750,7 +2746,7 @@ class Filter
 					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = get_enum_element( 'priority', $t_current );
+						$t_this_string = \Flickerbox\Helper::get_enum_element( 'priority', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
@@ -2927,7 +2923,7 @@ class Filter
 			if( -1 == $c_rel_type || 0 == $c_rel_bug ) {
 				echo \Flickerbox\Lang::get( 'any' );
 			} else {
-				echo relationship_get_description_for_history( $c_rel_type ) . ' ' . $c_rel_bug;
+				echo \Flickerbox\Relationship::get_description_for_history( $c_rel_type ) . ' ' . $c_rel_bug;
 			}
 	
 			?>
@@ -3349,7 +3345,7 @@ class Filter
 						if( META_FILTER_CURRENT == $t_current ) {
 							$t_this_name = '[' . \Flickerbox\Lang::get( 'current' ) . ']';
 						} else {
-							$t_this_name = project_get_name( $t_current, false );
+							$t_this_name = \Flickerbox\Project::get_name( $t_current, false );
 						}
 						if( $t_first_flag != true ) {
 							$t_output = $t_output . '<br />';
@@ -3453,7 +3449,7 @@ class Filter
 					$t_source_query_id = isset( $t_filter['_source_query_id'] ) ? (int)$t_filter['_source_query_id'] : -1;
 					foreach( $t_stored_queries_arr as $t_query_id => $t_query_name ) {
 						echo '<option value="' . $t_query_id . '" ';
-						check_selected( $t_query_id, $t_source_query_id );
+						\Flickerbox\Helper::check_selected( $t_query_id, $t_source_query_id );
 						echo '>' . \Flickerbox\String::display_line( $t_query_name ) . '</option>';
 					}
 					?>
@@ -3546,11 +3542,11 @@ class Filter
 			echo '<option value="' . $t_id . '" selected="selected">' . $t_display_name . '</option>';
 		} else {
 			?>
-			<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+			<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 			<?php
 				if( \Flickerbox\Access::has_project_level( config_get( 'report_bug_threshold' ) ) ) {
 					echo '<option value="' . META_FILTER_MYSELF . '" ';
-					check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_MYSELF );
+					\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_MYSELF );
 					echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
 				}
 			print_reporter_option_list( $g_filter[FILTER_PROPERTY_REPORTER_ID] );
@@ -3568,11 +3564,11 @@ class Filter
 		?>
 		<!-- Monitored by -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_MONITOR_USER_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 				<?php
 					if( \Flickerbox\Access::has_project_level( config_get( 'monitor_bug_threshold' ) ) ) {
 			echo '<option value="' . META_FILTER_MYSELF . '" ';
-			check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_MYSELF );
+			\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_MYSELF );
 			echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
 		}
 		$t_threshold = config_get( 'show_monitor_list_threshold' );
@@ -3595,13 +3591,13 @@ class Filter
 		?>
 			<!-- Handler -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_HANDLER_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 				<?php if( \Flickerbox\Access::has_project_level( config_get( 'view_handler_threshold' ) ) ) {?>
-				<option value="<?php echo META_FILTER_NONE?>"<?php check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
 				<?php
 					if( \Flickerbox\Access::has_project_level( config_get( 'handle_bug_threshold' ) ) ) {
 				echo '<option value="' . META_FILTER_MYSELF . '" ';
-				check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_MYSELF );
+				\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_MYSELF );
 				echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
 			}
 	
@@ -3620,7 +3616,7 @@ class Filter
 		?>
 			<!-- Category -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_CATEGORY_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_CATEGORY_ID], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_CATEGORY_ID], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 				<?php print_category_filter_option_list( $g_filter[FILTER_PROPERTY_CATEGORY_ID] )?>
 			</select>
 			<?php
@@ -3636,7 +3632,7 @@ class Filter
 		?>
 			<!-- Platform -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PLATFORM;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_PLATFORM], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PLATFORM], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 				<?php
 					\Flickerbox\Log::event( LOG_FILTERING, 'Platform = ' . var_export( $g_filter[FILTER_PROPERTY_PLATFORM], true ) );
 		print_platform_option_list( $g_filter[FILTER_PROPERTY_PLATFORM] );
@@ -3655,7 +3651,7 @@ class Filter
 		?>
 			<!-- OS -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_OS;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_OS], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_OS], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 				<?php print_os_option_list( $g_filter[FILTER_PROPERTY_OS] )?>
 			</select>
 			<?php
@@ -3671,7 +3667,7 @@ class Filter
 		?>
 			<!-- OS Build -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_OS_BUILD;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_OS_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_OS_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 				<?php print_os_build_option_list( $g_filter[FILTER_PROPERTY_OS_BUILD] )?>
 			</select>
 			<?php
@@ -3685,7 +3681,7 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Severity -->
 				<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_SEVERITY;?>[]">
-					<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_SEVERITY], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+					<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_SEVERITY], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 					<?php print_enum_string_option_list( 'severity', $g_filter[FILTER_PROPERTY_SEVERITY] )?>
 				</select>
 			<?php
@@ -3699,7 +3695,7 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Resolution -->
 				<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_RESOLUTION;?>[]">
-					<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_RESOLUTION], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+					<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_RESOLUTION], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 					<?php print_enum_string_option_list( 'resolution', $g_filter[FILTER_PROPERTY_RESOLUTION] )?>
 				</select>
 			<?php
@@ -3713,7 +3709,7 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?>	<!-- Status -->
 				<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_STATUS;?>[]">
-					<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_STATUS], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+					<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_STATUS], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 					<?php print_enum_string_option_list( 'status', $g_filter[FILTER_PROPERTY_STATUS] )?>
 				</select>
 			<?php
@@ -3741,8 +3737,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Build -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_BUILD;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
 				<?php print_build_option_list( $g_filter[FILTER_PROPERTY_BUILD] )?>
 			</select>
 			<?php
@@ -3756,8 +3752,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Version -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_VERSION;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
 				<?php print_version_option_list( $g_filter[FILTER_PROPERTY_VERSION], null, VERSION_ALL, false, true )?>
 			</select>
 			<?php
@@ -3771,8 +3767,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Fixed in Version -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_FIXED_IN_VERSION;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
 				<?php print_version_option_list( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], null, VERSION_ALL, false, true )?>
 			</select>
 			<?php
@@ -3786,8 +3782,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Fixed in Version -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_TARGET_VERSION;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
 				<?php print_version_option_list( $g_filter[FILTER_PROPERTY_TARGET_VERSION], null, VERSION_ALL, false, true )?>
 			</select>
 			<?php
@@ -3801,7 +3797,7 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Priority -->
 		<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PRIORITY;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_PRIORITY], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PRIORITY], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 				<?php print_enum_string_option_list( 'priority', $g_filter[FILTER_PROPERTY_PRIORITY] )?>
 		</select>
 			<?php
@@ -3815,8 +3811,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Profile -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PROFILE_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_PROFILE_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<?php print_profile_option_list_for_project( helper_get_current_project(), $g_filter[FILTER_PROPERTY_PROFILE_ID] );?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PROFILE_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<?php print_profile_option_list_for_project( \Flickerbox\Helper::get_current_project(), $g_filter[FILTER_PROPERTY_PROFILE_ID] );?>
 			</select>
 			<?php
 	}
@@ -3842,13 +3838,13 @@ class Filter
 			<select name="<?php echo FILTER_PROPERTY_VIEW_STATE;?>">
 				<?php
 				echo '<option value="' . META_FILTER_ANY . '"';
-		check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], META_FILTER_ANY );
+		\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], META_FILTER_ANY );
 		echo '>[' . \Flickerbox\Lang::get( 'any' ) . ']</option>';
 		echo '<option value="' . VS_PUBLIC . '"';
-		check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PUBLIC );
+		\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PUBLIC );
 		echo '>' . \Flickerbox\Lang::get( 'public' ) . '</option>';
 		echo '<option value="' . VS_PRIVATE . '"';
-		check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PRIVATE );
+		\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PRIVATE );
 		echo '>' . \Flickerbox\Lang::get( 'private' ) . '</option>';
 		?>
 			</select>
@@ -3862,7 +3858,7 @@ class Filter
 	static function print_filter_sticky_issues() {
 		global $g_filter;
 		?><!-- Show or hide sticky bugs -->
-				<input type="checkbox" name="<?php echo FILTER_PROPERTY_STICKY;?>"<?php check_checked( \Flickerbox\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_STICKY] ), true );?> />
+				<input type="checkbox" name="<?php echo FILTER_PROPERTY_STICKY;?>"<?php \Flickerbox\Helper::check_checked( \Flickerbox\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_STICKY] ), true );?> />
 			<?php
 	}
 	
@@ -3894,7 +3890,7 @@ class Filter
 					<label>
 						<input type="checkbox" id="use_date_filters" name="<?php
 							echo FILTER_PROPERTY_FILTER_BY_DATE ?>"<?php
-							check_checked( \Flickerbox\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_FILTER_BY_DATE] ), true ) ?> />
+							\Flickerbox\Helper::check_checked( \Flickerbox\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_FILTER_BY_DATE] ), true ) ?> />
 						<?php echo \Flickerbox\Lang::get( 'use_date_filters' )?>
 					</label>
 				</td>
@@ -3978,7 +3974,7 @@ class Filter
 		if( !$c_reltype_value ) {
 			$c_reltype_value = -1;
 		}
-		relationship_list_box( $c_reltype_value, 'relationship_type', true );
+		\Flickerbox\Relationship::list_box( $c_reltype_value, 'relationship_type', true );
 		echo '<input type="text" name="', FILTER_PROPERTY_RELATIONSHIP_BUG, '" size="5" maxlength="10" value="', $g_filter[FILTER_PROPERTY_RELATIONSHIP_BUG], '" />';
 	}
 	
@@ -4000,7 +3996,7 @@ class Filter
 		?>
 			<input type="hidden" id="tag_separator" value="<?php echo config_get( 'tag_separator' )?>" />
 			<input type="text" name="<?php echo FILTER_PROPERTY_TAG_STRING;?>" id="<?php echo FILTER_PROPERTY_TAG_STRING;?>" size="40" value="<?php echo \Flickerbox\String::attribute( $t_tag_string )?>" />
-			<select <?php echo helper_get_tab_index()?> name="<?php echo FILTER_PROPERTY_TAG_SELECT;?>" id="<?php echo FILTER_PROPERTY_TAG_SELECT;?>">
+			<select <?php echo \Flickerbox\Helper::get_tab_index()?> name="<?php echo FILTER_PROPERTY_TAG_SELECT;?>" id="<?php echo FILTER_PROPERTY_TAG_SELECT;?>">
 				<?php print_tag_option_list();?>
 			</select>
 			<?php
@@ -4015,13 +4011,13 @@ class Filter
 		?>
 		<!-- BUGNOTE REPORTER -->
 		<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_NOTE_USER_ID;?>[]">
-			<option value="<?php echo META_FILTER_ANY?>"<?php check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+			<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
 			<?php if( \Flickerbox\Access::has_project_level( config_get( 'view_handler_threshold' ) ) ) {?>
-			<option value="<?php echo META_FILTER_NONE?>"<?php check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+			<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
 			<?php
 				if( \Flickerbox\Access::has_project_level( config_get( 'handle_bug_threshold' ) ) ) {
 					echo '<option value="' . META_FILTER_MYSELF . '"';
-					check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_MYSELF );
+					\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_MYSELF );
 					echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
 				}
 	
@@ -4059,17 +4055,17 @@ class Filter
 	
 			case FILTER_TYPE_BOOLEAN:
 				echo '<input name="', \Flickerbox\String::attribute( $p_field_name ), '" type="checkbox"',
-					( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), check_checked( (bool)$g_filter[$p_field_name] ) , '"/>';
+					( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), \Flickerbox\Helper::check_checked( (bool)$g_filter[$p_field_name] ) , '"/>';
 				break;
 	
 			case FILTER_TYPE_MULTI_STRING:
 				echo '<select', $g_select_modifier, ( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), ' name="',
 					\Flickerbox\String::attribute( $p_field_name ), '[]">', '<option value="', META_FILTER_ANY, '"',
-					check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Flickerbox\Lang::get( 'any' ), ']</option>';
+					\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Flickerbox\Lang::get( 'any' ), ']</option>';
 	
 				foreach( $p_filter_object->options() as $t_option_value => $t_option_name ) {
 					echo '<option value="', \Flickerbox\String::attribute( $t_option_value ), '" ',
-						check_selected( $g_filter[$p_field_name], $t_option_value ), '>',
+						\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], $t_option_value ), '>',
 						\Flickerbox\String::display_line( $t_option_name ), '</option>';
 				}
 	
@@ -4079,11 +4075,11 @@ class Filter
 			case FILTER_TYPE_MULTI_INT:
 				echo '<select', $g_select_modifier, ( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), ' name="',
 					\Flickerbox\String::attribute( $p_field_name ), '[]">', '<option value="', META_FILTER_ANY, '"',
-					check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Flickerbox\Lang::get( 'any' ), ']</option>';
+					\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Flickerbox\Lang::get( 'any' ), ']</option>';
 	
 				foreach( $p_filter_object->options() as $t_option_value => $t_option_name ) {
 					echo '<option value="', (int)$t_option_value, '" ',
-						check_selected( $g_filter[$p_field_name], (int)$t_option_value ), '>',
+						\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], (int)$t_option_value ), '>',
 						\Flickerbox\String::display_line( $t_option_name ), '</option>';
 				}
 	
@@ -4116,13 +4112,13 @@ class Filter
 			} else {
 				echo '<select' . $g_select_modifier . ' name="custom_field_' . $p_field_id . '[]">';
 				echo '<option value="' . META_FILTER_ANY . '"';
-				check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_ANY );
+				\Flickerbox\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_ANY );
 				echo '>[' . \Flickerbox\Lang::get( 'any' ) . ']</option>';
 	
 				# don't show META_FILTER_NONE for enumerated types as it's not possible for them to be blank
 				if( !in_array( $t_accessible_custom_fields_types[$j], array( CUSTOM_FIELD_TYPE_ENUM, CUSTOM_FIELD_TYPE_LIST, CUSTOM_FIELD_TYPE_MULTILIST ) ) ) {
 					echo '<option value="' . META_FILTER_NONE . '"';
-					check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_NONE );
+					\Flickerbox\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_NONE );
 					echo '>[' . \Flickerbox\Lang::get( 'none' ) . ']</option>';
 				}
 				if( is_array( $t_accessible_custom_fields_values[$j] ) ) {
@@ -4131,7 +4127,7 @@ class Filter
 						if( ( strtolower( $t_item ) !== META_FILTER_ANY ) && ( strtolower( $t_item ) !== META_FILTER_NONE ) ) {
 							echo '<option value="' . \Flickerbox\String::attribute( $t_item ) . '"';
 							if( isset( $g_filter['custom_fields'][$p_field_id] ) ) {
-								check_selected( $g_filter['custom_fields'][$p_field_id], $t_item );
+								\Flickerbox\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], $t_item );
 							}
 							echo '>' . \Flickerbox\String::attribute( \Flickerbox\String::shorten( $t_item, $t_max_length ) ) . '</option>' . "\n";
 						}
@@ -4151,7 +4147,7 @@ class Filter
 	
 		# get all of the displayed fields for sort, then drop ones that
 		#  are not appropriate and translate the rest
-		$t_fields = helper_get_columns_to_view();
+		$t_fields = \Flickerbox\Helper::get_columns_to_view();
 		$t_n_fields = count( $t_fields );
 		$t_shown_fields[''] = '';
 		for( $i = 0;$i < $t_n_fields;$i++ ) {
@@ -4182,7 +4178,7 @@ class Filter
 			echo '<select name="', FILTER_PROPERTY_SORT_FIELD_NAME, '_0">';
 			foreach( $t_shown_fields as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				check_selected( $t_key, $t_sort_fields[0] );
+				\Flickerbox\Helper::check_selected( $t_key, $t_sort_fields[0] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
@@ -4190,7 +4186,7 @@ class Filter
 			echo '<select name="', FILTER_PROPERTY_SORT_DIRECTION, '_0">';
 			foreach( $t_shown_dirs as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				check_selected( $t_key, $t_dir_fields[0] );
+				\Flickerbox\Helper::check_selected( $t_key, $t_dir_fields[0] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
@@ -4201,14 +4197,14 @@ class Filter
 			echo '<select name="', FILTER_PROPERTY_SORT_FIELD_NAME, '_1">';
 			foreach( $t_shown_fields as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				check_selected( $t_key, $t_sort_fields[1] );
+				\Flickerbox\Helper::check_selected( $t_key, $t_sort_fields[1] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
 			echo '<select name="', FILTER_PROPERTY_SORT_DIRECTION, '_1">';
 			foreach( $t_shown_dirs as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				check_selected( $t_key, $t_dir_fields[1] );
+				\Flickerbox\Helper::check_selected( $t_key, $t_dir_fields[1] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
@@ -4293,28 +4289,28 @@ class Filter
 		echo '<table cellspacing="0" cellpadding="0"><tr><td>' . "\n";
 		echo '<select size="1" name="custom_field_' . $p_field_id . '_control">' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ANY . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ANY );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ANY );
 		echo '>' . \Flickerbox\Lang::get( 'any' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_NONE . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_NONE );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_NONE );
 		echo '>' . \Flickerbox\Lang::get( 'none' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_BETWEEN . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BETWEEN );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BETWEEN );
 		echo '>' . \Flickerbox\Lang::get( 'between_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ONORBEFORE . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORBEFORE );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORBEFORE );
 		echo '>' . \Flickerbox\Lang::get( 'on_or_before_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_BEFORE . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BEFORE );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BEFORE );
 		echo '>' . \Flickerbox\Lang::get( 'before_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ON . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ON );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ON );
 		echo '>' . \Flickerbox\Lang::get( 'on_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_AFTER . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_AFTER );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_AFTER );
 		echo '>' . \Flickerbox\Lang::get( 'after_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ONORAFTER . '"';
-		check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORAFTER );
+		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORAFTER );
 		echo '>' . \Flickerbox\Lang::get( 'on_or_after_date' ) . '</option>' . "\n";
 		echo '</select>' . "\n";
 	
@@ -4336,7 +4332,7 @@ class Filter
 			<!-- Project -->
 			<select <?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PROJECT_ID;?>[]">
 				<option value="<?php echo META_FILTER_CURRENT ?>"
-					<?php check_selected( $g_filter[FILTER_PROPERTY_PROJECT_ID], META_FILTER_CURRENT );?>>
+					<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PROJECT_ID], META_FILTER_CURRENT );?>>
 					[<?php echo \Flickerbox\Lang::get( 'current' )?>]
 				</option>
 				<?php print_project_option_list( $g_filter[FILTER_PROPERTY_PROJECT_ID] )?>
@@ -4353,8 +4349,8 @@ class Filter
 	?>
 			<!-- Project -->
 			<select <?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_MATCH_TYPE;?>">
-				<option value="<?php echo FILTER_MATCH_ALL?>" <?php check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ALL );?>>[<?php echo \Flickerbox\Lang::get( 'filter_match_all' )?>]</option>
-				<option value="<?php echo FILTER_MATCH_ANY?>" <?php check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'filter_match_any' )?>]</option>
+				<option value="<?php echo FILTER_MATCH_ALL?>" <?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ALL );?>>[<?php echo \Flickerbox\Lang::get( 'filter_match_all' )?>]</option>
+				<option value="<?php echo FILTER_MATCH_ANY?>" <?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'filter_match_any' )?>]</option>
 			</select>
 			<?php
 	}
@@ -4690,7 +4686,7 @@ class Filter
 		$t_overall_query_arr = array();
 	
 		if( null === $p_project_id ) {
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 		} else {
 			$t_project_id = (int)$p_project_id;
 		}

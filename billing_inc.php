@@ -42,7 +42,6 @@ if( !defined( 'BILLING_INC_ALLOW' ) ) {
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 
 ?>
 <a id="bugnotestats"></a><br />
@@ -77,7 +76,7 @@ $f_get_bugnote_stats_button = \Flickerbox\GPC::get_string( 'get_bugnote_stats_bu
 # Retrieve the cost as a string and convert to floating point
 $f_bugnote_cost = floatval( \Flickerbox\GPC::get_string( 'bugnote_cost', '' ) );
 
-$f_project_id = helper_get_current_project();
+$f_project_id = \Flickerbox\Helper::get_current_project();
 
 if( ON == config_get( 'time_tracking_with_billing' ) ) {
 	$t_cost_col = true;

@@ -44,7 +44,6 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
@@ -80,7 +79,7 @@ if( $t_multiple_projects ) {
 	$t_projects[ALL_PROJECTS] = ALL_PROJECTS;
 }
 # override the project if necessary
-if( $t_project_id != helper_get_current_project() ) {
+if( $t_project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_project_id;
@@ -346,11 +345,11 @@ if( $t_multiple_projects ) {
 			$t_default_bugnote_view_status = config_get( 'default_bugnote_view_status' );
 			if( \Flickerbox\Access::has_project_level( config_get( 'set_view_status_threshold' ), $t_project_id ) ) {
 ?>
-						<input type="checkbox" name="private" <?php check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
+						<input type="checkbox" name="private" <?php \Flickerbox\Helper::check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
 <?php
 				echo \Flickerbox\Lang::get( 'private' );
 			} else {
-				echo get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
+				echo \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
 			}
 ?>
 					</td>

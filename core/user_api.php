@@ -44,10 +44,6 @@
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'project_api.php' );
-require_api( 'project_hierarchy_api.php' );
-require_api( 'user_pref_api.php' );
 
 $g_cache_user = array();
 $g_user_accessible_subprojects_cache = null;
@@ -638,7 +634,7 @@ function user_delete( $p_user_id ) {
 	user_delete_profiles( $p_user_id );
 
 	# Remove associated preferences
-	user_pref_delete_all( $p_user_id );
+	\Flickerbox\User\Pref::delete_all( $p_user_id );
 
 	# Remove project specific access levels
 	user_delete_project_specific_access_levels( $p_user_id );
@@ -930,7 +926,7 @@ function user_get_access_level( $p_user_id, $p_project_id = ALL_PROJECTS ) {
 		return $t_access_level;
 	}
 
-	$t_project_access_level = project_get_local_user_access_level( $p_project_id, $p_user_id );
+	$t_project_access_level = \Flickerbox\Project::get_local_user_access_level( $p_project_id, $p_user_id );
 
 	if( false === $t_project_access_level ) {
 		return $t_access_level;
@@ -956,7 +952,7 @@ function user_get_accessible_projects( $p_user_id, $p_show_disabled = false ) {
 	}
 
 	if( \Flickerbox\Access::has_global_level( config_get( 'private_project_threshold' ), $p_user_id ) ) {
-		$t_projects = project_hierarchy_get_subprojects( ALL_PROJECTS, $p_show_disabled );
+		$t_projects = \Flickerbox\Project\Hierarchy::get_subprojects( ALL_PROJECTS, $p_show_disabled );
 	} else {
 		$t_public = VS_PUBLIC;
 		$t_private = VS_PRIVATE;
@@ -1166,7 +1162,7 @@ function user_get_assigned_projects( $p_user_id ) {
  */
 function user_get_unassigned_by_project_id( $p_project_id = null ) {
 	if( null === $p_project_id ) {
-		$p_project_id = helper_get_current_project();
+		$p_project_id = \Flickerbox\Helper::get_current_project();
 	}
 
 	$t_adm = config_get_global( 'admin_site_threshold' );
@@ -1218,7 +1214,7 @@ function user_get_unassigned_by_project_id( $p_project_id = null ) {
  * @return integer
  */
 function user_get_assigned_open_bug_count( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-	$t_where_prj = helper_project_specific_where( $p_project_id, $p_user_id ) . ' AND';
+	$t_where_prj = \Flickerbox\Helper::project_specific_where( $p_project_id, $p_user_id ) . ' AND';
 
 	$t_resolved = config_get( 'bug_resolved_status_threshold' );
 
@@ -1240,7 +1236,7 @@ function user_get_assigned_open_bug_count( $p_user_id, $p_project_id = ALL_PROJE
  * @return integer
  */
 function user_get_reported_open_bug_count( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-	$t_where_prj = helper_project_specific_where( $p_project_id, $p_user_id ) . ' AND';
+	$t_where_prj = \Flickerbox\Helper::project_specific_where( $p_project_id, $p_user_id ) . ' AND';
 
 	$t_resolved = config_get( 'bug_resolved_status_threshold' );
 
@@ -1311,7 +1307,7 @@ function user_is_lost_password_request_allowed( $p_user_id ) {
  */
 function user_get_bug_filter( $p_user_id, $p_project_id = null ) {
 	if( null === $p_project_id ) {
-		$t_project_id = helper_get_current_project();
+		$t_project_id = \Flickerbox\Helper::get_current_project();
 	} else {
 		$t_project_id = $p_project_id;
 	}
@@ -1485,7 +1481,7 @@ function user_set_field( $p_user_id, $p_field_name, $p_field_value ) {
  * @return void
  */
 function user_set_default_project( $p_user_id, $p_project_id ) {
-	user_pref_set_pref( $p_user_id, 'default_project', (int)$p_project_id );
+	\Flickerbox\User\Pref::set_pref( $p_user_id, 'default_project', (int)$p_project_id );
 }
 
 /**

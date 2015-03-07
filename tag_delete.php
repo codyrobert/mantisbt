@@ -34,7 +34,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_delete' );
@@ -44,7 +43,7 @@ require_api( 'print_api.php' );
 $f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
 $t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
 
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'tag_delete_message' ), \Flickerbox\Lang::get( 'tag_delete_button' ) );
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'tag_delete_message' ), \Flickerbox\Lang::get( 'tag_delete_button' ) );
 
 \Flickerbox\Tag::delete( $f_tag_id );
 

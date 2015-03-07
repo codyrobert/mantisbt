@@ -41,7 +41,6 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'bugnote_set_view_state' );
@@ -52,7 +51,7 @@ $f_private		= \Flickerbox\GPC::get_bool( 'private' );
 $t_bug_id = bugnote_get_field( $f_bugnote_id, 'bug_id' );
 
 $t_bug = bug_get( $t_bug_id, true );
-if( $t_bug->project_id != helper_get_current_project() ) {
+if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;

@@ -32,7 +32,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'graphviz_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -55,7 +54,7 @@ if( !empty( $t_graph_fontpath ) ) {
 	$t_graph_attributes['fontpath'] = $t_graph_fontpath;
 }
 
-$t_graph = new Graph( 'workflow', $t_graph_attributes, $t_dot_tool );
+$t_graph = new \Flickerbox\Graph( 'workflow', $t_graph_attributes, $t_dot_tool );
 
 $t_graph->set_default_node_attr( array ( 'fontname' => $t_graph_fontname,
 										 'fontsize' => $t_graph_fontsize,

@@ -47,7 +47,6 @@
 require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
 $f_project_id = \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
@@ -93,7 +92,7 @@ $t_title = config_get( 'window_title' );
 $t_image_link = $t_path . 'images/mantis_logo_button.gif';
 
 # only rss 2.0
-$t_category = project_get_name( $f_project_id );
+$t_category = \Flickerbox\Project::get_name( $f_project_id );
 if( $f_project_id !== 0 ) {
 	$t_title .= ' - ' . $t_category;
 }

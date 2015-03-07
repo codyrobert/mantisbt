@@ -54,11 +54,7 @@ require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
 require_api( 'email_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'print_api.php' );
-require_api( 'relationship_api.php' );
 require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_report' );
@@ -78,9 +74,9 @@ if( $f_master_bug_id > 0 ) {
 	$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 	$t_project_id = $f_project_id;
 }
-project_ensure_exists( $t_project_id );
+\Flickerbox\Project::ensure_exists( $t_project_id );
 
-if( $t_project_id != helper_get_current_project() ) {
+if( $t_project_id != \Flickerbox\Helper::get_current_project() ) {
 	$g_project_override = $t_project_id;
 }
 
@@ -151,7 +147,7 @@ if( 0 != $t_bug_data->profile_id ) {
 		$t_bug_data->os_build = $t_row['os_build'];
 	}
 }
-helper_call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
+\Flickerbox\Helper::call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
 
 # Validate the custom fields before adding the bug.
 $t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
@@ -173,7 +169,7 @@ foreach( $t_related_custom_field_ids as $t_id ) {
 }
 
 # Allow plugins to pre-process bug data
-$t_bug_data = event_signal( 'EVENT_REPORT_BUG_DATA', $t_bug_data );
+$t_bug_data = \Flickerbox\Event::signal( 'EVENT_REPORT_BUG_DATA', $t_bug_data );
 
 # Ensure that resolved bugs have a handler
 if( $t_bug_data->handler_id == NO_USER && $t_bug_data->status >= config_get( 'bug_resolved_status_threshold' ) ) {
@@ -189,7 +185,7 @@ $t_bug_id = $t_bug_data->create();
 
 # Handle the file upload
 if( !is_null( $f_files ) ) {
-	$t_files = helper_array_transpose( $f_files );
+	$t_files = \Flickerbox\Helper::array_transpose( $f_files );
 	foreach( $t_files as $t_file ) {
 		if( !empty( $t_file['name'] ) ) {
 			\Flickerbox\File::add( $t_bug_id, $t_file, 'bug' );
@@ -218,19 +214,19 @@ if( $f_master_bug_id > 0 ) {
 	bug_update_date( $f_master_bug_id );
 
 	# Add log line to record the cloning action
-	history_log_event_special( $t_bug_id, BUG_CREATED_FROM, '', $f_master_bug_id );
-	history_log_event_special( $f_master_bug_id, BUG_CLONED_TO, '', $t_bug_id );
+	\Flickerbox\History::log_event_special( $t_bug_id, BUG_CREATED_FROM, '', $f_master_bug_id );
+	\Flickerbox\History::log_event_special( $f_master_bug_id, BUG_CLONED_TO, '', $t_bug_id );
 
 	if( $f_rel_type > BUG_REL_ANY ) {
 		# Add the relationship
-		relationship_add( $t_bug_id, $f_master_bug_id, $f_rel_type );
+		\Flickerbox\Relationship::add( $t_bug_id, $f_master_bug_id, $f_rel_type );
 
 		# Add log line to the history (both issues)
-		history_log_event_special( $f_master_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $f_rel_type ), $t_bug_id );
-		history_log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_master_bug_id );
+		\Flickerbox\History::log_event_special( $f_master_bug_id, BUG_ADD_RELATIONSHIP, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ), $t_bug_id );
+		\Flickerbox\History::log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_master_bug_id );
 
 		# Send the email notification
-		email_relationship_added( $f_master_bug_id, $t_bug_id, relationship_get_complementary_type( $f_rel_type ) );
+		email_relationship_added( $f_master_bug_id, $t_bug_id, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ) );
 
 		# update relationship target bug last updated
 		bug_update_date( $t_bug_id );
@@ -265,20 +261,20 @@ if( $f_master_bug_id > 0 ) {
 	}
 }
 
-helper_call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
+\Flickerbox\Helper::call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
 
 # Allow plugins to post-process bug data with the new bug ID
-event_signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
+\Flickerbox\Event::signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
 email_generic( $t_bug_id, 'new', 'email_notification_title_for_action_bug_submitted' );
 
 # log status and resolution changes if they differ from the default
 if( $t_bug_data->status != config_get( 'bug_submit_status' ) ) {
-	history_log_event( $t_bug_id, 'status', config_get( 'bug_submit_status' ) );
+	\Flickerbox\History::log_event( $t_bug_id, 'status', config_get( 'bug_submit_status' ) );
 }
 
 if( $t_bug_data->resolution != config_get( 'default_bug_resolution' ) ) {
-	history_log_event( $t_bug_id, 'resolution', config_get( 'default_bug_resolution' ) );
+	\Flickerbox\History::log_event( $t_bug_id, 'resolution', config_get( 'default_bug_resolution' ) );
 }
 
 \Flickerbox\Form::security_purge( 'bug_report' );

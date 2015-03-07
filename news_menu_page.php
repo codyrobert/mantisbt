@@ -36,7 +36,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
@@ -82,7 +81,7 @@ require_api( 'print_api.php' );
 <?php
 # Add News Form END
 # Edit/Delete News Form BEGIN
-if( \Flickerbox\News::get_count( helper_get_current_project(), \Flickerbox\Current_User::is_administrator() ) > 0 ) { ?>
+if( \Flickerbox\News::get_count( \Flickerbox\Helper::get_current_project(), \Flickerbox\Current_User::is_administrator() ) > 0 ) { ?>
 <div id="news-edit-div" class="form-container">
 	<form id="news-edit-form" method="post" action="news_edit_page.php">
 		<fieldset>

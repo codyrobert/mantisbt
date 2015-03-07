@@ -45,10 +45,8 @@ require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
-require_api( 'user_pref_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_user_update' );
 
@@ -166,7 +164,7 @@ if( $f_protected && $t_old_protected ) {
 $t_result = db_query( $t_query, $t_query_params );
 
 if( $f_send_email_notification ) {
-	\Flickerbox\Lang::push( user_pref_get_language( $f_user_id ) );
+	\Flickerbox\Lang::push( \Flickerbox\User\Pref::get_language( $f_user_id ) );
 	$t_changes = '';
 	if( strcmp( $f_username, $t_old_username ) ) {
 		$t_changes .= \Flickerbox\Lang::get( 'username_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_username . ' => ' . $f_username . "\n";
@@ -178,8 +176,8 @@ if( $f_send_email_notification ) {
 		$t_changes .= \Flickerbox\Lang::get( 'email_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_email . ' => ' . $t_email . "\n";
 	}
 	if( strcmp( $f_access_level, $t_old_access_level ) ) {
-		$t_old_access_string = get_enum_element( 'access_levels', $t_old_access_level );
-		$t_new_access_string = get_enum_element( 'access_levels', $f_access_level );
+		$t_old_access_string = \Flickerbox\Helper::get_enum_element( 'access_levels', $t_old_access_level );
+		$t_new_access_string = \Flickerbox\Helper::get_enum_element( 'access_levels', $f_access_level );
 		$t_changes .= \Flickerbox\Lang::get( 'access_level_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_access_string . ' => ' . $t_new_access_string . "\n\n";
 	}
 	if( !empty( $t_changes ) ) {

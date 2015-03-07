@@ -34,7 +34,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 
 \Flickerbox\Access::ensure_project_level( config_get( 'manage_configuration_threshold' ) );
 

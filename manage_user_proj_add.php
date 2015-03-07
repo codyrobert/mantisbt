@@ -35,7 +35,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_user_proj_add' );
 
@@ -51,7 +50,7 @@ user_ensure_exists( $f_user_id );
 foreach ( $f_project_id as $t_proj_id ) {
 	if( \Flickerbox\Access::has_project_level( $t_manage_user_threshold, $t_proj_id ) &&
 		\Flickerbox\Access::has_project_level( $f_access_level, $t_proj_id ) ) {
-		project_add_user( $t_proj_id, $f_user_id, $f_access_level );
+		\Flickerbox\Project::add_user( $t_proj_id, $f_user_id, $f_access_level );
 	}
 }
 

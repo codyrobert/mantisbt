@@ -63,7 +63,7 @@ class ProjectTest extends SoapBase {
 
 		$t_project_data_structure['name'] = $t_project_new_name;
 
-		$t_return_bool = $this->client->mc_project_update( $this->userName, $this->password, $t_project_id,
+		$t_return_bool = $this->client->mc_\Flickerbox\Project::update( $this->userName, $this->password, $t_project_id,
 														$t_project_data_structure );
 
 		$t_projects_array = $this->client->mc_projects_get_user_accessible( $this->userName, $this->password );
@@ -141,7 +141,7 @@ class ProjectTest extends SoapBase {
 
 		# step 3
 		$t_project_data_structure['view_state'] = array( 'id' => VS_PRIVATE );
-		$t_update_ok = $this->client->mc_project_update( $this->userName, $this->password, $t_project_id, $t_project_data_structure );
+		$t_update_ok = $this->client->mc_\Flickerbox\Project::update( $this->userName, $this->password, $t_project_id, $t_project_data_structure );
 		$this->assertTrue( $t_update_ok, 'Project update failed' );
 
 		# step 4
@@ -178,7 +178,7 @@ class ProjectTest extends SoapBase {
 		parent::tearDown();
 
 		foreach( $this->projectIdToDelete as $t_project_id )  {
-			$this->client->mc_project_delete( $this->userName, $this->password, $t_project_id );
+			$this->client->mc_\Flickerbox\Project::delete( $this->userName, $this->password, $t_project_id );
 		}
 	}
 

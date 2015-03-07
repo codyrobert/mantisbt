@@ -51,7 +51,6 @@ require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
-require_api( 'user_pref_api.php' );
 
 #============ Parameters ============
 $f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
@@ -79,7 +78,7 @@ if( auth_get_current_user_id() != $f_user_id ) {
 	user_ensure_unprotected( $f_user_id );
 }
 
-user_pref_delete( $f_user_id );
+\Flickerbox\User\Pref::delete( $f_user_id );
 
 \Flickerbox\Form::security_purge( 'account_prefs_reset' );
 

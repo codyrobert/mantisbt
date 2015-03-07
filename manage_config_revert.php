@@ -40,9 +40,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_config_revert' );
 
@@ -65,8 +63,8 @@ if( !$t_access ) {
 
 if( '' != $f_revert ) {
 	# Confirm with the user
-	helper_ensure_confirmed( \Flickerbox\Lang::get( 'config_delete_sure' ) . \Flickerbox\Lang::get( 'word_separator' ) .
-		\Flickerbox\String::html_specialchars( implode( ', ', $t_revert_vars ) ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'in_project' ) . \Flickerbox\Lang::get( 'word_separator' ) . project_get_name( $f_project_id ),
+	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'config_delete_sure' ) . \Flickerbox\Lang::get( 'word_separator' ) .
+		\Flickerbox\String::html_specialchars( implode( ', ', $t_revert_vars ) ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'in_project' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Project::get_name( $f_project_id ),
 		\Flickerbox\Lang::get( 'delete_config_button' ) );
 
 	foreach ( $t_revert_vars as $t_revert ) {

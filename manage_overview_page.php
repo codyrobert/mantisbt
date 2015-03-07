@@ -35,8 +35,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 
 auth_reauthenticate();
 \Flickerbox\Access::ensure_global_level( config_get( 'manage_site_threshold' ) );
@@ -84,7 +82,7 @@ $t_version_suffix = config_get_global( 'version_suffix' );
 	<?php
 	}
 
-	event_signal( 'EVENT_MANAGE_OVERVIEW_INFO', array( $t_is_admin ) )
+	\Flickerbox\Event::signal( 'EVENT_MANAGE_OVERVIEW_INFO', array( $t_is_admin ) )
 	?>
 	</table>
 </div>

@@ -35,7 +35,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 \Flickerbox\HTML::require_css( 'login.css' );
 
@@ -64,7 +63,7 @@ if( LDAP == config_get_global( 'login_method' ) ||
 			<?php
 			echo \Flickerbox\Form::security_field( 'lost_pwd' );
 
-			$t_allow_passwd = helper_call_custom_function( 'auth_can_change_password', array() );
+			$t_allow_passwd = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
 			if( $t_allow_passwd ) { ?>
 			<div class="field-container">
 				<label for="username"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></label>

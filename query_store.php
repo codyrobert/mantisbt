@@ -37,7 +37,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'query_store' );
@@ -77,7 +76,7 @@ foreach( $t_query_arr as $t_id => $t_name )	{
 	}
 }
 
-$t_project_id = helper_get_current_project();
+$t_project_id = \Flickerbox\Helper::get_current_project();
 if( $f_all_projects ) {
 	$t_project_id = 0;
 }

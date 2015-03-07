@@ -173,7 +173,7 @@ class Error
 				case DISPLAY_ERROR_HALT:
 					# disable any further event callbacks
 					if( function_exists( 'event_clear_callbacks' ) ) {
-						event_clear_callbacks();
+						\Flickerbox\Event::clear_callbacks();
 					}
 	
 					$t_oblen = ob_get_length();

@@ -35,7 +35,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_revision_drop' );
@@ -44,7 +43,7 @@ $f_revision_id = \Flickerbox\GPC::get_int( 'id' );
 $t_revision = \Flickerbox\Bug\Revision::get( $f_revision_id );
 
 \Flickerbox\Access::ensure_bug_level( config_get( 'bug_revision_drop_threshold' ), $t_revision['bug_id'] );
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_revision_drop' ), \Flickerbox\Lang::get( 'revision_drop' ) );
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_revision_drop' ), \Flickerbox\Lang::get( 'revision_drop' ) );
 
 \Flickerbox\Bug\Revision::drop( $f_revision_id );
 \Flickerbox\Form::security_purge( 'bug_revision_drop' );

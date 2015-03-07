@@ -39,9 +39,7 @@
 require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'relationship_graph_api.php' );
 
 # If relationship graphs were made disabled, we disallow any access to
 # this script.
@@ -74,7 +72,7 @@ if( 'horizontal' == $f_orientation ) {
 
 $t_bug = bug_get( $f_bug_id, true );
 
-if( $t_bug->project_id != helper_get_current_project() ) {
+if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;

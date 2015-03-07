@@ -46,7 +46,7 @@ class Form
 	/**
 	 * Helper function to generate a form action value when forms are designed
 	 * to be submitted to the same url that's is currently being used, such as
-	 * helper_ensure_confirmed() or auth_reauthenticate().
+	 * \Flickerbox\Helper::ensure_confirmed() or auth_reauthenticate().
 	 * @return string Form action value
 	 */
 	static function action_self() {

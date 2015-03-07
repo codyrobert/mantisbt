@@ -43,10 +43,7 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'print_api.php' );
-require_api( 'relationship_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_relationship_add' );
 
@@ -86,35 +83,35 @@ foreach( $f_dest_bug_id_array as $f_dest_bug_id ) {
 	}
 
 	$t_bug = bug_get( $f_src_bug_id, true );
-	if( $t_bug->project_id != helper_get_current_project() ) {
+	if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 		# in case the current project is not the same project of the bug we are viewing...
 		# ... override the current project. This to avoid problems with categories and handlers lists etc.
 		$g_project_override = $t_bug->project_id;
 	}
 
 	# check if there is other relationship between the bugs...
-	$t_old_id_relationship = relationship_same_type_exists( $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
+	$t_old_id_relationship = \Flickerbox\Relationship::same_type_exists( $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
 
 	if( $t_old_id_relationship == -1 ) {
 		# the relationship type is exactly the same of the new one. No sense to proceed
 		trigger_error( ERROR_RELATIONSHIP_ALREADY_EXISTS, ERROR );
 	} else if( $t_old_id_relationship > 0 ) {
 		# there is already a relationship between them -> we have to update it and not to add a new one
-		helper_ensure_confirmed( \Flickerbox\Lang::get( 'replace_relationship_sure_msg' ), \Flickerbox\Lang::get( 'replace_relationship_button' ) );
+		\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'replace_relationship_sure_msg' ), \Flickerbox\Lang::get( 'replace_relationship_button' ) );
 
 		# Update the relationship
-		relationship_update( $t_old_id_relationship, $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
+		\Flickerbox\Relationship::update( $t_old_id_relationship, $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
 
 		# Add log line to the history (both bugs)
-		history_log_event_special( $f_src_bug_id, BUG_REPLACE_RELATIONSHIP, $f_rel_type, $f_dest_bug_id );
-		history_log_event_special( $f_dest_bug_id, BUG_REPLACE_RELATIONSHIP, relationship_get_complementary_type( $f_rel_type ), $f_src_bug_id );
+		\Flickerbox\History::log_event_special( $f_src_bug_id, BUG_REPLACE_RELATIONSHIP, $f_rel_type, $f_dest_bug_id );
+		\Flickerbox\History::log_event_special( $f_dest_bug_id, BUG_REPLACE_RELATIONSHIP, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ), $f_src_bug_id );
 	} else {
 		# Add the new relationship
-		relationship_add( $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
+		\Flickerbox\Relationship::add( $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
 
 		# Add log line to the history (both bugs)
-		history_log_event_special( $f_src_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_dest_bug_id );
-		history_log_event_special( $f_dest_bug_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $f_rel_type ), $f_src_bug_id );
+		\Flickerbox\History::log_event_special( $f_src_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_dest_bug_id );
+		\Flickerbox\History::log_event_special( $f_dest_bug_id, BUG_ADD_RELATIONSHIP, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ), $f_src_bug_id );
 	}
 
 	# update bug last updated for both bugs
@@ -123,7 +120,7 @@ foreach( $f_dest_bug_id_array as $f_dest_bug_id ) {
 
 	# send email notification to the users addressed by both the bugs
 	email_relationship_added( $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
-	email_relationship_added( $f_dest_bug_id, $f_src_bug_id, relationship_get_complementary_type( $f_rel_type ) );
+	email_relationship_added( $f_dest_bug_id, $f_src_bug_id, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ) );
 }
 
 \Flickerbox\Form::security_purge( 'bug_relationship_add' );

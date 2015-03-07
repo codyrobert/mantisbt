@@ -49,9 +49,6 @@
 
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'graphviz_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'relationship_api.php' );
 
 /**
  * Generate a pretty bug ID string that is safe to use in the DOT language
@@ -112,7 +109,7 @@ function relgraph_generate_rel_graph( $p_bug_id ) {
 
 		$v_bug_list[$t_id] = $t_bug;
 
-		$t_relationships = relationship_get_all_src( $t_id );
+		$t_relationships = \Flickerbox\Relationship::get_all_src( $t_id );
 		foreach( $t_relationships as $t_relationship ) {
 			$t_dst = $t_relationship->dest_bug_id;
 			if( BUG_DEPENDANT == $t_relationship->type ) {
@@ -128,7 +125,7 @@ function relgraph_generate_rel_graph( $p_bug_id ) {
 			}
 		}
 
-		$t_relationships = relationship_get_all_dest( $t_id );
+		$t_relationships = \Flickerbox\Relationship::get_all_dest( $t_id );
 		foreach( $t_relationships as $t_relationship ) {
 			$t_dst = $t_relationship->src_bug_id;
 			if( BUG_DEPENDANT == $t_relationship->type ) {
@@ -161,7 +158,7 @@ function relgraph_generate_rel_graph( $p_bug_id ) {
 		$t_graph_attributes['fontpath'] = $t_graph_fontpath;
 	}
 
-	$t_graph = new Graph( $t_id_string, $t_graph_attributes, $t_neato_tool );
+	$t_graph = new \Flickerbox\Graph( $t_id_string, $t_graph_attributes, $t_neato_tool );
 
 	$t_graph->set_default_node_attr( array (
 			'fontname'	=> $t_graph_fontname,
@@ -249,7 +246,7 @@ function relgraph_generate_dep_graph( $p_bug_id, $p_horizontal = false ) {
 	$v_bug_list[$p_bug_id]->children = array();
 
 	# Now we visit all ascendants of the root issue.
-	$t_relationships = relationship_get_all_dest( $p_bug_id );
+	$t_relationships = \Flickerbox\Relationship::get_all_dest( $p_bug_id );
 	foreach( $t_relationships as $t_relationship ) {
 		if( $t_relationship->type != BUG_DEPENDANT ) {
 			continue;
@@ -259,7 +256,7 @@ function relgraph_generate_dep_graph( $p_bug_id, $p_horizontal = false ) {
 		relgraph_add_parent( $v_bug_list, $t_relationship->src_bug_id );
 	}
 
-	$t_relationships = relationship_get_all_src( $p_bug_id );
+	$t_relationships = \Flickerbox\Relationship::get_all_src( $p_bug_id );
 	foreach( $t_relationships as $t_relationship ) {
 		if( $t_relationship->type != BUG_DEPENDANT ) {
 			continue;
@@ -292,7 +289,7 @@ function relgraph_generate_dep_graph( $p_bug_id, $p_horizontal = false ) {
 		$t_graph_orientation = 'vertical';
 	}
 
-	$t_graph = new Digraph( $t_id_string, $t_graph_attributes, $t_dot_tool );
+	$t_graph = new \Flickerbox\Digraph( $t_id_string, $t_graph_attributes, $t_dot_tool );
 
 	$t_graph->set_default_node_attr( array (
 			'fontname'	=> $t_graph_fontname,
@@ -369,7 +366,7 @@ function relgraph_add_parent( array &$p_bug_list, $p_bug_id ) {
 
 	# Add all parent issues to the list of parents and visit them
 	# recursively.
-	$t_relationships = relationship_get_all_dest( $p_bug_id );
+	$t_relationships = \Flickerbox\Relationship::get_all_dest( $p_bug_id );
 	foreach( $t_relationships as $t_relationship ) {
 		if( $t_relationship->type != BUG_DEPENDANT ) {
 			continue;
@@ -382,7 +379,7 @@ function relgraph_add_parent( array &$p_bug_list, $p_bug_id ) {
 	# Add all child issues to the list of children. Do not visit them
 	# since this will add too much data that is unrelated to the original
 	# issue, and has a potential to generate really huge graphs.
-	$t_relationships = relationship_get_all_src( $p_bug_id );
+	$t_relationships = \Flickerbox\Relationship::get_all_src( $p_bug_id );
 	foreach( $t_relationships as $t_relationship ) {
 		if( $t_relationship->type != BUG_DEPENDANT ) {
 			continue;
@@ -443,7 +440,7 @@ function relgraph_add_child( array &$p_bug_list, $p_bug_id ) {
 		# Add all parent issues to the list of parents. Do not visit them
 		# for the same reason we didn't visit the children of all
 		# ancestors.
-		$t_relationships = relationship_get_all_dest( $p_bug_id );
+		$t_relationships = \Flickerbox\Relationship::get_all_dest( $p_bug_id );
 		foreach( $t_relationships as $t_relationship ) {
 			if( $t_relationship->type != BUG_DEPENDANT ) {
 				continue;
@@ -454,7 +451,7 @@ function relgraph_add_child( array &$p_bug_list, $p_bug_id ) {
 
 		# Add all child issues to the list of children and visit them
 		# recursively.
-		$t_relationships = relationship_get_all_src( $p_bug_id );
+		$t_relationships = \Flickerbox\Relationship::get_all_src( $p_bug_id );
 		foreach( $t_relationships as $t_relationship ) {
 			if( $t_relationship->type != BUG_DEPENDANT ) {
 				continue;
@@ -513,14 +510,14 @@ function relgraph_add_bug_to_graph( Graph &$p_graph, $p_bug_id, BugData $p_bug, 
 		$t_node_attributes['style'] = 'filled';
 	}
 
-	$t_node_attributes['fillcolor'] = get_status_color( $p_bug->status );
+	$t_node_attributes['fillcolor'] = \Flickerbox\Helper::get_status_color( $p_bug->status );
 
 	if( null !== $p_url ) {
 		$t_node_attributes['URL'] = $p_url;
 	}
 
 	$t_summary = \Flickerbox\String::display_line_links( $p_bug->summary );
-	$t_status = get_enum_element( 'status', $p_bug->status );
+	$t_status = \Flickerbox\Helper::get_enum_element( 'status', $p_bug->status );
 	$t_node_attributes['tooltip'] = '[' . $t_status . '] ' . $t_summary;
 
 	$p_graph->add_node( $p_bug_id, $t_node_attributes );

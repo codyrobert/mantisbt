@@ -42,9 +42,6 @@ require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
-require_api( 'project_api.php' );
 
 $g_custom_field_types[CUSTOM_FIELD_TYPE_STRING] = 'standard';
 $g_custom_field_types[CUSTOM_FIELD_TYPE_TEXTAREA] = 'standard';
@@ -486,7 +483,7 @@ function custom_field_update( $p_field_id, array $p_def_array ) {
  */
 function custom_field_link( $p_field_id, $p_project_id ) {
 	custom_field_ensure_exists( $p_field_id );
-	project_ensure_exists( $p_project_id );
+	\Flickerbox\Project::ensure_exists( $p_project_id );
 
 	if( custom_field_is_linked( $p_field_id, $p_project_id ) ) {
 		return false;
@@ -544,7 +541,7 @@ function custom_field_destroy( $p_field_id ) {
  * Delete all associations of custom fields to the specified project
  * return true on success, false on failure
  *
- * To be called from within project_delete().
+ * To be called from within \Flickerbox\Project::delete().
  * @param integer $p_project_id A project identifier.
  * @return void
  * @access public
@@ -1040,7 +1037,7 @@ function custom_field_validate( $p_field_id, $p_value ) {
  */
 function custom_field_prepare_possible_values( $p_possible_values ) {
 	if( !\Flickerbox\Utility::is_blank( $p_possible_values ) && ( $p_possible_values[0] == '=' ) ) {
-		return helper_call_custom_function( 'enum_' . utf8_substr( $p_possible_values, 1 ), array() );
+		return \Flickerbox\Helper::call_custom_function( 'enum_' . utf8_substr( $p_possible_values, 1 ), array() );
 	}
 
 	return $p_possible_values;
@@ -1184,7 +1181,7 @@ function custom_field_set_value( $p_field_id, $p_bug_id, $p_value, $p_log_insert
 		);
 		db_query( $t_query, $t_params );
 
-		history_log_event_direct( $p_bug_id, $t_name, custom_field_database_to_value( $t_row[$t_value_field], $t_type ), $p_value );
+		\Flickerbox\History::log_event_direct( $p_bug_id, $t_name, custom_field_database_to_value( $t_row[$t_value_field], $t_type ), $p_value );
 	} else {
 		$t_query = 'INSERT INTO {custom_field_string}
 						( field_id, bug_id, ' . $t_value_field . ' )
@@ -1198,7 +1195,7 @@ function custom_field_set_value( $p_field_id, $p_bug_id, $p_value, $p_log_insert
 		db_query( $t_query, $t_params );
 		# Don't log history events for new bug reports or on other special occasions
 		if( $p_log_insert ) {
-			history_log_event_direct( $p_bug_id, $t_name, '', $p_value );
+			\Flickerbox\History::log_event_direct( $p_bug_id, $t_name, '', $p_value );
 		}
 	}
 

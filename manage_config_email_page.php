@@ -38,9 +38,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 auth_reauthenticate();
 
@@ -264,7 +262,7 @@ function get_section_end_for_email() {
 \Flickerbox\HTML::print_manage_config_menu( 'manage_config_email_page.php' );
 
 $t_access = \Flickerbox\Current_User::get_access_level();
-$t_project = helper_get_current_project();
+$t_project = \Flickerbox\Helper::get_current_project();
 
 # build a list of all of the actions
 $t_actions = array( 'owner', 'reopened', 'deleted', 'bugnote' );
@@ -323,7 +321,7 @@ if( config_get( 'enable_email_notification' ) == ON ) {
 	if( ALL_PROJECTS == $t_project ) {
 		$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
 	} else {
-		$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( project_get_name( $t_project ) ) );
+		$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project ) ) );
 	}
 	echo '<p class="bold">' . $t_project_title . '</p>' . "\n";
 	echo '<p>' . \Flickerbox\Lang::get( 'colour_coding' ) . '<br />';
@@ -346,7 +344,7 @@ if( config_get( 'enable_email_notification' ) == ON ) {
 
 	$t_statuses = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
 	foreach ( $t_statuses as $t_status => $t_label ) {
-		get_capability_row_for_email( \Flickerbox\Lang::get( 'status_changed_to' ) . ' \'' . get_enum_element( 'status', $t_status ) . '\'', $t_label );
+		get_capability_row_for_email( \Flickerbox\Lang::get( 'status_changed_to' ) . ' \'' . \Flickerbox\Helper::get_enum_element( 'status', $t_status ) . '\'', $t_label );
 	}
 
 	get_section_end_for_email();

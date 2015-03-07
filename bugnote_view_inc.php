@@ -50,8 +50,6 @@ require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -59,7 +57,7 @@ require_api( 'user_api.php' );
 $t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 #precache access levels
-\Flickerbox\Access::cache_matrix_project( helper_get_current_project() );
+\Flickerbox\Access::cache_matrix_project( \Flickerbox\Helper::get_current_project() );
 
 # get the bugnote data
 $t_bugnote_order = \Flickerbox\Current_User::get_pref( 'bugnote_order' );
@@ -101,7 +99,7 @@ $t_num_notes = count( $t_bugnotes );
 </tr>
 <?php }
 
-	event_signal( 'EVENT_VIEW_BUGNOTES_START', array( $f_bug_id, $t_bugnotes ) );
+	\Flickerbox\Event::signal( 'EVENT_VIEW_BUGNOTES_START', array( $f_bug_id, $t_bugnotes ) );
 
 	$t_normal_date_format = config_get( 'normal_date_format' );
 	$t_total_time = 0;
@@ -158,7 +156,7 @@ $t_num_notes = count( $t_bugnotes );
 				$t_access_level = \Flickerbox\Access::get_project_level( null, (int)$t_bugnote->reporter_id );
 				# Only display access level when higher than 0 (ANYBODY)
 				if( $t_access_level > ANYBODY ) {
-					echo '(', get_enum_element( 'access_levels', $t_access_level ), ')';
+					echo '(', \Flickerbox\Helper::get_enum_element( 'access_levels', $t_access_level ), ')';
 				}
 			}
 		?></span>
@@ -267,14 +265,14 @@ $t_num_notes = count( $t_bugnotes );
 		?>
 	</td>
 </tr>
-<?php event_signal( 'EVENT_VIEW_BUGNOTE', array( $f_bug_id, $t_bugnote->id, VS_PRIVATE == $t_bugnote->view_state ) ); ?>
+<?php \Flickerbox\Event::signal( 'EVENT_VIEW_BUGNOTE', array( $f_bug_id, $t_bugnote->id, VS_PRIVATE == $t_bugnote->view_state ) ); ?>
 <tr class="spacer">
 	<td colspan="2"></td>
 </tr>
 <?php
 	} # end for loop
 
-	event_signal( 'EVENT_VIEW_BUGNOTES_END', $f_bug_id );
+	\Flickerbox\Event::signal( 'EVENT_VIEW_BUGNOTES_END', $f_bug_id );
 ?>
 </table>
 <?php

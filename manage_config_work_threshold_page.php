@@ -39,9 +39,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
 auth_reauthenticate();
@@ -52,7 +50,7 @@ auth_reauthenticate();
 \Flickerbox\HTML::print_manage_config_menu( 'manage_config_work_threshold_page.php' );
 
 $g_user = \Flickerbox\Auth::get_current_user_id();
-$g_project_id = helper_get_current_project();
+$g_project_id = \Flickerbox\Helper::get_current_project();
 $t_show_submit = false;
 
 $g_access_levels = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'access_levels_enum_string' ) );
@@ -330,7 +328,7 @@ echo '<br /><br />' . "\n";
 if( ALL_PROJECTS == $g_project_id ) {
 	$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
 } else {
-	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( project_get_name( $g_project_id ) ) );
+	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( \Flickerbox\Project::get_name( $g_project_id ) ) );
 }
 echo '<p class="bold">' . $t_project_title . '</p>' . "\n";
 echo '<p>' . \Flickerbox\Lang::get( 'colour_coding' ) . '<br />';

@@ -34,20 +34,18 @@
 
 require_once( 'core.php' );
 require_api( 'columns_api.php' );
-require_api( 'csv_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
-helper_begin_long_process();
+\Flickerbox\Helper::begin_long_process();
 
 $t_page_number = 1;
 $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = null;
 
-$t_nl = csv_get_newline();
+$t_nl = \Flickerbox\CSV::get_newline();
 $t_sep = csv_get_separator();
 
 # Get bug rows according to the current filter
@@ -59,7 +57,7 @@ if( $t_rows === false ) {
 # pre-cache custom column data
 columns_plugin_cache_issue_data( $t_rows );
 
-$t_filename = csv_get_default_filename();
+$t_filename = \Flickerbox\CSV::get_default_filename();
 
 # Send headers to browser to activate mime loading
 
@@ -73,7 +71,7 @@ header( 'Content-Transfer-Encoding: BASE64;' );
 header( 'Content-Disposition: attachment; filename="' . urlencode( \Flickerbox\File::clean_name( $t_filename ) ) . '"' );
 
 # Get columns to be exported
-$t_columns = csv_get_columns();
+$t_columns = \Flickerbox\CSV::get_columns();
 
 # export BOM
 if( config_get( 'csv_add_bom' ) == ON ) {
@@ -123,12 +121,12 @@ foreach ( $t_rows as $t_row ) {
 		if( column_get_custom_field_name( $t_column ) !== null || column_is_plugin_column( $t_column ) ) {
 			ob_start();
 			$t_column_value_function = 'print_column_value';
-			helper_call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_CSV_PAGE ) );
+			\Flickerbox\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_CSV_PAGE ) );
 			$t_value = ob_get_clean();
 
-			echo csv_escape_string( $t_value );
+			echo \Flickerbox\CSV::escape_string( $t_value );
 		} else {
-			$t_function = 'csv_format_' . $t_column;
+			$t_function = '\Flickerbox\CSV::format_' . $t_column;
 			echo $t_function( $t_row );
 		}
 	}

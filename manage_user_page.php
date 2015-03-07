@@ -41,7 +41,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 auth_reauthenticate();
@@ -263,8 +262,8 @@ $t_user_count = count( $t_users );
 			<input type="hidden" name="dir" value="<?php echo $c_dir ?>" />
 			<input type="hidden" name="save" value="1" />
 			<input type="hidden" name="filter" value="<?php echo $c_filter ?>" />
-			<input type="checkbox" name="hideinactive" value="1" <?php check_checked( (int)$c_hide_inactive, 1 ); ?> /> <?php echo \Flickerbox\Lang::get( 'hide_inactive' ) ?>
-			<input type="checkbox" name="showdisabled" value="1" <?php check_checked( (int)$c_show_disabled, 1 ); ?> /> <?php echo \Flickerbox\Lang::get( 'show_disabled' ) ?>
+			<input type="checkbox" name="hideinactive" value="1" <?php \Flickerbox\Helper::check_checked( (int)$c_hide_inactive, 1 ); ?> /> <?php echo \Flickerbox\Lang::get( 'hide_inactive' ) ?>
+			<input type="checkbox" name="showdisabled" value="1" <?php \Flickerbox\Helper::check_checked( (int)$c_show_disabled, 1 ); ?> /> <?php echo \Flickerbox\Lang::get( 'show_disabled' ) ?>
 			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'filter_button' ) ?>" />
 		</fieldset>
 	</form>
@@ -305,7 +304,7 @@ $t_user_count = count( $t_users );
 		$u_last_visit    = date( $t_date_format, $u_last_visit );
 
 		if( !isset( $t_access_level[$u_access_level] ) ) {
-			$t_access_level[$u_access_level] = get_enum_element( 'access_levels', $u_access_level );
+			$t_access_level[$u_access_level] = \Flickerbox\Helper::get_enum_element( 'access_levels', $u_access_level );
 		} ?>
 			<tr>
 				<td><?php

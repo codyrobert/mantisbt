@@ -44,9 +44,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -61,7 +59,7 @@ $f_sort 				= null;
 $f_dir		 			= null;
 $t_project_id 			= 0;
 
-$t_columns = helper_get_columns_to_view( COLUMNS_TARGET_PRINT_PAGE );
+$t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_PRINT_PAGE );
 $t_num_of_columns = count( $t_columns );
 
 # check to see if the cookie exists
@@ -78,7 +76,7 @@ if( !\Flickerbox\Utility::is_blank( $t_cookie_value ) ) {
 	$f_highlight_changed 	= $t_filter_cookie_arr[FILTER_PROPERTY_HIGHLIGHT_CHANGED];
 	$f_sort 				= $t_filter_cookie_arr[FILTER_PROPERTY_SORT_FIELD_NAME];
 	$f_dir		 			= $t_filter_cookie_arr[FILTER_PROPERTY_SORT_DIRECTION];
-	$t_project_id 			= helper_get_current_project();
+	$t_project_id 			= \Flickerbox\Helper::get_current_project();
 }
 
 # This replaces the actual search that used to be here
@@ -101,7 +99,7 @@ $t_show_flag = \Flickerbox\GPC::get_int( 'show_flag', 0 );
 
 <table class="width100"><tr><td class="form-title">
 	<div class="center">
-		<?php echo \Flickerbox\String::display( config_get( 'window_title' ) ) . ' - ' . \Flickerbox\String::display( project_get_name( $t_project_id ) ); ?>
+		<?php echo \Flickerbox\String::display( config_get( 'window_title' ) ) . ' - ' . \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project_id ) ); ?>
 	</div>
 </td></tr></table>
 
@@ -205,7 +203,7 @@ $t_icon_path = config_get( 'icon_path' );
 
 		foreach( $t_columns as $t_column ) {
 			$t_title_function = 'print_column_title';
-			helper_call_custom_function( $t_title_function, array( $t_column, COLUMNS_TARGET_PRINT_PAGE ) );
+			\Flickerbox\Helper::call_custom_function( $t_title_function, array( $t_column, COLUMNS_TARGET_PRINT_PAGE ) );
 		}
 	?>
 </tr>
@@ -217,14 +215,14 @@ $t_icon_path = config_get( 'icon_path' );
 		$t_row = $t_result[$i];
 
 		# alternate row colors
-		$t_status_color = helper_alternate_colors( $i, '#ffffff', '#dddddd' );
+		$t_status_color = \Flickerbox\Helper::alternate_colors( $i, '#ffffff', '#dddddd' );
 		if( isset( $t_bug_arr_sort[$t_row->id] ) || ( $t_show_flag==0 ) ) {
 ?>
 <tr bgcolor="<?php echo $t_status_color ?>">
 <?php
 		foreach( $t_columns as $t_column ) {
 			$t_column_value_function = 'print_column_value';
-			helper_call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_PRINT_PAGE ) );
+			\Flickerbox\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_PRINT_PAGE ) );
 		}
 ?>
 </tr>

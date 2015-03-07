@@ -50,11 +50,7 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
-require_api( 'project_hierarchy_api.php' );
 require_api( 'user_api.php' );
 
 auth_reauthenticate();
@@ -62,15 +58,15 @@ auth_reauthenticate();
 $f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 $f_show_global_users = \Flickerbox\GPC::get_bool( 'show_global_users' );
 
-project_ensure_exists( $f_project_id );
+\Flickerbox\Project::ensure_exists( $f_project_id );
 $g_project_override = $f_project_id;
 \Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
 
-$t_row = project_get_row( $f_project_id );
+$t_row = \Flickerbox\Project::get_row( $f_project_id );
 
 $t_can_manage_users = \Flickerbox\Access::has_project_level( config_get( 'project_user_threshold' ), $f_project_id );
 
-\Flickerbox\HTML::page_top( project_get_field( $f_project_id, 'name' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Project::get_field( $f_project_id, 'name' ) );
 
 \Flickerbox\HTML::print_manage_menu( 'manage_proj_edit_page.php' );
 ?>
@@ -98,12 +94,12 @@ $t_can_manage_users = \Flickerbox\Access::has_project_level( config_get( 'projec
 			</div>
 			<div class="field-container">
 				<label for="project-enabled"><span><?php echo \Flickerbox\Lang::get( 'enabled' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="project-enabled" name="enabled" <?php check_checked( (int)$t_row['enabled'], ON ); ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="project-enabled" name="enabled" <?php \Flickerbox\Helper::check_checked( (int)$t_row['enabled'], ON ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="project-inherit-global"><span><?php echo \Flickerbox\Lang::get( 'inherit_global' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="project-inherit-global" name="inherit_global" <?php check_checked( (int)$t_row['inherit_global'], ON ); ?> /></span>
+				<span class="checkbox"><input type="checkbox" id="project-inherit-global" name="inherit_global" <?php \Flickerbox\Helper::check_checked( (int)$t_row['inherit_global'], ON ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
@@ -136,7 +132,7 @@ $t_can_manage_users = \Flickerbox\Access::has_project_level( config_get( 'projec
 				<span class="label-style"></span>
 			</div>
 
-			<?php event_signal( 'EVENT_MANAGE_PROJECT_UPDATE_FORM', array( $f_project_id ) ); ?>
+			<?php \Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_UPDATE_FORM', array( $f_project_id ) ); ?>
 
 			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_project_button' ) ?>" /></span>
 		</fieldset>
@@ -171,14 +167,14 @@ if( \Flickerbox\Access::has_global_level( config_get( 'delete_project_threshold'
 				<?php echo \Flickerbox\Form::security_field( 'manage_proj_subproj_add' ) ?>
 				<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 				<select name="subproject_id"><?php
-				$t_all_subprojects = project_hierarchy_get_subprojects( $f_project_id, true );
+				$t_all_subprojects = \Flickerbox\Project\Hierarchy::get_subprojects( $f_project_id, true );
 				$t_all_subprojects[] = $f_project_id;
 				$t_manage_access = config_get( 'manage_project_threshold' );
-				$t_projects = project_get_all_rows();
+				$t_projects = \Flickerbox\Project::get_all_rows();
 				$t_projects = \Flickerbox\Utility::multi_sort( $t_projects, 'name', ASCENDING );
 				foreach ( $t_projects as $t_project ) {
 					if( in_array( $t_project['id'], $t_all_subprojects ) ||
-						in_array( $f_project_id, project_hierarchy_get_all_subprojects( $t_project['id'] ) ) ||
+						in_array( $f_project_id, \Flickerbox\Project\Hierarchy::get_all_subprojects( $t_project['id'] ) ) ||
 						!\Flickerbox\Access::has_project_level( $t_manage_access, $t_project['id'] ) ) {
 						continue;
 					} ?>
@@ -211,8 +207,8 @@ if( \Flickerbox\Access::has_global_level( config_get( 'delete_project_threshold'
 				<tbody>
 <?php
 		foreach ( $t_subproject_ids as $t_subproject_id ) {
-			$t_subproject = project_get_row( $t_subproject_id );
-			$t_inherit_parent = project_hierarchy_inherit_parent( $t_subproject_id, $f_project_id, true ); ?>
+			$t_subproject = \Flickerbox\Project::get_row( $t_subproject_id );
+			$t_inherit_parent = \Flickerbox\Project\Hierarchy::inherit_parent( $t_subproject_id, $f_project_id, true ); ?>
 					<tr>
 						<td>
 							<a href="manage_proj_edit_page.php?project_id=<?php echo $t_subproject['id'] ?>">
@@ -220,7 +216,7 @@ if( \Flickerbox\Access::has_global_level( config_get( 'delete_project_threshold'
 							</a>
 						</td>
 						<td class="center">
-							<?php echo get_enum_element( 'project_status', $t_subproject['status'] ) ?>
+							<?php echo \Flickerbox\Helper::get_enum_element( 'project_status', $t_subproject['status'] ) ?>
 						</td>
 						<td class="center">
 							<?php echo \Flickerbox\Utility::trans_bool( $t_subproject['enabled'] ) ?>
@@ -232,7 +228,7 @@ if( \Flickerbox\Access::has_global_level( config_get( 'delete_project_threshold'
 							/>
 						</td>
 						<td class="center">
-							<?php echo get_enum_element( 'project_view_state', $t_subproject['view_state'] ) ?>
+							<?php echo \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_subproject['view_state'] ) ?>
 						</td>
 						<td>
 							<?php echo \Flickerbox\String::display_links( $t_subproject['description'] ) ?>
@@ -490,11 +486,11 @@ if( \Flickerbox\Access::has_project_level( config_get( 'custom_field_link_thresh
 </div><?php
 }
 
-event_signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
+\Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
 ?>
 
 <div class="important-msg center"><?php
-	if( VS_PUBLIC == project_get_field( $f_project_id, 'view_state' ) ) {
+	if( VS_PUBLIC == \Flickerbox\Project::get_field( $f_project_id, 'view_state' ) ) {
 		echo \Flickerbox\Lang::get( 'public_project_msg' );
 	} else {
 		echo \Flickerbox\Lang::get( 'private_project_msg' );
@@ -527,7 +523,7 @@ event_signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
 		</thead>
 		<tbody>
 <?php
-	$t_users = project_get_all_user_rows( $f_project_id, ANYBODY, $f_show_global_users );
+	$t_users = \Flickerbox\Project::get_all_user_rows( $f_project_id, ANYBODY, $f_show_global_users );
 	$t_display = array();
 	$t_sort = array();
 	foreach ( $t_users as $t_user ) {
@@ -566,12 +562,12 @@ event_signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
 					print_email_link( $t_email, $t_email );
 				?>
 				</td>
-				<td><?php echo get_enum_element( 'access_levels', $t_user['access_level'] ) ?></td>
+				<td><?php echo \Flickerbox\Helper::get_enum_element( 'access_levels', $t_user['access_level'] ) ?></td>
 				<td class="center"><?php
 					# You need global or project-specific permissions to remove users
 					#  from this project
 					if( $t_can_manage_users && \Flickerbox\Access::has_project_level( $t_user['access_level'], $f_project_id ) ) {
-						if( project_includes_user( $f_project_id, $t_user['id'] ) ) {
+						if( \Flickerbox\Project::includes_user( $f_project_id, $t_user['id'] ) ) {
 							print_button( 'manage_proj_user_remove.php?project_id=' . $f_project_id . '&user_id=' . $t_user['id'], \Flickerbox\Lang::get( 'remove_link' ) );
 							$t_removable_users_exist = true;
 						}

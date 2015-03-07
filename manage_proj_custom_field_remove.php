@@ -39,7 +39,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_custom_field_remove' );
@@ -59,7 +58,7 @@ $f_return = \Flickerbox\GPC::get_string( 'return', '' );
 $t_definition = custom_field_get_definition( $f_field_id );
 
 # Confirm with the user
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_unlinking' ) .
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_unlinking' ) .
 	'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
 	\Flickerbox\Lang::get( 'field_remove_button' ) );
 

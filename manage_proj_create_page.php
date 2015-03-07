@@ -37,7 +37,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
 
 auth_reauthenticate();
@@ -50,7 +49,7 @@ auth_reauthenticate();
 
 $f_parent_id = \Flickerbox\GPC::get( 'parent_id', null );
 
-if( project_table_empty() ) {
+if( \Flickerbox\Project::table_empty() ) {
 	echo '<br />';
 	echo '<div id="create-first-project" class="important-msg">';
 	echo '<ul>';
@@ -133,7 +132,7 @@ if( project_table_empty() ) {
 				<span class="label-style"></span>
 			</div>
 
-			<?php event_signal( 'EVENT_MANAGE_PROJECT_CREATE_FORM' ) ?>
+			<?php \Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_CREATE_FORM' ) ?>
 
 			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_project_button' ) ?>" /></span>
 		</fieldset>

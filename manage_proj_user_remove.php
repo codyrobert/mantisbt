@@ -38,9 +38,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_user_remove' );
@@ -57,9 +55,9 @@ $f_user_id = \Flickerbox\GPC::get_int( 'user_id', 0 );
 
 if( 0 == $f_user_id ) {
 	# Confirm with the user
-	helper_ensure_confirmed( \Flickerbox\Lang::get( 'remove_all_users_sure_msg' ), \Flickerbox\Lang::get( 'remove_all_users_button' ) );
+	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'remove_all_users_sure_msg' ), \Flickerbox\Lang::get( 'remove_all_users_button' ) );
 
-	project_remove_all_users( $f_project_id, \Flickerbox\Access::get_project_level( $f_project_id ) );
+	\Flickerbox\Project::remove_all_users( $f_project_id, \Flickerbox\Access::get_project_level( $f_project_id ) );
 } else {
 	# Don't allow removal of users from the project who have a higher access level than the current user
 	\Flickerbox\Access::ensure_project_level( \Flickerbox\Access::get_project_level( $f_project_id, $f_user_id ), $f_project_id );
@@ -67,11 +65,11 @@ if( 0 == $f_user_id ) {
 	$t_user = user_get_row( $f_user_id );
 
 	# Confirm with the user
-	helper_ensure_confirmed( \Flickerbox\Lang::get( 'remove_user_sure_msg' ) .
+	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'remove_user_sure_msg' ) .
 		'<br/>' . \Flickerbox\Lang::get( 'username_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_user['username'],
 		\Flickerbox\Lang::get( 'remove_user_button' ) );
 
-	project_remove_user( $f_project_id, $f_user_id );
+	\Flickerbox\Project::remove_user( $f_project_id, $f_user_id );
 }
 
 \Flickerbox\Form::security_purge( 'manage_proj_user_remove' );

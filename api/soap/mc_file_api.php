@@ -106,7 +106,7 @@ function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_ti
 	if( $t_project_id == ALL_PROJECTS ) {
 		$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 	} else {
-		$t_file_path = project_get_field( $t_project_id, 'file_path' );
+		$t_file_path = \Flickerbox\Project::get_field( $t_project_id, 'file_path' );
 		if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
 			$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 		}
@@ -169,7 +169,7 @@ function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_ti
 		bug_update_date( $t_issue_id );
 
 		# add history entry
-		history_log_event_special( $t_issue_id, FILE_ADDED, $p_name );
+		\Flickerbox\History::log_event_special( $t_issue_id, FILE_ADDED, $p_name );
 	}
 
 	return $t_attachment_id;

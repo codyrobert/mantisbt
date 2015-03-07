@@ -48,7 +48,6 @@ namespace Flickerbox;
 
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -352,7 +351,7 @@ class Auth
 	
 		# clear cookies, if they were set
 		if( \Flickerbox\Auth::clear_cookies() ) {
-			helper_clear_pref_cookies();
+			\Flickerbox\Helper::clear_pref_cookies();
 		}
 	
 		if( HTTP_AUTH == config_get( 'login_method' ) ) {

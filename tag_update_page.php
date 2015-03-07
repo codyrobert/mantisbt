@@ -41,7 +41,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -75,14 +74,14 @@ if( !( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) 
 			</div>
 			<div class="field-container">
 				<label for="tag-name"><span><?php echo \Flickerbox\Lang::get( 'tag_name' ) ?></span></label>
-				<span class="input"><input type="text" <?php echo helper_get_tab_index() ?> id="tag-name" name="name" value="<?php echo $t_name ?>"/></span>
+				<span class="input"><input type="text" <?php echo \Flickerbox\Helper::get_tab_index() ?> id="tag-name" name="name" value="<?php echo $t_name ?>"/></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<?php
 					if( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) ) ) {
 						echo '<label for="tag-user-id"><span>', \Flickerbox\Lang::get( 'tag_creator' ), '</span></label>';
-						echo '<span class="select"><select ', helper_get_tab_index(), ' id="tag-user-id" name="user_id">';
+						echo '<span class="select"><select ', \Flickerbox\Helper::get_tab_index(), ' id="tag-user-id" name="user_id">';
 						print_user_option_list( (int)$t_tag_row['user_id'], ALL_PROJECTS, (int)config_get( 'tag_create_threshold' ) );
 						echo '</select></span>';
 					} else { ?>
@@ -103,10 +102,10 @@ if( !( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) 
 			</div>
 			<div class="field-container">
 				<label for="tag-description"><span><?php echo \Flickerbox\Lang::get( 'tag_description' ) ?></span></label>
-				<span class="textarea"><textarea id="tag-description" name="description" <?php echo helper_get_tab_index() ?> cols="80" rows="6"><?php echo \Flickerbox\String::textarea( $t_description ) ?></textarea></span>
+				<span class="textarea"><textarea id="tag-description" name="description" <?php echo \Flickerbox\Helper::get_tab_index() ?> cols="80" rows="6"><?php echo \Flickerbox\String::textarea( $t_description ) ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input <?php echo helper_get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'tag_update_button' ) ?>" /></span>
+			<span class="submit-button"><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'tag_update_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>

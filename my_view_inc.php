@@ -40,9 +40,7 @@
 
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 $t_filter = \Flickerbox\Current_User::get_bug_filter();
 if( $t_filter === false ) {
@@ -58,7 +56,7 @@ $t_bug_resolved_status_threshold = config_get( 'bug_resolved_status_threshold' )
 $t_hide_status_default = config_get( 'hide_status_default' );
 $t_default_show_changed = config_get( 'default_show_changed' );
 
-$c_filter['assigned'] = \Flickerbox\Filter::create_assigned_to_unresolved( helper_get_current_project(), $t_current_user_id );
+$c_filter['assigned'] = \Flickerbox\Filter::create_assigned_to_unresolved( \Flickerbox\Helper::get_current_project(), $t_current_user_id );
 $t_url_link_parameters['assigned'] = FILTER_PROPERTY_HANDLER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
 
 $c_filter['recent_mod'] = array(
@@ -96,7 +94,7 @@ $c_filter['recent_mod'] = array(
 );
 $t_url_link_parameters['recent_mod'] = FILTER_PROPERTY_HIDE_STATUS . '=none';
 
-$c_filter['reported'] = \Flickerbox\Filter::create_reported_by( helper_get_current_project(), $t_current_user_id );
+$c_filter['reported'] = \Flickerbox\Filter::create_reported_by( \Flickerbox\Helper::get_current_project(), $t_current_user_id );
 $t_url_link_parameters['reported'] = FILTER_PROPERTY_REPORTER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
 $c_filter['resolved'] = array(
@@ -135,12 +133,12 @@ $c_filter['resolved'] = array(
 $t_url_link_parameters['resolved'] = FILTER_PROPERTY_STATUS . '=' . $t_bug_resolved_status_threshold . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
 
 
-$c_filter['unassigned'] = \Flickerbox\Filter::create_assigned_to_unresolved( helper_get_current_project(), 0 );
+$c_filter['unassigned'] = \Flickerbox\Filter::create_assigned_to_unresolved( \Flickerbox\Helper::get_current_project(), 0 );
 $t_url_link_parameters['unassigned'] = FILTER_PROPERTY_HANDLER_ID . '=[none]' . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
 # TODO: check. handler value looks wrong
 
-$c_filter['monitored'] = \Flickerbox\Filter::create_monitored_by( helper_get_current_project(), $t_current_user_id );
+$c_filter['monitored'] = \Flickerbox\Filter::create_monitored_by( \Flickerbox\Helper::get_current_project(), $t_current_user_id );
 $t_url_link_parameters['monitored'] = FILTER_PROPERTY_MONITOR_USER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
 $c_filter['feedback'] = array(
@@ -254,7 +252,7 @@ $t_url_link_parameters['my_comments'] = FILTER_PROPERTY_NOTE_USER_ID. '=' . META
 $t_rows = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $c_filter[$t_box_title] );
 
 # Improve performance by caching category data in one pass
-if( helper_get_current_project() == 0 ) {
+if( \Flickerbox\Helper::get_current_project() == 0 ) {
 	$t_categories = array();
 	foreach( $t_rows as $t_row ) {
 		$t_categories[] = $t_row->category_id;
@@ -318,7 +316,7 @@ for( $i = 0;$i < $t_count; $i++ ) {
 	}
 
 	# grab the project name
-	$t_project_name = project_get_field( $t_bug->project_id, 'name' );
+	$t_project_name = \Flickerbox\Project::get_field( $t_bug->project_id, 'name' );
 
 	if( VS_PRIVATE == $t_bug->view_state ) {
 	    $t_bug_class = 'my-buglist-private';
@@ -365,8 +363,8 @@ for( $i = 0;$i < $t_count; $i++ ) {
 	# -- Summary --?>
 	<td class="left my-buglist-description">
 		<?php
-		 	if( ON == config_get( 'show_bug_project_links' ) && helper_get_current_project() != $t_bug->project_id ) {
-				echo '<span class="small project">[', \Flickerbox\String::display_line( project_get_name( $t_bug->project_id ) ), '] </span>';
+		 	if( ON == config_get( 'show_bug_project_links' ) && \Flickerbox\Helper::get_current_project() != $t_bug->project_id ) {
+				echo '<span class="small project">[', \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $t_bug->project_id ) ), '] </span>';
 			}
 			echo '<span class="small summary">' . $t_summary . '</span><br />';
 	?>

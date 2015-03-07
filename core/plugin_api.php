@@ -39,9 +39,6 @@
 
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 
 # Cache variables #####
 
@@ -132,7 +129,7 @@ function plugin_page( $p_page, $p_redirect = false, $p_base_name = null ) {
 	if( $p_redirect ) {
 		return 'plugin.php?page=' . $t_current . '/' . $p_page;
 	} else {
-		return helper_mantis_url( 'plugin.php?page=' . $t_current . '/' . $p_page );
+		return \Flickerbox\Helper::mantis_url( 'plugin.php?page=' . $t_current . '/' . $p_page );
 	}
 }
 
@@ -166,7 +163,7 @@ function plugin_file( $p_file, $p_redirect = false, $p_base_name = null ) {
 	if( $p_redirect ) {
 		return 'plugin_file.php?file=' . $t_current . '/' . $p_file;
 	} else {
-		return helper_mantis_url( 'plugin_file.php?file=' . $t_current . '/' . $p_file );
+		return \Flickerbox\Helper::mantis_url( 'plugin_file.php?file=' . $t_current . '/' . $p_file );
 	}
 }
 
@@ -355,7 +352,7 @@ function plugin_history_log( $p_bug_id, $p_field_name, $p_old_value, $p_new_valu
 
 	$t_field_name = $t_basename . '_' . $p_field_name;
 
-	history_log_event_direct( $p_bug_id, $t_field_name, $p_old_value, $p_new_value, $p_user_id, PLUGIN_HISTORY );
+	\Flickerbox\History::log_event_direct( $p_bug_id, $t_field_name, $p_old_value, $p_new_value, $p_user_id, PLUGIN_HISTORY );
 }
 
 /**
@@ -385,7 +382,7 @@ function plugin_error( $p_error_name, $p_error_type = ERROR, $p_basename = null 
  */
 function plugin_event_hook( $p_name, $p_callback ) {
 	$t_basename = plugin_get_current();
-	event_hook( $p_name, $p_callback, $t_basename );
+	\Flickerbox\Event::hook( $p_name, $p_callback, $t_basename );
 }
 
 /**
@@ -402,12 +399,12 @@ function plugin_event_hook_many( array $p_hooks ) {
 
 	foreach( $p_hooks as $t_event => $t_callbacks ) {
 		if( !is_array( $t_callbacks ) ) {
-			event_hook( $t_event, $t_callbacks, $t_basename );
+			\Flickerbox\Event::hook( $t_event, $t_callbacks, $t_basename );
 			continue;
 		}
 
 		foreach( $t_callbacks as $t_callback ) {
-			event_hook( $t_event, $t_callback, $t_basename );
+			\Flickerbox\Event::hook( $t_event, $t_callback, $t_basename );
 		}
 	}
 }
@@ -1003,7 +1000,7 @@ function plugin_init_installed() {
 		$t_plugins = $t_plugins_retry;
 	} while( $t_continue );
 
-	event_signal( 'EVENT_PLUGIN_INIT' );
+	\Flickerbox\Event::signal( 'EVENT_PLUGIN_INIT' );
 }
 
 /**

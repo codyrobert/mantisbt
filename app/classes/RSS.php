@@ -37,7 +37,6 @@ namespace Flickerbox;
  */
 
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'user_api.php' );
 
 
@@ -117,7 +116,7 @@ class RSS
 		}
 	
 		if( $p_project_id === null ) {
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 		} else {
 			$t_project_id = (integer)$p_project_id;
 		}
@@ -166,7 +165,7 @@ class RSS
 		}
 	
 		if( $p_project_id === null ) {
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 		} else {
 			$t_project_id = (integer)$p_project_id;
 		}

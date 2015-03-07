@@ -39,7 +39,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 require_lib( 'rssbuilder' . DIRECTORY_SEPARATOR . 'class.RSSBuilder.inc.php' );
 
@@ -84,7 +83,7 @@ $t_description = $t_title;
 $t_image_link = config_get( 'path' ) . 'images/mantis_logo_button.gif';
 
 # only rss 2.0
-$t_category = string_rss_links( project_get_name( $f_project_id ) );
+$t_category = string_rss_links( \Flickerbox\Project::get_name( $f_project_id ) );
 
 # in minutes (only rss 2.0)
 $t_cache = '60';

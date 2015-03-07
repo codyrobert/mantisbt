@@ -514,7 +514,7 @@ switch( $g_active_language ) {
 # Enumerations format is: "abc|lmn|xyz"
 # To use this in a custom field type "=categories" in the possible values field.
 function custom_function_override_enum_categories() {
-    $t_categories = \Flickerbox\Category::get_all_rows( helper_get_current_project() );
+    $t_categories = \Flickerbox\Category::get_all_rows( \Flickerbox\Helper::get_current_project() );
 
     $t_enum = array();
     foreach( $t_categories as $t_category ) {

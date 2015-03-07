@@ -40,7 +40,6 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 /**
@@ -87,7 +86,7 @@ function action_add_note_print_fields() {
 				</select>
 <?php
 	} else {
-		echo get_enum_element( 'view_state', $t_default_state );
+		echo \Flickerbox\Helper::get_enum_element( 'view_state', $t_default_state );
 ?>
 				<input type="hidden" name="view_state" value="<?php echo $t_default_state; ?>" />';
 <?php

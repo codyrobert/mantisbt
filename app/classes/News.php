@@ -39,7 +39,6 @@ namespace Flickerbox;
 
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 
 
 class News
@@ -171,7 +170,7 @@ class News
 	 * @return int news count
 	 */
 	static function get_count( $p_project_id, $p_global = true ) {
-		$t_project_where = helper_project_specific_where( $p_project_id );
+		$t_project_where = \Flickerbox\Helper::project_specific_where( $p_project_id );
 	
 		$t_query = 'SELECT COUNT(*) FROM {news} WHERE ' . $t_project_where;
 	
@@ -253,7 +252,7 @@ class News
 	 */
 	static function get_limited_rows( $p_offset, $p_project_id = null ) {
 		if( $p_project_id === null ) {
-			$p_project_id = helper_get_current_project();
+			$p_project_id = \Flickerbox\Helper::get_current_project();
 		}
 	
 		$c_offset = (int)$p_offset;

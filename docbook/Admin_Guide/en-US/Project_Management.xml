@@ -54,7 +54,7 @@ function custom_function_override_changelog_print_issue( $p_issue_id, $p_issue_l
         echo ' (', \Flickerbox\Prepare::user_name( $t_bug->handler_id ), ')';
     }
 
-    echo ' - ', get_enum_element( 'status', $t_bug->status ), '.&lt;br /&gt;';
+    echo ' - ', \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status ), '.&lt;br /&gt;';
 }
 ]]>
 </programlisting>
@@ -162,7 +162,7 @@ function custom_function_override_roadmap_print_issue( $p_issue_id, $p_issue_lev
         echo ' (', \Flickerbox\Prepare::user_name( $t_bug->handler_id ), ')';
     }
 
-    echo ' - ', get_enum_element( 'status', $t_bug->status ), $t_strike_end, '.&lt;br /&gt;';
+    echo ' - ', \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status ), $t_strike_end, '.&lt;br /&gt;';
 }
 ]]>
 </programlisting>

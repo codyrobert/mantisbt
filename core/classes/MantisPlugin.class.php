@@ -254,7 +254,7 @@ abstract class MantisPlugin {
 	 */
 	final public function __init() {
 		plugin_config_defaults( $this->config() );
-		event_declare_many( $this->events() );
+		\Flickerbox\Event::declare_many( $this->events() );
 		plugin_event_hook_many( $this->hooks() );
 
 		$this->init();

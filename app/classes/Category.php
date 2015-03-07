@@ -39,10 +39,6 @@ namespace Flickerbox;
 
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
-require_api( 'project_api.php' );
-require_api( 'project_hierarchy_api.php' );
 
 
 class Category
@@ -153,7 +149,7 @@ class Category
 			$t_result = db_query( $t_query, array( $p_category_id ) );
 	
 			while( $t_bug_row = db_fetch_array( $t_result ) ) {
-				history_log_event_direct( $t_bug_row['id'], 'category', $t_old_category['name'], $p_name );
+				\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', $t_old_category['name'], $p_name );
 			}
 		}
 	}
@@ -181,7 +177,7 @@ class Category
 		$t_result = db_query( $t_query, array( $p_category_id ) );
 	
 		while( $t_bug_row = db_fetch_array( $t_result ) ) {
-			history_log_event_direct( $t_bug_row['id'], 'category', $t_category_row['name'], \Flickerbox\Category::full_name( $p_new_category_id, false ) );
+			\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', $t_category_row['name'], \Flickerbox\Category::full_name( $p_new_category_id, false ) );
 		}
 	
 		# update bug data
@@ -197,7 +193,7 @@ class Category
 	 * @access public
 	 */
 	static function remove_all( $p_project_id, $p_new_category_id = 0 ) {
-		project_ensure_exists( $p_project_id );
+		\Flickerbox\Project::ensure_exists( $p_project_id );
 		if( 0 != $p_new_category_id ) {
 			\Flickerbox\Category::ensure_exists( $p_new_category_id );
 		}
@@ -226,7 +222,7 @@ class Category
 		$t_result = db_query( $t_query );
 	
 		while( $t_bug_row = db_fetch_array( $t_result ) ) {
-			history_log_event_direct( $t_bug_row['id'], 'category', \Flickerbox\Category::full_name( $t_bug_row['category_id'], false ), \Flickerbox\Category::full_name( $p_new_category_id, false ) );
+			\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', \Flickerbox\Category::full_name( $t_bug_row['category_id'], false ), \Flickerbox\Category::full_name( $p_new_category_id, false ) );
 		}
 	
 		# update bug data
@@ -355,7 +351,7 @@ class Category
 	 */
 	static function get_filter_list( $p_project_id = null ) {
 		if( null === $p_project_id ) {
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 		} else {
 			$t_project_id = $p_project_id;
 		}
@@ -430,7 +426,7 @@ class Category
 		}
 	
 		if( $t_inherit ) {
-			$t_project_ids = project_hierarchy_inheritance( $p_project_id );
+			$t_project_ids = \Flickerbox\Project\Hierarchy::inheritance( $p_project_id );
 			$t_project_where = ' project_id IN ( ' . implode( ', ', $t_project_ids ) . ' ) ';
 		} else {
 			$t_project_where = ' project_id=' . $p_project_id . ' ';
@@ -523,7 +519,7 @@ class Category
 	 * @access public
 	 */
 	static function get_id_by_name( $p_category_name, $p_project_id, $p_trigger_errors = true ) {
-		$t_project_name = project_get_name( $p_project_id );
+		$t_project_name = \Flickerbox\Project::get_name( $p_project_id );
 	
 		$t_query = 'SELECT id FROM {category} WHERE name=' . db_param() . ' AND project_id=' . db_param();
 		$t_result = db_query( $t_query, array( $p_category_name, (int)$p_project_id ) );
@@ -558,10 +554,10 @@ class Category
 			$t_row = \Flickerbox\Category::get_row( $p_category_id );
 			$t_project_id = $t_row['project_id'];
 	
-			$t_current_project = is_null( $p_current_project ) ? helper_get_current_project() : $p_current_project;
+			$t_current_project = is_null( $p_current_project ) ? \Flickerbox\Helper::get_current_project() : $p_current_project;
 	
 			if( $p_show_project && $t_project_id != $t_current_project ) {
-				return '[' . project_get_name( $t_project_id ) . '] ' . $t_row['name'];
+				return '[' . \Flickerbox\Project::get_name( $t_project_id ) . '] ' . $t_row['name'];
 			}
 	
 			return $t_row['name'];

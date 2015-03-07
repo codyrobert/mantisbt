@@ -39,7 +39,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'proj_doc_delete' );
@@ -60,7 +59,7 @@ $t_result = db_query( $t_query, array( $f_file_id ) );
 $t_title = db_result( $t_result );
 
 # Confirm with the user
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_file_delete_msg' ) .
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_file_delete_msg' ) .
 	'<br/>' . \Flickerbox\Lang::get( 'filename_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::display( $t_title ),
 	\Flickerbox\Lang::get( 'file_delete_button' ) );
 

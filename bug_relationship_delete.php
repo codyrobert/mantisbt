@@ -47,10 +47,7 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
 require_api( 'print_api.php' );
-require_api( 'relationship_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_relationship_delete' );
 
@@ -58,7 +55,7 @@ $f_rel_id = \Flickerbox\GPC::get_int( 'rel_id' );
 $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
 $t_bug = bug_get( $f_bug_id, true );
-if( $t_bug->project_id != helper_get_current_project() ) {
+if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
@@ -74,7 +71,7 @@ if( bug_is_readonly( $f_bug_id ) ) {
 }
 
 # retrieve the destination bug of the relationship
-$t_dest_bug_id = relationship_get_linked_bug_id( $f_rel_id, $f_bug_id );
+$t_dest_bug_id = \Flickerbox\Relationship::get_linked_bug_id( $f_rel_id, $f_bug_id );
 
 $t_dest_bug = bug_get( $t_dest_bug_id, true );
 
@@ -86,13 +83,13 @@ if( bug_exists( $t_dest_bug_id ) ) {
 	}
 }
 
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'delete_relationship_sure_msg' ), \Flickerbox\Lang::get( 'delete_relationship_button' ) );
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_relationship_sure_msg' ), \Flickerbox\Lang::get( 'delete_relationship_button' ) );
 
-$t_bug_relationship_data = relationship_get( $f_rel_id );
+$t_bug_relationship_data = \Flickerbox\Relationship::get( $f_rel_id );
 $t_rel_type = $t_bug_relationship_data->type;
 
 # delete relationship from the DB
-relationship_delete( $f_rel_id );
+\Flickerbox\Relationship::delete( $f_rel_id );
 
 # update bug last updated (just for the src bug)
 bug_update_date( $f_bug_id );
@@ -100,19 +97,19 @@ bug_update_date( $f_bug_id );
 # set the rel_type for both bug and dest_bug based on $t_rel_type and on who is the dest bug
 if( $f_bug_id == $t_bug_relationship_data->src_bug_id ) {
 	$t_bug_rel_type = $t_rel_type;
-	$t_dest_bug_rel_type = relationship_get_complementary_type( $t_rel_type );
+	$t_dest_bug_rel_type = \Flickerbox\Relationship::get_complementary_type( $t_rel_type );
 } else {
-	$t_bug_rel_type = relationship_get_complementary_type( $t_rel_type );
+	$t_bug_rel_type = \Flickerbox\Relationship::get_complementary_type( $t_rel_type );
 	$t_dest_bug_rel_type = $t_rel_type;
 }
 
 # send email and update the history for the src issue
-history_log_event_special( $f_bug_id, BUG_DEL_RELATIONSHIP, $t_bug_rel_type, $t_dest_bug_id );
+\Flickerbox\History::log_event_special( $f_bug_id, BUG_DEL_RELATIONSHIP, $t_bug_rel_type, $t_dest_bug_id );
 email_relationship_deleted( $f_bug_id, $t_dest_bug_id, $t_bug_rel_type );
 
 if( bug_exists( $t_dest_bug_id ) ) {
 	# send email and update the history for the dest issue
-	history_log_event_special( $t_dest_bug_id, BUG_DEL_RELATIONSHIP, $t_dest_bug_rel_type, $f_bug_id );
+	\Flickerbox\History::log_event_special( $t_dest_bug_id, BUG_DEL_RELATIONSHIP, $t_dest_bug_rel_type, $f_bug_id );
 	email_relationship_deleted( $t_dest_bug_id, $f_bug_id, $t_dest_bug_rel_type );
 }
 

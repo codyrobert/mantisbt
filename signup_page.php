@@ -35,7 +35,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\HTML::require_css( 'login.css' );
@@ -90,7 +89,7 @@ $t_public_key = \Flickerbox\Crypto::generate_uri_safe_nonce( 64 );
 			</div>
 
 <?php
-			$t_allow_passwd_change = helper_call_custom_function( 'auth_can_change_password', array() );
+			$t_allow_passwd_change = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
 			# captcha image requires GD library and related option to ON
 			if( ON == config_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 && $t_allow_passwd_change ) {
 				$t_securimage_path = 'library/securimage';

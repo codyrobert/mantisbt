@@ -38,7 +38,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -78,7 +77,7 @@ if( \Flickerbox\Access::has_project_level( config_get( 'stored_query_create_shar
 	print '<br />';
 }
 ?>
-<input type="checkbox" name="all_projects" value="on" <?php check_checked( ALL_PROJECTS == helper_get_current_project() ) ?> />
+<input type="checkbox" name="all_projects" value="on" <?php \Flickerbox\Helper::check_checked( ALL_PROJECTS == \Flickerbox\Helper::get_current_project() ) ?> />
 <?php print \Flickerbox\Lang::get( 'all_projects' ); ?><br /><br />
 <input type="submit" class="button" value="<?php print \Flickerbox\Lang::get( 'save_query' ); ?>" />
 </form>

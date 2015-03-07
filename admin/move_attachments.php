@@ -68,7 +68,7 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 		$t_result = db_query( $t_query, array( $t_project ) );
 
 		# Project upload path
-		$t_upload_path = project_get_field( $t_project, 'file_path' );
+		$t_upload_path = \Flickerbox\Project::get_field( $t_project, 'file_path' );
 		if( \Flickerbox\Utility::is_blank( $t_upload_path ) ) {
 			$t_upload_path = config_get( 'absolute_path_default_upload_folder', '', ALL_USERS, $t_project );
 		}
@@ -132,7 +132,7 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 		}
 
 		$t_moved[] = array(
-			'name'       => project_get_name( $t_project ),
+			'name'       => \Flickerbox\Project::get_name( $t_project ),
 			'path'       => $t_upload_path,
 			'rows'       => db_num_rows( $t_result ),
 			'failed'     => $t_failures,
@@ -179,7 +179,7 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 		$t_result = db_query( $t_query, array( $t_project ) );
 
 		# Project upload path
-		$t_upload_path = project_get_upload_path( $t_project );
+		$t_upload_path = \Flickerbox\Project::get_upload_path( $t_project );
 		if( \Flickerbox\Utility::is_blank( $t_upload_path )
 			|| !file_exists( $t_upload_path )
 			|| !is_dir( $t_upload_path )
@@ -246,7 +246,7 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 		}
 
 		$t_moved[] = array(
-			'name'       => project_get_name( $t_project ),
+			'name'       => \Flickerbox\Project::get_name( $t_project ),
 			'path'       => $t_upload_path,
 			'rows'       => db_num_rows( $t_result ),
 			'failed'     => $t_failures,

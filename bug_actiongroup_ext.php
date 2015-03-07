@@ -39,12 +39,11 @@
 require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
-helper_begin_long_process();
+\Flickerbox\Helper::begin_long_process();
 
 $f_action = \Flickerbox\GPC::get_string( 'action' );
 $f_bug_arr	= \Flickerbox\GPC::get_int_array( 'bug_arr', array() );

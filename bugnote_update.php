@@ -41,7 +41,6 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'bugnote_update' );
@@ -73,7 +72,7 @@ bugnote_set_text( $f_bugnote_id, $f_bugnote_text );
 bugnote_set_time_tracking( $f_bugnote_id, $f_time_tracking );
 
 # Plugin integration
-event_signal( 'EVENT_BUGNOTE_EDIT', array( $t_bug_id, $f_bugnote_id ) );
+\Flickerbox\Event::signal( 'EVENT_BUGNOTE_EDIT', array( $t_bug_id, $f_bugnote_id ) );
 
 \Flickerbox\Form::security_purge( 'bugnote_update' );
 

@@ -49,9 +49,7 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
 /**
@@ -63,7 +61,7 @@ function print_version_header( array $p_version_row ) {
 	$t_project_id   = $p_version_row['project_id'];
 	$t_version_id   = $p_version_row['id'];
 	$t_version_name = $p_version_row['version'];
-	$t_project_name = project_get_field( $t_project_id, 'name' );
+	$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
 
 	$t_release_title = '<a href="roadmap_page.php?project_id=' . $t_project_id . '">' . \Flickerbox\String::display_line( $t_project_name ) . '</a> - <a href="roadmap_page.php?version_id=' . $t_version_id . '">' . \Flickerbox\String::display_line( $t_version_name ) . '</a>';
 
@@ -101,7 +99,7 @@ $f_project = \Flickerbox\GPC::get_string( 'project', '' );
 if( \Flickerbox\Utility::is_blank( $f_project ) ) {
 	$f_project_id = \Flickerbox\GPC::get_int( 'project_id', -1 );
 } else {
-	$f_project_id = project_get_id_by_name( $f_project );
+	$f_project_id = \Flickerbox\Project::get_id_by_name( $f_project );
 
 	if( $f_project_id === 0 ) {
 		\Flickerbox\Error::parameters( $f_project );
@@ -117,7 +115,7 @@ if( \Flickerbox\Utility::is_blank( $f_version ) ) {
 	# If both version_id and project_id parameters are supplied, then version_id take precedence.
 	if( $f_version_id == -1 ) {
 		if( $f_project_id == -1 ) {
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 		} else {
 			$t_project_id = $f_project_id;
 		}
@@ -126,7 +124,7 @@ if( \Flickerbox\Utility::is_blank( $f_version ) ) {
 	}
 } else {
 	if( $f_project_id == -1 ) {
-		$t_project_id = helper_get_current_project();
+		$t_project_id = \Flickerbox\Helper::get_current_project();
 	} else {
 		$t_project_id = $f_project_id;
 	}
@@ -163,7 +161,7 @@ $t_project_id_for_access_check = $t_project_id;
 \Flickerbox\Category::cache_array_rows_by_project( $t_project_ids );
 
 foreach( $t_project_ids as $t_project_id ) {
-	$t_project_name = project_get_field( $t_project_id, 'name' );
+	$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
 	$t_can_view_private = \Flickerbox\Access::has_project_level( config_get( 'private_bug_threshold' ), $t_project_id );
 
 	$t_limit_reporters = config_get( 'limit_reporters' );
@@ -230,7 +228,7 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_parent = $t_row['source_bug_id'];
 			$t_parent_version = $t_row['parent_version'];
 
-			if( !helper_call_custom_function( 'roadmap_include_issue', array( $t_issue_id ) ) ) {
+			if( !\Flickerbox\Helper::call_custom_function( 'roadmap_include_issue', array( $t_issue_id ) ) ) {
 				continue;
 			}
 
@@ -333,7 +331,7 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_set_id = $t_issue_set_ids[$j];
 			$t_issue_set_level = $t_issue_set_levels[$j];
 
-			helper_call_custom_function( 'roadmap_print_issue', array( $t_issue_set_id, $t_issue_set_level ) );
+			\Flickerbox\Helper::call_custom_function( 'roadmap_print_issue', array( $t_issue_set_id, $t_issue_set_level ) );
 
 			$t_issues_found = true;
 		}

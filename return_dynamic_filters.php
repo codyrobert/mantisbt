@@ -39,7 +39,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -50,7 +49,7 @@ $t_filter = \Flickerbox\Current_User::get_bug_filter();
 
 global $g_select_modifier;
 
-$t_project_id = helper_get_current_project();
+$t_project_id = \Flickerbox\Helper::get_current_project();
 $t_current_user_access_level = \Flickerbox\Current_User::get_access_level();
 $t_accessible_custom_fields_ids = array();
 $t_accessible_custom_fields_names = array();

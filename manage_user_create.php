@@ -42,7 +42,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'email_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -88,7 +87,7 @@ if( ( ON == config_get( 'send_reset_password' ) ) && ( ON == config_get( 'enable
 	# Password won't to be sent by email. It entered by the admin
 	# Now, if the password is empty, confirm that that is what we wanted
 	if( \Flickerbox\Utility::is_blank( $f_password ) ) {
-		helper_ensure_confirmed( \Flickerbox\Lang::get( 'empty_password_sure_msg' ),
+		\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'empty_password_sure_msg' ),
 				 \Flickerbox\Lang::get( 'empty_password_button' ) );
 	}
 }
@@ -124,7 +123,7 @@ if( $t_cookie === false ) {
 <br />
 <div class="success-msg">
 <?php
-$t_access_level = get_enum_element( 'access_levels', $f_access_level );
+$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $f_access_level );
 echo \Flickerbox\Lang::get( 'created_user_part1' ) . ' <span class="bold">' . $f_username . '</span> ' . \Flickerbox\Lang::get( 'created_user_part2' ) . ' <span class="bold">' . $t_access_level . '</span><br />';
 
 print_bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );

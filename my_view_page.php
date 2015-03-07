@@ -6,7 +6,7 @@ require_once( 'core.php' );
 $t_current_user_id = \Flickerbox\Auth::get_current_user_id();
 
 # Improve performance by caching category data in one pass
-\Flickerbox\Category::get_all_rows( helper_get_current_project() );
+\Flickerbox\Category::get_all_rows( \Flickerbox\Helper::get_current_project() );
 
 new \Flickerbox\Page([
 	'title'	=> \Flickerbox\Lang::get( 'my_view_link' ),
@@ -28,7 +28,7 @@ asort( $t_boxes );
 reset( $t_boxes );
 #print_r ($t_boxes);
 
-$t_project_id = helper_get_current_project();
+$t_project_id = \Flickerbox\Helper::get_current_project();
 ?>
 
 <div>

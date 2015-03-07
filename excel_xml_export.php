@@ -40,8 +40,6 @@ require_once( 'core.php' );
 require_api( 'bug_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
-require_api( 'excel_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
@@ -51,7 +49,7 @@ include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'print_all_bug_options_inc.
 
 $f_export = \Flickerbox\GPC::get_string( 'export', '' );
 
-helper_begin_long_process();
+\Flickerbox\Helper::begin_long_process();
 
 $t_export_title = excel_get_default_filename();
 

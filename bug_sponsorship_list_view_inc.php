@@ -43,7 +43,6 @@ if( !defined( 'BUG_SPONSORSHIP_LIST_VIEW_INC_ALLOW' ) ) {
 
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 #
@@ -136,7 +135,7 @@ if( $t_show_sponsorships ) {
 					print_user( $t_sponsorship->user_id );
 					echo ' (' . \Flickerbox\Sponsorship::format_amount( $t_sponsorship->amount ) . ')';
 					if( \Flickerbox\Access::has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
-						echo ' ' . get_enum_element( 'sponsorship', $t_sponsorship->paid );
+						echo ' ' . \Flickerbox\Helper::get_enum_element( 'sponsorship', $t_sponsorship->paid );
 					}
 				}
 			}

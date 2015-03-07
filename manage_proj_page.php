@@ -44,10 +44,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
-require_api( 'project_hierarchy_api.php' );
 require_api( 'user_api.php' );
 
 auth_reauthenticate();
@@ -107,7 +104,7 @@ if( 'ASC' == $f_dir ) {
 		$t_projects = user_get_accessible_projects( auth_get_current_user_id(), true );
 		$t_full_projects = array();
 		foreach ( $t_projects as $t_project_id ) {
-			$t_full_projects[] = project_get_row( $t_project_id );
+			$t_full_projects[] = \Flickerbox\Project::get_row( $t_project_id );
 		}
 		$t_projects = \Flickerbox\Utility::multi_sort( $t_full_projects, $f_sort, $t_direction );
 		$t_stack = array( $t_projects );
@@ -129,13 +126,13 @@ if( 'ASC' == $f_dir ) {
 				<td>
 					<a href="manage_proj_edit_page.php?project_id=<?php echo $t_project['id'] ?>"><?php echo str_repeat( '&raquo; ', $t_level ) . \Flickerbox\String::display( $t_project['name'] ) ?></a>
 				</td>
-				<td><?php echo get_enum_element( 'project_status', $t_project['status'] ) ?></td>
+				<td><?php echo \Flickerbox\Helper::get_enum_element( 'project_status', $t_project['status'] ) ?></td>
 				<td><?php echo \Flickerbox\Utility::trans_bool( $t_project['enabled'] ) ?></td>
-				<td><?php echo get_enum_element( 'project_view_state', $t_project['view_state'] ) ?></td>
+				<td><?php echo \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_project['view_state'] ) ?></td>
 				<td><?php echo \Flickerbox\String::display_links( $t_project['description'] ) ?></td>
 			</tr><?php
 			}
-			$t_subprojects = project_hierarchy_get_subprojects( $t_project_id, true );
+			$t_subprojects = \Flickerbox\Project\Hierarchy::get_subprojects( $t_project_id, true );
 
 			if( 0 < count( $t_projects ) || 0 < count( $t_subprojects ) ) {
 				array_unshift( $t_stack, $t_projects );
@@ -144,7 +141,7 @@ if( 'ASC' == $f_dir ) {
 			if( 0 < count( $t_subprojects ) ) {
 				$t_full_projects = array();
 				foreach ( $t_subprojects as $t_project_id ) {
-					$t_full_projects[] = project_get_row( $t_project_id );
+					$t_full_projects[] = \Flickerbox\Project::get_row( $t_project_id );
 				}
 				$t_subprojects = \Flickerbox\Utility::multi_sort( $t_full_projects, $f_sort, $t_direction );
 				array_unshift( $t_stack, $t_subprojects );

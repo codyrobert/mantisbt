@@ -55,15 +55,13 @@ require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 $f_bugnote_id = \Flickerbox\GPC::get_int( 'bugnote_id' );
 $t_bug_id = bugnote_get_field( $f_bugnote_id, 'bug_id' );
 
 $t_bug = bug_get( $t_bug_id, true );
-if( $t_bug->project_id != helper_get_current_project() ) {
+if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
@@ -129,7 +127,7 @@ $t_redirect_url = \Flickerbox\String::get_bug_view_url( $t_bug_id );
 <?php } ?>
 <?php } ?>
 
-<?php event_signal( 'EVENT_BUGNOTE_EDIT_FORM', array( $t_bug_id, $f_bugnote_id ) ); ?>
+<?php \Flickerbox\Event::signal( 'EVENT_BUGNOTE_EDIT_FORM', array( $t_bug_id, $f_bugnote_id ) ); ?>
 
 <tr>
 	<td class="center" colspan="2">

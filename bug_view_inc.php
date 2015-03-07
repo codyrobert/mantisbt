@@ -57,10 +57,7 @@ require_api( 'bug_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\HTML::require_css( 'status_config.php' );
 
@@ -146,7 +143,7 @@ $t_top_buttons_enabled = !$t_force_readonly && ( $t_action_button_position == PO
 $t_bottom_buttons_enabled = !$t_force_readonly && ( $t_action_button_position == POSITION_BOTTOM || $t_action_button_position == POSITION_BOTH );
 
 $t_show_project = in_array( 'project', $t_fields );
-$t_project_name = $t_show_project ? \Flickerbox\String::display_line( project_get_name( $t_bug->project_id ) ): '';
+$t_project_name = $t_show_project ? \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $t_bug->project_id ) ): '';
 $t_show_id = in_array( 'id', $t_fields );
 $t_formatted_bug_id = $t_show_id ? \Flickerbox\String::display_line( bug_format_id( $f_bug_id ) ) : '';
 
@@ -161,7 +158,7 @@ $t_show_tags = in_array( 'tags', $t_fields ) && \Flickerbox\Access::has_global_l
 $t_bug_overdue = bug_is_overdue( $f_bug_id );
 
 $t_show_view_state = in_array( 'view_state', $t_fields );
-$t_bug_view_state_enum = $t_show_view_state ? \Flickerbox\String::display_line( get_enum_element( 'view_state', $t_bug->view_state ) ) : '';
+$t_bug_view_state_enum = $t_show_view_state ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'view_state', $t_bug->view_state ) ) : '';
 
 $t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $f_bug_id );
 
@@ -190,23 +187,23 @@ $t_os = $t_show_os ? \Flickerbox\String::display_line( $t_bug->os ) : '';
 $t_show_os_version = $t_show_profiles && in_array( 'os_version', $t_fields );
 $t_os_version = $t_show_os_version ? \Flickerbox\String::display_line( $t_bug->os_build ) : '';
 $t_show_projection = in_array( 'projection', $t_fields );
-$t_projection = $t_show_projection ? \Flickerbox\String::display_line( get_enum_element( 'projection', $t_bug->projection ) ) : '';
+$t_projection = $t_show_projection ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'projection', $t_bug->projection ) ) : '';
 $t_show_eta = in_array( 'eta', $t_fields );
-$t_eta = $t_show_eta ? \Flickerbox\String::display_line( get_enum_element( 'eta', $t_bug->eta ) ) : '';
+$t_eta = $t_show_eta ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'eta', $t_bug->eta ) ) : '';
 $t_show_attachments = in_array( 'attachments', $t_fields );
 $t_can_attach_tag = $t_show_tags && !$t_force_readonly && \Flickerbox\Access::has_bug_level( config_get( 'tag_attach_threshold' ), $f_bug_id );
 $t_show_category = in_array( 'category_id', $t_fields );
 $t_category = $t_show_category ? \Flickerbox\String::display_line( \Flickerbox\Category::full_name( $t_bug->category_id ) ) : '';
 $t_show_priority = in_array( 'priority', $t_fields );
-$t_priority = $t_show_priority ? \Flickerbox\String::display_line( get_enum_element( 'priority', $t_bug->priority ) ) : '';
+$t_priority = $t_show_priority ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'priority', $t_bug->priority ) ) : '';
 $t_show_severity = in_array( 'severity', $t_fields );
-$t_severity = $t_show_severity ? \Flickerbox\String::display_line( get_enum_element( 'severity', $t_bug->severity ) ) : '';
+$t_severity = $t_show_severity ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'severity', $t_bug->severity ) ) : '';
 $t_show_reproducibility = in_array( 'reproducibility', $t_fields );
-$t_reproducibility = $t_show_reproducibility ? \Flickerbox\String::display_line( get_enum_element( 'reproducibility', $t_bug->reproducibility ) ): '';
+$t_reproducibility = $t_show_reproducibility ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'reproducibility', $t_bug->reproducibility ) ): '';
 $t_show_status = in_array( 'status', $t_fields );
-$t_status = $t_show_status ? \Flickerbox\String::display_line( get_enum_element( 'status', $t_bug->status ) ) : '';
+$t_status = $t_show_status ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status ) ) : '';
 $t_show_resolution = in_array( 'resolution', $t_fields );
-$t_resolution = $t_show_resolution ? \Flickerbox\String::display_line( get_enum_element( 'resolution', $t_bug->resolution ) ) : '';
+$t_resolution = $t_show_resolution ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution ) ) : '';
 $t_show_summary = in_array( 'summary', $t_fields );
 $t_show_description = in_array( 'description', $t_fields );
 
@@ -215,7 +212,7 @@ $t_description = $t_show_description ? \Flickerbox\String::display_links( $t_bug
 $t_steps_to_reproduce = $t_show_steps_to_reproduce ? \Flickerbox\String::display_links( $t_bug->steps_to_reproduce ) : '';
 $t_additional_information = $t_show_additional_information ? \Flickerbox\String::display_links( $t_bug->additional_information ) : '';
 
-$t_links = event_signal( 'EVENT_MENU_ISSUE', $f_bug_id );
+$t_links = \Flickerbox\Event::signal( 'EVENT_MENU_ISSUE', $f_bug_id );
 
 #
 # Start of Template
@@ -627,7 +624,7 @@ if( $t_show_target_version || $t_show_fixed_in_version ) {
 # Bug Details Event Signal
 #
 
-event_signal( 'EVENT_VIEW_BUG_DETAILS', array( $t_bug_id ) );
+\Flickerbox\Event::signal( 'EVENT_VIEW_BUG_DETAILS', array( $t_bug_id ) );
 
 # spacer
 echo '<tr class="spacer"><td colspan="6"></td></tr>';
@@ -736,7 +733,7 @@ if( $t_show_sponsorships_box ) {
 
 # Bug Relationships
 if( $t_show_relationships_box ) {
-	relationship_view_box( $t_bug->id );
+	\Flickerbox\Relationship::view_box( $t_bug->id );
 }
 
 # File upload box
@@ -771,7 +768,7 @@ if( 'ASC' == \Flickerbox\Current_User::get_pref( 'bugnote_order' ) ) {
 }
 
 # Allow plugins to display stuff after notes
-event_signal( 'EVENT_VIEW_BUG_EXTRA', array( $f_bug_id ) );
+\Flickerbox\Event::signal( 'EVENT_VIEW_BUG_EXTRA', array( $f_bug_id ) );
 
 # Time tracking statistics
 if( config_get( 'time_tracking_enabled' ) &&

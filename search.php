@@ -35,7 +35,6 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
@@ -134,7 +133,7 @@ $t_settings_serialized = json_encode( $t_setting_arr );
 $t_settings_string = FILTER_VERSION . '#' . $t_settings_serialized;
 
 # Store the filter string in the database: its the current filter, so some values won't change
-$t_project_id = helper_get_current_project();
+$t_project_id = \Flickerbox\Helper::get_current_project();
 $t_project_id = ( $t_project_id * -1 );
 $t_row_id = \Flickerbox\Filter::db_set_for_current_user( $t_project_id, false, '', $t_settings_string );
 

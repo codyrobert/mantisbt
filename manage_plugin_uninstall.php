@@ -38,7 +38,6 @@ define( 'PLUGINS_DISABLED', true );
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'plugin_api.php' );
 require_api( 'print_api.php' );
 
@@ -53,7 +52,7 @@ plugin_register_installed();
 $f_basename = \Flickerbox\GPC::get_string( 'name' );
 $t_plugin = plugin_register( $f_basename, true );
 
-helper_ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'plugin_uninstall_message' ), \Flickerbox\String::display_line( $t_plugin->name ) ), \Flickerbox\Lang::get( 'plugin_uninstall' ) );
+\Flickerbox\Helper::ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'plugin_uninstall_message' ), \Flickerbox\String::display_line( $t_plugin->name ) ), \Flickerbox\Lang::get( 'plugin_uninstall' ) );
 
 if( !is_null( $t_plugin ) ) {
 	plugin_uninstall( $t_plugin );

@@ -46,9 +46,7 @@ require_api( 'bug_api.php' );
 require_api( 'bugnote_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 require_api( 'user_api.php' );
 
 
@@ -81,15 +79,15 @@ class Access
 					}
 					$t_return_page = \Flickerbox\String::url( \Flickerbox\String::sanitize_url( $t_return_page ) );
 					echo '<p class="center">' . \Flickerbox\Error::string( ERROR_ACCESS_DENIED ) . '</p><p class="center">';
-					print_bracket_link( helper_mantis_url( 'login_page.php' ) . '?return=' . $t_return_page, \Flickerbox\Lang::get( 'click_to_login' ) );
+					print_bracket_link( \Flickerbox\Helper::mantis_url( 'login_page.php' ) . '?return=' . $t_return_page, \Flickerbox\Lang::get( 'click_to_login' ) );
 					echo '</p><p class="center">';
-					print_bracket_link( helper_mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
+					print_bracket_link( \Flickerbox\Helper::mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
 					echo '</p>';
 				}
 			} else {
 				echo '<p class="center">' . \Flickerbox\Error::string( ERROR_ACCESS_DENIED ) . '</p>';
 				echo '<p class="center">';
-				print_bracket_link( helper_mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
+				print_bracket_link( \Flickerbox\Helper::mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
 				echo '</p>';
 			}
 		}
@@ -256,7 +254,7 @@ class Access
 		}
 	
 		if( null === $p_project_id ) {
-			$p_project_id = helper_get_current_project();
+			$p_project_id = \Flickerbox\Helper::get_current_project();
 		}
 	
 		$t_global_access_level = \Flickerbox\Access::get_global_level( $p_user_id );
@@ -265,7 +263,7 @@ class Access
 			return $t_global_access_level;
 		} else {
 			$t_project_access_level = \Flickerbox\Access::get_local_level( $p_user_id, $p_project_id );
-			$t_project_view_state = project_get_field( $p_project_id, 'view_state' );
+			$t_project_view_state = \Flickerbox\Project::get_field( $p_project_id, 'view_state' );
 	
 			# Try to use the project access level.
 			# If the user is not listed in the project, then try to fall back
@@ -309,7 +307,7 @@ class Access
 			$p_user_id = \Flickerbox\Auth::get_current_user_id();
 		}
 		if( null === $p_project_id ) {
-			$p_project_id = helper_get_current_project();
+			$p_project_id = \Flickerbox\Helper::get_current_project();
 		}
 	
 		$t_access_level = \Flickerbox\Access::get_project_level( $p_project_id, $p_user_id );
@@ -350,7 +348,7 @@ class Access
 			$p_user_id = \Flickerbox\Auth::get_current_user_id();
 		}
 	
-		$t_projects = project_get_all_rows();
+		$t_projects = \Flickerbox\Project::get_all_rows();
 		foreach( $t_projects as $t_project ) {
 			if( \Flickerbox\Access::has_project_level( $p_access_level, $t_project['id'], $p_user_id ) ) {
 				return true;

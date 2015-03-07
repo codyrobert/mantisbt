@@ -40,10 +40,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
-require_api( 'project_hierarchy_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_create' );
 
@@ -61,22 +58,22 @@ $f_inherit_parent = \Flickerbox\GPC::get_bool( 'inherit_parent', 0 );
 $f_parent_id	= \Flickerbox\GPC::get_int( 'parent_id', 0 );
 
 if( 0 != $f_parent_id ) {
-	project_ensure_exists( $f_parent_id );
+	\Flickerbox\Project::ensure_exists( $f_parent_id );
 }
 
-$t_project_id = project_create( strip_tags( $f_name ), $f_description, $f_status, $f_view_state, $f_file_path, true, $f_inherit_global );
+$t_project_id = \Flickerbox\Project::create( strip_tags( $f_name ), $f_description, $f_status, $f_view_state, $f_file_path, true, $f_inherit_global );
 
 if( ( $f_view_state == VS_PRIVATE ) && ( false === \Flickerbox\Current_User::is_administrator() ) ) {
 	$t_access_level = \Flickerbox\Access::get_global_level();
 	$t_current_user_id = \Flickerbox\Auth::get_current_user_id();
-	project_add_user( $t_project_id, $t_current_user_id, $t_access_level );
+	\Flickerbox\Project::add_user( $t_project_id, $t_current_user_id, $t_access_level );
 }
 
 if( 0 != $f_parent_id ) {
-	project_hierarchy_add( $t_project_id, $f_parent_id, $f_inherit_parent );
+	\Flickerbox\Project\Hierarchy::add( $t_project_id, $f_parent_id, $f_inherit_parent );
 }
 
-event_signal( 'EVENT_MANAGE_PROJECT_CREATE', array( $t_project_id ) );
+\Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_CREATE', array( $t_project_id ) );
 
 \Flickerbox\Form::security_purge( 'manage_proj_create' );
 

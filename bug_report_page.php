@@ -56,11 +56,7 @@ require_api( 'bug_api.php' );
 require_api( 'columns_api.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'event_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
-require_api( 'relationship_api.php' );
 
 $f_master_bug_id = \Flickerbox\GPC::get_int( 'm_id', 0 );
 
@@ -78,7 +74,7 @@ if( $f_master_bug_id > 0 ) {
 
 	#@@@ (thraxisp) Note that the master bug is cloned into the same project as the master, independent of
 	#       what the current project is set to.
-	if( $t_bug->project_id != helper_get_current_project() ) {
+	if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 		# in case the current project is not the same project of the bug we are viewing...
 		# ... override the current project. This to avoid problems with categories and handlers lists etc.
 		$g_project_override = $t_bug->project_id;
@@ -113,19 +109,19 @@ if( $f_master_bug_id > 0 ) {
 	$t_project_id			= $t_bug->project_id;
 } else {
 	# Get Project Id and set it as current
-	$t_current_project = helper_get_current_project();
+	$t_current_project = \Flickerbox\Helper::get_current_project();
 	$t_project_id = \Flickerbox\GPC::get_int( 'project_id', $t_current_project );
 
 	# If all projects, use default project if set
-	$t_default_project = user_pref_get_pref( \Flickerbox\Auth::get_current_user_id(), 'default_project' );
+	$t_default_project = \Flickerbox\User\Pref::get_pref( \Flickerbox\Auth::get_current_user_id(), 'default_project' );
 	if( ALL_PROJECTS == $t_project_id && ALL_PROJECTS != $t_default_project ) {
 		$t_project_id = $t_default_project;
 	}
 
-	if( ( ALL_PROJECTS == $t_project_id || project_exists( $t_project_id ) )
+	if( ( ALL_PROJECTS == $t_project_id || \Flickerbox\Project::exists( $t_project_id ) )
 	 && $t_project_id != $t_current_project
 	) {
-		helper_set_current_project( $t_project_id );
+		\Flickerbox\Helper::set_current_project( $t_project_id );
 		# Reloading the page is required so that the project browser
 		# reflects the new current project
 		print_header_redirect( $_SERVER['REQUEST_URI'], true, false, true );
@@ -192,7 +188,7 @@ $t_show_product_version = $t_show_versions && in_array( 'product_version', $t_fi
 $t_show_product_build = $t_show_versions && in_array( 'product_build', $t_fields ) && config_get( 'enable_product_build' ) == ON;
 $t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold' ) );
 $t_show_additional_info = in_array( 'additional_info', $t_fields );
-$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'due_date_update_threshold' ), helper_get_current_project(), \Flickerbox\Auth::get_current_user_id() );
+$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'due_date_update_threshold' ), \Flickerbox\Helper::get_current_project(), \Flickerbox\Auth::get_current_user_id() );
 $t_show_attachments = in_array( 'attachments', $t_fields ) && \Flickerbox\File::allow_bug_upload();
 $t_show_view_state = in_array( 'view_state', $t_fields ) && \Flickerbox\Access::has_project_level( config_get( 'set_view_status_threshold' ) );
 
@@ -224,7 +220,7 @@ if( $t_show_attachments ) {
 			<input type="hidden" name="project_id" value="<?php echo $t_project_id ?>" />
 
 			<?php
-			event_signal( 'EVENT_REPORT_BUG_FORM_TOP', array( $t_project_id ) );
+			\Flickerbox\Event::signal( 'EVENT_REPORT_BUG_FORM_TOP', array( $t_project_id ) );
 
 			if( $t_show_category ) {
 			?>
@@ -235,9 +231,9 @@ if( $t_show_attachments ) {
 				?></span></label>
 				<span class="select">
 					<?php if( $t_changed_project ) {
-						echo '[' . project_get_field( $t_bug->project_id, 'name' ) . '] ';
+						echo '[' . \Flickerbox\Project::get_field( $t_bug->project_id, 'name' ) . '] ';
 					} ?>
-						<select <?php echo helper_get_tab_index() ?> id="category_id" name="category_id" class="autofocus">
+						<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="category_id" name="category_id" class="autofocus">
 					<?php
 					print_category_option_list( $f_category_id );
 					?>
@@ -252,7 +248,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'reproducibility' ) ?></span></label>
 				<span class="input">
-					<select <?php echo helper_get_tab_index() ?> id="reproducibility" name="reproducibility">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="reproducibility" name="reproducibility">
 						<?php print_enum_string_option_list( 'reproducibility', $f_reproducibility ) ?>
 					</select>
 				</span>
@@ -266,7 +262,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'eta' ) ?></span></label>
 				<span class="input">
-					<select <?php echo helper_get_tab_index() ?> id="eta" name="eta">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="eta" name="eta">
 						<?php print_enum_string_option_list( 'eta', $f_eta ) ?>
 					</select>
 				</span>
@@ -280,7 +276,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'severity' ) ?></span></label>
 				<span class="input">
-					<select <?php echo helper_get_tab_index() ?> id="severity" name="severity">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="severity" name="severity">
 						<?php print_enum_string_option_list( 'severity', $f_severity ) ?>
 					</select>
 				</span>
@@ -294,7 +290,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'priority' ) ?></span></label>
 				<span class="input">
-					<select <?php echo helper_get_tab_index() ?> id="priority" name="priority">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="priority" name="priority">
 						<?php print_enum_string_option_list( 'priority', $f_priority ) ?>
 					</select>
 				</span>
@@ -313,7 +309,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'due_date' ) ?></span></label>
 				<span class="input">
-					<?php echo '<input ' . helper_get_tab_index() . ' type="text" id="due_date" name="due_date" class="datetime" size="20" maxlength="16" value="' . $t_date_to_display . '" />' ?>
+					<?php echo '<input ' . \Flickerbox\Helper::get_tab_index() . ' type="text" id="due_date" name="due_date" class="datetime" size="20" maxlength="16" value="' . $t_date_to_display . '" />' ?>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -323,7 +319,7 @@ if( $t_show_attachments ) {
 				<label><span><?php echo \Flickerbox\Lang::get( 'select_profile' ) ?></span></label>
 				<span class="select">
 					<?php if( count( \Flickerbox\Profile::get_all_for_user( \Flickerbox\Auth::get_current_user_id() ) ) > 0 ) { ?>
-						<select <?php echo helper_get_tab_index() ?> id="profile_id" name="profile_id">
+						<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="profile_id" name="profile_id">
 							<?php print_profile_option_list( \Flickerbox\Auth::get_current_user_id(), $f_profile_id ) ?>
 						</select>
 					<?php } ?>
@@ -345,7 +341,7 @@ if( $t_show_attachments ) {
 						</select>
 						<?php
 							} else {
-								echo '<input type="text" id="platform" name="platform" class="autocomplete" size="32" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_platform ) . '" />';
+								echo '<input type="text" id="platform" name="platform" class="autocomplete" size="32" maxlength="32" tabindex="' . \Flickerbox\Helper::get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_platform ) . '" />';
 							}
 						?>
 					</span>
@@ -361,7 +357,7 @@ if( $t_show_attachments ) {
 						</select>
 						<?php
 							} else {
-								echo '<input type="text" id="os" name="os" class="autocomplete" size="32" maxlength="32" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_os ) . '" />';
+								echo '<input type="text" id="os" name="os" class="autocomplete" size="32" maxlength="32" tabindex="' . \Flickerbox\Helper::get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_os ) . '" />';
 							}
 						?>
 					</span>
@@ -379,7 +375,7 @@ if( $t_show_attachments ) {
 						</select>
 					<?php
 						} else {
-							echo '<input type="text" id="os_build" name="os_build" class="autocomplete" size="16" maxlength="16" tabindex="' . helper_get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_os_build ) . '" />';
+							echo '<input type="text" id="os_build" name="os_build" class="autocomplete" size="16" maxlength="16" tabindex="' . \Flickerbox\Helper::get_tab_index_value() . '" value="' . \Flickerbox\String::attribute( $f_os_build ) . '" />';
 						}
 					?>
 					</span>
@@ -399,7 +395,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'product_version' ) ?></span></label>
 				<span class="select">
-					<select <?php echo helper_get_tab_index() ?> id="product_version" name="product_version">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="product_version" name="product_version">
 						<?php print_version_option_list( $f_product_version, $t_project_id, $t_product_version_released_mask ) ?>
 					</select>
 				</span>
@@ -412,7 +408,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'product_build' ) ?></span></label>
 				<span class="input">
-					<input <?php echo helper_get_tab_index() ?> type="text" id="build" name="build" size="32" maxlength="32" value="<?php echo \Flickerbox\String::attribute( $f_build ) ?>" />
+					<input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="text" id="build" name="build" size="32" maxlength="32" value="<?php echo \Flickerbox\String::attribute( $f_build ) ?>" />
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -422,7 +418,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'assign_to' ) ?></span></label>
 				<span class="select">
-					<select <?php echo helper_get_tab_index() ?> id="handler_id" name="handler_id">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="handler_id" name="handler_id">
 						<option value="0" selected="selected"></option>
 						<?php print_assign_to_option_list( $f_handler_id ) ?>
 					</select>
@@ -435,7 +431,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'status' ) ?></span></label>
 				<span class="select">
-					<select <?php echo helper_get_tab_index() ?> name="status">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> name="status">
 					<?php
 					$t_resolution_options = get_status_option_list(
 						\Flickerbox\Access::get_project_level( $t_project_id ),
@@ -445,7 +441,7 @@ if( $t_show_attachments ) {
 						$t_project_id );
 					foreach ( $t_resolution_options as $t_key => $t_value ) {
 					?>
-						<option value="<?php echo $t_key ?>" <?php check_selected( $t_key, config_get( 'bug_submit_status' ) ); ?> >
+						<option value="<?php echo $t_key ?>" <?php \Flickerbox\Helper::check_selected( $t_key, config_get( 'bug_submit_status' ) ); ?> >
 							<?php echo $t_value ?>
 						</option>
 					<?php } ?>
@@ -459,7 +455,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'resolution' ) ?></span></label>
 				<span class="select">
-					<select <?php echo helper_get_tab_index() ?> name="resolution">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> name="resolution">
 						<?php
 						print_enum_string_option_list( 'resolution', config_get( 'default_bug_resolution' ) );
 						?>
@@ -474,19 +470,19 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'target_version' ) ?></span></label>
 				<span class="select">
-					<select <?php echo helper_get_tab_index() ?> id="target_version" name="target_version">
+					<select <?php echo \Flickerbox\Helper::get_tab_index() ?> id="target_version" name="target_version">
 						<?php print_version_option_list( '', null, VERSION_FUTURE ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
 <?php } ?>
-<?php event_signal( 'EVENT_REPORT_BUG_FORM', array( $t_project_id ) ) ?>
+<?php \Flickerbox\Event::signal( 'EVENT_REPORT_BUG_FORM', array( $t_project_id ) ) ?>
 
 			<div class="field-container">
 				<label><span class="required">*</span><span><?php print_documentation_link( 'summary' ) ?></span></label>
 				<span class="input">
-					<input <?php echo helper_get_tab_index() ?> type="text" id="summary" name="summary" size="105" maxlength="128" value="<?php echo \Flickerbox\String::attribute( $f_summary ) ?>" />
+					<input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="text" id="summary" name="summary" size="105" maxlength="128" value="<?php echo \Flickerbox\String::attribute( $f_summary ) ?>" />
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -494,7 +490,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><span class="required">*</span><?php print_documentation_link( 'description' ) ?></span></label>
 				<span class="textarea">
-					<textarea <?php echo helper_get_tab_index() ?> id="description" name="description" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_description ) ?></textarea>
+					<textarea <?php echo \Flickerbox\Helper::get_tab_index() ?> id="description" name="description" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_description ) ?></textarea>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -503,7 +499,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'steps_to_reproduce' ) ?></span></label>
 				<span class="textarea">
-					<textarea <?php echo helper_get_tab_index() ?> id="steps_to_reproduce" name="steps_to_reproduce" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_steps_to_reproduce ) ?></textarea>
+					<textarea <?php echo \Flickerbox\Helper::get_tab_index() ?> id="steps_to_reproduce" name="steps_to_reproduce" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_steps_to_reproduce ) ?></textarea>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -513,7 +509,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'additional_information' ) ?></span></label>
 				<span class="textarea">
-					<textarea <?php echo helper_get_tab_index() ?> id="additional_info" name="additional_info" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_additional_info ) ?></textarea>
+					<textarea <?php echo \Flickerbox\Helper::get_tab_index() ?> id="additional_info" name="additional_info" cols="80" rows="10"><?php echo \Flickerbox\String::textarea( $f_additional_info ) ?></textarea>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -568,7 +564,7 @@ if( $t_show_attachments ) {
 		# Display multiple file upload fields
 		for( $i = 0; $i < $t_file_upload_max_num; $i++ ) {
 ?>
-					<input <?php echo helper_get_tab_index() ?> id="ufile[]" name="ufile[]" type="file" />
+					<input <?php echo \Flickerbox\Helper::get_tab_index() ?> id="ufile[]" name="ufile[]" type="file" />
 <?php
 			if( $t_file_upload_max_num > 1 ) {
 				echo '<br />';
@@ -585,8 +581,8 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
 				<span class="input">
-					<label><input <?php echo helper_get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PUBLIC ?>" <?php check_checked( $f_view_state, VS_PUBLIC ) ?> /> <?php echo \Flickerbox\Lang::get( 'public' ) ?></label>
-					<label><input <?php echo helper_get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PRIVATE ?>" <?php check_checked( $f_view_state, VS_PRIVATE ) ?> /> <?php echo \Flickerbox\Lang::get( 'private' ) ?></label>
+					<label><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PUBLIC ?>" <?php \Flickerbox\Helper::check_checked( $f_view_state, VS_PUBLIC ) ?> /> <?php echo \Flickerbox\Lang::get( 'public' ) ?></label>
+					<label><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="radio" name="view_state" value="<?php echo VS_PRIVATE ?>" <?php \Flickerbox\Helper::check_checked( $f_view_state, VS_PRIVATE ) ?> /> <?php echo \Flickerbox\Lang::get( 'private' ) ?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -599,7 +595,7 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'relationship_with_parent' ) ?></span></label>
 				<span class="input">
-					<?php relationship_list_box( config_get( 'default_bug_relationship_clone' ), 'rel_type', false, true ) ?>
+					<?php \Flickerbox\Relationship::list_box( config_get( 'default_bug_relationship_clone' ), 'rel_type', false, true ) ?>
 					<?php echo '<strong>' . \Flickerbox\Lang::get( 'bug' ) . ' ' . bug_format_id( $f_master_bug_id ) . '</strong>' ?>
 				</span>
 				<span class="label-style"></span>
@@ -608,8 +604,8 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'copy_from_parent' ) ?></span></label>
 				<span class="input">
-					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="copy_notes_from_parent" name="copy_notes_from_parent" <?php check_checked( $f_copy_notes_from_parent ) ?> /> <?php echo \Flickerbox\Lang::get( 'copy_notes_from_parent' ) ?></label>
-					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="copy_attachments_from_parent" name="copy_attachments_from_parent" <?php check_checked( $f_copy_attachments_from_parent ) ?> /> <?php echo \Flickerbox\Lang::get( 'copy_attachments_from_parent' ) ?></label>
+					<label><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="checkbox" id="copy_notes_from_parent" name="copy_notes_from_parent" <?php \Flickerbox\Helper::check_checked( $f_copy_notes_from_parent ) ?> /> <?php echo \Flickerbox\Lang::get( 'copy_notes_from_parent' ) ?></label>
+					<label><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="checkbox" id="copy_attachments_from_parent" name="copy_attachments_from_parent" <?php \Flickerbox\Helper::check_checked( $f_copy_attachments_from_parent ) ?> /> <?php echo \Flickerbox\Lang::get( 'copy_attachments_from_parent' ) ?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
@@ -619,13 +615,13 @@ if( $t_show_attachments ) {
 			<div class="field-container">
 				<label><span><?php print_documentation_link( 'report_stay' ) ?></span></label>
 				<span class="input">
-					<label><input <?php echo helper_get_tab_index() ?> type="checkbox" id="report_stay" name="report_stay" <?php check_checked( $f_report_stay ) ?> /> <?php echo \Flickerbox\Lang::get( 'check_report_more_bugs' ) ?></label>
+					<label><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="checkbox" id="report_stay" name="report_stay" <?php \Flickerbox\Helper::check_checked( $f_report_stay ) ?> /> <?php echo \Flickerbox\Lang::get( 'check_report_more_bugs' ) ?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<span class="submit-button">
-				<input <?php echo helper_get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'submit_report_button' ) ?>" />
+				<input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'submit_report_button' ) ?>" />
 			</span>
 		</fieldset>
 	</form>

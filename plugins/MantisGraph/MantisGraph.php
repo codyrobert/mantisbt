@@ -114,7 +114,7 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 */
 	function summary_submenu() {
 		$t_icon_path = config_get( 'icon_path' );
-		return array( '<a href="' . helper_mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . plugin_langget( 'synthesis_link' ) . '</a>',
+		return array( '<a href="' . \Flickerbox\Helper::mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . plugin_langget( 'synthesis_link' ) . '</a>',
 			'<a href="' . plugin_page( 'summary_graph_imp_status.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'status_link' ) . '</a>',
 			'<a href="' . plugin_page( 'summary_graph_imp_priority.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'priority_link' ) . '</a>',
 			'<a href="' . plugin_page( 'summary_graph_imp_severity.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'severity_link' ) . '</a>',

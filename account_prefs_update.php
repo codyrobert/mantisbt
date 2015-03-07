@@ -38,10 +38,8 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'event_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
-require_api( 'user_pref_api.php' );
 
 \Flickerbox\Form::security_validate( 'account_prefs_update' );
 
@@ -67,7 +65,7 @@ if( auth_get_current_user_id() != $f_user_id ) {
 	user_ensure_unprotected( $f_user_id );
 }
 
-$t_prefs = user_pref_get( $f_user_id );
+$t_prefs = \Flickerbox\User\Pref::get( $f_user_id );
 
 $t_prefs->redirect_delay	= \Flickerbox\GPC::get_int( 'redirect_delay' );
 $t_prefs->refresh_delay		= \Flickerbox\GPC::get_int( 'refresh_delay' );
@@ -115,9 +113,9 @@ if( in_array( $t_timezone, timezone_identifiers_list() ) ) {
 	}
 }
 
-event_signal( 'EVENT_ACCOUNT_PREF_UPDATE', array( $f_user_id ) );
+\Flickerbox\Event::signal( 'EVENT_ACCOUNT_PREF_UPDATE', array( $f_user_id ) );
 
-user_pref_set( $f_user_id, $t_prefs );
+\Flickerbox\User\Pref::set( $f_user_id, $t_prefs );
 
 \Flickerbox\Form::security_purge( 'account_prefs_update' );
 

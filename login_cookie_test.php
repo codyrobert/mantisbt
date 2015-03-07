@@ -41,7 +41,7 @@ if( auth_is_user_authenticated() ) {
 	# If this is the first login for an instance, then redirect to create project page.
 	# Use lack of projects as a hint for such scenario.
 	if( \Flickerbox\Utility::is_blank( $f_return ) || $f_return == 'index.php' ) {
-		if( \Flickerbox\Current_User::is_administrator() && project_table_empty() ) {
+		if( \Flickerbox\Current_User::is_administrator() && \Flickerbox\Project::table_empty() ) {
 			$c_return = 'manage_proj_create_page.php';
 		}
 	}

@@ -179,7 +179,7 @@ function mc_issue_get_history( $p_username, $p_password, $p_issue_id ) {
 
 	\Flickerbox\Log::event( LOG_WEBSERVICE, 'retrieving history for issue \'' . $p_issue_id . '\'' );
 
-	$t_bug_history = history_get_raw_events_array( $p_issue_id, $t_user_id );
+	$t_bug_history = \Flickerbox\History::get_raw_events_array( $p_issue_id, $t_user_id );
 
 	return $t_bug_history;
 }
@@ -351,28 +351,28 @@ function mci_issue_get_attachments( $p_issue_id ) {
 function mci_issue_get_relationships( $p_issue_id, $p_user_id ) {
 	$t_relationships = array();
 
-	$t_src_relationships = relationship_get_all_src( $p_issue_id );
+	$t_src_relationships = \Flickerbox\Relationship::get_all_src( $p_issue_id );
 	foreach( $t_src_relationships as $t_relship_row ) {
 		if( \Flickerbox\Access::has_bug_level( config_get( 'webservice_readonly_access_level_threshold' ), $t_relship_row->dest_bug_id, $p_user_id ) ) {
 			$t_relationship = array();
 			$t_reltype = array();
 			$t_relationship['id'] = $t_relship_row->id;
 			$t_reltype['id'] = $t_relship_row->type;
-			$t_reltype['name'] = relationship_get_description_src_side( $t_relship_row->type );
+			$t_reltype['name'] = \Flickerbox\Relationship::get_description_src_side( $t_relship_row->type );
 			$t_relationship['type'] = $t_reltype;
 			$t_relationship['target_id'] = $t_relship_row->dest_bug_id;
 			$t_relationships[] = $t_relationship;
 		}
 	}
 
-	$t_dest_relationships = relationship_get_all_dest( $p_issue_id );
+	$t_dest_relationships = \Flickerbox\Relationship::get_all_dest( $p_issue_id );
 	foreach( $t_dest_relationships as $t_relship_row ) {
 		if( \Flickerbox\Access::has_bug_level( config_get( 'webservice_readonly_access_level_threshold' ), $t_relship_row->src_bug_id, $p_user_id ) ) {
 			$t_relationship = array();
 			$t_relationship['id'] = $t_relship_row->id;
 			$t_reltype = array();
-			$t_reltype['id'] = relationship_get_complementary_type( $t_relship_row->type );
-			$t_reltype['name'] = relationship_get_description_dest_side( $t_relship_row->type );
+			$t_reltype['id'] = \Flickerbox\Relationship::get_complementary_type( $t_relship_row->type );
+			$t_reltype['name'] = \Flickerbox\Relationship::get_description_dest_side( $t_relship_row->type );
 			$t_relationship['type'] = $t_reltype;
 			$t_relationship['target_id'] = $t_relship_row->src_bug_id;
 			$t_relationships[] = $t_relationship;
@@ -543,11 +543,11 @@ function mc_issue_get_biggest_id( $p_username, $p_password, $p_project_id ) {
 	# Get project id, if -1, then retrieve the current which will be the default since there is no cookie.
 	$t_project_id = $p_project_id;
 	if( $t_project_id == -1 ) {
-		$t_project_id = helper_get_current_project();
+		$t_project_id = \Flickerbox\Helper::get_current_project();
 	}
 	$g_project_override = $t_project_id;
 
-	if( ( $t_project_id > 0 ) && !project_exists( $t_project_id ) ) {
+	if( ( $t_project_id > 0 ) && !\Flickerbox\Project::exists( $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $t_project_id . '\' does not exist.' );
 	}
 
@@ -655,7 +655,7 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 	$t_project = $p_issue['project'];
 
 	$t_project_id = mci_get_project_id( $t_project );
-	$g_project_override = $t_project_id; # ensure that helper_get_current_project() calls resolve to this project id
+	$g_project_override = $t_project_id; # ensure that \Flickerbox\Helper::get_current_project() calls resolve to this project id
 
 	if( !mci_has_readwrite_access( $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
@@ -689,7 +689,7 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 		$t_reporter_id = $t_user_id;
 	}
 
-	if( ( $t_project_id == 0 ) || !project_exists( $t_project_id ) ) {
+	if( ( $t_project_id == 0 ) || !\Flickerbox\Project::exists( $t_project_id ) ) {
 		if( $t_project_id == 0 ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', "Project '" . $t_project->name . "' does not exist." );
 		} else {
@@ -722,7 +722,7 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 
 		$t_error_when_version_not_found = config_get( 'webservice_error_when_version_not_found' );
 		if( $t_error_when_version_not_found == ON ) {
-			$t_project_name = project_get_name( $t_project_id );
+			$t_project_name = \Flickerbox\Project::get_name( $t_project_id );
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Version \'' . $t_version . '\' does not exist in project \'' . $t_project_name . '\'.' );
 		} else {
 			$t_version_when_not_found = config_get( 'webservice_version_when_not_found' );
@@ -833,11 +833,11 @@ function mc_issue_add( $p_username, $p_password, stdClass $p_issue ) {
 	email_generic( $t_issue_id, 'new', 'email_notification_title_for_action_bug_submitted' );
 
 	if( $t_bug_data->status != config_get( 'bug_submit_status' ) ) {
-		history_log_event( $t_issue_id, 'status', config_get( 'bug_submit_status' ) );
+		\Flickerbox\History::log_event( $t_issue_id, 'status', config_get( 'bug_submit_status' ) );
 	}
 
 	if( $t_bug_data->resolution != config_get( 'default_bug_resolution' ) ) {
-		history_log_event( $t_issue_id, 'resolution', config_get( 'default_bug_resolution' ) );
+		\Flickerbox\History::log_event( $t_issue_id, 'resolution', config_get( 'default_bug_resolution' ) );
 	}
 
 	return $t_issue_id;
@@ -875,7 +875,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	$g_project_override = $t_project_id; # ensure that helper_get_current_project() calls resolve to this project id
+	$g_project_override = $t_project_id; # ensure that \Flickerbox\Helper::get_current_project() calls resolve to this project id
 
 	$p_issue = SoapObjectsFactory::unwrapObject( $p_issue );
 
@@ -886,7 +886,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 	$t_summary = isset( $p_issue['summary'] ) ? $p_issue['summary'] : '';
 	$t_description = isset( $p_issue['description'] ) ? $p_issue['description'] : '';
 
-	if( ( $t_project_id == 0 ) || !project_exists( $t_project_id ) ) {
+	if( ( $t_project_id == 0 ) || !\Flickerbox\Project::exists( $t_project_id ) ) {
 		if( $t_project_id == 0 ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $t_project['name'] . '\' does not exist.' );
 		}
@@ -904,7 +904,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 		if( isset( $p_issue['category'] ) && !\Flickerbox\Utility::is_blank( $p_issue['category'] ) ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Category field must be supplied.' );
 		} else {
-			$t_project_name = project_get_name( $t_project_id );
+			$t_project_name = \Flickerbox\Project::get_name( $t_project_id );
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Category \'' . $p_issue['category'] . '\' not found for project \'' . $t_project_name . '\'.' );
 		}
 	}
@@ -912,7 +912,7 @@ function mc_issue_update( $p_username, $p_password, $p_issue_id, stdClass $p_iss
 	if( isset( $p_issue['version'] ) && !\Flickerbox\Utility::is_blank( $p_issue['version'] ) && !\Flickerbox\Version::get_id( $p_issue['version'], $t_project_id ) ) {
 		$t_error_when_version_not_found = config_get( 'webservice_error_when_version_not_found' );
 		if( $t_error_when_version_not_found == ON ) {
-			$t_project_name = project_get_name( $t_project_id );
+			$t_project_name = \Flickerbox\Project::get_name( $t_project_id );
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Version \'' . $p_issue['version'] . '\' does not exist in project \'' . $t_project_name . '\'.' );
 		} else {
 			$t_version_when_not_found = config_get( 'webservice_version_when_not_found' );
@@ -1379,7 +1379,7 @@ function mc_issue_note_update( $p_username, $p_password, stdClass $p_note ) {
  * @param stdClass $p_relationship The relationship to add (RelationshipData SOAP object).
  * @return integer The id of the added relationship.
  */
-function mc_issue_relationship_add( $p_username, $p_password, $p_issue_id, stdClass $p_relationship ) {
+function mc_issue_\Flickerbox\Relationship::add( $p_username, $p_password, $p_issue_id, stdClass $p_relationship ) {
 	global $g_project_override;
 	$t_user_id = mci_check_login( $p_username, $p_password );
 
@@ -1423,19 +1423,19 @@ function mc_issue_relationship_add( $p_username, $p_password, $p_issue_id, stdCl
 		return mci_soap_fault_access_denied( $t_user_id, 'The issue \'' . $t_dest_issue_id . '\' requires higher access level' );
 	}
 
-	$t_old_id_relationship = relationship_same_type_exists( $p_issue_id, $t_dest_issue_id, $t_rel_type['id'] );
+	$t_old_id_relationship = \Flickerbox\Relationship::same_type_exists( $p_issue_id, $t_dest_issue_id, $t_rel_type['id'] );
 
 	if( $t_old_id_relationship == 0 ) {
 		\Flickerbox\Log::event( LOG_WEBSERVICE, 'adding relationship type \'' . $t_rel_type['id'] . '\' between \'' . $p_issue_id . '\' and \'' . $t_dest_issue_id . '\'' );
-		relationship_add( $p_issue_id, $t_dest_issue_id, $t_rel_type['id'] );
+		\Flickerbox\Relationship::add( $p_issue_id, $t_dest_issue_id, $t_rel_type['id'] );
 
 		# The above function call into MantisBT does not seem to return a valid BugRelationshipData object.
 		# So we call db_insert_id in order to find the id of the created relationship.
 		$t_relationship_id = db_insert_id( db_get_table( 'bug_relationship' ) );
 
 		# Add log line to the history (both bugs)
-		history_log_event_special( $p_issue_id, BUG_ADD_RELATIONSHIP, $t_rel_type['id'], $t_dest_issue_id );
-		history_log_event_special( $t_dest_issue_id, BUG_ADD_RELATIONSHIP, relationship_get_complementary_type( $t_rel_type['id'] ), $p_issue_id );
+		\Flickerbox\History::log_event_special( $p_issue_id, BUG_ADD_RELATIONSHIP, $t_rel_type['id'], $t_dest_issue_id );
+		\Flickerbox\History::log_event_special( $t_dest_issue_id, BUG_ADD_RELATIONSHIP, \Flickerbox\Relationship::get_complementary_type( $t_rel_type['id'] ), $p_issue_id );
 
 		# update bug last updated for both bugs
 		bug_update_date( $p_issue_id );
@@ -1443,7 +1443,7 @@ function mc_issue_relationship_add( $p_username, $p_password, $p_issue_id, stdCl
 
 		# send email notification to the users addressed by both the bugs
 		email_relationship_added( $p_issue_id, $t_dest_issue_id, $t_rel_type['id'] );
-		email_relationship_added( $t_dest_issue_id, $p_issue_id, relationship_get_complementary_type( $t_rel_type['id'] ) );
+		email_relationship_added( $t_dest_issue_id, $p_issue_id, \Flickerbox\Relationship::get_complementary_type( $t_rel_type['id'] ) );
 
 		return $t_relationship_id;
 	} else {
@@ -1460,7 +1460,7 @@ function mc_issue_relationship_add( $p_username, $p_password, $p_issue_id, stdCl
  * @param integer $p_relationship_id The id of relationship to delete.
  * @return boolean true: success, false: failure
  */
-function mc_issue_relationship_delete( $p_username, $p_password, $p_issue_id, $p_relationship_id ) {
+function mc_issue_\Flickerbox\Relationship::delete( $p_username, $p_password, $p_issue_id, $p_relationship_id ) {
 	global $g_project_override;
 
 	$t_user_id = mci_check_login( $p_username, $p_password );
@@ -1486,7 +1486,7 @@ function mc_issue_relationship_delete( $p_username, $p_password, $p_issue_id, $p
 	}
 
 	# retrieve the destination bug of the relationship
-	$t_dest_issue_id = relationship_get_linked_bug_id( $p_relationship_id, $p_issue_id );
+	$t_dest_issue_id = \Flickerbox\Relationship::get_linked_bug_id( $p_relationship_id, $p_issue_id );
 
 	# user can access to the related bug at least as viewer, if it's exist...
 	if( bug_exists( $t_dest_issue_id ) ) {
@@ -1495,12 +1495,12 @@ function mc_issue_relationship_delete( $p_username, $p_password, $p_issue_id, $p
 		}
 	}
 
-	$t_bug_relationship_data = relationship_get( $p_relationship_id );
+	$t_bug_relationship_data = \Flickerbox\Relationship::get( $p_relationship_id );
 	$t_rel_type = $t_bug_relationship_data->type;
 
 	# delete relationship from the DB
 	\Flickerbox\Log::event( LOG_WEBSERVICE, 'deleting relationship id \'' . $p_relationship_id . '\'' );
-	relationship_delete( $p_relationship_id );
+	\Flickerbox\Relationship::delete( $p_relationship_id );
 
 	# update bug last updated
 	bug_update_date( $p_issue_id );
@@ -1509,19 +1509,19 @@ function mc_issue_relationship_delete( $p_username, $p_password, $p_issue_id, $p
 	# set the rel_type for both bug and dest_bug based on $t_rel_type and on who is the dest bug
 	if( $p_issue_id == $t_bug_relationship_data->src_bug_id ) {
 		$t_bug_rel_type = $t_rel_type;
-		$t_dest_bug_rel_type = relationship_get_complementary_type( $t_rel_type );
+		$t_dest_bug_rel_type = \Flickerbox\Relationship::get_complementary_type( $t_rel_type );
 	} else {
-		$t_bug_rel_type = relationship_get_complementary_type( $t_rel_type );
+		$t_bug_rel_type = \Flickerbox\Relationship::get_complementary_type( $t_rel_type );
 		$t_dest_bug_rel_type = $t_rel_type;
 	}
 
 	# send email and update the history for the src issue
-	history_log_event_special( $p_issue_id, BUG_DEL_RELATIONSHIP, $t_bug_rel_type, $t_dest_issue_id );
+	\Flickerbox\History::log_event_special( $p_issue_id, BUG_DEL_RELATIONSHIP, $t_bug_rel_type, $t_dest_issue_id );
 	email_relationship_deleted( $p_issue_id, $t_dest_issue_id, $t_bug_rel_type );
 
 	if( bug_exists( $t_dest_issue_id ) ) {
 		# send email and update the history for the dest issue
-		history_log_event_special( $t_dest_issue_id, BUG_DEL_RELATIONSHIP, $t_dest_bug_rel_type, $p_issue_id );
+		\Flickerbox\History::log_event_special( $t_dest_issue_id, BUG_DEL_RELATIONSHIP, $t_dest_bug_rel_type, $p_issue_id );
 		email_relationship_deleted( $t_dest_issue_id, $p_issue_id, $t_dest_bug_rel_type );
 	}
 

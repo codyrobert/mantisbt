@@ -39,9 +39,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 $f_project_id	= \Flickerbox\GPC::get_string( 'project_id' );
 $f_make_default	= \Flickerbox\GPC::get_bool( 'make_default' );
@@ -54,7 +52,7 @@ $t_top     = $t_project[0];
 $t_bottom  = $t_project[count( $t_project ) - 1];
 
 if( ALL_PROJECTS != $t_bottom ) {
-	project_ensure_exists( $t_bottom );
+	\Flickerbox\Project::ensure_exists( $t_bottom );
 }
 
 # Set default project
@@ -62,7 +60,7 @@ if( $f_make_default ) {
 	\Flickerbox\Current_User::set_default_project( $t_top );
 }
 
-helper_set_current_project( $f_project_id );
+\Flickerbox\Helper::set_current_project( $f_project_id );
 
 # redirect to 'same page' when switching projects.
 

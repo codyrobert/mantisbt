@@ -44,7 +44,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
@@ -63,7 +62,7 @@ if( !isset( $t_filter[$t_target_field] ) ) {
 
 # @todo thraxisp - could this be replaced by a call to filter_draw_selection_area2
 
-$t_project_id = helper_get_current_project();
+$t_project_id = \Flickerbox\Helper::get_current_project();
 
 $t_current_user_access_level = \Flickerbox\Current_User::get_access_level();
 $t_accessible_custom_fields_ids = array();
@@ -75,7 +74,7 @@ $t_custom_cols = 1;
 $t_custom_rows = 0;
 
 #get valid target fields
-$t_fields = helper_get_columns_to_view();
+$t_fields = \Flickerbox\Helper::get_columns_to_view();
 $t_n_fields = count( $t_fields );
 for( $i=0; $i < $t_n_fields; $i++ ) {
 	if( in_array( $t_fields[$i], array( 'selection', 'edit', 'bugnotes_count', 'attachment_count' ) ) ) {
@@ -306,7 +305,7 @@ $t_show_tags = \Flickerbox\Access::has_global_level( config_get( 'tag_view_thres
 		<label>
 			<input type="checkbox" id="use_date_filters"
 				name="<?php echo FILTER_PROPERTY_FILTER_BY_DATE ?>"
-				<?php check_checked( $t_filter['filter_by_date'], true ) ?>
+				<?php \Flickerbox\Helper::check_checked( $t_filter['filter_by_date'], true ) ?>
 			/>
 			<?php echo \Flickerbox\Lang::get( 'use_date_filters' )?>
 		</label>

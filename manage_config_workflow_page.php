@@ -39,9 +39,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 auth_reauthenticate();
 
@@ -51,7 +49,7 @@ auth_reauthenticate();
 \Flickerbox\HTML::print_manage_config_menu( 'manage_config_workflow_page.php' );
 
 $g_access = \Flickerbox\Current_User::get_access_level();
-$t_project = helper_get_current_project();
+$t_project = \Flickerbox\Helper::get_current_project();
 $g_can_change_workflow = ( $g_access >= config_get_access( 'status_enum_workflow' ) );
 $g_can_change_flags = $g_can_change_workflow;
 $g_overrides = array();
@@ -418,7 +416,7 @@ echo '</fieldset>';
 if( ALL_PROJECTS == $t_project ) {
 	$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
 } else {
-	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( project_get_name( $t_project ) ) );
+	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project ) ) );
 }
 echo '<p class="bold">' . $t_project_title . '</p>' . "\n";
 echo '<p>' . \Flickerbox\Lang::get( 'colour_coding' ) . '<br />';

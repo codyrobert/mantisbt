@@ -155,9 +155,9 @@ class Revision
 			db_query( $t_query, $p_revision_id );
 			foreach( $p_revision_id as $t_rev_id ) {
 				if( $t_revisions[$t_rev_id]['type'] == REV_BUGNOTE ) {
-					history_log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUGNOTE_REVISION_DROPPED, bugnote_format_id( $t_rev_id ), $t_revisions[$t_rev_id]['bugnote_id'] );
+					\Flickerbox\History::log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUGNOTE_REVISION_DROPPED, bugnote_format_id( $t_rev_id ), $t_revisions[$t_rev_id]['bugnote_id'] );
 				} else {
-					history_log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUG_REVISION_DROPPED, bugnote_format_id( $t_rev_id ), $t_revisions[$t_rev_id]['type'] );
+					\Flickerbox\History::log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUG_REVISION_DROPPED, bugnote_format_id( $t_rev_id ), $t_revisions[$t_rev_id]['type'] );
 				}
 			}
 		} else {
@@ -165,9 +165,9 @@ class Revision
 			$t_query = 'DELETE FROM {bug_revision} WHERE id=' . db_param();
 			db_query( $t_query, array( $p_revision_id ) );
 			if( $t_revision['type'] == REV_BUGNOTE ) {
-				history_log_event_special( $t_revision['bug_id'], BUGNOTE_REVISION_DROPPED, bugnote_format_id( $p_revision_id ), $t_revision['bugnote_id'] );
+				\Flickerbox\History::log_event_special( $t_revision['bug_id'], BUGNOTE_REVISION_DROPPED, bugnote_format_id( $p_revision_id ), $t_revision['bugnote_id'] );
 			} else {
-				history_log_event_special( $t_revision['bug_id'], BUG_REVISION_DROPPED, bugnote_format_id( $p_revision_id ), $t_revision['type'] );
+				\Flickerbox\History::log_event_special( $t_revision['bug_id'], BUG_REVISION_DROPPED, bugnote_format_id( $p_revision_id ), $t_revision['type'] );
 			}
 		}
 	}

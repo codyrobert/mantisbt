@@ -35,9 +35,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'adm_config_delete' );
 
@@ -48,10 +46,10 @@ $f_config_option = \Flickerbox\GPC::get_string( 'config_option' );
 \Flickerbox\Access::ensure_global_level( config_get( 'set_configuration_threshold' ) );
 
 if( $f_project_id != ALL_PROJECTS ) {
-	project_ensure_exists( $f_project_id );
+	\Flickerbox\Project::ensure_exists( $f_project_id );
 }
 
-helper_ensure_confirmed( \Flickerbox\Lang::get( 'delete_config_sure_msg' ), \Flickerbox\Lang::get( 'delete_link' ) );
+\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_config_sure_msg' ), \Flickerbox\Lang::get( 'delete_link' ) );
 
 config_delete( $f_config_option, $f_user_id, $f_project_id );
 

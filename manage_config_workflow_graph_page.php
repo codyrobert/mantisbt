@@ -39,9 +39,7 @@
 
 require_once( 'core.php' );
 require_api( 'config_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 auth_reauthenticate();
 
@@ -54,12 +52,12 @@ if( !config_get( 'relationship_graph_enable' ) ) {
 \Flickerbox\HTML::print_manage_menu( 'adm_permissions_report.php' );
 \Flickerbox\HTML::print_manage_config_menu( 'manage_config_workflow_graph_page.php' );
 
-$t_project = helper_get_current_project();
+$t_project = \Flickerbox\Helper::get_current_project();
 
 if( $t_project == ALL_PROJECTS ) {
 	$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
 } else {
-	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( project_get_name( $t_project ) ) );
+	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project ) ) );
 }
 ?>
 	<br />

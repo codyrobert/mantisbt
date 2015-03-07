@@ -37,7 +37,6 @@ namespace Flickerbox;
  */
 
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'user_api.php' );
 
 
@@ -258,7 +257,7 @@ class Profile
 	 * @return array
 	 */
 	static function get_all_for_project( $p_project_id ) {
-		$t_project_where = helper_project_specific_where( $p_project_id );
+		$t_project_where = \Flickerbox\Helper::project_specific_where( $p_project_id );
 	
 		$t_query = 'SELECT DISTINCT(up.id), up.user_id, up.platform, up.os, up.os_build
 					  FROM {user_profile} up, {bug} b

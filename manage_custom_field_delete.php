@@ -39,7 +39,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_custom_field_delete' );
@@ -53,11 +52,11 @@ $f_return = strip_tags( \Flickerbox\GPC::get_string( 'return', 'manage_custom_fi
 $t_definition = custom_field_get_definition( $f_field_id );
 
 if( 0 < count( custom_field_get_project_ids( $f_field_id ) ) ) {
-	helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_used_custom_field_deletion' ) .
+	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_used_custom_field_deletion' ) .
 		'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
 		\Flickerbox\Lang::get( 'field_delete_button' ) );
 } else {
-	helper_ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_deletion' ) .
+	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_deletion' ) .
 		'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
 		\Flickerbox\Lang::get( 'field_delete_button' ) );
 }

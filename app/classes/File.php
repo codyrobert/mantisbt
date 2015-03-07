@@ -42,9 +42,6 @@ namespace Flickerbox;
 require_api( 'bug_api.php' );
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
-require_api( 'history_api.php' );
-require_api( 'project_api.php' );
 
 
 class File
@@ -227,7 +224,7 @@ class File
 		$t_expected_file_path = '';
 	
 		if( $p_project_id != ALL_PROJECTS ) {
-			$t_path = project_get_field( $p_project_id, 'file_path' );
+			$t_path = \Flickerbox\Project::get_field( $p_project_id, 'file_path' );
 			if( !\Flickerbox\Utility::is_blank( $t_path ) ) {
 				$t_diskfile = \Flickerbox\File::path_combine( $t_path, $t_basename );
 	
@@ -477,7 +474,7 @@ class File
 	
 		if( 'bug' == $p_table ) {
 			# log file deletion
-			history_log_event_special( $t_bug_id, FILE_DELETED, \Flickerbox\File::get_display_name( $t_filename ) );
+			\Flickerbox\History::log_event_special( $t_bug_id, FILE_DELETED, \Flickerbox\File::get_display_name( $t_filename ) );
 		}
 	
 		$t_file_table = db_get_table( $p_table . '_file' );
@@ -637,7 +634,7 @@ class File
 			$t_id = (int)$p_bug_id;
 			$t_bug_id = bug_format_id( $p_bug_id );
 		} else {
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 			$t_id = $t_project_id;
 			$t_bug_id = 0;
 		}
@@ -653,7 +650,7 @@ class File
 		if( $t_project_id == ALL_PROJECTS ) {
 			$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 		} else {
-			$t_file_path = project_get_field( $t_project_id, 'file_path' );
+			$t_file_path = \Flickerbox\Project::get_field( $t_project_id, 'file_path' );
 			if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
 				$t_file_path = config_get( 'absolute_path_default_upload_folder' );
 			}
@@ -713,7 +710,7 @@ class File
 			}
 	
 			# log file added to bug history
-			history_log_event_special( $p_bug_id, FILE_ADDED, $t_file_name );
+			\Flickerbox\History::log_event_special( $p_bug_id, FILE_ADDED, $t_file_name );
 		}
 	}
 	
@@ -739,7 +736,7 @@ class File
 	 */
 	static function allow_project_upload( $p_project_id = null, $p_user_id = null ) {
 		if( null === $p_project_id ) {
-			$p_project_id = helper_get_current_project();
+			$p_project_id = \Flickerbox\Helper::get_current_project();
 		}
 		if( null === $p_user_id ) {
 			$p_user_id = \Flickerbox\Auth::get_current_user_id();
@@ -770,7 +767,7 @@ class File
 	
 		if( null === $p_bug_id ) {
 			# new bug
-			$t_project_id = helper_get_current_project();
+			$t_project_id = \Flickerbox\Helper::get_current_project();
 	
 			# the user must be the reporter if they're reporting a new bug
 			$t_reporter = true;
@@ -934,12 +931,12 @@ class File
 			return;
 		}
 	
-		$t_path_from = project_get_field( $t_project_id_from, 'file_path' );
+		$t_path_from = \Flickerbox\Project::get_field( $t_project_id_from, 'file_path' );
 		if( \Flickerbox\Utility::is_blank( $t_path_from ) ) {
 			$t_path_from = config_get( 'absolute_path_default_upload_folder', null, null, $t_project_id_from );
 		}
 		\Flickerbox\File::ensure_valid_upload_path( $t_path_from );
-		$t_path_to = project_get_field( $p_project_id_to, 'file_path' );
+		$t_path_to = \Flickerbox\Project::get_field( $p_project_id_to, 'file_path' );
 		if( \Flickerbox\Utility::is_blank( $t_path_to ) ) {
 			$t_path_to = config_get( 'absolute_path_default_upload_folder', null, null, $p_project_id_to );
 		}

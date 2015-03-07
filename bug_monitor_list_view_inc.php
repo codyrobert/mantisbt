@@ -40,7 +40,6 @@ if( !defined( 'BUG_MONITOR_LIST_VIEW_INC_ALLOW' ) ) {
 
 require_api( 'config_api.php' );
 require_api( 'database_api.php' );
-require_api( 'helper_api.php' );
 require_api( 'print_api.php' );
 require_api( 'user_api.php' );
 
@@ -75,7 +74,7 @@ if( \Flickerbox\Access::has_bug_level( config_get( 'show_monitor_list_threshold'
 				echo ($i > 0) ? ', ' : '';
 				print_user( $t_users[$i] );
 				if( $t_can_delete_others ) {
-					echo ' [<a class="small" href="' . helper_mantis_url( 'bug_monitor_delete.php' ) . '?bug_id=' . $f_bug_id . '&amp;user_id=' . $t_users[$i] . htmlspecialchars( \Flickerbox\Form::security_param( 'bug_monitor_delete' ) ) . '">' . \Flickerbox\Lang::get( 'delete_link' ) . '</a>]';
+					echo ' [<a class="small" href="' . \Flickerbox\Helper::mantis_url( 'bug_monitor_delete.php' ) . '?bug_id=' . $f_bug_id . '&amp;user_id=' . $t_users[$i] . htmlspecialchars( \Flickerbox\Form::security_param( 'bug_monitor_delete' ) ) . '">' . \Flickerbox\Lang::get( 'delete_link' ) . '</a>]';
 				}
 	 		}
 		}

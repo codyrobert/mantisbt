@@ -36,7 +36,6 @@
 require_once( 'core.php' );
 require_api( 'config_api.php' );
 require_api( 'print_api.php' );
-require_api( 'project_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_custom_field_copy' );
 
@@ -60,7 +59,7 @@ if( $f_copy_from ) {
 	trigger_error( ERROR_CATEGORY_NO_ACTION, ERROR );
 }
 
-project_copy_custom_fields( $t_dst_project_id, $t_src_project_id );
+\Flickerbox\Project::copy_custom_fields( $t_dst_project_id, $t_src_project_id );
 
 \Flickerbox\Form::security_purge( 'manage_proj_custom_field_copy' );
 
