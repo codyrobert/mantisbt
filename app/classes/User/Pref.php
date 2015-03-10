@@ -36,9 +36,6 @@ namespace Flickerbox\User;
  * @uses utility_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'user_api.php' );
 
 
 class Pref
@@ -62,10 +59,10 @@ class Pref
 			return $g_cache_user_pref[(int)$p_user_id][(int)$p_project_id];
 		}
 	
-		$t_query = 'SELECT * FROM {user_pref} WHERE user_id=' . db_param() . ' AND project_id=' . db_param();
-		$t_result = db_query( $t_query, array( (int)$p_user_id, (int)$p_project_id ) );
+		$t_query = 'SELECT * FROM {user_pref} WHERE user_id=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_user_id, (int)$p_project_id ) );
 	
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			if( $p_trigger_errors ) {
@@ -107,11 +104,11 @@ class Pref
 			return;
 		}
 	
-		$t_query = 'SELECT * FROM {user_pref} WHERE user_id IN (' . implode( ',', $c_user_id_array ) . ') AND project_id=' . db_param();
+		$t_query = 'SELECT * FROM {user_pref} WHERE user_id IN (' . implode( ',', $c_user_id_array ) . ') AND project_id=' . \Flickerbox\Database::param();
 	
-		$t_result = db_query( $t_query, array( (int)$p_project_id ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			if( !isset( $g_cache_user_pref[(int)$t_row['user_id']] ) ) {
 				$g_cache_user_pref[(int)$t_row['user_id']] = array();
 			}
@@ -175,20 +172,20 @@ class Pref
 		$c_user_id = (int)$p_user_id;
 		$c_project_id = (int)$p_project_id;
 	
-		user_ensure_unprotected( $p_user_id );
+		\Flickerbox\User::ensure_unprotected( $p_user_id );
 	
 		if( $s_vars == null ) {
-			$s_vars = \Flickerbox\Utility::getClassProperties( '\Flickerbox\UserPreferences', 'protected' );
+			$s_vars = \Flickerbox\Utility::getClassProperties( '\\Flickerbox\\UserPreferences', 'protected' );
 		}
 	
 		$t_values = array();
 	
-		$t_params[] = db_param(); # user_id
+		$t_params[] = \Flickerbox\Database::param(); # user_id
 		$t_values[] = $c_user_id;
-		$t_params[] = db_param(); # project_id
+		$t_params[] = \Flickerbox\Database::param(); # project_id
 		$t_values[] = $c_project_id;
 		foreach( $s_vars as $t_var => $t_val ) {
-			array_push( $t_params, db_param() );
+			array_push( $t_params, \Flickerbox\Database::param() );
 			array_push( $t_values, $p_prefs->Get( $t_var ) );
 		}
 	
@@ -197,7 +194,7 @@ class Pref
 	
 		$t_query = 'INSERT INTO {user_pref}
 				  (user_id, project_id, ' . $t_vars_string . ') VALUES ( ' . $t_params_string . ')';
-		db_query( $t_query, $t_values );
+		\Flickerbox\Database::query( $t_query, $t_values );
 	
 		return true;
 	}
@@ -212,17 +209,17 @@ class Pref
 	static function update( $p_user_id, $p_project_id, \Flickerbox\UserPreferences $p_prefs ) {
 		static $s_vars;
 	
-		user_ensure_unprotected( $p_user_id );
+		\Flickerbox\User::ensure_unprotected( $p_user_id );
 	
 		if( $s_vars == null ) {
-			$s_vars = \Flickerbox\Utility::getClassProperties( '\Flickerbox\UserPreferences', 'protected' );
+			$s_vars = \Flickerbox\Utility::getClassProperties( '\\Flickerbox\\UserPreferences', 'protected' );
 		}
 	
 		$t_pairs = array();
 		$t_values = array();
 	
 		foreach( $s_vars as $t_var => $t_val ) {
-			array_push( $t_pairs, $t_var . ' = ' . db_param() ) ;
+			array_push( $t_pairs, $t_var . ' = ' . \Flickerbox\Database::param() ) ;
 			array_push( $t_values, $p_prefs->$t_var );
 		}
 	
@@ -231,8 +228,8 @@ class Pref
 		$t_values[] = $p_project_id;
 	
 		$t_query = 'UPDATE {user_pref} SET ' . $t_pairs_string . '
-					  WHERE user_id=' . db_param() . ' AND project_id=' . db_param();
-		db_query( $t_query, $t_values );
+					  WHERE user_id=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, $t_values );
 	
 		user_pref_clear_cache( $p_user_id, $p_project_id );
 	}
@@ -245,12 +242,12 @@ class Pref
 	 * @return void
 	 */
 	static function delete( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-		user_ensure_unprotected( $p_user_id );
+		\Flickerbox\User::ensure_unprotected( $p_user_id );
 	
 		$t_query = 'DELETE FROM {user_pref}
-					  WHERE user_id=' . db_param() . ' AND
-					  		project_id=' . db_param();
-		db_query( $t_query, array( $p_user_id, $p_project_id ) );
+					  WHERE user_id=' . \Flickerbox\Database::param() . ' AND
+					  		project_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_user_id, $p_project_id ) );
 	
 		user_pref_clear_cache( $p_user_id, $p_project_id );
 	}
@@ -266,10 +263,10 @@ class Pref
 	 * @return void
 	 */
 	static function delete_all( $p_user_id ) {
-		user_ensure_unprotected( $p_user_id );
+		\Flickerbox\User::ensure_unprotected( $p_user_id );
 	
-		$t_query = 'DELETE FROM {user_pref} WHERE user_id=' . db_param();
-		db_query( $t_query, array( $p_user_id ) );
+		$t_query = 'DELETE FROM {user_pref} WHERE user_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_user_id ) );
 	
 		user_pref_clear_cache( $p_user_id );
 	}
@@ -284,8 +281,8 @@ class Pref
 	 * @return void
 	 */
 	static function delete_project( $p_project_id ) {
-		$t_query = 'DELETE FROM {user_pref} WHERE project_id=' . db_param();
-		db_query( $t_query, array( $p_project_id ) );
+		$t_query = 'DELETE FROM {user_pref} WHERE project_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_project_id ) );
 	}
 	
 	/**
@@ -323,7 +320,7 @@ class Pref
 		}
 	
 		if( $s_vars == null ) {
-			$s_vars = \Flickerbox\Utility::getClassProperties( '\Flickerbox\UserPreferences', 'protected' );
+			$s_vars = \Flickerbox\Utility::getClassProperties( '\\Flickerbox\\UserPreferences', 'protected' );
 		}
 	
 		$t_row_keys = array_keys( $t_row );
@@ -357,7 +354,7 @@ class Pref
 		$t_prefs = \Flickerbox\User\Pref::get( $p_user_id, $p_project_id );
 	
 		if( $s_vars == null ) {
-			$t_reflection = new \ReflectionClass( '\Flickerbox\UserPreferences' );
+			$t_reflection = new \ReflectionClass( '\\Flickerbox\\UserPreferences' );
 			$s_vars = $t_reflection->getDefaultProperties();
 		}
 	

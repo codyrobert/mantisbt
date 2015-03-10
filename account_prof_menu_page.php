@@ -39,10 +39,8 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
-if( !config_get( 'enable_profiles' ) ) {
+if( !\Flickerbox\Config::mantis_get( 'enable_profiles' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
 }
 
@@ -57,9 +55,9 @@ if( isset( $g_global_profiles ) ) {
 \Flickerbox\Current_User::ensure_unprotected();
 
 if( $g_global_profiles ) {
-	\Flickerbox\Access::ensure_global_level( config_get( 'manage_global_profile_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) );
 } else {
-	\Flickerbox\Access::ensure_global_level( config_get( 'add_profile_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'add_profile_threshold' ) );
 }
 
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_profiles_link' ) );
@@ -150,7 +148,7 @@ if( $g_global_profiles ) {
 				<label for="select-profile"><span><?php echo \Flickerbox\Lang::get( 'select_profile' ) ?></span></label>
 				<span class="input">
 					<select id="select-profile" name="profile_id">
-						<?php print_profile_option_list( $t_user_id, '', $t_profiles ) ?>
+						<?php \Flickerbox\Print_Util::profile_option_list( $t_user_id, '', $t_profiles ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

@@ -35,8 +35,6 @@ namespace Flickerbox\Bug;
  * @uses string_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
 
 \Flickerbox\HTML::require_css( 'status_config.php' );
 
@@ -59,7 +57,7 @@ class Group
 			trigger_error( ERROR_GENERIC, ERROR );
 		}
 	
-		$t_include_file = config_get_global( 'absolute_path' ) . 'bug_actiongroup_' . $p_action . '_inc.php';
+		$t_include_file = \Flickerbox\Config::get_global( 'absolute_path' ) . 'bug_actiongroup_' . $p_action . '_inc.php';
 		if( !file_exists( $t_include_file ) ) {
 			trigger_error( ERROR_GENERIC, ERROR );
 		} else {
@@ -90,7 +88,7 @@ class Group
 	 * @return void
 	 */
 	static function action_print_bug_list( array $p_bug_ids_array ) {
-		$t_legend_position = config_get( 'status_legend_position' );
+		$t_legend_position = \Flickerbox\Config::mantis_get( 'status_legend_position' );
 	
 		if( STATUS_LEGEND_POSITION_TOP == $t_legend_position ) {
 			\Flickerbox\HTML::status_legend();
@@ -109,9 +107,9 @@ class Group
 	
 		foreach( $p_bug_ids_array as $t_bug_id ) {
 			# choose color based on status
-			$t_status_label = \Flickerbox\HTML::get_status_css_class( bug_get_field( $t_bug_id, 'status' ), auth_get_current_user_id(), bug_get_field( $t_bug_id, 'project_id' ) );
+			$t_status_label = \Flickerbox\HTML::get_status_css_class( \Flickerbox\Bug::get_field( $t_bug_id, 'status' ), auth_get_current_user_id(), \Flickerbox\Bug::get_field( $t_bug_id, 'project_id' ) );
 	
-			echo sprintf( "<tr class=\"%s\"> <td>%s</td> <td>%s</td> </tr>\n", $t_status_label, \Flickerbox\String::get_bug_view_link( $t_bug_id ), \Flickerbox\String::attribute( bug_get_field( $t_bug_id, 'summary' ) ) );
+			echo sprintf( "<tr class=\"%s\"> <td>%s</td> <td>%s</td> </tr>\n", $t_status_label, \Flickerbox\String::get_bug_view_link( $t_bug_id ), \Flickerbox\String::attribute( \Flickerbox\Bug::get_field( $t_bug_id, 'summary' ) ) );
 		}
 	
 		echo '</table>';
@@ -203,19 +201,19 @@ class Group
 		foreach( $p_project_ids as $t_project_id ) {
 	
 			if( !isset( $t_commands['MOVE'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'move_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'move_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['MOVE'] = \Flickerbox\Lang::get( 'actiongroup_menu_move' );
 			}
 	
 			if( !isset( $t_commands['COPY'] ) &&
-				\Flickerbox\Access::has_any_project( config_get( 'report_bug_threshold', null, null, $t_project_id ) ) ) {
+				\Flickerbox\Access::has_any_project( \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, null, $t_project_id ) ) ) {
 				$t_commands['COPY'] = \Flickerbox\Lang::get( 'actiongroup_menu_copy' );
 			}
 	
 			if( !isset( $t_commands['ASSIGN'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_assign_threshold', null, null, $t_project_id ), $t_project_id ) ) {
-				if( ON == config_get( 'auto_set_status_to_assigned', null, null, $t_project_id ) &&
-					\Flickerbox\Access::has_project_level( \Flickerbox\Access::get_status_threshold( config_get( 'bug_assigned_status', null, null, $t_project_id ), $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_assign_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				if( ON == \Flickerbox\Config::mantis_get( 'auto_set_status_to_assigned', null, null, $t_project_id ) &&
+					\Flickerbox\Access::has_project_level( \Flickerbox\Access::get_status_threshold( \Flickerbox\Config::mantis_get( 'bug_assigned_status', null, null, $t_project_id ), $t_project_id ), $t_project_id ) ) {
 					$t_commands['ASSIGN'] = \Flickerbox\Lang::get( 'actiongroup_menu_assign' );
 				} else {
 					$t_commands['ASSIGN'] = \Flickerbox\Lang::get( 'actiongroup_menu_assign' );
@@ -223,84 +221,84 @@ class Group
 			}
 	
 			if( !isset( $t_commands['CLOSE'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_status_threshold', null, null, $t_project_id ), $t_project_id ) &&
-				( \Flickerbox\Access::has_project_level( \Flickerbox\Access::get_status_threshold( config_get( 'bug_closed_status_threshold', null, null, $t_project_id ), $t_project_id ), $t_project_id ) ||
-					\Flickerbox\Access::has_project_level( config_get( 'allow_reporter_close', null, null, $t_project_id ), $t_project_id ) ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_status_threshold', null, null, $t_project_id ), $t_project_id ) &&
+				( \Flickerbox\Access::has_project_level( \Flickerbox\Access::get_status_threshold( \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold', null, null, $t_project_id ), $t_project_id ), $t_project_id ) ||
+					\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'allow_reporter_close', null, null, $t_project_id ), $t_project_id ) ) ) {
 				$t_commands['CLOSE'] = \Flickerbox\Lang::get( 'actiongroup_menu_close' );
 			}
 	
 			if( !isset( $t_commands['DELETE'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'delete_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'delete_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['DELETE'] = \Flickerbox\Lang::get( 'actiongroup_menu_delete' );
 			}
 	
 			if( !isset( $t_commands['RESOLVE'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_status_threshold', null, null, $t_project_id ), $t_project_id ) &&
-				\Flickerbox\Access::has_project_level( \Flickerbox\Access::get_status_threshold( config_get( 'bug_resolved_status_threshold', null, null, $t_project_id ), $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_status_threshold', null, null, $t_project_id ), $t_project_id ) &&
+				\Flickerbox\Access::has_project_level( \Flickerbox\Access::get_status_threshold( \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $t_project_id ), $t_project_id ), $t_project_id ) ) {
 				$t_commands['RESOLVE'] = \Flickerbox\Lang::get( 'actiongroup_menu_resolve' );
 			}
 	
 			if( !isset( $t_commands['SET_STICKY'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'set_bug_sticky_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'set_bug_sticky_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['SET_STICKY'] = \Flickerbox\Lang::get( 'actiongroup_menu_set_sticky' );
 			}
 	
 			if( !isset( $t_commands['UP_PRIOR'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['UP_PRIOR'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_priority' );
 			}
 	
 			if( !isset( $t_commands['EXT_UPDATE_SEVERITY'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['EXT_UPDATE_SEVERITY'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_severity' );
 			}
 	
 			if( !isset( $t_commands['UP_STATUS'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_status_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_status_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['UP_STATUS'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_status' );
 			}
 	
 			if( !isset( $t_commands['UP_CATEGORY'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['UP_CATEGORY'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_category' );
 			}
 	
 			if( !isset( $t_commands['VIEW_STATUS'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'change_view_status_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'change_view_status_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['VIEW_STATUS'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_view_status' );
 			}
 	
 			if( !isset( $t_commands['EXT_UPDATE_PRODUCT_BUILD'] ) &&
-				config_get( 'enable_product_build', null, null, $t_project_id ) == ON &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Config::mantis_get( 'enable_product_build', null, null, $t_project_id ) == ON &&
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['EXT_UPDATE_PRODUCT_BUILD'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_product_build' );
 			}
 	
 			if( !isset( $t_commands['EXT_ADD_NOTE'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'add_bugnote_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'add_bugnote_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['EXT_ADD_NOTE'] = \Flickerbox\Lang::get( 'actiongroup_menu_add_note' );
 			}
 	
 			if( !isset( $t_commands['EXT_ATTACH_TAGS'] ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'tag_attach_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'tag_attach_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['EXT_ATTACH_TAGS'] = \Flickerbox\Lang::get( 'actiongroup_menu_attach_tags' );
 			}
 	
 			if( !isset( $t_commands['UP_PRODUCT_VERSION'] ) &&
 				\Flickerbox\Version::should_show_product_version( $t_project_id ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['UP_PRODUCT_VERSION'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_product_version' );
 			}
 	
 			if( !isset( $t_commands['UP_FIXED_IN_VERSION'] ) &&
 				\Flickerbox\Version::should_show_product_version( $t_project_id ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['UP_FIXED_IN_VERSION'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_fixed_in_version' );
 			}
 	
 			if( !isset( $t_commands['UP_TARGET_VERSION'] ) &&
 				\Flickerbox\Version::should_show_product_version( $t_project_id ) &&
-				\Flickerbox\Access::has_project_level( config_get( 'roadmap_update_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+				\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'roadmap_update_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_commands['UP_TARGET_VERSION'] = \Flickerbox\Lang::get( 'actiongroup_menu_update_target_version' );
 			}
 	
@@ -316,7 +314,7 @@ class Group
 			}
 		}
 	
-		$t_custom_group_actions = config_get( 'custom_group_actions' );
+		$t_custom_group_actions = \Flickerbox\Config::mantis_get( 'custom_group_actions' );
 	
 		foreach( $t_custom_group_actions as $t_custom_group_action ) {
 			# use label if provided to get the localized text, otherwise fallback to action name.

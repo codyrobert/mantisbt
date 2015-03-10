@@ -21,7 +21,7 @@
 /**
  * Mantis Core Formatting plugin
  */
-class MantisCoreFormattingPlugin extends MantisFormattingPlugin {
+class MantisCoreFormattingPlugin extends \Flickerbox\MantisFormattingPlugin {
 	/**
 	 * A method that populates the plugin information and minimum requirements.
 	 * @return void
@@ -72,7 +72,7 @@ class MantisCoreFormattingPlugin extends MantisFormattingPlugin {
 		$t_string = $p_string;
 
 		if( null === $s_text ) {
-			$s_text = plugin_config_get( 'process_text' );
+			$s_text = \Flickerbox\Plugin::config_get( 'process_text' );
 		}
 
 		if( ON == $s_text ) {
@@ -109,8 +109,8 @@ class MantisCoreFormattingPlugin extends MantisFormattingPlugin {
 		$t_string = $this->text( $p_event, $p_string, $p_multiline );
 
 		if( null === $s_urls ) {
-			$s_urls = plugin_config_get( 'process_urls' );
-			$s_buglinks = plugin_config_get( 'process_buglinks' );
+			$s_urls = \Flickerbox\Plugin::config_get( 'process_urls' );
+			$s_buglinks = \Flickerbox\Plugin::config_get( 'process_buglinks' );
 		}
 
 		if( ON == $s_urls ) {
@@ -137,9 +137,9 @@ class MantisCoreFormattingPlugin extends MantisFormattingPlugin {
 		$t_string = $p_string;
 
 		if( null === $s_text ) {
-			$s_text = plugin_config_get( 'process_text' );
-			$s_urls = plugin_config_get( 'process_urls' );
-			$s_buglinks = plugin_config_get( 'process_buglinks' );
+			$s_text = \Flickerbox\Plugin::config_get( 'process_text' );
+			$s_urls = \Flickerbox\Plugin::config_get( 'process_urls' );
+			$s_buglinks = \Flickerbox\Plugin::config_get( 'process_buglinks' );
 		}
 
 		if( ON == $s_text ) {
@@ -173,8 +173,8 @@ class MantisCoreFormattingPlugin extends MantisFormattingPlugin {
 		$t_string = $p_string;
 
 		if( null === $s_text ) {
-			$s_text = plugin_config_get( 'process_text' );
-			$s_buglinks = plugin_config_get( 'process_buglinks' );
+			$s_text = \Flickerbox\Plugin::config_get( 'process_text' );
+			$s_buglinks = \Flickerbox\Plugin::config_get( 'process_buglinks' );
 		}
 
 		if( ON == $s_text ) {

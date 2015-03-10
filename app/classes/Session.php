@@ -38,7 +38,6 @@ namespace Flickerbox;
  * @uses php_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Session
@@ -63,7 +62,7 @@ class Session
 				break;
 		}
 	
-		if( ON == config_get_global( 'session_validation' ) && \Flickerbox\Session::get( 'secure_session', false ) ) {
+		if( ON == \Flickerbox\Config::get_global( 'session_validation' ) && \Flickerbox\Session::get( 'secure_session', false ) ) {
 			\Flickerbox\Session::validate( $g_session );
 		}
 	}
@@ -92,7 +91,7 @@ class Session
 	
 				trigger_error( ERROR_SESSION_NOT_VALID, WARNING );
 	
-				$t_url = config_get_global( 'path' ) . config_get_global( 'default_home_page' );
+				$t_url = \Flickerbox\Config::get_global( 'path' ) . \Flickerbox\Config::get_global( 'default_home_page' );
 				echo "\t<meta http-equiv=\"Refresh\" content=\"4;URL=" . $t_url . "\" />\n";
 	
 				die();

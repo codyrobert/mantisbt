@@ -36,8 +36,6 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 /**
  * Prints the title for the custom action page.
@@ -56,7 +54,7 @@ function action_attach_tags_print_title() {
  */
 function action_attach_tags_print_fields() {
 	echo '<tr><th class="category">', \Flickerbox\Lang::get( 'tag_attach_long' ), '</th><td>';
-	print_tag_input();
+	\Flickerbox\Print_Util::tag_input();
 	echo '<input type="submit" class="button" value="' . \Flickerbox\Lang::get( 'tag_attach' ) . ' " /></td></tr>';
 }
 
@@ -71,7 +69,7 @@ function action_attach_tags_validate( $p_bug_id ) {
 	global $g_action_attach_tags_attach;
 	global $g_action_attach_tags_create;
 
-	$t_can_attach = \Flickerbox\Access::has_bug_level( config_get( 'tag_attach_threshold' ), $p_bug_id );
+	$t_can_attach = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'tag_attach_threshold' ), $p_bug_id );
 	if( !$t_can_attach ) {
 		return \Flickerbox\Lang::get( 'tag_attach_denied' );
 	}
@@ -91,7 +89,7 @@ function action_attach_tags_validate( $p_bug_id ) {
 		}
 	}
 
-	$t_can_create = \Flickerbox\Access::has_bug_level( config_get( 'tag_create_threshold' ), $p_bug_id );
+	$t_can_create = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'tag_create_threshold' ), $p_bug_id );
 	if( count( $g_action_attach_tags_create ) > 0 && !$t_can_create ) {
 		return \Flickerbox\Lang::get( 'tag_create_denied' );
 	}

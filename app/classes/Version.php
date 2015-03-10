@@ -36,8 +36,6 @@ namespace Flickerbox;
  * @uses project_hierarchy_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
 
 
 class Version
@@ -61,10 +59,10 @@ class Version
 			return $g_cache_versions[$c_version_id];
 		}
 	
-		$t_query = 'SELECT * FROM {project_version} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $c_version_id ) );
+		$t_query = 'SELECT * FROM {project_version} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $c_version_id ) );
 	
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			$g_cache_versions[$c_version_id] = false;
@@ -146,7 +144,7 @@ class Version
 		$c_obsolete = (bool)$p_obsolete;
 	
 		if( null === $p_date_order ) {
-			$c_date_order = db_now();
+			$c_date_order = \Flickerbox\Database::now();
 		} else {
 			$c_date_order = $p_date_order;
 		}
@@ -156,10 +154,10 @@ class Version
 		$t_query = 'INSERT INTO {project_version}
 						( project_id, version, date_order, description, released, obsolete )
 					  VALUES
-						(' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ' )';
-		db_query( $t_query, array( $c_project_id, $p_version, $c_date_order, $p_description, $c_released, $c_obsolete ) );
+						(' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
+		\Flickerbox\Database::query( $t_query, array( $c_project_id, $p_version, $c_date_order, $p_description, $c_released, $c_obsolete ) );
 	
-		$t_version_id = db_insert_id( db_get_table( 'project_version' ) );
+		$t_version_id = \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'project_version' ) );
 	
 		\Flickerbox\Event::signal( 'EVENT_MANAGE_VERSION_CREATE', array( $t_version_id ) );
 	
@@ -191,46 +189,46 @@ class Version
 		$c_project_id = (int)$p_version_info->project_id;
 	
 		$t_query = 'UPDATE {project_version}
-					  SET version=' . db_param() . ',
-						description=' . db_param() . ',
-						released=' . db_param() . ',
-						date_order=' . db_param() . ',
-						obsolete=' . db_param() . '
-					  WHERE id=' . db_param();
-		db_query( $t_query, array( $c_version_name, $c_description, $c_released, $c_date_order, $c_obsolete, $c_version_id ) );
+					  SET version=' . \Flickerbox\Database::param() . ',
+						description=' . \Flickerbox\Database::param() . ',
+						released=' . \Flickerbox\Database::param() . ',
+						date_order=' . \Flickerbox\Database::param() . ',
+						obsolete=' . \Flickerbox\Database::param() . '
+					  WHERE id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $c_version_name, $c_description, $c_released, $c_date_order, $c_obsolete, $c_version_id ) );
 	
 		if( $c_version_name != $c_old_version_name ) {
 			$t_project_list = array( $c_project_id );
-			if( config_get( 'subprojects_inherit_versions' ) ) {
+			if( \Flickerbox\Config::mantis_get( 'subprojects_inherit_versions' ) ) {
 				$t_project_list = array_merge( $t_project_list, \Flickerbox\Project\Hierarchy::get_all_subprojects( $c_project_id, true ) );
 			}
 			$t_project_list = implode( ',', $t_project_list );
 	
-			$t_query = 'UPDATE {bug} SET version=' . db_param() .
-					 ' WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( version=' . db_param() . ')';
-			db_query( $t_query, array( $c_version_name, $c_old_version_name ) );
+			$t_query = 'UPDATE {bug} SET version=' . \Flickerbox\Database::param() .
+					 ' WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( version=' . \Flickerbox\Database::param() . ')';
+			\Flickerbox\Database::query( $t_query, array( $c_version_name, $c_old_version_name ) );
 	
-			$t_query = 'UPDATE {bug} SET fixed_in_version=' . db_param() . '
-						  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( fixed_in_version=' . db_param() . ')';
-			db_query( $t_query, array( $c_version_name, $c_old_version_name ) );
+			$t_query = 'UPDATE {bug} SET fixed_in_version=' . \Flickerbox\Database::param() . '
+						  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( fixed_in_version=' . \Flickerbox\Database::param() . ')';
+			\Flickerbox\Database::query( $t_query, array( $c_version_name, $c_old_version_name ) );
 	
-			$t_query = 'UPDATE {bug} SET target_version=' . db_param() . '
-						  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( target_version=' . db_param() . ')';
-			db_query( $t_query, array( $c_version_name, $c_old_version_name ) );
-	
-			$t_query = 'UPDATE {bug_history}
-				SET old_value='.db_param().'
-				WHERE field_name IN (\'version\',\'fixed_in_version\',\'target_version\')
-					AND old_value='.db_param().'
-					AND bug_id IN (SELECT id FROM {bug} WHERE project_id IN ( ' . $t_project_list . ' ))';
-			db_query( $t_query, array( $c_version_name, $c_old_version_name ) );
+			$t_query = 'UPDATE {bug} SET target_version=' . \Flickerbox\Database::param() . '
+						  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( target_version=' . \Flickerbox\Database::param() . ')';
+			\Flickerbox\Database::query( $t_query, array( $c_version_name, $c_old_version_name ) );
 	
 			$t_query = 'UPDATE {bug_history}
-				SET new_value='.db_param().'
+				SET old_value='.\Flickerbox\Database::param().'
 				WHERE field_name IN (\'version\',\'fixed_in_version\',\'target_version\')
-					AND new_value='.db_param().'
+					AND old_value='.\Flickerbox\Database::param().'
 					AND bug_id IN (SELECT id FROM {bug} WHERE project_id IN ( ' . $t_project_list . ' ))';
-			db_query( $t_query, array( $c_version_name, $c_old_version_name ) );
+			\Flickerbox\Database::query( $t_query, array( $c_version_name, $c_old_version_name ) );
+	
+			$t_query = 'UPDATE {bug_history}
+				SET new_value='.\Flickerbox\Database::param().'
+				WHERE field_name IN (\'version\',\'fixed_in_version\',\'target_version\')
+					AND new_value='.\Flickerbox\Database::param().'
+					AND bug_id IN (SELECT id FROM {bug} WHERE project_id IN ( ' . $t_project_list . ' ))';
+			\Flickerbox\Database::query( $t_query, array( $c_version_name, $c_old_version_name ) );
 	
 			# @todo We should consider using ids instead of names for foreign keys.  The main advantage of using the names are:
 			#		- for history the version history entries will still be valid even if the version is deleted in the future. --  we can ban deleting referenced versions.
@@ -253,26 +251,26 @@ class Version
 		$t_old_version = \Flickerbox\Version::get_field( $p_version_id, 'version' );
 		$t_project_id = \Flickerbox\Version::get_field( $p_version_id, 'project_id' );
 	
-		$t_query = 'DELETE FROM {project_version} WHERE id=' . db_param();
-		db_query( $t_query, array( (int)$p_version_id ) );
+		$t_query = 'DELETE FROM {project_version} WHERE id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( (int)$p_version_id ) );
 	
 		$t_project_list = array( $t_project_id );
-		if( config_get( 'subprojects_inherit_versions' ) ) {
+		if( \Flickerbox\Config::mantis_get( 'subprojects_inherit_versions' ) ) {
 			$t_project_list = array_merge( $t_project_list, \Flickerbox\Project\Hierarchy::get_all_subprojects( $t_project_id, true ) );
 		}
 		$t_project_list = implode( ',', $t_project_list );
 	
-		$t_query = 'UPDATE {bug} SET version=' . db_param() . '
-					  WHERE project_id IN ( ' . $t_project_list . ' ) AND version=' . db_param();
-		db_query( $t_query, array( $p_new_version, $t_old_version ) );
+		$t_query = 'UPDATE {bug} SET version=' . \Flickerbox\Database::param() . '
+					  WHERE project_id IN ( ' . $t_project_list . ' ) AND version=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_new_version, $t_old_version ) );
 	
-		$t_query = 'UPDATE {bug} SET fixed_in_version=' . db_param() . '
-					  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( fixed_in_version=' . db_param() . ')';
-		db_query( $t_query, array( $p_new_version, $t_old_version ) );
+		$t_query = 'UPDATE {bug} SET fixed_in_version=' . \Flickerbox\Database::param() . '
+					  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( fixed_in_version=' . \Flickerbox\Database::param() . ')';
+		\Flickerbox\Database::query( $t_query, array( $p_new_version, $t_old_version ) );
 	
-		$t_query = 'UPDATE {bug} SET target_version=' . db_param() . '
-					  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( target_version=' . db_param() . ')';
-		db_query( $t_query, array( $p_new_version, $t_old_version ) );
+		$t_query = 'UPDATE {bug} SET target_version=' . \Flickerbox\Database::param() . '
+					  WHERE ( project_id IN ( ' . $t_project_list . ' ) ) AND ( target_version=' . \Flickerbox\Database::param() . ')';
+		\Flickerbox\Database::query( $t_query, array( $p_new_version, $t_old_version ) );
 	}
 	
 	/**
@@ -286,12 +284,12 @@ class Version
 		# remove all references to versions from version, fixed in version and target version.
 		$t_query = 'UPDATE {bug}
 					  SET version=\'\', fixed_in_version=\'\', target_version=\'\'
-					  WHERE project_id=' . db_param();
-		db_query( $t_query, array( $c_project_id ) );
+					  WHERE project_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $c_project_id ) );
 	
 		# remove the actual versions associated with the project.
-		$t_query = 'DELETE FROM {project_version} WHERE project_id=' . db_param();
-		db_query( $t_query, array( $c_project_id ) );
+		$t_query = 'DELETE FROM {project_version} WHERE project_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $c_project_id ) );
 	
 		return true;
 	}
@@ -320,10 +318,10 @@ class Version
 		$t_query = 'SELECT * FROM {project_version}
 					  WHERE project_id IN (' . implode( ',', $c_project_id_array ) . ')
 					  ORDER BY date_order DESC';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_rows = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$g_cache_versions[(int)$t_row['id']] = $t_row;
 	
 			$t_rows[(int)$t_row['project_id']][] = $t_row['id'];
@@ -346,7 +344,7 @@ class Version
 		global $g_cache_versions, $g_cache_versions_project;
 	
 		if( $p_inherit === null ) {
-			$t_inherit = ( ON == config_get( 'subprojects_inherit_versions' ) );
+			$t_inherit = ( ON == \Flickerbox\Config::mantis_get( 'subprojects_inherit_versions' ) );
 		} else {
 			$t_inherit = $p_inherit;
 		}
@@ -383,20 +381,20 @@ class Version
 		$t_query_params = array();
 	
 		if( $p_released !== null ) {
-			$t_query .= ' AND released = ' . db_param();
+			$t_query .= ' AND released = ' . \Flickerbox\Database::param();
 			$t_query_params[] = (bool)$p_released;
 		}
 	
 		if( $p_obsolete !== null ) {
-			$t_query .= ' AND obsolete = ' . db_param();
+			$t_query .= ' AND obsolete = ' . \Flickerbox\Database::param();
 			$t_query_params[] = (bool)$p_obsolete;
 		}
 	
 		$t_query .= ' ORDER BY date_order DESC';
 	
-		$t_result = db_query( $t_query, $t_query_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_query_params );
 		$t_rows = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$g_cache_versions[(int)$t_row['id']] = $t_row;
 	
 			$t_rows[] = $t_row;
@@ -420,23 +418,23 @@ class Version
 			$t_released_where = '';
 		} else {
 			$c_released = (bool)$p_released;
-			$t_released_where = 'AND ( released = ' . db_param() . ' )';
+			$t_released_where = 'AND ( released = ' . \Flickerbox\Database::param() . ' )';
 			$t_query_params[] = $c_released;
 		}
 	
 		if( $p_obsolete === null ) {
 			$t_obsolete_where = '';
 		} else {
-			$t_obsolete_where = 'AND ( obsolete = ' . db_param() . ' )';
+			$t_obsolete_where = 'AND ( obsolete = ' . \Flickerbox\Database::param() . ' )';
 			$t_query_params[] = (bool)$p_obsolete;
 		}
 	
 		$t_query = 'SELECT * FROM {project_version}
 					  WHERE ' . $t_project_where . ' ' . $t_released_where . ' ' . $t_obsolete_where . '
 					  ORDER BY date_order DESC';
-		$t_result = db_query( $t_query, $t_query_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_query_params );
 		$t_rows = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_rows[] = $t_row;
 		}
 		return $t_rows;
@@ -467,11 +465,11 @@ class Version
 	
 		$t_project_where = \Flickerbox\Version::get_project_where_clause( $c_project_id, $p_inherit );
 	
-		$t_query = 'SELECT id FROM {project_version} WHERE ' . $t_project_where . ' AND version=' . db_param();
+		$t_query = 'SELECT id FROM {project_version} WHERE ' . $t_project_where . ' AND version=' . \Flickerbox\Database::param();
 	
-		$t_result = db_query( $t_query, array( $p_version ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_version ) );
 	
-		if( $t_row = db_result( $t_result ) ) {
+		if( $t_row = \Flickerbox\Database::result( $t_result ) ) {
 			return $t_row;
 		} else {
 			return false;
@@ -545,7 +543,7 @@ class Version
 		$t_row = \Flickerbox\Version::cache_row( $p_version_id );
 	
 		if( $s_vars == null ) {
-			$t_reflection = new \ReflectionClass( '\Flickerbox\VersionData' );
+			$t_reflection = new \ReflectionClass( '\\Flickerbox\\VersionData' );
 			$s_vars = $t_reflection->getDefaultProperties();
 		}
 	
@@ -585,8 +583,8 @@ class Version
 	 * @return boolean true: show, false: otherwise.
 	 */
 	static function should_show_product_version( $p_project_id ) {
-		return ( ON == config_get( 'show_product_version', null, null, $p_project_id ) )
-			|| ( ( AUTO == config_get( 'show_product_version', null, null, $p_project_id ) )
+		return ( ON == \Flickerbox\Config::mantis_get( 'show_product_version', null, null, $p_project_id ) )
+			|| ( ( AUTO == \Flickerbox\Config::mantis_get( 'show_product_version', null, null, $p_project_id ) )
 					&& ( count( \Flickerbox\Version::get_all_rows( $p_project_id ) ) > 0 ) );
 	}
 	
@@ -602,7 +600,7 @@ class Version
 			$t_inherit = false;
 		} else {
 			if( $p_inherit === null ) {
-				$t_inherit = ( ON == config_get( 'subprojects_inherit_versions' ) );
+				$t_inherit = ( ON == \Flickerbox\Config::mantis_get( 'subprojects_inherit_versions' ) );
 			} else {
 				$t_inherit = $p_inherit;
 			}

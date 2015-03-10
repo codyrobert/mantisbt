@@ -31,13 +31,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
-if( !config_get( 'time_tracking_enabled' ) ) {
+if( !\Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
 }
 
-\Flickerbox\Access::ensure_global_level( config_get( 'time_tracking_reporting_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'time_tracking_reporting_threshold' ) );
 
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'time_tracking_billing_link' ) );
 ?>

@@ -38,9 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Helper::begin_long_process();
 
@@ -54,7 +51,7 @@ if( $f_bug_id == -1 && $f_files	== -1 ) {
 
 \Flickerbox\Form::security_validate( 'bug_file_add(' );
 
-$t_bug = bug_get( $f_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
@@ -65,7 +62,7 @@ if( !\Flickerbox\File::allow_bug_upload( $f_bug_id ) ) {
 	\Flickerbox\Access::denied();
 }
 
-\Flickerbox\Access::ensure_bug_level( config_get( 'upload_bug_file_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'upload_bug_file_threshold' ), $f_bug_id );
 
 # Process array of files to upload
 if( -1 != $f_files ) {

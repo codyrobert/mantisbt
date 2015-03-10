@@ -43,15 +43,13 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
 $f_search		= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SEARCH, false ); # @todo need a better default
 $f_offset		= \Flickerbox\GPC::get_int( 'offset', 0 );
 
-$t_cookie_value_id = \Flickerbox\GPC::get_cookie( config_get( 'view_all_cookie' ), '' );
+$t_cookie_value_id = \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), '' );
 $t_cookie_value = \Flickerbox\Filter::db_get_filter( $t_cookie_value_id );
 
 $f_highlight_changed 	= 0;
@@ -67,7 +65,7 @@ if( !\Flickerbox\Utility::is_blank( $t_cookie_value ) ) {
 
 	# check to see if new cookie is needed
 	if( !\Flickerbox\Filter::is_cookie_valid() ) {
-		print_header_redirect( 'view_all_set.php?type=0&print=1' );
+		\Flickerbox\Print_Util::header_redirect( 'view_all_set.php?type=0&print=1' );
 	}
 
 	$t_setting_arr = explode( '#', $t_cookie_value, 2 );
@@ -89,7 +87,7 @@ $t_result = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_pa
 $t_row_count = count( $t_result );
 
 # pre-cache custom column data
-columns_plugin_cache_issue_data( $t_result );
+\Flickerbox\Columns::plugin_cache_issue_data( $t_result );
 
 # for export
 $t_show_flag = \Flickerbox\GPC::get_int( 'show_flag', 0 );
@@ -99,7 +97,7 @@ $t_show_flag = \Flickerbox\GPC::get_int( 'show_flag', 0 );
 
 <table class="width100"><tr><td class="form-title">
 	<div class="center">
-		<?php echo \Flickerbox\String::display( config_get( 'window_title' ) ) . ' - ' . \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project_id ) ); ?>
+		<?php echo \Flickerbox\String::display( \Flickerbox\Config::mantis_get( 'window_title' ) ) . ' - ' . \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project_id ) ); ?>
 	</div>
 </td></tr></table>
 
@@ -132,7 +130,7 @@ for( $i=0; $i < $t_row_count; $i++ ) {
 }
 $f_export = implode( ',', $f_bug_arr );
 
-$t_icon_path = config_get( 'icon_path' );
+$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 ?>
 
 <tr>
@@ -190,9 +188,9 @@ $t_icon_path = config_get( 'icon_path' );
 	</td>
 	<td class="right" colspan="<?php echo $t_num_of_columns / 2 ?>">
 		<?php
-			# print_bracket_link( 'print_all_bug_options_page.php', \Flickerbox\Lang::get( 'printing_options_link' ) );
-			# print_bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'view_bugs_link' ) );
-			# print_bracket_link( 'summary_page.php', \Flickerbox\Lang::get( 'summary' ) );
+			# \Flickerbox\Print_Util::bracket_link( 'print_all_bug_options_page.php', \Flickerbox\Lang::get( 'printing_options_link' ) );
+			# \Flickerbox\Print_Util::bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'view_bugs_link' ) );
+			# \Flickerbox\Print_Util::bracket_link( 'summary_page.php', \Flickerbox\Lang::get( 'summary' ) );
 		?>
 	</td>
 </tr>

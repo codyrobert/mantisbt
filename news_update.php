@@ -33,8 +33,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
 
@@ -50,8 +48,8 @@ $f_body			= \Flickerbox\GPC::get_string( 'body', '' );
 $t_row = \Flickerbox\News::get_row( $f_news_id );
 
 # Check both the old project and the new project
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ), $t_row['project_id'] );
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ), $t_row['project_id'] );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ), $f_project_id );
 
 \Flickerbox\News::update( $f_news_id, $f_project_id, $f_view_state, $f_announcement, $f_headline, $f_body );
 
@@ -64,12 +62,12 @@ echo \Flickerbox\Lang::get( 'operation_successful' );
 
 echo '<br />';
 
-print_bracket_link( 'news_edit_page.php?news_id=' . $f_news_id . '&action=edit', \Flickerbox\Lang::get( 'edit_link' ) );
-print_bracket_link( 'news_menu_page.php', \Flickerbox\Lang::get( 'proceed' ) );
+\Flickerbox\Print_Util::bracket_link( 'news_edit_page.php?news_id=' . $f_news_id . '&action=edit', \Flickerbox\Lang::get( 'edit_link' ) );
+\Flickerbox\Print_Util::bracket_link( 'news_menu_page.php', \Flickerbox\Lang::get( 'proceed' ) );
 
 echo '<br /><br />';
 
-print_news_entry( $f_headline, $f_body, $t_row['poster_id'], $f_view_state, $f_announcement, $t_row['date_posted'] );
+\Flickerbox\Print_Util::news_entry( $f_headline, $f_body, $t_row['poster_id'], $f_view_state, $f_announcement, $t_row['date_posted'] );
 
 echo '</div>';
 

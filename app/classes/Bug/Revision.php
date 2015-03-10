@@ -28,7 +28,6 @@ namespace Flickerbox\Bug;
  * @uses database_api.php
  */
 
-require_api( 'database_api.php' );
 
 
 class Revision
@@ -59,7 +58,7 @@ class Revision
 		}
 	
 		if( $p_timestamp === null ) {
-			$t_timestamp = db_now();
+			$t_timestamp = \Flickerbox\Database::now();
 		} else {
 			$t_timestamp = $p_timestamp;
 		}
@@ -68,13 +67,13 @@ class Revision
 				bug_id, bugnote_id, user_id,
 				timestamp, type, value
 			) VALUES ( ' .
-				db_param() . ', ' . db_param() . ', ' . db_param() . ', ' .
-				db_param() . ', ' . db_param() . ', ' . db_param() . ' )';
-		db_query( $t_query, array(
+				\Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' .
+				\Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
+		\Flickerbox\Database::query( $t_query, array(
 				$p_bug_id, $p_bugnote_id, $p_user_id,
 				$t_timestamp, $p_type, $p_value ) );
 	
-		return db_insert_id( db_get_table( 'bug_revision' ) );
+		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'bug_revision' ) );
 	}
 	
 	/**
@@ -83,10 +82,10 @@ class Revision
 	 * @return boolean Whether or not the bug revision exists
 	 */
 	static function exists( $p_revision_id ) {
-		$t_query = 'SELECT id FROM {bug_revision} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_revision_id ) );
+		$t_query = 'SELECT id FROM {bug_revision} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_revision_id ) );
 	
-		if( !db_result( $t_result ) ) {
+		if( !\Flickerbox\Database::result( $t_result ) ) {
 			return false;
 		}
 	
@@ -99,10 +98,10 @@ class Revision
 	 * @return array Revision data row
 	 */
 	static function get( $p_revision_id ) {
-		$t_query = 'SELECT * FROM {bug_revision} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_revision_id ) );
+		$t_query = 'SELECT * FROM {bug_revision} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_revision_id ) );
 	
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 		if( !$t_row ) {
 			trigger_error( ERROR_BUG_REVISION_NOT_FOUND, ERROR );
 		}
@@ -147,27 +146,27 @@ class Revision
 	
 			# TODO: Fetch bug revisions in one query (and cache them)
 			foreach( $p_revision_id as $t_rev_id ) {
-				$t_query .= ( $t_first ? db_param() : ', ' . db_param() );
+				$t_query .= ( $t_first ? \Flickerbox\Database::param() : ', ' . \Flickerbox\Database::param() );
 				$t_revisions[$t_rev_id] = \Flickerbox\Bug\Revision::get( $t_rev_id );
 			}
 	
 			$t_query .= ' )';
-			db_query( $t_query, $p_revision_id );
+			\Flickerbox\Database::query( $t_query, $p_revision_id );
 			foreach( $p_revision_id as $t_rev_id ) {
 				if( $t_revisions[$t_rev_id]['type'] == REV_BUGNOTE ) {
-					\Flickerbox\History::log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUGNOTE_REVISION_DROPPED, bugnote_format_id( $t_rev_id ), $t_revisions[$t_rev_id]['bugnote_id'] );
+					\Flickerbox\History::log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUGNOTE_REVISION_DROPPED, \Flickerbox\Bug\Note::format_id( $t_rev_id ), $t_revisions[$t_rev_id]['bugnote_id'] );
 				} else {
-					\Flickerbox\History::log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUG_REVISION_DROPPED, bugnote_format_id( $t_rev_id ), $t_revisions[$t_rev_id]['type'] );
+					\Flickerbox\History::log_event_special( $t_revisions[$t_rev_id]['bug_id'], BUG_REVISION_DROPPED, \Flickerbox\Bug\Note::format_id( $t_rev_id ), $t_revisions[$t_rev_id]['type'] );
 				}
 			}
 		} else {
 			$t_revision = \Flickerbox\Bug\Revision::get( $p_revision_id );
-			$t_query = 'DELETE FROM {bug_revision} WHERE id=' . db_param();
-			db_query( $t_query, array( $p_revision_id ) );
+			$t_query = 'DELETE FROM {bug_revision} WHERE id=' . \Flickerbox\Database::param();
+			\Flickerbox\Database::query( $t_query, array( $p_revision_id ) );
 			if( $t_revision['type'] == REV_BUGNOTE ) {
-				\Flickerbox\History::log_event_special( $t_revision['bug_id'], BUGNOTE_REVISION_DROPPED, bugnote_format_id( $p_revision_id ), $t_revision['bugnote_id'] );
+				\Flickerbox\History::log_event_special( $t_revision['bug_id'], BUGNOTE_REVISION_DROPPED, \Flickerbox\Bug\Note::format_id( $p_revision_id ), $t_revision['bugnote_id'] );
 			} else {
-				\Flickerbox\History::log_event_special( $t_revision['bug_id'], BUG_REVISION_DROPPED, bugnote_format_id( $p_revision_id ), $t_revision['type'] );
+				\Flickerbox\History::log_event_special( $t_revision['bug_id'], BUG_REVISION_DROPPED, \Flickerbox\Bug\Note::format_id( $p_revision_id ), $t_revision['type'] );
 			}
 		}
 	}
@@ -181,23 +180,23 @@ class Revision
 	 */
 	static function count( $p_bug_id, $p_type = REV_ANY, $p_bugnote_id = 0 ) {
 		$t_params = array( $p_bug_id );
-		$t_query = 'SELECT COUNT(id) FROM {bug_revision} WHERE bug_id=' . db_param();
+		$t_query = 'SELECT COUNT(id) FROM {bug_revision} WHERE bug_id=' . \Flickerbox\Database::param();
 	
 		if( REV_ANY < $p_type ) {
-			$t_query .= ' AND type=' . db_param();
+			$t_query .= ' AND type=' . \Flickerbox\Database::param();
 			$t_params[] = $p_type;
 		}
 	
 		if( $p_bugnote_id > 0 ) {
-			$t_query .= ' AND bugnote_id=' . db_param();
+			$t_query .= ' AND bugnote_id=' . \Flickerbox\Database::param();
 			$t_params[] = $p_bugnote_id;
 		} else {
 			$t_query .= ' AND bugnote_id=0';
 		}
 	
-		$t_result = db_query( $t_query, $t_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_params );
 	
-		return db_result( $t_result );
+		return \Flickerbox\Database::result( $t_result );
 	}
 	
 	/**
@@ -208,11 +207,11 @@ class Revision
 	 */
 	static function delete( $p_bug_id, $p_bugnote_id = 0 ) {
 		if( $p_bugnote_id < 1 ) {
-			$t_query = 'DELETE FROM {bug_revision} WHERE bug_id=' . db_param();
-			db_query( $t_query, array( $p_bug_id ) );
+			$t_query = 'DELETE FROM {bug_revision} WHERE bug_id=' . \Flickerbox\Database::param();
+			\Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
 		} else {
-			$t_query = 'DELETE FROM {bug_revision} WHERE bugnote_id=' . db_param();
-			db_query( $t_query, array( $p_bugnote_id ) );
+			$t_query = 'DELETE FROM {bug_revision} WHERE bugnote_id=' . \Flickerbox\Database::param();
+			\Flickerbox\Database::query( $t_query, array( $p_bugnote_id ) );
 		}
 	}
 	
@@ -225,24 +224,24 @@ class Revision
 	 */
 	static function last( $p_bug_id, $p_type = REV_ANY, $p_bugnote_id = 0 ) {
 		$t_params = array( $p_bug_id );
-		$t_query = 'SELECT * FROM {bug_revision} WHERE bug_id=' . db_param();
+		$t_query = 'SELECT * FROM {bug_revision} WHERE bug_id=' . \Flickerbox\Database::param();
 	
 		if( REV_ANY < $p_type ) {
-			$t_query .= ' AND type=' . db_param();
+			$t_query .= ' AND type=' . \Flickerbox\Database::param();
 			$t_params[] = $p_type;
 		}
 	
 		if( $p_bugnote_id > 0 ) {
-			$t_query .= ' AND bugnote_id=' . db_param();
+			$t_query .= ' AND bugnote_id=' . \Flickerbox\Database::param();
 			$t_params[] = $p_bugnote_id;
 		} else {
 			$t_query .= ' AND bugnote_id=0';
 		}
 	
 		$t_query .= ' ORDER BY timestamp DESC';
-		$t_result = db_query( $t_query, $t_params, 1 );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_params, 1 );
 	
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 		if( $t_row ) {
 			return $t_row;
 		} else {
@@ -259,25 +258,25 @@ class Revision
 	 */
 	static function list( $p_bug_id, $p_type = REV_ANY, $p_bugnote_id = 0 ) {
 		$t_params = array( $p_bug_id );
-		$t_query = 'SELECT * FROM {bug_revision} WHERE bug_id=' . db_param();
+		$t_query = 'SELECT * FROM {bug_revision} WHERE bug_id=' . \Flickerbox\Database::param();
 	
 		if( REV_ANY < $p_type ) {
-			$t_query .= ' AND type=' . db_param();
+			$t_query .= ' AND type=' . \Flickerbox\Database::param();
 			$t_params[] = $p_type;
 		}
 	
 		if( $p_bugnote_id > 0 ) {
-			$t_query .= ' AND bugnote_id=' . db_param();
+			$t_query .= ' AND bugnote_id=' . \Flickerbox\Database::param();
 			$t_params[] = $p_bugnote_id;
 		} else {
 			$t_query .= ' AND bugnote_id=0';
 		}
 	
 		$t_query .= ' ORDER BY id DESC';
-		$t_result = db_query( $t_query, $t_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_params );
 	
 		$t_revisions = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_revisions[$t_row['id']] = $t_row;
 		}
 	
@@ -291,10 +290,10 @@ class Revision
 	 * @return array|null Array of Revision rows
 	 */
 	static function like( $p_rev_id ) {
-		$t_query = 'SELECT bug_id, bugnote_id, type FROM {bug_revision} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_rev_id ) );
+		$t_query = 'SELECT bug_id, bugnote_id, type FROM {bug_revision} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_rev_id ) );
 	
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			trigger_error( ERROR_BUG_REVISION_NOT_FOUND, ERROR );
@@ -305,25 +304,25 @@ class Revision
 		$t_type = $t_row['type'];
 	
 		$t_params = array( $t_bug_id );
-		$t_query = 'SELECT * FROM {bug_revision} WHERE bug_id=' . db_param();
+		$t_query = 'SELECT * FROM {bug_revision} WHERE bug_id=' . \Flickerbox\Database::param();
 	
 		if( REV_ANY < $t_type ) {
-			$t_query .= ' AND type=' . db_param();
+			$t_query .= ' AND type=' . \Flickerbox\Database::param();
 			$t_params[] = $t_type;
 		}
 	
 		if( $t_bugnote_id > 0 ) {
-			$t_query .= ' AND bugnote_id=' . db_param();
+			$t_query .= ' AND bugnote_id=' . \Flickerbox\Database::param();
 			$t_params[] = $t_bugnote_id;
 		} else {
 			$t_query .= ' AND bugnote_id=0';
 		}
 	
 		$t_query .= ' ORDER BY id DESC';
-		$t_result = db_query( $t_query, $t_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_params );
 	
 		$t_revisions = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_revisions[$t_row['id']] = $t_row;
 		}
 	

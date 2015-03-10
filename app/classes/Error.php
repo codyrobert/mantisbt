@@ -33,8 +33,6 @@ namespace Flickerbox;
  * @uses lang_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
 
 
 class Error
@@ -75,7 +73,7 @@ class Error
 	
 		$t_db_connected = false;
 		if( function_exists( 'db_is_connected' ) ) {
-			if( db_is_connected() ) {
+			if( \Flickerbox\Database::is_connected() ) {
 				$t_db_connected = true;
 			}
 		}
@@ -90,7 +88,7 @@ class Error
 			$t_lang_pushed = true;
 		}
 	
-		$t_method_array = config_get_global( 'display_errors' );
+		$t_method_array = \Flickerbox\Config::get_global( 'display_errors' );
 		if( isset( $t_method_array[$p_type] ) ) {
 			$t_method = $t_method_array[$p_type];
 		} else {
@@ -160,7 +158,7 @@ class Error
 			if( DISPLAY_ERROR_NONE != $t_method ) {
 				echo $t_error_type . ': ' . $t_error_description . "\n";
 	
-				if( ON == config_get_global( 'show_detailed_errors' ) ) {
+				if( ON == \Flickerbox\Config::get_global( 'show_detailed_errors' ) ) {
 					echo "\n";
 					debug_print_backtrace();
 				}
@@ -229,7 +227,7 @@ class Error
 					}
 					echo '</div>';
 	
-					if( ON == config_get_global( 'show_detailed_errors' ) ) {
+					if( ON == \Flickerbox\Config::get_global( 'show_detailed_errors' ) ) {
 						echo '<div class="error-details">';
 						\Flickerbox\Error::print_details( $p_file, $p_line, $p_context );
 						echo '</div>';

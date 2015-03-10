@@ -34,25 +34,23 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
 
 # If relationship graphs were made disabled, we disallow any access to
 # this script.
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
-if( ON != config_get( 'relationship_graph_enable' ) ) {
+if( ON != \Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
 	\Flickerbox\Access::denied();
 }
 
 $f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
 $f_type			= \Flickerbox\GPC::get_string( 'graph', 'relation' );
-$f_orientation	= \Flickerbox\GPC::get_string( 'orientation', config_get( 'relationship_graph_orientation' ) );
+$f_orientation	= \Flickerbox\GPC::get_string( 'orientation', \Flickerbox\Config::mantis_get( 'relationship_graph_orientation' ) );
 
-$t_bug = bug_get( $f_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 
-\Flickerbox\Access::ensure_bug_level( config_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $f_bug_id );
 
 \Flickerbox\Compress::enable();
 
@@ -60,9 +58,9 @@ $t_graph_relation = ( 'relation' == $f_type );
 $t_graph_horizontal = ( 'horizontal' == $f_orientation );
 
 if( $t_graph_relation ) {
-	$t_graph = relgraph_generate_rel_graph( $f_bug_id );
+	$t_graph = \Flickerbox\Relationship\Graph::generate_rel_graph( $f_bug_id );
 } else {
-	$t_graph = relgraph_generate_dep_graph( $f_bug_id, $t_graph_horizontal );
+	$t_graph = \Flickerbox\Relationship\Graph::generate_dep_graph( $f_bug_id, $t_graph_horizontal );
 }
 
-relgraph_output_image( $t_graph );
+\Flickerbox\Relationship\Graph::output_image( $t_graph );

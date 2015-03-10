@@ -39,7 +39,6 @@ namespace Flickerbox;
  * @uses error_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Utility
@@ -273,7 +272,7 @@ class Utility
 	 * @return string representing system path to font location
 	 */
 	static function get_font_path() {
-			$t_font_path = config_get_global( 'system_font_folder' );
+			$t_font_path = \Flickerbox\Config::get_global( 'system_font_folder' );
 			if( $t_font_path == '' ) {
 				if( \Flickerbox\Utility::is_windows_server() ) {
 					$t_system_root = $_SERVER['SystemRoot'];
@@ -303,12 +302,12 @@ class Utility
 	 */
 	static function finfo_get_if_available() {
 		if( class_exists( 'finfo' ) ) {
-			$t_info_file = config_get( 'fileinfo_magic_db_file' );
+			$t_info_file = \Flickerbox\Config::mantis_get( 'fileinfo_magic_db_file' );
 	
 			if( \Flickerbox\Utility::is_blank( $t_info_file ) ) {
-				$t_finfo = new finfo( FILEINFO_MIME );
+				$t_finfo = new \finfo( FILEINFO_MIME );
 			} else {
-				$t_finfo = new finfo( FILEINFO_MIME, $t_info_file );
+				$t_finfo = new \finfo( FILEINFO_MIME, $t_info_file );
 			}
 	
 			if( $t_finfo ) {

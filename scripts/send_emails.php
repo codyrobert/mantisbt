@@ -28,7 +28,6 @@ $g_bypass_headers = 1;
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-require_api( 'email_api.php' );
 
 # Make sure this script doesn't run via the webserver
 if( php_sapi_name() != 'cli' ) {
@@ -37,7 +36,7 @@ if( php_sapi_name() != 'cli' ) {
 }
 
 echo "Sending emails...\n";
-email_send_all();
+\Flickerbox\Email::send_all();
 echo "Done.\n";
 
 exit( 0 );

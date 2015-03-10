@@ -38,12 +38,10 @@ if( !defined( 'BUGNOTE_ADD_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
 
 ?>
-<?php if( ( !bug_is_readonly( $f_bug_id ) ) &&
-		( \Flickerbox\Access::has_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id ) ) ) { ?>
+<?php if( ( !\Flickerbox\Bug::is_readonly( $f_bug_id ) ) &&
+		( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'add_bugnote_threshold' ), $f_bug_id ) ) ) { ?>
 <?php # Bugnote Add Form BEGIN ?>
 <a id="addbugnote"></a> <br />
 
@@ -75,7 +73,7 @@ require_api( 'config_api.php' );
 			</tr>
 
 <?php
-	if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
+	if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
 ?>
 			<tr class="row-1">
 				<th class="category">
@@ -83,8 +81,8 @@ require_api( 'config_api.php' );
 				</th>
 				<td>
 <?php
-		$t_default_bugnote_view_status = config_get( 'default_bugnote_view_status' );
-		if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
+		$t_default_bugnote_view_status = \Flickerbox\Config::mantis_get( 'default_bugnote_view_status' );
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
 ?>
 					<input type="checkbox" id="bugnote_add_view_status" name="private" <?php \Flickerbox\Helper::check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
 					<label for="bugnote_add_view_status"><?php echo \Flickerbox\Lang::get( 'private' ) ?></label>
@@ -98,15 +96,15 @@ require_api( 'config_api.php' );
 <?php
 	}
 
-	if( config_get( 'time_tracking_enabled' ) ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'time_tracking_edit_threshold' ), $f_bug_id ) ) {
+	if( \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_edit_threshold' ), $f_bug_id ) ) {
 ?>
 			<tr>
 				<th class="category">
 					<?php echo \Flickerbox\Lang::get( 'time_tracking' ) ?>
 				</th>
 				<td>
-					<?php if( config_get( 'time_tracking_stopwatch' ) ) { ?>
+					<?php if( \Flickerbox\Config::mantis_get( 'time_tracking_stopwatch' ) ) { ?>
 					<input type="text" name="time_tracking" class="stopwatch_time" size="8" placeholder="hh:mm:ss" />
 					<input type="button" name="time_tracking_toggle" class="stopwatch_toggle" value="<?php echo \Flickerbox\Lang::get( 'time_tracking_stopwatch_start' ) ?>" />
 					<input type="button" name="time_tracking_reset" class="stopwatch_reset" value="<?php echo \Flickerbox\Lang::get( 'time_tracking_stopwatch_reset' ) ?>" />

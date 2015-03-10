@@ -41,10 +41,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'user_api.php' );
 
 
 class Summary
@@ -78,7 +74,7 @@ class Summary
 	 * @return string
 	 */
 	static function helper_get_developer_label ( $p_user_id ) {
-		$t_user = \Flickerbox\String::display_line( user_get_name( $p_user_id ) );
+		$t_user = \Flickerbox\String::display_line( \Flickerbox\User::get_name( $p_user_id ) );
 	
 		return '<a class="subtle" href="view_all_set.php?type=1&amp;temporary=y
 				&amp;' . FILTER_PROPERTY_REPORTER_ID . '=' . $p_user_id . '
@@ -103,7 +99,7 @@ class Summary
 			return;
 		}
 	
-		$t_filter_prefix = config_get( 'bug_count_hyperlink_prefix' );
+		$t_filter_prefix = \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' );
 	
 		$t_status_query = ( 'status' == $p_enum ) ? '' : ' ,status ';
 		$t_query = 'SELECT COUNT(id) as bugcount, ' . $p_enum . ' ' . $t_status_query . '
@@ -111,7 +107,7 @@ class Summary
 					WHERE ' . $t_project_filter . '
 					GROUP BY ' . $p_enum . ' ' . $t_status_query . '
 					ORDER BY ' . $p_enum . ' ' . $t_status_query;
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_last_value = -1;
 		$t_bugs_open = 0;
@@ -119,10 +115,10 @@ class Summary
 		$t_bugs_closed = 0;
 		$t_bugs_total = 0;
 	
-		$t_resolved_val = config_get( 'bug_resolved_status_threshold' );
-		$t_closed_val = config_get( 'bug_closed_status_threshold' );
+		$t_resolved_val = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+		$t_closed_val = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			if( ( $t_row[$p_enum] != $t_last_value ) && ( -1 != $t_last_value ) ) {
 				# Build up the hyperlinks to bug views
 				$t_bug_link = '';
@@ -253,9 +249,9 @@ class Summary
 		}
 	
 		$t_query = 'SELECT COUNT(*) FROM {bug}
-					WHERE ' . db_helper_compare_time( db_param(), '<=', 'date_submitted', $c_time_length ) . ' AND ' . $t_specific_where;
-		$t_result = db_query( $t_query, array( db_now() ) );
-		return db_result( $t_result, 0 );
+					WHERE ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '<=', 'date_submitted', $c_time_length ) . ' AND ' . $t_specific_where;
+		$t_result = \Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now() ) );
+		return \Flickerbox\Database::result( $t_result, 0 );
 	}
 	
 	/**
@@ -265,7 +261,7 @@ class Summary
 	 * @return integer
 	 */
 	static function resolved_bug_count_by_date( $p_num_days = 1 ) {
-		$t_resolved = config_get( 'bug_resolved_status_threshold' );
+		$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
 	
 		$c_time_length = (int)$p_num_days * SECONDS_PER_DAY;
 	
@@ -282,13 +278,13 @@ class Summary
 					ON b.id = h.bug_id
 					AND h.type = ' . NORMAL_TYPE . '
 					AND h.field_name = \'status\'
-					WHERE b.status >= ' . db_param() . '
-					AND h.old_value < ' . db_param() . '
-					AND h.new_value >= ' . db_param() . '
-					AND ' . db_helper_compare_time( db_param(), '<=', 'date_modified', $c_time_length ) . '
+					WHERE b.status >= ' . \Flickerbox\Database::param() . '
+					AND h.old_value < ' . \Flickerbox\Database::param() . '
+					AND h.new_value >= ' . \Flickerbox\Database::param() . '
+					AND ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '<=', 'date_modified', $c_time_length ) . '
 					AND ' . $t_specific_where;
-		$t_result = db_query( $t_query, array( $t_resolved, $t_resolved, $t_resolved, db_now() ) );
-		return db_result( $t_result, 0 );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $t_resolved, $t_resolved, $t_resolved, \Flickerbox\Database::now() ) );
+		return \Flickerbox\Database::result( $t_result, 0 );
 	}
 	
 	/**
@@ -303,7 +299,7 @@ class Summary
 			$t_resolved_count = \Flickerbox\Summary::resolved_bug_count_by_date( $t_days );
 	
 			$t_start_date = mktime( 0, 0, 0, date( 'm' ), ( date( 'd' ) - $t_days ), date( 'Y' ) );
-			$t_new_bugs_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_FILTER_BY_DATE . '=on&amp;' . FILTER_PROPERTY_START_YEAR . '=' . date( 'Y', $t_start_date ) . '&amp;' . FILTER_PROPERTY_START_MONTH . '=' . date( 'm', $t_start_date ) . '&amp;' . FILTER_PROPERTY_START_DAY . '=' . date( 'd', $t_start_date ) . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=">';
+			$t_new_bugs_link = '<a class="subtle" href="' . \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_FILTER_BY_DATE . '=on&amp;' . FILTER_PROPERTY_START_YEAR . '=' . date( 'Y', $t_start_date ) . '&amp;' . FILTER_PROPERTY_START_MONTH . '=' . date( 'm', $t_start_date ) . '&amp;' . FILTER_PROPERTY_START_DAY . '=' . date( 'd', $t_start_date ) . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=">';
 	
 			echo '<tr>' . "\n";
 			echo '    <td class="width50">' . $t_days . '</td>' . "\n";
@@ -341,7 +337,7 @@ class Summary
 	 */
 	static function print_by_activity() {
 		$t_project_id = \Flickerbox\Helper::get_current_project();
-		$t_resolved = config_get( 'bug_resolved_status_threshold' );
+		$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
 	
 		$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id );
 		if( ' 1<>1' == $t_specific_where ) {
@@ -350,17 +346,17 @@ class Summary
 		$t_query = 'SELECT COUNT(h.id) as count, b.id, b.summary, b.view_state
 					FROM {bug} b, {bug_history} h
 					WHERE h.bug_id = b.id
-					AND b.status < ' . db_param() . '
+					AND b.status < ' . \Flickerbox\Database::param() . '
 					AND ' . $t_specific_where . '
 					GROUP BY h.bug_id, b.id, b.summary, b.last_updated, b.view_state
 					ORDER BY count DESC, b.last_updated DESC';
-		$t_result = db_query( $t_query, array( $t_resolved ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $t_resolved ) );
 	
 		$t_count = 0;
-		$t_private_bug_threshold = config_get( 'private_bug_threshold' );
+		$t_private_bug_threshold = \Flickerbox\Config::mantis_get( 'private_bug_threshold' );
 		$t_summarydata = array();
 		$t_summarybugs = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			# Skip private bugs unless user has proper permissions
 			if( ( VS_PRIVATE == $t_row['view_state'] ) && ( false == \Flickerbox\Access::has_bug_level( $t_private_bug_threshold, $t_row['id'] ) ) ) {
 				continue;
@@ -378,7 +374,7 @@ class Summary
 			$t_summarybugs[] = $t_row['id'];
 		}
 	
-		bug_cache_array_rows( $t_summarybugs );
+		\Flickerbox\Bug::cache_array_rows( $t_summarybugs );
 	
 		foreach( $t_summarydata as $t_row ) {
 			$t_bugid = \Flickerbox\String::get_bug_view_link( $t_row['id'] );
@@ -397,27 +393,27 @@ class Summary
 	 */
 	static function print_by_age() {
 		$t_project_id = \Flickerbox\Helper::get_current_project();
-		$t_resolved = config_get( 'bug_resolved_status_threshold' );
+		$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
 	
 		$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id );
 		if( ' 1<>1' == $t_specific_where ) {
 			return;
 		}
 		$t_query = 'SELECT * FROM {bug}
-					WHERE status < ' . db_param() . '
+					WHERE status < ' . \Flickerbox\Database::param() . '
 					AND ' . $t_specific_where . '
 					ORDER BY date_submitted ASC, priority DESC';
-		$t_result = db_query( $t_query, array( $t_resolved ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $t_resolved ) );
 	
 		$t_count = 0;
-		$t_private_bug_threshold = config_get( 'private_bug_threshold' );
+		$t_private_bug_threshold = \Flickerbox\Config::mantis_get( 'private_bug_threshold' );
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			# as we select all from bug_table, inject into the cache.
-			bug_cache_database_result( $t_row );
+			\Flickerbox\Bug::cache_database_result( $t_row );
 	
 			# Skip private bugs unless user has proper permissions
-			if( ( VS_PRIVATE == bug_get_field( $t_row['id'], 'view_state' ) ) && ( false == \Flickerbox\Access::has_bug_level( $t_private_bug_threshold, $t_row['id'] ) ) ) {
+			if( ( VS_PRIVATE == \Flickerbox\Bug::get_field( $t_row['id'], 'view_state' ) ) && ( false == \Flickerbox\Access::has_bug_level( $t_private_bug_threshold, $t_row['id'] ) ) ) {
 				continue;
 			}
 	
@@ -452,7 +448,7 @@ class Summary
 					WHERE handler_id>0 AND ' . $t_specific_where . '
 					GROUP BY handler_id, status
 					ORDER BY handler_id, status';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_last_handler = -1;
 		$t_bugs_open = 0;
@@ -460,17 +456,17 @@ class Summary
 		$t_bugs_closed = 0;
 		$t_bugs_total = 0;
 	
-		$t_resolved_val = config_get( 'bug_resolved_status_threshold' );
-		$t_closed_val = config_get( 'bug_closed_status_threshold' );
+		$t_resolved_val = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+		$t_closed_val = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
 	
 		$t_summaryusers = array();
 		$t_summarydata = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_summarydata[] = $t_row;
 			$t_summaryusers[] = $t_row['handler_id'];
 		}
 	
-		user_cache_array_rows( array_unique( $t_summaryusers ) );
+		\Flickerbox\User::cache_array_rows( array_unique( $t_summaryusers ) );
 	
 		foreach( $t_summarydata as $t_row ) {
 			$v_handler_id = $t_row['handler_id'];
@@ -479,7 +475,7 @@ class Summary
 			if( ( $v_handler_id != $t_last_handler ) && ( -1 != $t_last_handler ) ) {
 				$t_user = \Flickerbox\Summary::helper_get_developer_label( $t_last_handler );
 	
-				$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_HANDLER_ID . '=' . $t_last_handler;
+				$t_bug_link = '<a class="subtle" href="' . \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_HANDLER_ID . '=' . $t_last_handler;
 				if( 0 < $t_bugs_open ) {
 					$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
 				}
@@ -515,7 +511,7 @@ class Summary
 		if( 0 < $t_bugs_total ) {
 			$t_user = \Flickerbox\Summary::helper_get_developer_label( $t_last_handler );
 	
-			$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_HANDLER_ID . '=' . $t_last_handler;
+			$t_bug_link = '<a class="subtle" href="' . \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_HANDLER_ID . '=' . $t_last_handler;
 			if( 0 < $t_bugs_open ) {
 				$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
 			}
@@ -538,7 +534,7 @@ class Summary
 	 * @return void
 	 */
 	static function print_by_reporter() {
-		$t_reporter_summary_limit = config_get( 'reporter_summary_limit' );
+		$t_reporter_summary_limit = \Flickerbox\Config::mantis_get( 'reporter_summary_limit' );
 	
 		$t_project_id = \Flickerbox\Helper::get_current_project();
 	
@@ -552,33 +548,33 @@ class Summary
 					WHERE ' . $t_specific_where . '
 					GROUP BY reporter_id
 					ORDER BY num DESC';
-		$t_result = db_query( $t_query, array(), $t_reporter_summary_limit );
+		$t_result = \Flickerbox\Database::query( $t_query, array(), $t_reporter_summary_limit );
 	
 		$t_reporters = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_reporters[] = $t_row['reporter_id'];
 		}
 	
-		user_cache_array_rows( $t_reporters );
+		\Flickerbox\User::cache_array_rows( $t_reporters );
 	
 		foreach( $t_reporters as $t_reporter ) {
 			$v_reporter_id = $t_reporter;
 			$t_query = 'SELECT COUNT(id) as bugcount, status FROM {bug}
-						WHERE reporter_id=' . db_param() . '
+						WHERE reporter_id=' . \Flickerbox\Database::param() . '
 						AND ' . $t_specific_where . '
 						GROUP BY status
 						ORDER BY status';
-			$t_result2 = db_query( $t_query, array( $v_reporter_id ) );
+			$t_result2 = \Flickerbox\Database::query( $t_query, array( $v_reporter_id ) );
 	
 			$t_bugs_open = 0;
 			$t_bugs_resolved = 0;
 			$t_bugs_closed = 0;
 			$t_bugs_total = 0;
 	
-			$t_resolved_val = config_get( 'bug_resolved_status_threshold' );
-			$t_closed_val = config_get( 'bug_closed_status_threshold' );
+			$t_resolved_val = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+			$t_closed_val = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
 	
-			while( $t_row2 = db_fetch_array( $t_result2 ) ) {
+			while( $t_row2 = \Flickerbox\Database::fetch_array( $t_result2 ) ) {
 				$t_bugs_total += $t_row2['bugcount'];
 				if( $t_closed_val <= $t_row2['status'] ) {
 					$t_bugs_closed += $t_row2['bugcount'];
@@ -590,9 +586,9 @@ class Summary
 			}
 	
 			if( 0 < $t_bugs_total ) {
-				$t_user = \Flickerbox\String::display_line( user_get_name( $v_reporter_id ) );
+				$t_user = \Flickerbox\String::display_line( \Flickerbox\User::get_name( $v_reporter_id ) );
 	
-				$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_REPORTER_ID . '=' . $v_reporter_id;
+				$t_bug_link = '<a class="subtle" href="' . \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_REPORTER_ID . '=' . $v_reporter_id;
 				if( 0 < $t_bugs_open ) {
 					$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
 				}
@@ -616,7 +612,7 @@ class Summary
 	 * @return void
 	 */
 	static function print_by_category() {
-		$t_summary_category_include_project = config_get( 'summary_category_include_project' );
+		$t_summary_category_include_project = \Flickerbox\Config::mantis_get( 'summary_category_include_project' );
 	
 		$t_project_id = \Flickerbox\Helper::get_current_project();
 		$t_user_id = \Flickerbox\Auth::get_current_user_id();
@@ -634,7 +630,7 @@ class Summary
 					GROUP BY ' . $t_project_query . ' c.name, b.category_id, b.status
 					ORDER BY ' . $t_project_query . ' c.name';
 	
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_last_category_name = -1;
 		$t_last_project = -1;
@@ -643,10 +639,10 @@ class Summary
 		$t_bugs_closed = 0;
 		$t_bugs_total = 0;
 	
-		$t_resolved_val = config_get( 'bug_resolved_status_threshold' );
-		$t_closed_val = config_get( 'bug_closed_status_threshold' );
+		$t_resolved_val = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+		$t_closed_val = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$v_category_id = $t_row['category_id'];
 			$v_category_name = $t_row['category_name'];
 	
@@ -656,7 +652,7 @@ class Summary
 					$t_label = sprintf( '[%s] %s', \Flickerbox\Project::get_name( $t_last_project ), $t_label );
 				}
 	
-				$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_CATEGORY_ID . '=' . urlencode( $t_last_category_name );
+				$t_bug_link = '<a class="subtle" href="' . \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_CATEGORY_ID . '=' . urlencode( $t_last_category_name );
 				if( 0 < $t_bugs_open ) {
 					$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
 				}
@@ -699,7 +695,7 @@ class Summary
 				$t_label = sprintf( '[%s] %s', \Flickerbox\Project::get_name( $t_last_project ), $t_label );
 			}
 	
-			$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_CATEGORY_ID . '=' . urlencode( $t_last_category_name );
+			$t_bug_link = '<a class="subtle" href="' . \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_CATEGORY_ID . '=' . urlencode( $t_last_category_name );
 			if( !\Flickerbox\Utility::is_blank( $t_bug_link ) ) {
 				if( 0 < $t_bugs_open ) {
 					$t_bugs_open = $t_bug_link . '&amp;' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_resolved_val . '">' . $t_bugs_open . '</a>';
@@ -747,13 +743,13 @@ class Summary
 						FROM {bug}
 						GROUP BY project_id, status';
 	
-			$t_result = db_query( $t_query );
+			$t_result = \Flickerbox\Database::query( $t_query );
 			$p_cache = array();
 	
-			$t_resolved_val = config_get( 'bug_resolved_status_threshold' );
-			$t_closed_val = config_get( 'bug_closed_status_threshold' );
+			$t_resolved_val = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+			$t_closed_val = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
 	
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				$t_project_id = $t_row['project_id'];
 				$t_status = $t_row['status'];
 				$t_bugcount = $t_row['bugcount'];
@@ -812,7 +808,7 @@ class Summary
 		$t_project_id = \Flickerbox\Helper::get_current_project();
 	
 		# Get the resolution values ot use
-		$c_res_s = \MantisEnum::getValues( $p_resolution_enum_string );
+		$c_res_s = \Flickerbox\MantisEnum::getValues( $p_resolution_enum_string );
 		$t_enum_res_count = count( $c_res_s );
 	
 		$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id );
@@ -828,10 +824,10 @@ class Summary
 					WHERE ' . $t_specific_where . '
 					GROUP BY handler_id, resolution
 					ORDER BY handler_id, resolution';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_handler_res_arr = array();
-		$t_arr = db_fetch_array( $t_result );
+		$t_arr = \Flickerbox\Database::fetch_array( $t_result );
 		while( $t_arr ) {
 			if( !isset( $t_handler_res_arr[$t_arr['handler_id']] ) ) {
 				$t_handler_res_arr[$t_arr['handler_id']] = array();
@@ -843,10 +839,10 @@ class Summary
 			$t_handler_res_arr[$t_arr['handler_id']][$t_arr['resolution']] += $t_arr['bugcount'];
 			$t_handler_res_arr[$t_arr['handler_id']]['total'] += $t_arr['bugcount'];
 	
-			$t_arr = db_fetch_array( $t_result );
+			$t_arr = \Flickerbox\Database::fetch_array( $t_result );
 		}
 	
-		$t_filter_prefix = config_get( 'bug_count_hyperlink_prefix' );
+		$t_filter_prefix = \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' );
 		$t_row_count = 0;
 	
 		# We now have a multi dimensional array of users and resolutions, with the value of each resolution for each user
@@ -884,8 +880,8 @@ class Summary
 					}
 					echo "</td>\n";
 	
-					if( $c_res_s[$j] >= config_get( 'bug_resolution_fixed_threshold' ) ) {
-						if( $c_res_s[$j] < config_get( 'bug_resolution_not_fixed_threshold' ) ) {
+					if( $c_res_s[$j] >= \Flickerbox\Config::mantis_get( 'bug_resolution_fixed_threshold' ) ) {
+						if( $c_res_s[$j] < \Flickerbox\Config::mantis_get( 'bug_resolution_not_fixed_threshold' ) ) {
 							# Count bugs with a resolution between fixed and not fixed thresholds
 							$t_bugs_fixed += $t_res_bug_count;
 						} else {
@@ -915,12 +911,12 @@ class Summary
 	 * @return void
 	 */
 	static function print_reporter_resolution( $p_resolution_enum_string ) {
-		$t_reporter_summary_limit = config_get( 'reporter_summary_limit' );
+		$t_reporter_summary_limit = \Flickerbox\Config::mantis_get( 'reporter_summary_limit' );
 	
 		$t_project_id = \Flickerbox\Helper::get_current_project();
 	
 		# Get the resolution values ot use
-		$c_res_s = \MantisEnum::getValues( $p_resolution_enum_string );
+		$c_res_s = \Flickerbox\MantisEnum::getValues( $p_resolution_enum_string );
 		$t_enum_res_count = count( $c_res_s );
 	
 		# Checking if it's a per project statistic or all projects
@@ -934,11 +930,11 @@ class Summary
 					FROM {bug}
 					WHERE ' . $t_specific_where . '
 					GROUP BY reporter_id, resolution';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_reporter_res_arr = array();
 		$t_reporter_bugcount_arr = array();
-		$t_arr = db_fetch_array( $t_result );
+		$t_arr = \Flickerbox\Database::fetch_array( $t_result );
 		while( $t_arr ) {
 			if( !isset( $t_reporter_res_arr[$t_arr['reporter_id']] ) ) {
 				$t_reporter_res_arr[$t_arr['reporter_id']] = array();
@@ -950,7 +946,7 @@ class Summary
 			$t_reporter_res_arr[$t_arr['reporter_id']][$t_arr['resolution']] += $t_arr['bugcount'];
 			$t_reporter_bugcount_arr[$t_arr['reporter_id']] += $t_arr['bugcount'];
 	
-			$t_arr = db_fetch_array( $t_result );
+			$t_arr = \Flickerbox\Database::fetch_array( $t_result );
 		}
 	
 		# Sort our total bug count array so that the reporters with the highest number of bugs are listed first,
@@ -975,7 +971,7 @@ class Summary
 				echo '<tr>';
 				$t_row_count++;
 				echo '<td>';
-				echo \Flickerbox\String::display_line( user_get_name( $t_reporter_id ) );
+				echo \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_reporter_id ) );
 				echo "</td>\n";
 	
 				# We need to track the percentage of bugs that are considered fix, as well as
@@ -991,7 +987,7 @@ class Summary
 	
 					echo '<td class="right">';
 					if( 0 < $t_res_bug_count ) {
-						$t_bug_link = '<a class="subtle" href="' . config_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_REPORTER_ID . '=' . $t_reporter_id;
+						$t_bug_link = '<a class="subtle" href="' . \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) . '&amp;' . FILTER_PROPERTY_REPORTER_ID . '=' . $t_reporter_id;
 						$t_bug_link = $t_bug_link . '&amp;' . FILTER_PROPERTY_RESOLUTION . '=' . $c_res_s[$j] . '">';
 						echo $t_bug_link . $t_res_bug_count . '</a>';
 					} else {
@@ -999,8 +995,8 @@ class Summary
 					}
 					echo "</td>\n";
 	
-					if( $c_res_s[$j] >= config_get( 'bug_resolution_fixed_threshold' ) ) {
-						if( $c_res_s[$j] < config_get( 'bug_resolution_not_fixed_threshold' ) ) {
+					if( $c_res_s[$j] >= \Flickerbox\Config::mantis_get( 'bug_resolution_fixed_threshold' ) ) {
+						if( $c_res_s[$j] < \Flickerbox\Config::mantis_get( 'bug_resolution_not_fixed_threshold' ) ) {
 							# Count bugs with a resolution between fixed and not fixed thresholds
 							$t_bugs_fixed += $t_res_bug_count;
 						} else {
@@ -1031,19 +1027,19 @@ class Summary
 	 * @return void
 	 */
 	static function print_reporter_effectiveness( $p_severity_enum_string, $p_resolution_enum_string ) {
-		$t_reporter_summary_limit = config_get( 'reporter_summary_limit' );
+		$t_reporter_summary_limit = \Flickerbox\Config::mantis_get( 'reporter_summary_limit' );
 	
 		$t_project_id = \Flickerbox\Helper::get_current_project();
 	
-		$t_severity_multipliers = config_get( 'severity_multipliers' );
-		$t_resolution_multipliers = config_get( 'resolution_multipliers' );
+		$t_severity_multipliers = \Flickerbox\Config::mantis_get( 'severity_multipliers' );
+		$t_resolution_multipliers = \Flickerbox\Config::mantis_get( 'resolution_multipliers' );
 	
 		# Get the severity values to use
-		$c_sev_s = \MantisEnum::getValues( $p_severity_enum_string );
+		$c_sev_s = \Flickerbox\MantisEnum::getValues( $p_severity_enum_string );
 		$t_enum_sev_count = count( $c_sev_s );
 	
 		# Get the resolution values to use
-		$c_res_s = \MantisEnum::getValues( $p_resolution_enum_string );
+		$c_res_s = \Flickerbox\MantisEnum::getValues( $p_resolution_enum_string );
 	
 		# Checking if it's a per project statistic or all projects
 		$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id );
@@ -1056,11 +1052,11 @@ class Summary
 					FROM {bug}
 					WHERE ' . $t_specific_where . '
 					GROUP BY reporter_id, resolution, severity';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_reporter_ressev_arr = array();
 		$t_reporter_bugcount_arr = array();
-		$t_arr = db_fetch_array( $t_result );
+		$t_arr = \Flickerbox\Database::fetch_array( $t_result );
 		while( $t_arr ) {
 			if( !isset( $t_reporter_ressev_arr[$t_arr['reporter_id']] ) ) {
 				$t_reporter_ressev_arr[$t_arr['reporter_id']] = array();
@@ -1077,7 +1073,7 @@ class Summary
 			$t_reporter_ressev_arr[$t_arr['reporter_id']][$t_arr['severity']]['total'] += $t_arr['bugcount'];
 			$t_reporter_bugcount_arr[$t_arr['reporter_id']] += $t_arr['bugcount'];
 	
-			$t_arr = db_fetch_array( $t_result );
+			$t_arr = \Flickerbox\Database::fetch_array( $t_result );
 		}
 	
 		# Sort our total bug count array so that the reporters with the highest number of bugs are listed first,
@@ -1103,7 +1099,7 @@ class Summary
 				echo '<tr>';
 				$t_row_count++;
 				echo '<td>';
-				echo \Flickerbox\String::display_line( user_get_name( $t_reporter_id ) );
+				echo \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_reporter_id ) );
 				echo '</td>';
 	
 				$t_total_severity = 0;

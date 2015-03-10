@@ -29,14 +29,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 if(\Flickerbox\Auth::is_user_authenticated()) 
 {
-	print_header_redirect( \Flickerbox\Config::get( 'default_home_page' ) );
+	\Flickerbox\Print_Util::header_redirect( \Flickerbox\Config::mantis_get( 'default_home_page' ) );
 }
 else
 {
-	print_header_redirect( 'login_page.php' );
+	\Flickerbox\Print_Util::header_redirect( 'login_page.php' );
 }

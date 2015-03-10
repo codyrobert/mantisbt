@@ -38,13 +38,9 @@ if( !defined( 'BUG_MONITOR_LIST_VIEW_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
-if( \Flickerbox\Access::has_bug_level( config_get( 'show_monitor_list_threshold' ), $f_bug_id ) ) {
-	$t_users = bug_get_monitors( $f_bug_id );
+if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'show_monitor_list_threshold' ), $f_bug_id ) ) {
+	$t_users = \Flickerbox\Bug::get_monitors( $f_bug_id );
 	$t_num_users = sizeof( $t_users );
 
 	echo '<a id="monitors"></a><br />';
@@ -69,17 +65,17 @@ if( \Flickerbox\Access::has_bug_level( config_get( 'show_monitor_list_threshold'
 		if( 0 == $t_num_users ) {
 			echo \Flickerbox\Lang::get( 'no_users_monitoring_bug' );
 		} else {
-			$t_can_delete_others = \Flickerbox\Access::has_bug_level( config_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
+			$t_can_delete_others = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
 	 		for( $i = 0; $i < $t_num_users; $i++ ) {
 				echo ($i > 0) ? ', ' : '';
-				print_user( $t_users[$i] );
+				\Flickerbox\Print_Util::user( $t_users[$i] );
 				if( $t_can_delete_others ) {
 					echo ' [<a class="small" href="' . \Flickerbox\Helper::mantis_url( 'bug_monitor_delete.php' ) . '?bug_id=' . $f_bug_id . '&amp;user_id=' . $t_users[$i] . htmlspecialchars( \Flickerbox\Form::security_param( 'bug_monitor_delete' ) ) . '">' . \Flickerbox\Lang::get( 'delete_link' ) . '</a>]';
 				}
 	 		}
 		}
 
-		if( \Flickerbox\Access::has_bug_level( config_get( 'monitor_add_others_bug_threshold' ), $f_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'monitor_add_others_bug_threshold' ), $f_bug_id ) ) {
 ?>
 		<br /><br />
 		<form method="get" action="bug_monitor_add.php">

@@ -38,8 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 auth_reauthenticate();
 
@@ -50,7 +48,7 @@ auth_reauthenticate();
 
 $g_access = \Flickerbox\Current_User::get_access_level();
 $t_project = \Flickerbox\Helper::get_current_project();
-$g_can_change_workflow = ( $g_access >= config_get_access( 'status_enum_workflow' ) );
+$g_can_change_workflow = ( $g_access >= \Flickerbox\Config::get_access( 'status_enum_workflow' ) );
 $g_can_change_flags = $g_can_change_workflow;
 $g_overrides = array();
 
@@ -137,7 +135,7 @@ function show_flag( $p_from_status_id, $p_to_status_id ) {
  * @return void
  */
 function section_begin( $p_section_name ) {
-	$t_enum_statuses = \MantisEnum::getValues( config_get( 'status_enum_string' ) );
+	$t_enum_statuses = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
 	echo '<div class="form-container">'. "\n";
 	echo "\t<table>\n";
 	echo "\t\t<thead>\n";
@@ -152,7 +150,7 @@ function section_begin( $p_section_name ) {
 
 	foreach( $t_enum_statuses as $t_status ) {
 		echo "\t\t\t" . '<th class="form-title" style="text-align:center">&#160;'
-			. \Flickerbox\String::no_break( \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_status ) )
+			. \Flickerbox\String::no_break( \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_status ) )
 			. '&#160;</th>' ."\n";
 	}
 
@@ -169,8 +167,8 @@ function section_begin( $p_section_name ) {
  */
 function capability_row( $p_from_status ) {
 	global $g_file_workflow, $g_global_workflow, $g_project_workflow, $g_can_change_workflow;
-	$t_enum_status = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
-	echo "\t\t" .'<tr><td>' . \Flickerbox\String::no_break( \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $p_from_status ) ) . '</td>' . "\n";
+	$t_enum_status = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
+	echo "\t\t" .'<tr><td>' . \Flickerbox\String::no_break( \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $p_from_status ) ) . '</td>' . "\n";
 	foreach ( $t_enum_status as $t_to_status_id => $t_to_status_label ) {
 		echo show_flag( $p_from_status, $t_to_status_id );
 	}
@@ -186,10 +184,10 @@ function capability_row( $p_from_status ) {
 	echo "\t\t\t" . '<td class="center ' . $t_color . '">';
 	if( $g_can_change_workflow ) {
 		echo '<select name="default_' . $p_from_status . '">';
-		print_enum_string_option_list( 'status', $t_project );
+		\Flickerbox\Print_Util::enum_string_option_list( 'status', $t_project );
 		echo '</select>';
 	} else {
-		echo \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_project );
+		echo \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_project );
 	}
 	echo ' </td>' . "\n";
 	echo "\t\t" . '</tr>' . "\n";
@@ -230,10 +228,10 @@ function threshold_begin( $p_section_name ) {
 function threshold_row( $p_threshold ) {
 	global $g_access, $g_can_change_flags;
 
-	$t_file = config_get_global( $p_threshold );
-	$t_global = config_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
-	$t_project = config_get( $p_threshold );
-	$t_can_change_threshold = ( $g_access >= config_get_access( $p_threshold ) );
+	$t_file = \Flickerbox\Config::get_global( $p_threshold );
+	$t_global = \Flickerbox\Config::mantis_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
+	$t_project = \Flickerbox\Config::mantis_get( $p_threshold );
+	$t_can_change_threshold = ( $g_access >= \Flickerbox\Config::get_access( $p_threshold ) );
 
 	$t_color = set_color_override( $t_file, $t_global, $t_project );
 	if( $t_can_change_threshold && $t_color != '' ) {
@@ -243,15 +241,15 @@ function threshold_row( $p_threshold ) {
 	echo '<tr><td>' . \Flickerbox\Lang::get( 'desc_' . $p_threshold ) . '</td>' . "\n";
 	if( $t_can_change_threshold ) {
 		echo '<td class="center ' . $t_color . '"><select name="threshold_' . $p_threshold . '">';
-		print_enum_string_option_list( 'status', $t_project );
+		\Flickerbox\Print_Util::enum_string_option_list( 'status', $t_project );
 		echo '</select> </td>' . "\n";
 		echo '<td><select name="access_' . $p_threshold . '">';
-		print_enum_string_option_list( 'access_levels', config_get_access( $p_threshold ) );
+		\Flickerbox\Print_Util::enum_string_option_list( 'access_levels', \Flickerbox\Config::get_access( $p_threshold ) );
 		echo '</select> </td>' . "\n";
 		$g_can_change_flags = true;
 	} else {
-		echo '<td' . $t_color . '>' . \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_project ) . '&#160;</td>' . "\n";
-		echo '<td>' . \MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), config_get_access( $p_threshold ) ) . '&#160;</td>' . "\n";
+		echo '<td' . $t_color . '>' . \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_project ) . '&#160;</td>' . "\n";
+		echo '<td>' . \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), \Flickerbox\Config::get_access( $p_threshold ) ) . '&#160;</td>' . "\n";
 	}
 
 	echo '</tr>' . "\n";
@@ -287,28 +285,28 @@ function access_begin( $p_section_name ) {
 function access_row() {
 	global $g_access, $g_can_change_flags;
 
-	$t_enum_status = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
+	$t_enum_status = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
 
-	$t_file_new = config_get_global( 'report_bug_threshold' );
-	$t_global_new = config_get( 'report_bug_threshold', null, ALL_USERS, ALL_PROJECTS );
-	$t_project_new = config_get( 'report_bug_threshold' );
+	$t_file_new = \Flickerbox\Config::get_global( 'report_bug_threshold' );
+	$t_global_new = \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, ALL_USERS, ALL_PROJECTS );
+	$t_project_new = \Flickerbox\Config::mantis_get( 'report_bug_threshold' );
 
-	$t_file_set = config_get_global( 'set_status_threshold' );
-	$t_global_set = config_get( 'set_status_threshold', null, ALL_USERS, ALL_PROJECTS );
-	$t_project_set = config_get( 'set_status_threshold' );
+	$t_file_set = \Flickerbox\Config::get_global( 'set_status_threshold' );
+	$t_global_set = \Flickerbox\Config::mantis_get( 'set_status_threshold', null, ALL_USERS, ALL_PROJECTS );
+	$t_project_set = \Flickerbox\Config::mantis_get( 'set_status_threshold' );
 
-	$t_submit_status = config_get( 'bug_submit_status' );
+	$t_submit_status = \Flickerbox\Config::mantis_get( 'bug_submit_status' );
 
 	# Print the table rows
 	foreach( $t_enum_status as $t_status => $t_status_label ) {
 		echo "\t\t" . '<tr><td class="width30">'
-			. \Flickerbox\String::no_break( \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_status ) ) . '</td>' . "\n";
+			. \Flickerbox\String::no_break( \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_status ) ) . '</td>' . "\n";
 
 		if( $t_status == $t_submit_status ) {
 			# 'NEW' status
 			$t_level_project = $t_project_new;
 
-			$t_can_change = ( $g_access >= config_get_access( 'report_bug_threshold' ) );
+			$t_can_change = ( $g_access >= \Flickerbox\Config::get_access( 'report_bug_threshold' ) );
 			$t_color = set_color_override( $t_file_new, $t_global_new, $t_project_new );
 			if( $t_can_change  && $t_color != '' ) {
 				set_overrides( 'report_bug_threshold' );
@@ -320,13 +318,13 @@ function access_row() {
 			if( isset( $t_file_set[$t_status] ) ) {
 				$t_level_file = $t_file_set[$t_status];
 			} else {
-				$t_level_file = config_get_global( 'update_bug_status_threshold' );
+				$t_level_file = \Flickerbox\Config::get_global( 'update_bug_status_threshold' );
 			}
 
 			$t_level_global  = isset( $t_global_set[$t_status] ) ? $t_global_set[$t_status] : $t_level_file;
 			$t_level_project = isset( $t_project_set[$t_status] ) ? $t_project_set[$t_status] : $t_level_global;
 
-			$t_can_change = ( $g_access >= config_get_access( 'set_status_threshold' ) );
+			$t_can_change = ( $g_access >= \Flickerbox\Config::get_access( 'set_status_threshold' ) );
 			$t_color = set_color_override( $t_level_file, $t_level_global, $t_level_project );
 			if( $t_can_change  && $t_color != '' ) {
 				set_overrides( 'set_status_threshold' );
@@ -335,12 +333,12 @@ function access_row() {
 
 		if( $t_can_change ) {
 			echo '<td class="center ' . $t_color . '"><select name="access_change_' . $t_status . '">' . "\n";
-			print_enum_string_option_list( 'access_levels', $t_level_project );
+			\Flickerbox\Print_Util::enum_string_option_list( 'access_levels', $t_level_project );
 			echo '</select> </td>' . "\n";
 			$g_can_change_flags = true;
 		} else {
 			echo '<td class="center ' . $t_color . '">'
-				. \MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_level_project )
+				. \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_level_project )
 				. '</td>' . "\n";
 		}
 
@@ -359,24 +357,24 @@ function access_end() {
 echo '<br /><br />';
 
 # count arcs in and out of each status
-$t_enum_status = config_get( 'status_enum_string' );
-$t_status_arr  = \MantisEnum::getAssocArrayIndexedByValues( $t_enum_status );
+$t_enum_status = \Flickerbox\Config::mantis_get( 'status_enum_string' );
+$t_status_arr  = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( $t_enum_status );
 
 $t_extra_enum_status = '0:non-existent,' . $t_enum_status;
 $t_lang_enum_status = '0:' . \Flickerbox\Lang::get( 'non_existent' ) . ',' . \Flickerbox\Lang::get( 'status_enum_string' );
 $t_all_status = explode( ',', $t_extra_enum_status );
 
 # gather all versions of the workflow
-$g_file_workflow = \Flickerbox\Workflow::parse( config_get_global( 'status_enum_workflow' ) );
-$g_global_workflow = \Flickerbox\Workflow::parse( config_get( 'status_enum_workflow', null, ALL_USERS, ALL_PROJECTS ) );
-$g_project_workflow = \Flickerbox\Workflow::parse( config_get( 'status_enum_workflow', null, ALL_USERS, $t_project ) );
+$g_file_workflow = \Flickerbox\Workflow::parse( \Flickerbox\Config::get_global( 'status_enum_workflow' ) );
+$g_global_workflow = \Flickerbox\Workflow::parse( \Flickerbox\Config::mantis_get( 'status_enum_workflow', null, ALL_USERS, ALL_PROJECTS ) );
+$g_project_workflow = \Flickerbox\Workflow::parse( \Flickerbox\Config::mantis_get( 'status_enum_workflow', null, ALL_USERS, $t_project ) );
 
 # validate the project workflow
 $t_validation_result = '';
 foreach( $t_status_arr as $t_status => $t_label ) {
 	if( isset( $g_project_workflow['exit'][$t_status][$t_status] ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Flickerbox\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FFED4F">' . \Flickerbox\Lang::get( 'superfluous' ) . '</td></tr>';
 	}
 }
@@ -385,7 +383,7 @@ foreach( $t_status_arr as $t_status => $t_label ) {
 foreach( $t_status_arr as $t_status => $t_status_label ) {
 	if( ( 0 == count( $g_project_workflow['entry'][$t_status] ) ) && ( 0 < count( $g_project_workflow['exit'][$t_status] ) ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Flickerbox\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FF0088">' . \Flickerbox\Lang::get( 'unreachable' ) . '</td></tr>';
 	}
 }
@@ -394,7 +392,7 @@ foreach( $t_status_arr as $t_status => $t_status_label ) {
 foreach( $t_status_arr as $t_status => $t_status_label ) {
 	if( ( 0 == count( $g_project_workflow['exit'][$t_status] ) ) && ( 0 < count( $g_project_workflow['entry'][$t_status] ) ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Flickerbox\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FF0088">' . \Flickerbox\Lang::get( 'no_exit' ) . '</td></tr>';
 	}
 }
@@ -403,7 +401,7 @@ foreach( $t_status_arr as $t_status => $t_status_label ) {
 foreach ( $t_status_arr as $t_status => $t_status_label ) {
 	if( ( 0 == count( $g_project_workflow['exit'][$t_status] ) ) && ( 0 == count( $g_project_workflow['entry'][$t_status] ) ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Flickerbox\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FF0088">' . \Flickerbox\Lang::get( 'unreachable' ) . '<br />' . \Flickerbox\Lang::get( 'no_exit' ) . '</td></tr>';
 	}
 }
@@ -427,7 +425,7 @@ echo '<span class="color-global">' . \Flickerbox\Lang::get( 'colour_global' ) . 
 
 # show the settings used to derive the table
 threshold_begin( \Flickerbox\Lang::get( 'workflow_thresholds' ) );
-if( !is_array( config_get( 'bug_submit_status' ) ) ) {
+if( !is_array( \Flickerbox\Config::mantis_get( 'bug_submit_status' ) ) ) {
 	threshold_row( 'bug_submit_status' );
 }
 threshold_row( 'bug_resolved_status_threshold' );
@@ -446,9 +444,9 @@ if( '' <> $t_validation_result ) {
 }
 
 # Initialization for 'reopened' label handling
-$t_resolved_status = config_get( 'bug_resolved_status_threshold' );
-$t_reopen_status = config_get( 'bug_reopen_status' );
-$t_reopen_label = \MantisEnum::getLabel( \Flickerbox\Lang::get( 'resolution_enum_string' ), config_get( 'bug_reopen_resolution' ) );
+$t_resolved_status = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_reopen_status = \Flickerbox\Config::mantis_get( 'bug_reopen_status' );
+$t_reopen_label = \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'resolution_enum_string' ), \Flickerbox\Config::mantis_get( 'bug_reopen_resolution' ) );
 
 # display the graph as a matrix
 section_begin( \Flickerbox\Lang::get( 'workflow' ) );
@@ -460,7 +458,7 @@ section_end();
 if( $g_can_change_workflow ) {
 	echo '<p>' . \Flickerbox\Lang::get( 'workflow_change_access_label' );
 	echo '<select name="workflow_access">';
-	print_enum_string_option_list( 'access_levels', config_get_access( 'status_enum_workflow' ) );
+	\Flickerbox\Print_Util::enum_string_option_list( 'access_levels', \Flickerbox\Config::get_access( 'status_enum_workflow' ) );
 	echo '</select> </p><br />';
 }
 
@@ -469,10 +467,10 @@ access_begin( \Flickerbox\Lang::get( 'access_levels' ) );
 access_row();
 access_end();
 
-if( $g_access >= config_get_access( 'set_status_threshold' ) ) {
+if( $g_access >= \Flickerbox\Config::get_access( 'set_status_threshold' ) ) {
 	echo '<p>' . \Flickerbox\Lang::get( 'access_change_access_label' );
 	echo '<select name="status_access">';
-	print_enum_string_option_list( 'access_levels', config_get_access( 'set_status_threshold' ) );
+	\Flickerbox\Print_Util::enum_string_option_list( 'access_levels', \Flickerbox\Config::get_access( 'set_status_threshold' ) );
 	echo '</select> </p><br />';
 }
 

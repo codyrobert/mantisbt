@@ -15,17 +15,17 @@ class MantisPHPSession extends MantisSession {
 	function __construct( $p_session_id = null ) {
 		global $g_cookie_secure_flag_enabled;
 
-		$this->key = hash( 'whirlpool', 'session_key' . config_get_global( 'crypto_master_salt' ), false );
+		$this->key = hash( 'whirlpool', 'session_key' . \Flickerbox\Config::get_global( 'crypto_master_salt' ), false );
 
 		# Save session information where specified or with PHP's default
-		$t_session_save_path = config_get_global( 'session_save_path' );
+		$t_session_save_path = \Flickerbox\Config::get_global( 'session_save_path' );
 		if( $t_session_save_path ) {
 			session_save_path( $t_session_save_path );
 		}
 
 		# Handle session cookie and caching
 		session_cache_limiter( 'private_no_expire' );
-		session_set_cookie_params( 0, config_get( 'cookie_path' ), config_get( 'cookie_domain' ), $g_cookie_secure_flag_enabled, true );
+		session_set_cookie_params( 0, \Flickerbox\Config::mantis_get( 'cookie_path' ), \Flickerbox\Config::mantis_get( 'cookie_domain' ), $g_cookie_secure_flag_enabled, true );
 
 		# Handle existent session ID
 		if( !is_null( $p_session_id ) ) {

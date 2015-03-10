@@ -30,7 +30,6 @@ namespace Flickerbox;
  * @uses config_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 
@@ -154,7 +153,7 @@ class HTTP
 		if( !headers_sent() ) {
 			header( 'X-Frame-Options: DENY' );
 			$t_avatar_img_allow = '';
-			if( config_get_global( 'show_avatar' ) ) {
+			if( \Flickerbox\Config::get_global( 'show_avatar' ) ) {
 				if( \Flickerbox\HTTP::is_protocol_https() ) {
 					$t_avatar_img_allow = "; img-src 'self' https://secure.gravatar.com:443";
 				} else {
@@ -175,7 +174,7 @@ class HTTP
 	static function custom_headers() {
 		if( !headers_sent() ) {
 			# send user-defined headers
-			foreach( config_get_global( 'custom_headers' ) as $t_header ) {
+			foreach( \Flickerbox\Config::get_global( 'custom_headers' ) as $t_header ) {
 				header( $t_header );
 			}
 		}

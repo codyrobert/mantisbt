@@ -37,12 +37,9 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 # Check if project documentation feature is enabled.
-if( OFF == config_get( 'enable_project_documentation' ) ||
+if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ||
 	!\Flickerbox\File::is_uploading_enabled() ||
 	!\Flickerbox\File::allow_project_upload() ) {
 	\Flickerbox\Access::denied();
@@ -52,17 +49,17 @@ $t_file_id = \Flickerbox\GPC::get_int( 'file_id' );
 
 $t_project_id = \Flickerbox\File::get_field( $t_file_id, 'project_id', 'project' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'upload_project_file_threshold' ), $t_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id );
 
-$t_query = 'SELECT * FROM {project_file} WHERE id=' . db_param();
-$t_result = db_query( $t_query, array( $t_file_id ) );
-$t_row = db_fetch_array( $t_result );
+$t_query = 'SELECT * FROM {project_file} WHERE id=' . \Flickerbox\Database::param();
+$t_result = \Flickerbox\Database::query( $t_query, array( $t_file_id ) );
+$t_row = \Flickerbox\Database::fetch_array( $t_result );
 extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 
 $v_title = \Flickerbox\String::attribute( $v_title );
 $v_description = \Flickerbox\String::textarea( $v_description );
 
-$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
 
 \Flickerbox\HTML::page_top();
 ?>
@@ -105,7 +102,7 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 		<?php
 			$t_href = '<a href="file_download.php?file_id='.$v_id.'&amp;type=doc">';
 			echo $t_href;
-			print_file_icon( $v_filename );
+			\Flickerbox\Print_Util::file_icon( $v_filename );
 			echo '</a>&#160;' . $t_href . \Flickerbox\File::get_display_name( $v_filename ) . '</a>';
 		?>
 	</td>
@@ -114,7 +111,7 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 	<td class="category">
 		<?php echo \Flickerbox\Lang::get( 'select_file' ); ?>
 		<br />
-		<?php print_max_filesize( $t_max_file_size ); ?>
+		<?php \Flickerbox\Print_Util::max_filesize( $t_max_file_size ); ?>
 	</td>
 	<td>
 		<input type="hidden" name="max_file_size" value="<?php echo $t_max_file_size ?>" />

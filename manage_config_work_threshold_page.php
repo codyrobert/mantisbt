@@ -38,9 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 auth_reauthenticate();
 
@@ -53,7 +50,7 @@ $g_user = \Flickerbox\Auth::get_current_user_id();
 $g_project_id = \Flickerbox\Helper::get_current_project();
 $t_show_submit = false;
 
-$g_access_levels = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'access_levels_enum_string' ) );
+$g_access_levels = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'access_levels_enum_string' ) );
 $g_overrides = array();
 
 /**
@@ -86,7 +83,7 @@ function get_section_begin_mcwt( $p_section_name ) {
 	echo '<th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Flickerbox\Lang::get( 'alter_level' ) . '&#160;</th>';
 	echo '</tr><tr class="row-category2">';
 	foreach( $g_access_levels as $t_access_level => $t_access_label ) {
-		echo '<th class="form-title" style="text-align:center">&#160;' . \MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
+		echo '<th class="form-title" style="text-align:center">&#160;' . \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
 	}
 	echo '</tr>' . "\n";
 	echo '</thead>';
@@ -136,20 +133,20 @@ function print_who_can_change( $p_threshold, $p_can_change ) {
 	static $s_file_access = null;
 
 	if( is_null( $s_file_access ) ) {
-		$t_file_access = config_get_global( 'admin_site_threshold' );
+		$t_file_access = \Flickerbox\Config::get_global( 'admin_site_threshold' );
 	}
-	$t_global_access = config_get_access( $p_threshold, ALL_USERS, ALL_PROJECTS );
-	$t_project_access = config_get_access( $p_threshold );
+	$t_global_access = \Flickerbox\Config::get_access( $p_threshold, ALL_USERS, ALL_PROJECTS );
+	$t_project_access = \Flickerbox\Config::get_access( $p_threshold );
 
 	$t_color = set_color( $p_threshold, $t_file_access, $t_global_access, $t_project_access, $p_can_change );
 
 	echo '<td class="' . $t_color . '">';
 	if( $p_can_change ) {
 		echo '<select name="access_' . $p_threshold . '">';
-		print_enum_string_option_list( 'access_levels', $t_project_access );
+		\Flickerbox\Print_Util::enum_string_option_list( 'access_levels', $t_project_access );
 		echo '</select>';
 	} else {
-		echo \MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_project_access ) . '&#160;';
+		echo \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_project_access ) . '&#160;';
 	}
 	echo "</td>\n";
 }
@@ -164,7 +161,7 @@ function print_who_can_change( $p_threshold, $p_can_change ) {
 function get_capability_row( $p_caption, $p_threshold, $p_all_projects_only = false ) {
 	global $g_user, $g_project_id, $t_show_submit, $g_access_levels;
 
-	$t_file = config_get_global( $p_threshold );
+	$t_file = \Flickerbox\Config::get_global( $p_threshold );
 	if( !is_array( $t_file ) ) {
 		$t_file_exp = array();
 		foreach( $g_access_levels as $t_access_level => $t_label ) {
@@ -176,7 +173,7 @@ function get_capability_row( $p_caption, $p_threshold, $p_all_projects_only = fa
 		$t_file_exp = $t_file;
 	}
 
-	$t_global = config_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
+	$t_global = \Flickerbox\Config::mantis_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
 	if( !is_array( $t_global ) ) {
 		$t_global_exp = array();
 		foreach( $g_access_levels as $t_access_level => $t_label ) {
@@ -188,7 +185,7 @@ function get_capability_row( $p_caption, $p_threshold, $p_all_projects_only = fa
 		$t_global_exp = $t_global;
 	}
 
-	$t_project = config_get( $p_threshold );
+	$t_project = \Flickerbox\Config::mantis_get( $p_threshold );
 	if( !is_array( $t_project ) ) {
 		$t_project_exp = array();
 		foreach( $g_access_levels as $t_access_level => $t_label ) {
@@ -200,7 +197,7 @@ function get_capability_row( $p_caption, $p_threshold, $p_all_projects_only = fa
 		$t_project_exp = $t_project;
 	}
 
-	$t_can_change = \Flickerbox\Access::has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
+	$t_can_change = \Flickerbox\Access::has_project_level( \Flickerbox\Config::get_access( $p_threshold ), $g_project_id, $g_user )
 			  && ( ( ALL_PROJECTS == $g_project_id ) || !$p_all_projects_only );
 
 	echo "<tr>\n";
@@ -243,11 +240,11 @@ function get_capability_row( $p_caption, $p_threshold, $p_all_projects_only = fa
 function get_capability_boolean( $p_caption, $p_threshold, $p_all_projects_only = false ) {
 	global $g_user, $g_project_id, $t_show_submit, $g_access_levels;
 
-	$t_file = config_get_global( $p_threshold );
-	$t_global = config_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
-	$t_project = config_get( $p_threshold );
+	$t_file = \Flickerbox\Config::get_global( $p_threshold );
+	$t_global = \Flickerbox\Config::mantis_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
+	$t_project = \Flickerbox\Config::mantis_get( $p_threshold );
 
-	$t_can_change = \Flickerbox\Access::has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
+	$t_can_change = \Flickerbox\Access::has_project_level( \Flickerbox\Config::get_access( $p_threshold ), $g_project_id, $g_user )
 			  && ( ( ALL_PROJECTS == $g_project_id ) || !$p_all_projects_only );
 
 	echo "<tr>\n\t<td>" . \Flickerbox\String::display( $p_caption ) . "</td>\n";
@@ -255,11 +252,11 @@ function get_capability_boolean( $p_caption, $p_threshold, $p_all_projects_only 
 	# Value
 	$t_color = set_color( $p_threshold, $t_file, $t_global, $t_project, $t_can_change );
 	if( $t_can_change ) {
-		$t_checked = ( ON == config_get( $p_threshold ) ) ? 'checked="checked"' : '';
+		$t_checked = ( ON == \Flickerbox\Config::mantis_get( $p_threshold ) ) ? 'checked="checked"' : '';
 		$t_value = '<input type="checkbox" name="flag_' . $p_threshold . '" value="1" ' . $t_checked . ' />';
 		$t_show_submit = true;
 	} else {
-		if( ON == config_get( $p_threshold ) ) {
+		if( ON == \Flickerbox\Config::mantis_get( $p_threshold ) ) {
 			$t_value = '<img src="images/ok.gif" width="20" height="15" title="X" alt="X" />';
 		} else {
 			$t_value = '&#160;';
@@ -284,11 +281,11 @@ function get_capability_boolean( $p_caption, $p_threshold, $p_all_projects_only 
 function get_capability_enum( $p_caption, $p_threshold, $p_enum, $p_all_projects_only = false ) {
 	global $g_user, $g_project_id, $t_show_submit, $g_access_levels;
 
-	$t_file = config_get_global( $p_threshold );
-	$t_global = config_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
-	$t_project = config_get( $p_threshold );
+	$t_file = \Flickerbox\Config::get_global( $p_threshold );
+	$t_global = \Flickerbox\Config::mantis_get( $p_threshold, null, ALL_USERS, ALL_PROJECTS );
+	$t_project = \Flickerbox\Config::mantis_get( $p_threshold );
 
-	$t_can_change = \Flickerbox\Access::has_project_level( config_get_access( $p_threshold ), $g_project_id, $g_user )
+	$t_can_change = \Flickerbox\Access::has_project_level( \Flickerbox\Config::get_access( $p_threshold ), $g_project_id, $g_user )
 			  && ( ( ALL_PROJECTS == $g_project_id ) || !$p_all_projects_only );
 
 	echo '<tr>' . "\n";
@@ -299,11 +296,11 @@ function get_capability_enum( $p_caption, $p_threshold, $p_enum, $p_all_projects
 	echo "\t" . '<td class="left ' . $t_color . '" colspan="3">';
 	if( $t_can_change ) {
 		echo '<select name="flag_' . $p_threshold . '">';
-		print_enum_string_option_list( $p_enum, config_get( $p_threshold ) );
+		\Flickerbox\Print_Util::enum_string_option_list( $p_enum, \Flickerbox\Config::mantis_get( $p_threshold ) );
 		echo '</select>';
 		$t_show_submit = true;
 	} else {
-		$t_value = \MantisEnum::getLabel( \Flickerbox\Lang::get( $p_enum . '_enum_string' ), config_get( $p_threshold ) ) . '&#160;';
+		$t_value = \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( $p_enum . '_enum_string' ), \Flickerbox\Config::mantis_get( $p_threshold ) ) . '&#160;';
 		echo $t_value;
 	}
 	echo '</td>' . "\n\t" . '<td colspan="' . ( count( $g_access_levels ) - 3 ) . '"></td>' . "\n";

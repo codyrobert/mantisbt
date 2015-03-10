@@ -48,9 +48,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 #============ Parameters ============
 $f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
@@ -61,25 +58,25 @@ $f_redirect_url	= \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string(
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
-user_ensure_exists( $f_user_id );
+\Flickerbox\User::ensure_exists( $f_user_id );
 
-$t_user = user_get_row( $f_user_id );
+$t_user = \Flickerbox\User::get_row( $f_user_id );
 
 # This page is currently called from the manage_* namespace and thus we
 # have to allow authorised users to update the accounts of other users.
 # TODO: split this functionality into manage_user_prefs_reset.php
 if( auth_get_current_user_id() != $f_user_id ) {
-	\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 	\Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
 } else {
 	# Protected users should not be able to update the preferences of their
 	# user account. The anonymous user is always considered a protected
 	# user and hence will also not be allowed to update preferences.
-	user_ensure_unprotected( $f_user_id );
+	\Flickerbox\User::ensure_unprotected( $f_user_id );
 }
 
 \Flickerbox\User\Pref::delete( $f_user_id );
 
 \Flickerbox\Form::security_purge( 'account_prefs_reset' );
 
-print_header_redirect( $f_redirect_url, true, true );
+\Flickerbox\Print_Util::header_redirect( $f_redirect_url, true, true );

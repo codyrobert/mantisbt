@@ -25,9 +25,9 @@
 
 require_once( 'core.php' );
 
-plugin_require_api( 'core/graph_api.php' );
+\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
 
 $f_width = \Flickerbox\GPC::get_int( 'width', 300 );
 
@@ -38,5 +38,5 @@ if( $t_token == null ) {
 	 $t_metrics = graph_total_metrics( json_decode( $t_token, true ) );
 }
 
-graph_pie( $t_metrics, plugin_langget( 'by_resolution_pct' ), $f_width, $f_width );
+graph_pie( $t_metrics, \Flickerbox\Plugin::langget( 'by_resolution_pct' ), $f_width, $f_width );
 

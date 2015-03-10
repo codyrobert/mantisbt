@@ -30,13 +30,13 @@
  * @return boolean
  */
 function mci_file_can_download_bug_attachments( $p_bug_id, $p_user_id ) {
-	$t_can_download = \Flickerbox\Access::has_bug_level( config_get( 'download_attachments_threshold' ), $p_bug_id );
+	$t_can_download = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'download_attachments_threshold' ), $p_bug_id );
 	if( $t_can_download ) {
 		return true;
 	}
 
-	$t_reported_by_me = bug_is_user_reporter( $p_bug_id, $p_user_id );
-	return( $t_reported_by_me && config_get( 'allow_download_own_attachments' ) );
+	$t_reported_by_me = \Flickerbox\Bug::is_user_reporter( $p_bug_id, $p_user_id );
+	return( $t_reported_by_me && \Flickerbox\Config::mantis_get( 'allow_download_own_attachments' ) );
 }
 
 /**
@@ -84,15 +84,15 @@ function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_ti
 	}
 
 	$t_file_size = strlen( $p_content );
-	$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+	$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
 	if( $t_file_size > $t_max_file_size ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'File is too big.' );
 	}
 
 	if( 'bug' == $p_table ) {
-		$t_project_id = bug_get_field( $p_id, 'project_id' );
+		$t_project_id = \Flickerbox\Bug::get_field( $p_id, 'project_id' );
 		$t_id = (int)$p_id;
-		$t_issue_id = bug_format_id( $p_id );
+		$t_issue_id = \Flickerbox\Bug::format_id( $p_id );
 	} else {
 		$t_project_id = $p_id;
 		$t_id = $t_project_id;
@@ -104,18 +104,18 @@ function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_ti
 	}
 
 	if( $t_project_id == ALL_PROJECTS ) {
-		$t_file_path = config_get( 'absolute_path_default_upload_folder' );
+		$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
 	} else {
 		$t_file_path = \Flickerbox\Project::get_field( $t_project_id, 'file_path' );
 		if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
-			$t_file_path = config_get( 'absolute_path_default_upload_folder' );
+			$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
 		}
 	}
 
 	$t_unique_name = \Flickerbox\File::generate_unique_name( $t_file_path );
 	$t_disk_file_name = $t_file_path . $t_unique_name;
 
-	$t_method = config_get( 'file_upload_method' );
+	$t_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
 
 	switch( $t_method ) {
 		case DISK:
@@ -127,46 +127,46 @@ function mci_file_add( $p_id, $p_name, $p_content, $p_file_type, $p_table, $p_ti
 
 			if( !file_exists( $t_disk_file_name ) ) {
 				mci_file_write_local( $t_disk_file_name, $p_content );
-				chmod( $t_disk_file_name, config_get( 'attachments_file_permissions' ) );
+				chmod( $t_disk_file_name, \Flickerbox\Config::mantis_get( 'attachments_file_permissions' ) );
 				$c_content = "''";
 			}
 			break;
 		case DATABASE:
-			$c_content = db_prepare_binary_string( $p_content );
+			$c_content = \Flickerbox\Database::prepare_binary_string( $p_content );
 			$t_file_path = '';
 			break;
 	}
 
-	$t_file_table = db_get_table( $p_table . '_file' );
+	$t_file_table = \Flickerbox\Database::get_table( $p_table . '_file' );
 	$t_id_col = $p_table . '_id';
 
 	$t_query = 'INSERT INTO ' . $t_file_table . '
 				( ' . $t_id_col . ', title, description, diskfile, filename, folder, filesize, file_type, date_added, user_id )
 		VALUES
-				( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', '
-				    . db_param() . ', ' . db_param() . ', ' . db_param() . ', '
-				    . db_param() . ', ' . db_param() . ', ' . db_param() . ', '
-				    . db_param() . ' )';
-	db_query( $t_query, array(
+				( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', '
+				    . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', '
+				    . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', '
+				    . \Flickerbox\Database::param() . ' )';
+	\Flickerbox\Database::query( $t_query, array(
 		$t_id, $p_title, $p_desc,
 		$t_unique_name, $p_name, $t_file_path,
-		$t_file_size, $p_file_type, db_now(),
+		$t_file_size, $p_file_type, \Flickerbox\Database::now(),
 		(int)$p_user_id,
 	) );
 
 	# get attachment id
-	$t_attachment_id = db_insert_id( $t_file_table );
+	$t_attachment_id = \Flickerbox\Database::insert_id( $t_file_table );
 
-	if( db_is_oracle() ) {
-		db_update_blob( $t_file_table, 'content', $c_content, "diskfile='$t_unique_name'" );
+	if( \Flickerbox\Database::is_oracle() ) {
+		\Flickerbox\Database::update_blob( $t_file_table, 'content', $c_content, "diskfile='$t_unique_name'" );
 	} else {
-		$t_query = "UPDATE $t_file_table SET content=" . db_param() . " WHERE id = " . db_param();
-		db_query( $t_query, array( $c_content, $t_attachment_id ) );
+		$t_query = "UPDATE $t_file_table SET content=" . \Flickerbox\Database::param() . " WHERE id = " . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $c_content, $t_attachment_id ) );
 	}
 
 	if( 'bug' == $p_table ) {
 		# bump the last_updated date
-		bug_update_date( $t_issue_id );
+		\Flickerbox\Bug::update_date( $t_issue_id );
 
 		# add history entry
 		\Flickerbox\History::log_event_special( $t_issue_id, FILE_ADDED, $p_name );
@@ -189,28 +189,28 @@ function mci_file_get( $p_file_id, $p_type, $p_user_id ) {
 	$t_query = '';
 	switch( $p_type ) {
 		case 'bug':
-			$t_query = 'SELECT * FROM {bug_file} WHERE id=' . db_param();
+			$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Flickerbox\Database::param();
 			break;
 		case 'doc':
-			$t_query = 'SELECT * FROM {project_file} WHERE id=' . db_param();
+			$t_query = 'SELECT * FROM {project_file} WHERE id=' . \Flickerbox\Database::param();
 			break;
 		default:
 			return SoapObjectsFactory::newSoapFault( 'Server', 'Invalid file type '. $p_type . ' .' );
 	}
 
-	$t_result = db_query( $t_query, array( $p_file_id ) );
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_file_id ) );
 
 	if( $t_result->EOF ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Unable to find an attachment with type ' . $p_type. ' and id ' . $p_file_id . ' .' );
 	}
 
-	$t_row = db_fetch_array( $t_result );
+	$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 	if( $p_type == 'doc' ) {
 		$t_project_id = $t_row['project_id'];
 	} else if( $p_type == 'bug' ) {
 		$t_bug_id = $t_row['bug_id'];
-		$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
+		$t_project_id = \Flickerbox\Bug::get_field( $t_bug_id, 'project_id' );
 	}
 
 	$t_diskfile = \Flickerbox\File::normalize_attachment_path( $t_row['diskfile'], $t_project_id );
@@ -225,17 +225,17 @@ function mci_file_get( $p_file_id, $p_type, $p_user_id ) {
 			break;
 		case 'doc':
 			# Check if project documentation feature is enabled.
-			if( OFF == config_get( 'enable_project_documentation' ) ) {
+			if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
 				return mci_soap_fault_access_denied( $p_user_id );
 			}
-			if( !\Flickerbox\Access::has_project_level( config_get( 'view_proj_doc_threshold' ), $t_project_id, $p_user_id ) ) {
+			if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_proj_doc_threshold' ), $t_project_id, $p_user_id ) ) {
 				return mci_soap_fault_access_denied( $p_user_id );
 			}
 			break;
 	}
 
 	# dump file content to the connection.
-	switch( config_get( 'file_upload_method' ) ) {
+	switch( \Flickerbox\Config::mantis_get( 'file_upload_method' ) ) {
 		case DISK:
 			if( file_exists( $t_diskfile ) ) {
 				return mci_file_read_local( $t_diskfile ) ;

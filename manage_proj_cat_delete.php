@@ -38,9 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_cat_delete' );
 
@@ -53,19 +50,19 @@ $t_row = \Flickerbox\Category::get_row( $f_category_id );
 $t_name = \Flickerbox\Category::full_name( $f_category_id );
 $t_project_id = $t_row['project_id'];
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_project_id );
 
 # Protect the 'default category for moves' from deletion
 $t_default_cat = 'default_category_for_moves';
-$t_query = 'SELECT count(config_id) FROM {config} WHERE config_id = ' . db_param() . ' AND value = ' . db_param();
-$t_default_cat_count = db_result( db_query( $t_query, array( $t_default_cat, $f_category_id ) ) );
-if( $t_default_cat_count > 0 || $f_category_id == config_get_global( $t_default_cat ) ) {
+$t_query = 'SELECT count(config_id) FROM {config} WHERE config_id = ' . \Flickerbox\Database::param() . ' AND value = ' . \Flickerbox\Database::param();
+$t_default_cat_count = \Flickerbox\Database::result( \Flickerbox\Database::query( $t_query, array( $t_default_cat, $f_category_id ) ) );
+if( $t_default_cat_count > 0 || $f_category_id == \Flickerbox\Config::get_global( $t_default_cat ) ) {
 	trigger_error( ERROR_CATEGORY_CANNOT_DELETE_DEFAULT, ERROR );
 }
 
 # Get a bug count
-$t_query = 'SELECT COUNT(id) FROM {bug} WHERE category_id=' . db_param();
-$t_bug_count = db_result( db_query( $t_query, array( $f_category_id ) ) );
+$t_query = 'SELECT COUNT(id) FROM {bug} WHERE category_id=' . \Flickerbox\Database::param();
+$t_bug_count = \Flickerbox\Database::result( \Flickerbox\Database::query( $t_query, array( $f_category_id ) ) );
 
 # Confirm with the user
 \Flickerbox\Helper::ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'category_delete_sure_msg' ), \Flickerbox\String::display_line( $t_name ), $t_bug_count ),

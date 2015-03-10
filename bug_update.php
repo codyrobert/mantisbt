@@ -43,17 +43,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'bugnote_api.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'email_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_update' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
-$t_existing_bug = bug_get( $f_bug_id, true );
+$t_existing_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 $f_update_type = \Flickerbox\GPC::get_string( 'action_type', BUG_UPDATE_TYPE_NORMAL );
 
 if( \Flickerbox\Helper::get_current_project() !== $t_existing_bug->project_id ) {
@@ -63,11 +58,11 @@ if( \Flickerbox\Helper::get_current_project() !== $t_existing_bug->project_id ) 
 # Ensure that the user has permission to update bugs. This check also factors
 # in whether the user has permission to view private bugs. The
 # $g_limit_reporters option is also taken into consideration.
-\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $f_bug_id );
 
 # Check if the bug is in a read-only state and whether the current user has
 # permission to update read-only bugs.
-if( bug_is_readonly( $f_bug_id ) ) {
+if( \Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
 	\Flickerbox\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
@@ -109,7 +104,7 @@ $t_updated_bug->view_state = \Flickerbox\GPC::get_int( 'view_state', $t_existing
 
 $t_bug_note = new BugNoteData();
 $t_bug_note->note = \Flickerbox\GPC::get_string( 'bugnote_text', '' );
-$t_bug_note->view_state = \Flickerbox\GPC::get_bool( 'private', config_get( 'default_bugnote_view_status' ) == VS_PRIVATE ) ? VS_PRIVATE : VS_PUBLIC;
+$t_bug_note->view_state = \Flickerbox\GPC::get_bool( 'private', \Flickerbox\Config::mantis_get( 'default_bugnote_view_status' ) == VS_PRIVATE ) ? VS_PRIVATE : VS_PUBLIC;
 $t_bug_note->time_tracking = \Flickerbox\GPC::get_string( 'time_tracking', '0:00' );
 
 if( $t_existing_bug->last_updated !== $t_updated_bug->last_updated ) {
@@ -119,9 +114,9 @@ if( $t_existing_bug->last_updated !== $t_updated_bug->last_updated ) {
 # Determine whether the new status will reopen, resolve or close the issue.
 # Note that multiple resolved or closed states can exist and thus we need to
 # look at a range of statuses when performing this check.
-$t_resolved_status = config_get( 'bug_resolved_status_threshold' );
-$t_closed_status = config_get( 'bug_closed_status_threshold' );
-$t_reopen_resolution = config_get( 'bug_reopen_resolution' );
+$t_resolved_status = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_closed_status = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
+$t_reopen_resolution = \Flickerbox\Config::mantis_get( 'bug_reopen_resolution' );
 $t_resolve_issue = false;
 $t_close_issue = false;
 $t_reopen_issue = false;
@@ -133,7 +128,7 @@ if( $t_existing_bug->status < $t_resolved_status &&
 			$t_updated_bug->status >= $t_closed_status ) {
 	$t_close_issue = true;
 } else if( $t_existing_bug->status >= $t_resolved_status &&
-			$t_updated_bug->status <= config_get( 'bug_reopen_status' ) ) {
+			$t_updated_bug->status <= \Flickerbox\Config::mantis_get( 'bug_reopen_status' ) ) {
 	$t_reopen_issue = true;
 }
 
@@ -145,8 +140,8 @@ if( ( $t_resolve_issue || $t_close_issue ) &&
 
 # Validate any change to the status of the issue.
 if( $t_existing_bug->status !== $t_updated_bug->status ) {
-	\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_status_threshold' ), $f_bug_id );
-	if( !bug_check_workflow( $t_existing_bug->status, $t_updated_bug->status ) ) {
+	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_status_threshold' ), $f_bug_id );
+	if( !\Flickerbox\Bug::check_workflow( $t_existing_bug->status, $t_updated_bug->status ) ) {
 		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'status' ) );
 		trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 	}
@@ -156,12 +151,12 @@ if( $t_existing_bug->status !== $t_updated_bug->status ) {
 		if( $t_close_issue &&
 		     $t_existing_bug->status >= $t_resolved_status &&
 		     $t_existing_bug->reporter_id === auth_get_current_user_id() &&
-		     config_get( 'allow_reporter_close' ) ) {
+		     \Flickerbox\Config::mantis_get( 'allow_reporter_close' ) ) {
 			$t_can_bypass_status_access_thresholds = true;
 		} else if( $t_reopen_issue &&
 		            $t_existing_bug->status < $t_closed_status &&
 		            $t_existing_bug->reporter_id === auth_get_current_user_id() &&
-		            config_get( 'allow_reporter_reopen' ) ) {
+		            \Flickerbox\Config::mantis_get( 'allow_reporter_reopen' ) ) {
 			$t_can_bypass_status_access_thresholds = true;
 		}
 		if( !$t_can_bypass_status_access_thresholds ) {
@@ -177,15 +172,15 @@ if( $t_existing_bug->status !== $t_updated_bug->status ) {
 # Validate any change to the handler of an issue.
 $t_issue_is_sponsored = \Flickerbox\Sponsorship::get_amount( \Flickerbox\Sponsorship::get_all_ids( $f_bug_id ) ) > 0;
 if( $t_existing_bug->handler_id !== $t_updated_bug->handler_id ) {
-	\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_assign_threshold' ), $f_bug_id );
-	if( $t_issue_is_sponsored && !\Flickerbox\Access::has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
+	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_assign_threshold' ), $f_bug_id );
+	if( $t_issue_is_sponsored && !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
 		trigger_error( ERROR_SPONSORSHIP_HANDLER_ACCESS_LEVEL_TOO_LOW, ERROR );
 	}
 	if( $t_updated_bug->handler_id !== NO_USER ) {
-		if( !\Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $f_bug_id, $t_updated_bug->handler_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ), $f_bug_id, $t_updated_bug->handler_id ) ) {
 			trigger_error( ERROR_HANDLER_ACCESS_TOO_LOW, ERROR );
 		}
-		if( $t_issue_is_sponsored && !\Flickerbox\Access::has_bug_level( config_get( 'assign_sponsored_bugs_threshold' ), $f_bug_id ) ) {
+		if( $t_issue_is_sponsored && !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'assign_sponsored_bugs_threshold' ), $f_bug_id ) ) {
 			trigger_error( ERROR_SPONSORSHIP_ASSIGNER_ACCESS_LEVEL_TOO_LOW, ERROR );
 		}
 	}
@@ -194,7 +189,7 @@ if( $t_existing_bug->handler_id !== $t_updated_bug->handler_id ) {
 # Check whether the category has been undefined when it's compulsory.
 if( $t_existing_bug->category_id !== $t_updated_bug->category_id ) {
 	if( $t_updated_bug->category_id === 0 &&
-	     !config_get( 'allow_no_category' ) ) {
+	     !\Flickerbox\Config::mantis_get( 'allow_no_category' ) ) {
 		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'category' ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
@@ -205,7 +200,7 @@ if( $t_existing_bug->category_id !== $t_updated_bug->category_id ) {
 # - new status >= RESOLVED and resolution < fixed_threshold
 # - resolution = REOPENED and current status < RESOLVED and new status >= RESOLVED
 # Refer to #15653 for further details (particularly note 37180)
-$t_resolution_fixed_threshold = config_get( 'bug_resolution_fixed_threshold' );
+$t_resolution_fixed_threshold = \Flickerbox\Config::mantis_get( 'bug_resolution_fixed_threshold' );
 if( $t_existing_bug->resolution != $t_updated_bug->resolution && (
 	   (  $t_updated_bug->resolution >= $t_resolution_fixed_threshold
 	   && $t_updated_bug->resolution != $t_reopen_resolution
@@ -228,12 +223,12 @@ if( $t_existing_bug->resolution != $t_updated_bug->resolution && (
 
 # Ensure that the user has permission to change the target version of the issue.
 if( $t_existing_bug->target_version !== $t_updated_bug->target_version ) {
-	\Flickerbox\Access::ensure_bug_level( config_get( 'roadmap_update_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'roadmap_update_threshold' ), $f_bug_id );
 }
 
 # Ensure that the user has permission to change the view status of the issue.
 if( $t_existing_bug->view_state !== $t_updated_bug->view_state ) {
-	\Flickerbox\Access::ensure_bug_level( config_get( 'change_view_status_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'change_view_status_threshold' ), $f_bug_id );
 }
 
 # Determine the custom field "require check" to use for validating
@@ -293,8 +288,8 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 	if( $t_updated_bug->duplicate_id === $f_bug_id ) {
 		trigger_error( ERROR_BUG_DUPLICATE_SELF, ERROR );
 	}
-	bug_ensure_exists( $t_updated_bug->duplicate_id );
-	if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_updated_bug->duplicate_id ) ) {
+	\Flickerbox\Bug::ensure_exists( $t_updated_bug->duplicate_id );
+	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $t_updated_bug->duplicate_id ) ) {
 		trigger_error( ERROR_RELATIONSHIP_ACCESS_LEVEL_TO_DEST_BUG_TOO_LOW, ERROR );
 	}
 	if( \Flickerbox\Relationship::exists( $f_bug_id, $t_updated_bug->duplicate_id ) ) {
@@ -304,16 +299,16 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 
 # Validate the new bug note (if any is provided).
 if( $t_bug_note->note ||
-	 ( config_get( 'time_tracking_enabled' ) &&
+	 ( \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) &&
 	   \Flickerbox\Helper::duration_to_minutes( $t_bug_note->time_tracking ) > 0 ) ) {
-	\Flickerbox\Access::ensure_bug_level( config_get( 'add_bugnote_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'add_bugnote_threshold' ), $f_bug_id );
 	if( !$t_bug_note->note &&
-	     !config_get( 'time_tracking_without_note' ) ) {
+	     !\Flickerbox\Config::mantis_get( 'time_tracking_without_note' ) ) {
 		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'bugnote' ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
-	if( $t_bug_note->view_state !== config_get( 'default_bugnote_view_status' ) ) {
-		\Flickerbox\Access::ensure_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id );
+	if( $t_bug_note->view_state !== \Flickerbox\Config::mantis_get( 'default_bugnote_view_status' ) ) {
+		\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'set_view_status_threshold' ), $f_bug_id );
 	}
 }
 
@@ -323,24 +318,24 @@ if( $t_bug_note->note ||
 # between 'bug_submit_status' and 'bug_feedback_status'. It assumes you only
 # have one feedback, assigned and submitted status.
 if( $t_bug_note->note &&
-	 config_get( 'reassign_on_feedback' ) &&
-	 $t_existing_bug->status === config_get( 'bug_feedback_status' ) &&
+	 \Flickerbox\Config::mantis_get( 'reassign_on_feedback' ) &&
+	 $t_existing_bug->status === \Flickerbox\Config::mantis_get( 'bug_feedback_status' ) &&
 	 $t_updated_bug->status !== $t_existing_bug->status &&
 	 $t_updated_bug->handler_id !== auth_get_current_user_id() &&
 	 $t_updated_bug->reporter_id === auth_get_current_user_id() ) {
 	if( $t_updated_bug->handler_id !== NO_USER ) {
-		$t_updated_bug->status = config_get( 'bug_assigned_status' );
+		$t_updated_bug->status = \Flickerbox\Config::mantis_get( 'bug_assigned_status' );
 	} else {
-		$t_updated_bug->status = config_get( 'bug_submit_status' );
+		$t_updated_bug->status = \Flickerbox\Config::mantis_get( 'bug_submit_status' );
 	}
 }
 
 # Handle automatic assignment of issues.
 if( $t_existing_bug->handler_id === NO_USER &&
 	 $t_updated_bug->handler_id !== NO_USER &&
-	 $t_updated_bug->status < config_get( 'bug_assigned_status' ) &&
-	 config_get( 'auto_set_status_to_assigned' ) ) {
-	$t_updated_bug->status = config_get( 'bug_assigned_status' );
+	 $t_updated_bug->status < \Flickerbox\Config::mantis_get( 'bug_assigned_status' ) &&
+	 \Flickerbox\Config::mantis_get( 'auto_set_status_to_assigned' ) ) {
+	$t_updated_bug->status = \Flickerbox\Config::mantis_get( 'bug_assigned_status' );
 }
 
 # Allow a custom function to validate the proposed bug updates. Note that
@@ -364,7 +359,7 @@ foreach ( $t_custom_fields_to_set as $t_custom_field_to_set ) {
 
 # Add a bug note if there is one.
 if( $t_bug_note->note || \Flickerbox\Helper::duration_to_minutes( $t_bug_note->time_tracking ) > 0 ) {
-	bugnote_add( $f_bug_id, $t_bug_note->note, $t_bug_note->time_tracking, $t_bug_note->view_state == VS_PRIVATE, 0, '', null, false );
+	\Flickerbox\Bug\Note::add( $f_bug_id, $t_bug_note->note, $t_bug_note->time_tracking, $t_bug_note->view_state == VS_PRIVATE, 0, '', null, false );
 }
 
 # Add a duplicate relationship if requested.
@@ -372,13 +367,13 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 	\Flickerbox\Relationship::add( $f_bug_id, $t_updated_bug->duplicate_id, BUG_DUPLICATE );
 	\Flickerbox\History::log_event_special( $f_bug_id, BUG_ADD_RELATIONSHIP, BUG_DUPLICATE, $t_updated_bug->duplicate_id );
 	\Flickerbox\History::log_event_special( $t_updated_bug->duplicate_id, BUG_ADD_RELATIONSHIP, BUG_HAS_DUPLICATE, $f_bug_id );
-	if( user_exists( $t_existing_bug->reporter_id ) ) {
-		bug_monitor( $f_bug_id, $t_existing_bug->reporter_id );
+	if( \Flickerbox\User::exists( $t_existing_bug->reporter_id ) ) {
+		\Flickerbox\Bug::monitor( $f_bug_id, $t_existing_bug->reporter_id );
 	}
-	if( user_exists( $t_existing_bug->handler_id ) ) {
-		bug_monitor( $f_bug_id, $t_existing_bug->handler_id );
+	if( \Flickerbox\User::exists( $t_existing_bug->handler_id ) ) {
+		\Flickerbox\Bug::monitor( $f_bug_id, $t_existing_bug->handler_id );
 	}
-	bug_monitor_copy( $f_bug_id, $t_updated_bug->duplicate_id );
+	\Flickerbox\Bug::monitor_copy( $f_bug_id, $t_updated_bug->duplicate_id );
 }
 
 \Flickerbox\Event::signal( 'EVENT_UPDATE_BUG', array( $t_existing_bug, $t_updated_bug ) );
@@ -390,24 +385,24 @@ if( $t_updated_bug->duplicate_id !== 0 ) {
 
 # Send a notification of changes via email.
 if( $t_resolve_issue ) {
-	email_generic( $f_bug_id, 'resolved', 'The following issue has been RESOLVED.' );
-	email_relationship_child_resolved( $f_bug_id );
+	\Flickerbox\Email::generic( $f_bug_id, 'resolved', 'The following issue has been RESOLVED.' );
+	\Flickerbox\Email::relationship_child_resolved( $f_bug_id );
 } else if( $t_close_issue ) {
-	email_generic( $f_bug_id, 'closed', 'The following issue has been CLOSED' );
-	email_relationship_child_closed( $f_bug_id );
+	\Flickerbox\Email::generic( $f_bug_id, 'closed', 'The following issue has been CLOSED' );
+	\Flickerbox\Email::relationship_child_closed( $f_bug_id );
 } else if( $t_reopen_issue ) {
-	email_generic( $f_bug_id, 'reopened', 'email_notification_title_for_action_bug_reopened' );
+	\Flickerbox\Email::generic( $f_bug_id, 'reopened', 'email_notification_title_for_action_bug_reopened' );
 } else if( $t_existing_bug->handler_id === NO_USER &&
 			$t_updated_bug->handler_id !== NO_USER ) {
-	email_generic( $f_bug_id, 'owner', 'email_notification_title_for_action_bug_assigned' );
+	\Flickerbox\Email::generic( $f_bug_id, 'owner', 'email_notification_title_for_action_bug_assigned' );
 } else if( $t_existing_bug->status !== $t_updated_bug->status ) {
-	$t_new_status_label = \MantisEnum::getLabel( config_get( 'status_enum_string' ), $t_updated_bug->status );
+	$t_new_status_label = \Flickerbox\MantisEnum::getLabel( \Flickerbox\Config::mantis_get( 'status_enum_string' ), $t_updated_bug->status );
 	$t_new_status_label = str_replace( ' ', '_', $t_new_status_label );
-	email_generic( $f_bug_id, $t_new_status_label, 'email_notification_title_for_status_bug_' . $t_new_status_label );
+	\Flickerbox\Email::generic( $f_bug_id, $t_new_status_label, 'email_notification_title_for_status_bug_' . $t_new_status_label );
 } else {
-	email_generic( $f_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
+	\Flickerbox\Email::generic( $f_bug_id, 'updated', 'email_notification_title_for_action_bug_updated' );
 }
 
 \Flickerbox\Form::security_purge( 'bug_update' );
 
-print_successful_redirect_to_bug( $f_bug_id );
+\Flickerbox\Print_Util::successful_redirect_to_bug( $f_bug_id );

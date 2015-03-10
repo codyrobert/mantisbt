@@ -32,7 +32,6 @@ if( !defined( 'CHECK_PATHS_INC_ALLOW' ) ) {
 
 # MantisBT Check API
 require_once( 'check_api.php' );
-require_api( 'config_api.php' );
 
 check_print_section_header_row( 'Paths' );
 
@@ -46,7 +45,7 @@ $t_path_config_names = array(
 );
 
 # Handle file upload default path only if attachments stored on disk
-if( DISK == config_get_global( 'file_upload_method' ) ) {
+if( DISK == \Flickerbox\Config::get_global( 'file_upload_method' ) ) {
 	$t_path_config_names[] = 'absolute_path_default_upload_folder';
 }
 
@@ -54,7 +53,7 @@ if( DISK == config_get_global( 'file_upload_method' ) ) {
 $t_paths = array();
 foreach( $t_path_config_names as $t_path_config_name ) {
 	$t_new_path = array();
-	$t_new_path['config_value'] = config_get_global( $t_path_config_name );
+	$t_new_path['config_value'] = \Flickerbox\Config::get_global( $t_path_config_name );
 	$t_new_path['real_path'] = realpath( $t_new_path['config_value'] );
 	$t_paths[$t_path_config_name] = $t_new_path;
 }
@@ -96,7 +95,7 @@ foreach( $t_paths as $t_path_config_name => $t_path ) {
 }
 
 # File upload default path must be writeable
-if( DISK == config_get_global( 'file_upload_method' ) ) {
+if( DISK == \Flickerbox\Config::get_global( 'file_upload_method' ) ) {
 	$t_path_config_name = 'absolute_path_default_upload_folder';
 	$t_path = $t_paths[$t_path_config_name];
 	check_print_test_row(
@@ -144,7 +143,7 @@ $t_removeable_directories = array(
 
 foreach( $t_removeable_directories as $t_removeable_directory ) {
 	check_print_test_warn_row(
-		'Directory <em><a href="' . htmlentities( config_get_global( 'short_path' ) ) . $t_removeable_directory . '">' . $t_removeable_directory . '</a></em> does not need to exist within the MantisBT root',
+		'Directory <em><a href="' . htmlentities( \Flickerbox\Config::get_global( 'short_path' ) ) . $t_removeable_directory . '">' . $t_removeable_directory . '</a></em> does not need to exist within the MantisBT root',
 		!is_dir( $t_paths['absolute_path']['config_value'] . $t_removeable_directory ),
 		array( false => 'The ' . $t_removeable_directory . ' directory within the MantisBT root should be removed as it is not needed for the live operation of MantisBT.' )
 	);
@@ -157,13 +156,13 @@ $t_developer_directories = array(
 
 foreach( $t_developer_directories as $t_developer_directory ) {
 	check_print_test_warn_row(
-		'Directory <em><a href="' . htmlentities( config_get_global( 'short_path' ) ) . $t_developer_directory . '">' . $t_developer_directory . '</a></em> exists. These files are not included in MantisBT builds. For production use, please use a release build/snapshot, and not the developer git code.',
+		'Directory <em><a href="' . htmlentities( \Flickerbox\Config::get_global( 'short_path' ) ) . $t_developer_directory . '">' . $t_developer_directory . '</a></em> exists. These files are not included in MantisBT builds. For production use, please use a release build/snapshot, and not the developer git code.',
 		!is_dir( $t_paths['absolute_path']['config_value'] . $t_developer_directory ),
 		array( false => 'The ' . $t_developer_directory . ' directory within the MantisBT root is for development use and is not included in official releases of MantisBT.' )
 	);
 }
 
 check_print_test_warn_row(
-	'Directory <em><a href="' . htmlentities( config_get_global( 'short_path' ) ) . 'api">api</a></em> should be removed from the MantisBT root if you do not plan on using <a href="http://en.wikipedia.org/wiki/SOAP">SOAP</a>',
+	'Directory <em><a href="' . htmlentities( \Flickerbox\Config::get_global( 'short_path' ) ) . 'api">api</a></em> should be removed from the MantisBT root if you do not plan on using <a href="http://en.wikipedia.org/wiki/SOAP">SOAP</a>',
 	!is_dir( $t_paths['absolute_path']['config_value'] . 'api' )
 );

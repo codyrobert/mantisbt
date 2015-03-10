@@ -161,7 +161,7 @@ function mc_projects_get_user_accessible( $p_username, $p_password ) {
 	$t_lang = mci_get_user_lang( $t_user_id );
 
 	$t_result = array();
-	foreach( user_get_accessible_projects( $t_user_id ) as $t_project_id ) {
+	foreach( \Flickerbox\User::get_accessible_projects( $t_user_id ) as $t_project_id ) {
 		$t_project_row = \Flickerbox\Project::cache_row( $t_project_id );
 		$t_project = array();
 		$t_project['id'] = $t_project_id;
@@ -233,7 +233,7 @@ function mc_project_add_category( $p_username, $p_password, $p_project_id, $p_ca
 	}
 	$g_project_override = $p_project_id;
 
-	if( !mci_has_access( config_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
+	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
 		return mci_soap_fault_access_denied();
 	}
 
@@ -262,7 +262,7 @@ function mc_project_delete_category ( $p_username, $p_password, $p_project_id, $
 
 	$g_project_override = $p_project_id;
 
-	if( !mci_has_access( config_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
+	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
 		return mci_soap_fault_access_denied();
 	}
 
@@ -270,7 +270,7 @@ function mc_project_delete_category ( $p_username, $p_password, $p_project_id, $
 	$p_category_id = \Flickerbox\Category::get_id_by_name( $p_category_name, $p_project_id );
 
 	# delete the category and link all the issue to the default category
-	return \Flickerbox\Category::remove( $p_category_id, config_get( 'default_category_for_moves' ) );
+	return \Flickerbox\Category::remove( $p_category_id, \Flickerbox\Config::mantis_get( 'default_category_for_moves' ) );
 }
 
 /**
@@ -301,7 +301,7 @@ function mc_project_rename_category_by_name( $p_username, $p_password, $p_projec
 
 	$g_project_override = $p_project_id;
 
-	if( !mci_has_access( config_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
+	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
 		return mci_soap_fault_access_denied();
 	}
 
@@ -459,7 +459,7 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !mci_has_access( config_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
+	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -532,7 +532,7 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !mci_has_access( config_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
+	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -596,7 +596,7 @@ function mc_project_version_delete( $p_username, $p_password, $p_version_id ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !mci_has_access( config_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
+	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -684,7 +684,7 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 	$g_project_override = $p_project_id;
 
 	# Check if project documentation feature is enabled.
-	if( OFF == config_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
+	if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
@@ -698,11 +698,11 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 
 	$t_pub = VS_PUBLIC;
 	$t_priv = VS_PRIVATE;
-	$t_admin = config_get_global( 'admin_site_threshold' );
+	$t_admin = \Flickerbox\Config::get_global( 'admin_site_threshold' );
 
 	if( $p_project_id == ALL_PROJECTS ) {
 		# Select all the projects that the user has access to
-		$t_projects = user_get_accessible_projects( $t_user_id );
+		$t_projects = \Flickerbox\User::get_accessible_projects( $t_user_id );
 	} else {
 		# Select the specific project
 		$t_projects = array(
@@ -712,7 +712,7 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 
 	$t_projects[] = ALL_PROJECTS; # add ALL_PROJECTS to the list of projects to fetch
 
-	$t_reqd_access = config_get( 'view_proj_doc_threshold' );
+	$t_reqd_access = \Flickerbox\Config::mantis_get( 'view_proj_doc_threshold' );
 	if( is_array( $t_reqd_access ) ) {
 		if( 1 == count( $t_reqd_access ) ) {
 			$t_access_clause = '= ' . array_shift( $t_reqd_access ) . ' ';
@@ -727,20 +727,20 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 		FROM {project_file} pft
 		LEFT JOIN {project} pt ON pft.project_id = pt.id
 		LEFT JOIN {project_user_list} pult
-		ON pft.project_id = pult.project_id AND pult.user_id = ' . db_param() . '
-		LEFT JOIN {user} ut ON ut.id = ' . db_param() . '
+		ON pft.project_id = pult.project_id AND pult.user_id = ' . \Flickerbox\Database::param() . '
+		LEFT JOIN {user} ut ON ut.id = ' . \Flickerbox\Database::param() . '
 		WHERE pft.project_id in (' . implode( ',', $t_projects ) . ') AND
-		( ( ( pt.view_state = ' . db_param() . ' OR pt.view_state is null ) AND pult.user_id is null AND ut.access_level ' . $t_access_clause . ' ) OR
-		( ( pult.user_id = ' . db_param() . ' ) AND ( pult.access_level ' . $t_access_clause . ' ) ) OR
-		( ut.access_level = ' . db_param() . ' ) )
+		( ( ( pt.view_state = ' . \Flickerbox\Database::param() . ' OR pt.view_state is null ) AND pult.user_id is null AND ut.access_level ' . $t_access_clause . ' ) OR
+		( ( pult.user_id = ' . \Flickerbox\Database::param() . ' ) AND ( pult.access_level ' . $t_access_clause . ' ) ) OR
+		( ut.access_level = ' . \Flickerbox\Database::param() . ' ) )
 		ORDER BY pt.name ASC, pft.title ASC';
 
-	$t_result = db_query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_id, $t_admin ) );
-	$t_num_files = db_num_rows( $t_result );
+	$t_result = \Flickerbox\Database::query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_id, $t_admin ) );
+	$t_num_files = \Flickerbox\Database::num_rows( $t_result );
 
 	$t_attachments = array();
 	for( $i = 0; $i < $t_num_files; $i++ ) {
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 		$t_attachment = array();
 		$t_attachment['id'] = $t_row['id'];
@@ -784,7 +784,7 @@ function mc_project_get_all_subprojects( $p_username, $p_password, $p_project_id
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	return user_get_all_accessible_subprojects( $t_user_id, $p_project_id );
+	return \Flickerbox\User::get_all_accessible_subprojects( $t_user_id, $p_project_id );
 }
 
 /**
@@ -903,7 +903,7 @@ function mc_project_add( $p_username, $p_password, stdClass $p_project ) {
  * @param stdClass $p_project    A new ProjectData structure.
  * @return boolean returns true or false depending on the success of the update action
  */
-function mc_\Flickerbox\Project::update( $p_username, $p_password, $p_project_id, stdClass $p_project ) {
+function mc_project_update( $p_username, $p_password, $p_project_id, stdClass $p_project ) {
 	global $g_project_override;
 
 	$t_user_id = mci_check_login( $p_username, $p_password );
@@ -988,7 +988,7 @@ function mc_\Flickerbox\Project::update( $p_username, $p_password, $p_project_id
  * @param integer $p_project_id A project's identifier.
  * @return boolean returns true or false depending on the success of the delete action
  */
-function mc_\Flickerbox\Project::delete( $p_username, $p_password, $p_project_id ) {
+function mc_project_delete( $p_username, $p_password, $p_project_id ) {
 	global $g_project_override;
 
 	$t_user_id = mci_check_login( $p_username, $p_password );
@@ -1080,8 +1080,8 @@ function mc_project_get_users( $p_username, $p_password, $p_project_id, $p_acces
 
 	$t_display = array();
 	$t_sort = array();
-	$t_show_realname = ( ON == config_get( 'show_realname' ) );
-	$t_sort_by_last_name = ( ON == config_get( 'sort_by_last_name' ) );
+	$t_show_realname = ( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) );
+	$t_sort_by_last_name = ( ON == \Flickerbox\Config::mantis_get( 'sort_by_last_name' ) );
 	foreach( $t_users as $t_user ) {
 		$t_user_name = \Flickerbox\String::attribute( $t_user['username'] );
 		$t_sort_name = strtolower( $t_user_name );

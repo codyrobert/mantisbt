@@ -34,9 +34,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_update' );
 
@@ -45,13 +42,13 @@ require_api( 'user_api.php' );
 $f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
 $t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
 
-if( !( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) )
+if( !( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) )
 	|| ( auth_get_current_user_id() == $t_tag_row['user_id'] )
-		&& \Flickerbox\Access::has_global_level( config_get( 'tag_edit_own_threshold' ) ) ) ) {
+		&& \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
 	\Flickerbox\Access::denied();
 }
 
-if( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) ) ) {
+if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) ) ) {
 	$f_new_user_id = \Flickerbox\GPC::get_int( 'user_id', $t_tag_row['user_id'] );
 } else {
 	$f_new_user_id = $t_tag_row['user_id'];
@@ -65,4 +62,4 @@ $f_new_description = \Flickerbox\GPC::get_string( 'description', $t_tag_row['des
 \Flickerbox\Form::security_purge( 'tag_update' );
 
 $t_url = 'tag_view_page.php?tag_id='.$f_tag_id;
-print_successful_redirect( $t_url );
+\Flickerbox\Print_Util::successful_redirect( $t_url );

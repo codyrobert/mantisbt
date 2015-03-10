@@ -31,8 +31,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'print_api.php' );
 
 $f_id = \Flickerbox\GPC::get_int( 'id' );
 $f_type = \Flickerbox\GPC::get_string( 'type', 'issue' );
@@ -44,8 +42,8 @@ if( $f_type == 'project' ) {
 
 	$t_url = \Flickerbox\Wiki::link_project( $f_id );
 } else {
-	bug_ensure_exists( $f_id );
+	\Flickerbox\Bug::ensure_exists( $f_id );
 	$t_url = \Flickerbox\Wiki::link_bug( $f_id );
 }
 
-print_header_redirect( $t_url, true, false, true );
+\Flickerbox\Print_Util::header_redirect( $t_url, true, false, true );

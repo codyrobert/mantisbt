@@ -31,8 +31,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 if( auth_is_user_authenticated() ) {
 	$f_return = \Flickerbox\GPC::get_string( 'return' );
@@ -51,4 +49,4 @@ if( auth_is_user_authenticated() ) {
 	$t_redirect_url = 'login_page.php?cookie_error=1';
 }
 
-print_header_redirect( $t_redirect_url, true, true );
+\Flickerbox\Print_Util::header_redirect( $t_redirect_url, true, true );

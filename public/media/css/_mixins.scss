@@ -1,0 +1,110 @@
+//*************************************
+// Mixins
+//*************************************
+
+@mixin breakpoint($point) {
+	@if $point == xl {
+		@media (max-width: #{$breakpoint-xl}) { @content; }
+	}
+	@else if $point == large {
+		@media (max-width: #{$breakpoint-large}) { @content; }
+	}
+	@else if $point == medium-large {
+		@media (max-width: #{$breakpoint-medium-large}) { @content; }
+	}
+	@else if $point == medium {
+		@media (max-width: #{$breakpoint-medium}) { @content; }
+	}
+	@else if $point == medium-small {
+		@media (max-width: #{$breakpoint-medium-small}) { @content; }
+	}
+	@else if $point == small {
+		@media (max-width: #{$breakpoint-small})  { @content; }
+	}
+}
+
+.clearfix {
+	&:before,
+	&:after {
+		content:"";
+		display:table;
+	}
+	&:after{
+		clear:both;
+	}
+}
+
+@mixin proxima-nova-thin {
+	font-family: "proxima-nova", sans-serif;
+	font-weight: 100;
+	font-style: normal;
+}
+@mixin proxima-nova-light {
+	font-family: "proxima-nova", sans-serif;
+	font-weight: 300;
+	font-style: normal;
+}
+@mixin proxima-nova {
+	font-family: "proxima-nova", sans-serif;
+	font-weight: 400;
+	font-style: normal;
+}
+@mixin proxima-nova-medium {
+	font-family: "proxima-nova", sans-serif;
+	font-weight: 600;
+	font-style: normal;
+}
+@mixin proxima-nova-bold {
+	font-family: "proxima-nova", sans-serif;
+	font-weight: 700;
+	font-style: normal;
+}
+@mixin rotate($rotate: $default-rotate, $perspective: false, $only3d: false) {
+  $trans: rotate($rotate);
+  @if $perspective {
+    $trans: perspective($perspective) $trans; }
+  @include transform($trans, $only3d); }
+//
+// Triangle mixin
+//
+@mixin triangle ($color,$pointing,$side1,$side2,$side3) {
+	width: 0;
+	height: 0;
+	@if $pointing == up {
+		border-top: none;
+		border-right: $side1 solid transparent;
+		border-bottom: $side2 solid $color;
+		border-left: $side3 solid transparent;
+	}
+	@if $pointing == right {
+
+		border-top: $side1 solid transparent;
+		border-right: none;
+		border-left: $side2 solid $color;
+		border-bottom: $side3 solid transparent;
+	}
+	@if $pointing == left {
+		border-top: $side1 solid transparent;
+		border-right: $side2 solid $color;
+		border-left: none;
+		border-bottom: $side3 solid transparent;
+	}
+	@if $pointing == down {
+		border-top: $side1 solid $color;
+		border-right: $side2 solid transparent;
+		border-left: $side3 solid transparent;
+		border-bottom: none;
+	}
+}
+
+
+@mixin circle ($diameter, $bg-color) {
+	display: block;
+	position: relative;
+	background-color: $bg-color;
+	width: $diameter;
+	height: $diameter;
+	line-height: $diameter;
+	border-radius: 50%;
+	-moz-border-radius: 50%;
+}

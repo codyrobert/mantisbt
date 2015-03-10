@@ -23,10 +23,10 @@
 # or not.
 # returns true: to include, false: to exclude.
 function custom_function_override_changelog_include_issue( $p_issue_id ) {
-    $t_issue = bug_get( $p_issue_id );
+    $t_issue = \Flickerbox\Bug::get( $p_issue_id );
 
     return ( ( $t_issue->resolution == FIXED || $t_issue->resolution == IMPLEMENTED ) &&
-        ( $t_issue->status >= config_get( 'bug_resolved_status_threshold' ) ) );
+        ( $t_issue->status >= \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' ) ) );
 }
 ]]>
 </programlisting>
@@ -39,7 +39,7 @@ function custom_function_override_changelog_include_issue( $p_issue_id ) {
 # --------------------
 # Prints one entry in the changelog.
 function custom_function_override_changelog_print_issue( $p_issue_id, $p_issue_level = 0 ) {
-    $t_bug = bug_get( $p_issue_id );
+    $t_bug = \Flickerbox\Bug::get( $p_issue_id );
 
     if( $t_bug->category_id ) {
         $t_category_name = \Flickerbox\Category::get_field( $t_bug->category_id );
@@ -139,9 +139,9 @@ function custom_function_override_roadmap_include_issue( $p_issue_id ) {
 # --------------------
 # Prints one entry in the roadmap.
 function custom_function_override_roadmap_print_issue( $p_issue_id, $p_issue_level = 0 ) {
-    $t_bug = bug_get( $p_issue_id );
+    $t_bug = \Flickerbox\Bug::get( $p_issue_id );
 
-    if( bug_is_resolved( $p_issue_id ) ) {
+    if( \Flickerbox\Bug::is_resolved( $p_issue_id ) ) {
         $t_strike_start = '&lt;strike&gt;';
         $t_strike_end = '&lt;/strike&gt;';
     } else {

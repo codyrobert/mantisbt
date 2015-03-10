@@ -37,8 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_cat_add' );
 
@@ -48,7 +46,7 @@ $f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
 $f_name			= \Flickerbox\GPC::get_string( 'name' );
 $f_add_and_edit	= \Flickerbox\GPC::get_bool( 'add_and_edit_category' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
 if( \Flickerbox\Utility::is_blank( $f_name ) ) {
 	\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'category' ) );
@@ -90,4 +88,4 @@ if( $f_add_and_edit ) {
 	$t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 }
 
-print_header_redirect( $t_redirect_url );
+\Flickerbox\Print_Util::header_redirect( $t_redirect_url );

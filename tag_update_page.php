@@ -40,9 +40,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Compress::enable();
 
@@ -52,9 +49,9 @@ $t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
 $t_name = \Flickerbox\String::display_line( $t_tag_row['name'] );
 $t_description = \Flickerbox\String::display( $t_tag_row['description'] );
 
-if( !( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) )
+if( !( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) )
 	|| ( auth_get_current_user_id() == $t_tag_row['user_id'] )
-		&& \Flickerbox\Access::has_global_level( config_get( 'tag_edit_own_threshold' ) ) ) ) {
+		&& \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
 	\Flickerbox\Access::denied();
 }
 
@@ -64,7 +61,7 @@ if( !( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) 
 	<form method="post" action="tag_update.php">
 		<fieldset>
 			<legend><span><?php echo sprintf( \Flickerbox\Lang::get( 'tag_update' ), $t_name ) ?></span></legend>
-			<div class="section-link"><?php print_bracket_link( 'tag_view_page.php?tag_id='.$f_tag_id, \Flickerbox\Lang::get( 'tag_update_return' ) ); ?></div>
+			<div class="section-link"><?php \Flickerbox\Print_Util::bracket_link( 'tag_view_page.php?tag_id='.$f_tag_id, \Flickerbox\Lang::get( 'tag_update_return' ) ); ?></div>
 			<input type="hidden" name="tag_id" value="<?php echo $f_tag_id ?>"/>
 			<?php echo \Flickerbox\Form::security_field( 'tag_update' ) ?>
 			<div class="field-container">
@@ -79,25 +76,25 @@ if( !( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) 
 			</div>
 			<div class="field-container">
 				<?php
-					if( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) ) ) {
+					if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) ) ) {
 						echo '<label for="tag-user-id"><span>', \Flickerbox\Lang::get( 'tag_creator' ), '</span></label>';
 						echo '<span class="select"><select ', \Flickerbox\Helper::get_tab_index(), ' id="tag-user-id" name="user_id">';
-						print_user_option_list( (int)$t_tag_row['user_id'], ALL_PROJECTS, (int)config_get( 'tag_create_threshold' ) );
+						\Flickerbox\Print_Util::user_option_list( (int)$t_tag_row['user_id'], ALL_PROJECTS, (int)\Flickerbox\Config::mantis_get( 'tag_create_threshold' ) );
 						echo '</select></span>';
 					} else { ?>
 						<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_creator' ); ?></span></span>
-						<span class="display-value"><span><?php echo \Flickerbox\String::display_line( user_get_name( $t_tag_row['user_id'] ) ); ?></span></span><?php
+						<span class="display-value"><span><?php echo \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_tag_row['user_id'] ) ); ?></span></span><?php
 					} ?>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_created' ) ?></span></span>
-				<span class="display-value"><span><?php echo date( config_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
+				<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_updated' ) ?></span></span>
-				<span class="display-value"><span><?php echo date( config_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
+				<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">

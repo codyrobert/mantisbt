@@ -34,8 +34,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_user_copy' );
 
@@ -60,11 +58,11 @@ if( $f_copy_from ) {
 # We should check both since we are in the project section and an
 #  admin might raise the first threshold and not realize they need
 #  to raise the second
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_dst_project_id );
-\Flickerbox\Access::ensure_project_level( config_get( 'project_user_threshold' ), $t_dst_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_dst_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'project_user_threshold' ), $t_dst_project_id );
 
 \Flickerbox\Project::copy_users( $t_dst_project_id, $t_src_project_id, \Flickerbox\Access::get_project_level( $t_dst_project_id ) );
 
 \Flickerbox\Form::security_purge( 'manage_proj_user_copy' );
 
-print_header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );
+\Flickerbox\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

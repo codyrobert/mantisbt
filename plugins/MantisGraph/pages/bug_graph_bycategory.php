@@ -25,13 +25,13 @@
 
 require_once( 'core.php' );
 
-plugin_require_api( 'core/Period.php' );
-plugin_require_api( 'core/graph_api.php' );
+\Flickerbox\Plugin::require_api( 'core/Period.php' );
+\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
 
 $f_width = \Flickerbox\GPC::get_int( 'width', 600 );
-$t_ar = plugin_config_get( 'bar_aspect' );
+$t_ar = \Flickerbox\Plugin::config_get( 'bar_aspect' );
 $t_interval = new Period();
 $t_interval->set_period_from_selector( 'interval' );
 $f_show_as_table = \Flickerbox\GPC::get_bool( 'show_table', false );
@@ -68,8 +68,8 @@ $t_ptr = 0;
 $t_end = $t_interval->get_end_timestamp();
 $t_start = $t_interval->get_start_timestamp();
 
-$t_resolved = config_get( 'bug_resolved_status_threshold' );
-$t_closed = config_get( 'bug_closed_status_threshold' );
+$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_closed = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
 
 $t_bug = array();
 $t_bug_cat = array(); # save categoties or bugs to look up resolved ones.
@@ -103,10 +103,10 @@ $t_select = 'SELECT bug_id, type, field_name, old_value, new_value, date_modifie
 	WHERE bug_id in (' . implode( ',', $t_bug ) . ') and '.
 		'( (type=' . NORMAL_TYPE . ' and field_name=\'category\') or '.
 			'(type=' . NORMAL_TYPE . ' and field_name=\'status\') or type='.NEW_BUG.' ) and '.
-			'date_modified >= ' . db_param() .
+			'date_modified >= ' . \Flickerbox\Database::param() .
 		' order by date_modified DESC';
-$t_result = db_query( $t_select, array( $t_start ) );
-$t_row = db_fetch_array( $t_result );
+$t_result = \Flickerbox\Database::query( $t_select, array( $t_start ) );
+$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 for( $t_now = time() - $t_incr; $t_now >= $t_start; $t_now -= $t_incr ) {
 	# walk through the data points and use the data retrieved to update counts
@@ -167,7 +167,7 @@ for( $t_now = time() - $t_incr; $t_now >= $t_start; $t_now -= $t_incr ) {
 				}
 				break;
 		}
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 	}
 
 	if( $t_now <= $t_end ) {
@@ -198,7 +198,7 @@ for( $i=0; $i<$t_count_cat; $i++ ) {
 # sort and display the results
 sort( $t_category );
 if( $f_show_as_table ) {
-	$t_date_format = config_get( 'short_date_format' );
+	$t_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
 	\Flickerbox\HTML::begin();
 	\Flickerbox\HTML::head_begin();
 	\Flickerbox\HTML::css();

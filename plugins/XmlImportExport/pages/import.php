@@ -22,36 +22,36 @@
  * Import XML Issues Page
  */
 
-\Flickerbox\Access::ensure_project_level( plugin_config_get( 'import_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Plugin::config_get( 'import_threshold' ) );
 
 auth_reauthenticate( );
 
-\Flickerbox\HTML::page_top( plugin_langget( 'import' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Plugin::langget( 'import' ) );
 
-$t_this_page = plugin_page( 'import' ); # FIXME with plugins this does not work...
+$t_this_page = \Flickerbox\Plugin::page( 'import' ); # FIXME with plugins this does not work...
 \Flickerbox\HTML::print_manage_menu( $t_this_page );
 
 $t_max_file_size = (int)min(
 	\Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ),
 	\Flickerbox\Utility::ini_get_number( 'post_max_size' ),
-	config_get( 'max_file_size' )
+	\Flickerbox\Config::mantis_get( 'max_file_size' )
 );
 
 # We need a project to import into
 $t_project_id = \Flickerbox\Helper::get_current_project( );
 if( ALL_PROJECTS == $t_project_id ) {
-	print_header_redirect( 'login_select_proj_page.php?ref=' . $t_this_page );
+	\Flickerbox\Print_Util::header_redirect( 'login_select_proj_page.php?ref=' . $t_this_page );
 }
 
 ?>
 
 <div id="importexport-import-div" class="form-container">
-	<form id="file_upload" method="post" enctype="multipart/form-data" action="<?php echo plugin_page( 'import_action' )?>">
+	<form id="file_upload" method="post" enctype="multipart/form-data" action="<?php echo \Flickerbox\Plugin::page( 'import_action' )?>">
 		<fieldset>
 			<legend>
 				<span>
 					<?php printf(
-						plugin_langget( 'importing_in_project' ),
+						\Flickerbox\Plugin::langget( 'importing_in_project' ),
 						\Flickerbox\String::display( \Flickerbox\Project::get_field( $t_project_id, 'name' ) )
 					); ?>
 				</span>
@@ -73,20 +73,20 @@ if( ALL_PROJECTS == $t_project_id ) {
 			</div>
 
 			<h2>
-				<?php echo plugin_langget( 'import_options' ); ?>
+				<?php echo \Flickerbox\Plugin::langget( 'import_options' ); ?>
 			</h2>
 
 			<div class="field-container">
-				<label><span><?php echo plugin_langget( 'cross_references' );?></span></label>
+				<label><span><?php echo \Flickerbox\Plugin::langget( 'cross_references' );?></span></label>
 				<span class="select">
-					<?php echo plugin_langget( 'default_strategy' );?>
+					<?php echo \Flickerbox\Plugin::langget( 'default_strategy' );?>
 					<select name="strategy">
-						<option value="renumber" title="<?php echo plugin_langget( 'renumber_desc' );?>">
-						<?php echo plugin_langget( 'renumber' );?></option>
-						<option value="link" title="<?php echo plugin_langget( 'link_desc' );?>">
-						<?php echo plugin_langget( 'link' );?></option>
-						<option value="disable" title="<?php echo plugin_langget( 'disable_desc' );?>">
-						<?php echo plugin_langget( 'disable' );?></option>
+						<option value="renumber" title="<?php echo \Flickerbox\Plugin::langget( 'renumber_desc' );?>">
+						<?php echo \Flickerbox\Plugin::langget( 'renumber' );?></option>
+						<option value="link" title="<?php echo \Flickerbox\Plugin::langget( 'link_desc' );?>">
+						<?php echo \Flickerbox\Plugin::langget( 'link' );?></option>
+						<option value="disable" title="<?php echo \Flickerbox\Plugin::langget( 'disable_desc' );?>">
+						<?php echo \Flickerbox\Plugin::langget( 'disable' );?></option>
 					</select>
 					<br><br>
 				</span>
@@ -94,13 +94,13 @@ if( ALL_PROJECTS == $t_project_id ) {
 			</div>
 
 			<div class="field-container">
-				<label><span><?php echo plugin_langget( 'fallback' );?></span></label>
+				<label><span><?php echo \Flickerbox\Plugin::langget( 'fallback' );?></span></label>
 				<span class="input">
 					<select name="fallback">
-						<option value="link" title="<?php echo plugin_langget( 'link_desc' );?>">
-						<?php echo plugin_langget( 'link' );?></option>
-						<option value="disable" title="<?php echo plugin_langget( 'disable_desc' );?>">
-						<?php echo plugin_langget( 'disable' );?></option>
+						<option value="link" title="<?php echo \Flickerbox\Plugin::langget( 'link_desc' );?>">
+						<?php echo \Flickerbox\Plugin::langget( 'link' );?></option>
+						<option value="disable" title="<?php echo \Flickerbox\Plugin::langget( 'disable_desc' );?>">
+						<?php echo \Flickerbox\Plugin::langget( 'disable' );?></option>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -110,16 +110,16 @@ if( ALL_PROJECTS == $t_project_id ) {
 				<label><span><?php echo \Flickerbox\Lang::get( 'categories' );?></span></label>
 				<span class="checkbox">
 					<input type="checkbox" checked="checked" id="keepcategory" name="keepcategory" />
-					<label for="keepcategory"><?php echo plugin_langget( 'keep_same_category' );?></label>
+					<label for="keepcategory"><?php echo \Flickerbox\Plugin::langget( 'keep_same_category' );?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<div class="field-container">
-				<label><span><?php echo plugin_langget( 'fallback_category' );?></span></label>
+				<label><span><?php echo \Flickerbox\Plugin::langget( 'fallback_category' );?></span></label>
 				<span class="select">
 					<select name="defaultcategory">
-						<?php print_category_option_list( );?>
+						<?php \Flickerbox\Print_Util::category_option_list( );?>
 					</select>
 				</span>
 				<span class="label-style"></span>

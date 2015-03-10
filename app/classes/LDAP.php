@@ -33,8 +33,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'user_api.php' );
 
 
 class LDAP
@@ -61,13 +59,13 @@ class LDAP
 			trigger_error( ERROR_LDAP_EXTENSION_NOT_LOADED, ERROR );
 		}
 	
-		$t_ldap_server = config_get( 'ldap_server' );
+		$t_ldap_server = \Flickerbox\Config::mantis_get( 'ldap_server' );
 	
 		\Flickerbox\Log::event( LOG_LDAP, 'Attempting connection to LDAP server/URI \'' . $t_ldap_server . '\'.' );
 		$t_ds = @ldap_connect( $t_ldap_server );
 		if( $t_ds !== false && $t_ds > 0 ) {
 			\Flickerbox\Log::event( LOG_LDAP, 'Connection accepted by LDAP server' );
-			$t_protocol_version = config_get( 'ldap_protocol_version' );
+			$t_protocol_version = \Flickerbox\Config::mantis_get( 'ldap_protocol_version' );
 	
 			if( $t_protocol_version > 0 ) {
 				\Flickerbox\Log::event( LOG_LDAP, 'Setting LDAP protocol version to ' . $t_protocol_version );
@@ -78,7 +76,7 @@ class LDAP
 			}
 	
 			# Set referrals flag.
-			$t_follow_referrals = ON == config_get( 'ldap_follow_referrals' );
+			$t_follow_referrals = ON == \Flickerbox\Config::mantis_get( 'ldap_follow_referrals' );
 			$t_result = @ldap_set_option( $t_ds, LDAP_OPT_REFERRALS, $t_follow_referrals );
 			if( !$t_result ) {
 				\Flickerbox\LDAP::log_error( $t_ds );
@@ -87,8 +85,8 @@ class LDAP
 			# If no Bind DN and Password is set, attempt to login as the configured
 			#  Bind DN.
 			if( \Flickerbox\Utility::is_blank( $p_binddn ) && \Flickerbox\Utility::is_blank( $p_password ) ) {
-				$p_binddn = config_get( 'ldap_bind_dn', '' );
-				$p_password = config_get( 'ldap_bind_passwd', '' );
+				$p_binddn = \Flickerbox\Config::mantis_get( 'ldap_bind_dn', '' );
+				$p_password = \Flickerbox\Config::mantis_get( 'ldap_bind_passwd', '' );
 			}
 	
 			if( !\Flickerbox\Utility::is_blank( $p_binddn ) && !\Flickerbox\Utility::is_blank( $p_password ) ) {
@@ -127,7 +125,7 @@ class LDAP
 			return $g_cache_ldap_email[(int)$p_user_id];
 		}
 	
-		$t_username = user_get_field( $p_user_id, 'username' );
+		$t_username = \Flickerbox\User::get_field( $p_user_id, 'username' );
 		$t_email = \Flickerbox\LDAP::email_from_username( $t_username );
 	
 		$g_cache_ldap_email[(int)$p_user_id] = $t_email;
@@ -159,7 +157,7 @@ class LDAP
 	 * @return string real name.
 	 */
 	static function realname( $p_user_id ) {
-		$t_username = user_get_field( $p_user_id, 'username' );
+		$t_username = \Flickerbox\User::get_field( $p_user_id, 'username' );
 		return \Flickerbox\LDAP::realname_from_username( $t_username );
 	}
 	
@@ -174,7 +172,7 @@ class LDAP
 			return \Flickerbox\LDAP::simulatiom_realname_from_username( $p_username );
 		}
 	
-		$t_ldap_realname_field	= config_get( 'ldap_realname_field' );
+		$t_ldap_realname_field	= \Flickerbox\Config::mantis_get( 'ldap_realname_field' );
 		$t_realname = \Flickerbox\LDAP::get_field_from_username( $p_username, $t_ldap_realname_field );
 		if( $t_realname === null ) {
 			return '';
@@ -210,9 +208,9 @@ class LDAP
 	 * @return string The field value or null if not found.
 	 */
 	static function get_field_from_username( $p_username, $p_field ) {
-		$t_ldap_organization    = config_get( 'ldap_organization' );
-		$t_ldap_root_dn         = config_get( 'ldap_root_dn' );
-		$t_ldap_uid_field		= config_get( 'ldap_uid_field' );
+		$t_ldap_organization    = \Flickerbox\Config::mantis_get( 'ldap_organization' );
+		$t_ldap_root_dn         = \Flickerbox\Config::mantis_get( 'ldap_root_dn' );
+		$t_ldap_uid_field		= \Flickerbox\Config::mantis_get( 'ldap_uid_field' );
 	
 		$c_username = \Flickerbox\LDAP::escape_string( $p_username );
 	
@@ -285,7 +283,7 @@ class LDAP
 			return false;
 		}
 	
-		$t_username = user_get_field( $p_user_id, 'username' );
+		$t_username = \Flickerbox\User::get_field( $p_user_id, 'username' );
 	
 		return \Flickerbox\LDAP::authenticate_by_username( $t_username, $p_password );
 	}
@@ -304,10 +302,10 @@ class LDAP
 		} else {
 			$c_username = \Flickerbox\LDAP::escape_string( $p_username );
 	
-			$t_ldap_organization = config_get( 'ldap_organization' );
-			$t_ldap_root_dn = config_get( 'ldap_root_dn' );
+			$t_ldap_organization = \Flickerbox\Config::mantis_get( 'ldap_organization' );
+			$t_ldap_root_dn = \Flickerbox\Config::mantis_get( 'ldap_root_dn' );
 	
-			$t_ldap_uid_field = config_get( 'ldap_uid_field', 'uid' );
+			$t_ldap_uid_field = \Flickerbox\Config::mantis_get( 'ldap_uid_field', 'uid' );
 			$t_search_filter = '(&' . $t_ldap_organization . '(' . $t_ldap_uid_field . '=' . $c_username . '))';
 			$t_search_attrs = array(
 				$t_ldap_uid_field,
@@ -367,21 +365,21 @@ class LDAP
 		# from LDAP.  This will allow us to use the local data after login without
 		# having to go back to LDAP.  This will also allow fallback to DB if LDAP is down.
 		if( $t_authenticated ) {
-			$t_user_id = user_get_id_by_name( $p_username );
+			$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
 	
 			if( false !== $t_user_id ) {
 	
 				$t_fields_to_update = array('password' => md5( $p_password ));
 	
-				if( ON == config_get( 'use_ldap_realname' ) ) {
+				if( ON == \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) {
 					$t_fields_to_update['realname'] = \Flickerbox\LDAP::realname( $t_user_id );
 				}
 	
-				if( ON == config_get( 'use_ldap_email' ) ) {
+				if( ON == \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) {
 					$t_fields_to_update['email'] = \Flickerbox\LDAP::email_from_username( $p_username );
 				}
 	
-				user_set_fields( $t_user_id, $t_fields_to_update );
+				\Flickerbox\User::set_fields( $t_user_id, $t_fields_to_update );
 			}
 			\Flickerbox\Log::event( LOG_LDAP, 'User \'' . $p_username . '\' authenticated' );
 		} else {
@@ -397,7 +395,7 @@ class LDAP
 	 * @return boolean true if enabled, false otherwise.
 	 */
 	static function simulation_is_enabled() {
-		$t_filename = config_get( 'ldap_simulation_file_path' );
+		$t_filename = \Flickerbox\Config::mantis_get( 'ldap_simulation_file_path' );
 		return !\Flickerbox\Utility::is_blank( $t_filename );
 	}
 	
@@ -408,7 +406,7 @@ class LDAP
 	 * @return array|null An associate array with user information or null if not found.
 	 */
 	static function simulation_get_user( $p_username ) {
-		$t_filename = config_get( 'ldap_simulation_file_path' );
+		$t_filename = \Flickerbox\Config::mantis_get( 'ldap_simulation_file_path' );
 		$t_lines = file( $t_filename );
 		if( $t_lines === false ) {
 			\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_get_user: could not read simulation data from ' . $t_filename );

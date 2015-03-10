@@ -37,9 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -57,8 +54,8 @@ $t_form_name = 'bug_actiongroup_' . $f_action;
 # group bugs by project
 $t_projects_bugs = array();
 foreach( $f_bug_arr as $t_bug_id ) {
-	bug_ensure_exists( $t_bug_id );
-	$t_bug = bug_get( $t_bug_id, true );
+	\Flickerbox\Bug::ensure_exists( $t_bug_id );
+	$t_bug = \Flickerbox\Bug::get( $t_bug_id, true );
 
 	if( isset( $t_projects_bugs[$t_bug->project_id] ) ) {
 	  $t_projects_bugs[$t_bug->project_id][] = $t_bug_id;
@@ -100,10 +97,10 @@ if( count( $t_failed_ids ) > 0 ) {
 		printf( "<p>%s%s</p>\n", $t_label, $t_reason );
 	}
 
-	print_bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'proceed' ) );
+	\Flickerbox\Print_Util::bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'proceed' ) );
 	echo '</div>';
 
 	\Flickerbox\HTML::page_bottom();
 } else {
-	print_header_redirect( 'view_all_bug_page.php' );
+	\Flickerbox\Print_Util::header_redirect( 'view_all_bug_page.php' );
 }

@@ -7,7 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<?php
-	$t_meta = config_get_global( 'meta_include_file' );
+	$t_meta = \Flickerbox\Config::get_global( 'meta_include_file' );
 	if( !\Flickerbox\Utility::is_blank( $t_meta ) ) {
 		include( $t_meta );
 	}
@@ -20,7 +20,7 @@
 	\Flickerbox\HTML::css();
 	\Flickerbox\HTML::rss_link();
 
-	$t_favicon_image = \Flickerbox\Config::get( 'favicon_image' );
+	$t_favicon_image = \Flickerbox\Config::mantis_get( 'favicon_image' );
 	if( !\Flickerbox\Utility::is_blank( $t_favicon_image ) ) {
 		echo "\t", '<link rel="shortcut icon" href="', \Flickerbox\Helper::mantis_url( $t_favicon_image ), '" type="image/x-icon" />', "\n";
 	}
@@ -44,7 +44,7 @@
 	if( \Flickerbox\Auth::is_user_authenticated() ) {
 		\Flickerbox\HTML::login_info();
 
-		if( ON == \Flickerbox\Config::get( 'show_project_menu_bar' ) ) {
+		if( ON == \Flickerbox\Config::mantis_get( 'show_project_menu_bar' ) ) {
 			\Flickerbox\HTML::print_project_menu_bar();
 			echo '<br />';
 		}

@@ -1,0 +1,282 @@
+<?php
+namespace Flickerbox;
+
+
+/**
+ * MantisBT - A PHP based bugtracking system
+ *
+ * MantisBT is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * MantisBT is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MantisBT.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @copyright Copyright 2002  MantisBT Team - mantisbt-dev@lists.sourceforge.net
+ * @link http://www.mantisbt.org
+ * @package MantisBT
+ */
+
+class CF_Def
+{
+	/**
+	 * Prepare List Value for database storage
+	 * @param string $p_value Value.
+	 * @return string
+	 */
+	static function prepare_list_database_to_value( $p_value ) {
+		return rtrim( ltrim( $p_value, '|' ), '|' );
+	}
+	
+	/**
+	 * Prepare List Value for email
+	 * @param string $p_value Value.
+	 * @return string
+	 */
+	static function prepare_list_value_for_email( $p_value ) {
+		# strip start and end markers before converting markers to commas
+		return str_replace( '|', ', ', utf8_substr( str_replace( '||', '|', '|' . $p_value . '|' ), 1, -1 ) );
+	}
+	
+	/**
+	 * Format email address for email
+	 * @param string $p_value Value.
+	 * @return string
+	 */
+	static function prepare_email_value_for_email( $p_value ) {
+		return 'mailto:' . $p_value;
+	}
+	
+	/**
+	 * format date value for email
+	 * @param integer $p_value Value.
+	 * @return string
+	 */
+	static function prepare_date_value_for_email( $p_value ) {
+		if( $p_value != null ) {
+			return date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_value ) ;
+		}
+	}
+	
+	/**
+	 * Translates the default date value entered by the creator of the custom
+	 * field into a date value.  For example, translate '=tomorrow' to tomorrow's
+	 * date.
+	 * @param string $p_value The default date string.
+	 * @return string The calculated default date value if $p_value starts with '=', otherwise, returns $p_value.
+	 */
+	static function prepare_date_default( $p_value ) {
+		if( \Flickerbox\Utility::is_blank( $p_value ) ) {
+			return '';
+		}
+	
+		$t_value = trim( $p_value );
+		$t_value_length = utf8_strlen( $t_value );
+	
+		# We are expanding {tomorrow}, {yesterday}, {+3 days}, {-7 days}, {next week}
+		# See strtotime() for more details about supported formats.
+		if( $t_value_length >= 3 && $t_value[0] == '{' && $t_value[$t_value_length - 1] == '}' ) {
+			$t_value = utf8_substr( $t_value, 1, $t_value_length - 2 );
+			$t_value = @strtotime( $t_value );
+	
+			# Different versions of PHP return different values in case of error.
+			if( $t_value == -1 || $t_value === false ) {
+				return '';
+			}
+		}
+	
+		return $t_value;
+	}
+	
+	/**
+	 * string_custom_field_value
+	 * @param string $p_value Value.
+	 * @return string
+	 */
+	static function prepare_list_value( $p_value ) {
+		# strip start and end markers before converting markers to commas
+		return \Flickerbox\String::display_line( str_replace( '|', ', ', utf8_substr( str_replace( '||', '|', '|' . $p_value . '|' ), 1, -1 ) ) );
+	}
+	
+	/**
+	 * Prepare email value
+	 * @param string $p_value Email address.
+	 * @return string
+	 */
+	static function prepare_email_value( $p_value ) {
+		return '<a href="mailto:' . \Flickerbox\String::attribute( $p_value ) . '">' . \Flickerbox\String::display_line( $p_value ) . '</a>';
+	}
+	
+	/**
+	 * Prepare date value
+	 * @param integer $p_value Date timestamp.
+	 * @return string
+	 */
+	static function prepare_date_value( $p_value ) {
+		if( $p_value != null ) {
+			return date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_value );
+		}
+	}
+	
+	/**
+	 * print_custom_field_input
+	 * @param array $p_field_def          Custom field definition.
+	 * @param mixed $p_custom_field_value Custom field value.
+	 * @return void
+	 */
+	static function input_list( array $p_field_def, $p_custom_field_value ) {
+		$t_values = explode( '|', custom_field_prepare_possible_values( $p_field_def['possible_values'] ) );
+		$t_list_size = $t_possible_values_count = count( $t_values );
+	
+		if( $t_possible_values_count > 5 ) {
+			$t_list_size = 5;
+		}
+	
+		if( $p_field_def['type'] == CUSTOM_FIELD_TYPE_ENUM ) {
+			$t_list_size = 0;	# for enums the size is 0
+		}
+	
+		if( $p_field_def['type'] == CUSTOM_FIELD_TYPE_MULTILIST ) {
+			echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '[]" size="' . $t_list_size . '" multiple="multiple">';
+		} else {
+			echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="' . $t_list_size . '">';
+		}
+	
+		$t_selected_values = explode( '|', $p_custom_field_value );
+		foreach( $t_values as $t_option ) {
+			if( in_array( $t_option, $t_selected_values, true ) ) {
+				echo '<option value="' . \Flickerbox\String::attribute( $t_option ) . '" selected="selected"> ' . \Flickerbox\String::display_line( $t_option ) . '</option>';
+			} else {
+				echo '<option value="' . \Flickerbox\String::attribute( $t_option ) . '">' . \Flickerbox\String::display_line( $t_option ) . '</option>';
+			}
+		}
+		echo '</select>';
+	}
+	
+	/**
+	 * print_custom_field_input
+	 * @param array $p_field_def          Custom field definition.
+	 * @param mixed $p_custom_field_value Custom field value.
+	 * @return void
+	 */
+	static function input_checkbox( array $p_field_def, $p_custom_field_value ) {
+		$t_values = explode( '|', custom_field_prepare_possible_values( $p_field_def['possible_values'] ) );
+		$t_checked_values = explode( '|', $p_custom_field_value );
+		for( $i = 0; $i < count( $t_values ); $i++ ) {
+			$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
+			$t_input_name = 'custom_field_' . $p_field_def['id'] . '[]';
+			echo '<input id="$t_input_id" ' . \Flickerbox\Helper::get_tab_index() . ' type="checkbox" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
+			\Flickerbox\Helper::check_checked( $t_checked_values, $t_values[$i] );
+			echo " />\n";
+			echo '<label for="' . $t_input_id . '">"' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
+		}
+	}
+	
+	/**
+	 * print_custom_field_input
+	 * @param array $p_field_def          Custom field definition.
+	 * @param mixed $p_custom_field_value Custom field value.
+	 * @return void
+	 */
+	static function input_radio( array $p_field_def, $p_custom_field_value ) {
+		$t_values = explode( '|', custom_field_prepare_possible_values( $p_field_def['possible_values'] ) );
+	
+		$t_len = strlen( $p_custom_field_value );
+		if( $t_len >= 2 && ( $p_custom_field_value[0] == '|' ) && ( $p_custom_field_value[$t_len-1] == '|' ) ) {
+			$t_checked_value = substr( $p_custom_field_value, 1, $t_len - 2 );
+		} else {
+			$t_checked_value = $p_custom_field_value;
+		}
+	
+		for( $i = 0; $i < count( $t_values ); $i++ ) {
+			$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
+			$t_input_name = 'custom_field_' . $p_field_def['id'];
+			echo '<input id="' . $t_input_id . '" ' . \Flickerbox\Helper::get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
+			\Flickerbox\Helper::check_checked( $t_checked_value, $t_values[$i] );
+			echo " />\n";
+			echo '<label for="' . $t_input_id . '">' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
+		}
+	}
+	
+	/**
+	 * print_custom_field_input
+	 * @param array $p_field_def          Custom field definition.
+	 * @param mixed $p_custom_field_value Custom field value.
+	 * @return void
+	 */
+	static function input_textbox( array $p_field_def, $p_custom_field_value ) {
+		echo '<input ' . \Flickerbox\Helper::get_tab_index() . ' type="text" id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="80"';
+		if( 0 < $p_field_def['length_max'] ) {
+			echo ' maxlength="' . $p_field_def['length_max'] . '"';
+		} else {
+			echo ' maxlength="255"';
+		}
+		echo ' value="' . \Flickerbox\String::attribute( $p_custom_field_value ) .'"></input>';
+	}
+	
+	/**
+	 * print_custom_field_input
+	 * @param array $p_field_def          Custom field definition.
+	 * @param mixed $p_custom_field_value Custom field value.
+	 * @return void
+	 */
+	static function input_textarea( array $p_field_def, $p_custom_field_value ) {
+		echo '<textarea ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '"';
+		echo ' cols="70" rows="8">' . $p_custom_field_value .'</textarea>';
+	}
+	
+	/**
+	 * Prints the controls for the date selector.
+	 *
+	 * @param string $p_field_def          The custom field definition.
+	 * @param string $p_custom_field_value The custom field value to print.
+	 * @return void
+	 */
+	static function input_date( $p_field_def, $p_custom_field_value ) {
+		\Flickerbox\Date::print_date_selection_set( 'custom_field_' . $p_field_def['id'], \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_custom_field_value, false, true );
+	}
+	
+	/**
+	 * value to database
+	 * @param string $p_value Value.
+	 * @return string
+	 */
+	static function prepare_list_value_to_database( $p_value ) {
+		if( '' == $p_value ) {
+			return '';
+		} else {
+			return '|' . $p_value . '|';
+		}
+	}
+	
+	/**
+	 * Prepare possible values for option list
+	 * @param array $p_field_def Custom field definition.
+	 * @return array|boolean
+	 */
+	static function prepare_list_distinct_values( array $p_field_def ) {
+		$t_query = 'SELECT possible_values FROM {custom_field} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_def['id'] ) );
+	
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		if( !$t_row ) {
+			return false;
+		}
+	
+		$t_possible_values = custom_field_prepare_possible_values( $t_row['possible_values'] );
+		$t_values_arr = explode( '|', $t_possible_values );
+		$t_return_arr = array();
+	
+		foreach( $t_values_arr as $t_option ) {
+			array_push( $t_return_arr, $t_option );
+		}
+		return $t_return_arr;
+	}
+
+}

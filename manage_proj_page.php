@@ -43,9 +43,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 auth_reauthenticate();
 
@@ -68,31 +65,31 @@ if( 'ASC' == $f_dir ) {
 	<h2><?php echo \Flickerbox\Lang::get( 'projects_title' ); ?></h2><?php
 
 	# Check the user's global access level before allowing project creation
-	if( \Flickerbox\Access::has_global_level( config_get( 'create_project_threshold' ) ) ) {
-		print_button( 'manage_proj_create_page.php', \Flickerbox\Lang::get( 'create_new_project_link' ) );
+	if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'create_project_threshold' ) ) ) {
+		\Flickerbox\Print_Util::button( 'manage_proj_create_page.php', \Flickerbox\Lang::get( 'create_new_project_link' ) );
 	} ?>
 
 	<table>
 		<thead>
 			<tr class="row-category">
 				<td><?php
-					print_manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'name' ), 'name', $t_direction, $f_sort );
+					\Flickerbox\Print_Util::manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'name' ), 'name', $t_direction, $f_sort );
 					\Flickerbox\Icon::print_sort_icon( $t_direction, $f_sort, 'name' ); ?>
 				</td>
 				<td><?php
-					print_manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'status' ), 'status', $t_direction, $f_sort );
+					\Flickerbox\Print_Util::manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'status' ), 'status', $t_direction, $f_sort );
 					\Flickerbox\Icon::print_sort_icon( $t_direction, $f_sort, 'status' ); ?>
 				</td>
 				<td><?php
-					print_manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'enabled' ), 'enabled', $t_direction, $f_sort );
+					\Flickerbox\Print_Util::manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'enabled' ), 'enabled', $t_direction, $f_sort );
 					\Flickerbox\Icon::print_sort_icon( $t_direction, $f_sort, 'enabled' ); ?>
 				</td>
 				<td><?php
-					print_manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'view_status' ), 'view_state', $t_direction, $f_sort );
+					\Flickerbox\Print_Util::manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'view_status' ), 'view_state', $t_direction, $f_sort );
 					\Flickerbox\Icon::print_sort_icon( $t_direction, $f_sort, 'view_state' ); ?>
 				</td>
 				<td><?php
-					print_manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'description' ), 'description', $t_direction, $f_sort );
+					\Flickerbox\Print_Util::manage_project_sort_link( 'manage_proj_page.php', \Flickerbox\Lang::get( 'description' ), 'description', $t_direction, $f_sort );
 					\Flickerbox\Icon::print_sort_icon( $t_direction, $f_sort, 'description' ); ?>
 				</td>
 			</tr>
@@ -100,8 +97,8 @@ if( 'ASC' == $f_dir ) {
 
 		<tbody>
 <?php
-		$t_manage_project_threshold = config_get( 'manage_project_threshold' );
-		$t_projects = user_get_accessible_projects( auth_get_current_user_id(), true );
+		$t_manage_project_threshold = \Flickerbox\Config::mantis_get( 'manage_project_threshold' );
+		$t_projects = \Flickerbox\User::get_accessible_projects( auth_get_current_user_id(), true );
 		$t_full_projects = array();
 		foreach ( $t_projects as $t_project_id ) {
 			$t_full_projects[] = \Flickerbox\Project::get_row( $t_project_id );
@@ -157,7 +154,7 @@ if( 'ASC' == $f_dir ) {
 	<table>
 <?php
 		$t_categories = \Flickerbox\Category::get_all_rows( ALL_PROJECTS );
-		$t_can_update_global_cat = \Flickerbox\Access::has_global_level( config_get( 'manage_site_threshold' ) );
+		$t_can_update_global_cat = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_site_threshold' ) );
 
 		if( count( $t_categories ) > 0 ) {
 ?>
@@ -185,9 +182,9 @@ if( 'ASC' == $f_dir ) {
 					$t_id = urlencode( $t_id );
 					$t_project_id = urlencode( ALL_PROJECTS );
 
-					print_button( 'manage_proj_cat_edit_page.php?id=' . $t_id . '&project_id=' . $t_project_id, \Flickerbox\Lang::get( 'edit_link' ) );
+					\Flickerbox\Print_Util::button( 'manage_proj_cat_edit_page.php?id=' . $t_id . '&project_id=' . $t_project_id, \Flickerbox\Lang::get( 'edit_link' ) );
 					echo '&#160;';
-					print_button( 'manage_proj_cat_delete.php?id=' . $t_id . '&project_id=' . $t_project_id, \Flickerbox\Lang::get( 'delete_link' ) );
+					\Flickerbox\Print_Util::button( 'manage_proj_cat_delete.php?id=' . $t_id . '&project_id=' . $t_project_id, \Flickerbox\Lang::get( 'delete_link' ) );
 ?>
 				</td>
 			<?php } ?>

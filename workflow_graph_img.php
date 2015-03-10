@@ -31,22 +31,21 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
-if( !config_get( 'relationship_graph_enable' ) ) {
+if( !\Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
 	\Flickerbox\Access::denied();
 }
 
 \Flickerbox\Compress::enable();
 
-$t_status_arr  = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
+$t_status_arr  = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
 
-$t_graph_fontname = config_get( 'relationship_graph_fontname' );
-$t_graph_fontsize = config_get( 'relationship_graph_fontsize' );
+$t_graph_fontname = \Flickerbox\Config::mantis_get( 'relationship_graph_fontname' );
+$t_graph_fontsize = \Flickerbox\Config::mantis_get( 'relationship_graph_fontsize' );
 $t_graph_fontpath = \Flickerbox\Utility::get_font_path();
-$t_dot_tool = config_get( 'dot_tool' );
+$t_dot_tool = \Flickerbox\Config::mantis_get( 'dot_tool' );
 
 $t_graph_attributes = array();
 
@@ -68,11 +67,11 @@ $t_graph->set_default_edge_attr( array ( 'style' => 'solid',
 										 'dir'   => 'forward' ) );
 
 foreach ( $t_status_arr as $t_from_status => $t_from_label ) {
-	$t_enum_status = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
+	$t_enum_status = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
 	foreach ( $t_enum_status as $t_to_status_id => $t_to_status_label ) {
 		if( \Flickerbox\Workflow::transition_edge_exists( $t_from_status, $t_to_status_id ) ) {
-			$t_graph->add_edge( \Flickerbox\String::no_break( \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_from_status ) ),
-			                    \Flickerbox\String::no_break( \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_to_status_id ) ),
+			$t_graph->add_edge( \Flickerbox\String::no_break( \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_from_status ) ),
+			                    \Flickerbox\String::no_break( \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $t_to_status_id ) ),
 			                    array() );
 		}
 	}

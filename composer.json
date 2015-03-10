@@ -1,5 +1,7 @@
 {
     "require": {
+        "altorouter/altorouter": "dev-master",
+    	"codyrobert/redbean-single-file": "dev-master",
         "league/plates": "3.*",
         "google/apiclient": "1.0.*@beta",
         "raveren/kint": "v0.9"

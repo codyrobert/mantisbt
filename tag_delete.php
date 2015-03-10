@@ -33,12 +33,10 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_delete' );
 
-\Flickerbox\Access::ensure_global_level( config_get( 'tag_edit_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) );
 
 $f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
 $t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
@@ -49,4 +47,4 @@ $t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
 
 \Flickerbox\Form::security_purge( 'tag_delete' );
 
-print_successful_redirect( 'manage_tags_page.php' );
+\Flickerbox\Print_Util::successful_redirect( 'manage_tags_page.php' );

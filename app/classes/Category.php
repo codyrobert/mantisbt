@@ -37,8 +37,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
 
 
 class Category
@@ -76,8 +74,8 @@ class Category
 	 */
 	static function is_unique( $p_project_id, $p_name ) {
 		$t_query = 'SELECT COUNT(*) FROM {category}
-						WHERE project_id=' . db_param() . ' AND ' . db_helper_like( 'name' );
-		$t_count = db_result( db_query( $t_query, array( $p_project_id, $p_name ) ) );
+						WHERE project_id=' . \Flickerbox\Database::param() . ' AND ' . \Flickerbox\Database::helper_like( 'name' );
+		$t_count = \Flickerbox\Database::result( \Flickerbox\Database::query( $t_query, array( $p_project_id, $p_name ) ) );
 	
 		if( 0 < $t_count ) {
 			return false;
@@ -116,11 +114,11 @@ class Category
 		\Flickerbox\Category::ensure_unique( $p_project_id, $p_name );
 	
 		$t_query = 'INSERT INTO {category} ( project_id, name )
-					  VALUES ( ' . db_param() . ', ' . db_param() . ' )';
-		db_query( $t_query, array( $p_project_id, $p_name ) );
+					  VALUES ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
+		\Flickerbox\Database::query( $t_query, array( $p_project_id, $p_name ) );
 	
-		# db_query() errors on failure so:
-		return db_insert_id( db_get_table( 'category' ) );
+		# \Flickerbox\Database::query() errors on failure so:
+		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'category' ) );
 	}
 	
 	/**
@@ -139,16 +137,16 @@ class Category
 	
 		$t_old_category = \Flickerbox\Category::get_row( $p_category_id );
 	
-		$t_query = 'UPDATE {category} SET name=' . db_param() . ', user_id=' . db_param() . '
-					  WHERE id=' . db_param();
-		db_query( $t_query, array( $p_name, $p_assigned_to, $p_category_id ) );
+		$t_query = 'UPDATE {category} SET name=' . \Flickerbox\Database::param() . ', user_id=' . \Flickerbox\Database::param() . '
+					  WHERE id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_name, $p_assigned_to, $p_category_id ) );
 	
 		# Add bug history entries if we update the category's name
 		if( $t_old_category['name'] != $p_name ) {
-			$t_query = 'SELECT id FROM {bug} WHERE category_id=' . db_param();
-			$t_result = db_query( $t_query, array( $p_category_id ) );
+			$t_query = 'SELECT id FROM {bug} WHERE category_id=' . \Flickerbox\Database::param();
+			$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_id ) );
 	
-			while( $t_bug_row = db_fetch_array( $t_result ) ) {
+			while( $t_bug_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', $t_old_category['name'], $p_name );
 			}
 		}
@@ -169,20 +167,20 @@ class Category
 			\Flickerbox\Category::ensure_exists( $p_new_category_id );
 		}
 	
-		$t_query = 'DELETE FROM {category} WHERE id=' . db_param();
-		db_query( $t_query, array( $p_category_id ) );
+		$t_query = 'DELETE FROM {category} WHERE id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_category_id ) );
 	
 		# update bug history entries
-		$t_query = 'SELECT id FROM {bug} WHERE category_id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_category_id ) );
+		$t_query = 'SELECT id FROM {bug} WHERE category_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_id ) );
 	
-		while( $t_bug_row = db_fetch_array( $t_result ) ) {
+		while( $t_bug_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', $t_category_row['name'], \Flickerbox\Category::full_name( $p_new_category_id, false ) );
 		}
 	
 		# update bug data
-		$t_query = 'UPDATE {bug} SET category_id=' . db_param() . ' WHERE category_id=' . db_param();
-		db_query( $t_query, array( $p_new_category_id, $p_category_id ) );
+		$t_query = 'UPDATE {bug} SET category_id=' . \Flickerbox\Database::param() . ' WHERE category_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_new_category_id, $p_category_id ) );
 	}
 	
 	/**
@@ -202,11 +200,11 @@ class Category
 		\Flickerbox\Category::get_all_rows( $p_project_id );
 	
 		# get a list of affected categories
-		$t_query = 'SELECT id FROM {category} WHERE project_id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_project_id ) );
+		$t_query = 'SELECT id FROM {category} WHERE project_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_project_id ) );
 	
 		$t_category_ids = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_category_ids[] = $t_row['id'];
 		}
 	
@@ -219,19 +217,19 @@ class Category
 	
 		# update bug history entries
 		$t_query = 'SELECT id, category_id FROM {bug} WHERE category_id IN ( ' . $t_category_ids . ' )';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
-		while( $t_bug_row = db_fetch_array( $t_result ) ) {
+		while( $t_bug_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', \Flickerbox\Category::full_name( $t_bug_row['category_id'], false ), \Flickerbox\Category::full_name( $p_new_category_id, false ) );
 		}
 	
 		# update bug data
-		$t_query = 'UPDATE {bug} SET category_id=' . db_param() . ' WHERE category_id IN ( ' . $t_category_ids . ' )';
-		db_query( $t_query, array( $p_new_category_id ) );
+		$t_query = 'UPDATE {bug} SET category_id=' . \Flickerbox\Database::param() . ' WHERE category_id IN ( ' . $t_category_ids . ' )';
+		\Flickerbox\Database::query( $t_query, array( $p_new_category_id ) );
 	
 		# delete categories
-		$t_query = 'DELETE FROM {category} WHERE project_id=' . db_param();
-		db_query( $t_query, array( $p_project_id ) );
+		$t_query = 'DELETE FROM {category} WHERE project_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_project_id ) );
 	
 		return true;
 	}
@@ -252,9 +250,9 @@ class Category
 			return $g_category_cache[$p_category_id];
 		}
 	
-		$t_query = 'SELECT * FROM {category} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_category_id ) );
-		$t_row = db_fetch_array( $t_result );
+		$t_query = 'SELECT * FROM {category} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_id ) );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 		if( !$t_row ) {
 			if( $p_error_if_not_exists ) {
 				trigger_error( ERROR_CATEGORY_NOT_FOUND, ERROR );
@@ -326,10 +324,10 @@ class Category
 						ON c.project_id=p.id
 					WHERE project_id IN ( ' . implode( ', ', $c_project_id_array ) . ' )
 					ORDER BY c.name ';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_rows = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$g_category_cache[(int)$t_row['id']] = $t_row;
 	
 			$t_rows[(int)$t_row['project_id']][] = $t_row['id'];
@@ -419,7 +417,7 @@ class Category
 			$t_inherit = false;
 		} else {
 			if( $p_inherit === null ) {
-				$t_inherit = config_get( 'subprojects_inherit_categories' );
+				$t_inherit = \Flickerbox\Config::mantis_get( 'subprojects_inherit_categories' );
 			} else {
 				$t_inherit = $p_inherit;
 			}
@@ -436,9 +434,9 @@ class Category
 					LEFT JOIN {project} p
 						ON c.project_id=p.id
 					WHERE ' . $t_project_where . ' ORDER BY c.name';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 		$t_rows = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_rows[] = $t_row;
 			$g_category_cache[(int)$t_row['id']] = $t_row;
 		}
@@ -476,9 +474,9 @@ class Category
 					LEFT JOIN {project} p
 						ON c.project_id=p.id
 					WHERE c.id IN (' . implode( ',', $c_cat_id_array ) . ')';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$g_category_cache[(int)$t_row['id']] = $t_row;
 		}
 		return;
@@ -521,9 +519,9 @@ class Category
 	static function get_id_by_name( $p_category_name, $p_project_id, $p_trigger_errors = true ) {
 		$t_project_name = \Flickerbox\Project::get_name( $p_project_id );
 	
-		$t_query = 'SELECT id FROM {category} WHERE name=' . db_param() . ' AND project_id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_category_name, (int)$p_project_id ) );
-		$t_id = db_result( $t_result );
+		$t_query = 'SELECT id FROM {category} WHERE name=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_name, (int)$p_project_id ) );
+		$t_id = \Flickerbox\Database::result( $t_result );
 		if( $t_id === false ) {
 			if( $p_trigger_errors ) {
 				\Flickerbox\Error::parameters( $p_category_name, $t_project_name );

@@ -32,8 +32,6 @@ namespace Flickerbox;
  * @uses plugin_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'plugin_api.php' );
 
 
 class Wiki
@@ -45,7 +43,7 @@ class Wiki
 	 * @access public
 	 */
 	static function enabled() {
-		return( config_get_global( 'wiki_enable' ) == ON );
+		return( \Flickerbox\Config::get_global( 'wiki_enable' ) == ON );
 	}
 	
 	/**
@@ -57,27 +55,27 @@ class Wiki
 		if( \Flickerbox\Wiki::enabled() ) {
 	
 			# handle legacy style wiki integration
-			require_once( config_get_global( 'class_path' ) . 'MantisCoreWikiPlugin.class.php' );
-			switch( config_get_global( 'wiki_engine' ) ) {
+			//require_once( \Flickerbox\Config::get_global( 'class_path' ) . 'MantisCoreWikiPlugin.class.php' );
+			switch( \Flickerbox\Config::get_global( 'wiki_engine' ) ) {
 				case 'dokuwiki':
-					plugin_child( 'MantisCoreDokuwiki' );
+					\Flickerbox\Plugin::child( 'MantisCoreDokuwiki' );
 					break;
 				case 'mediawiki':
-					plugin_child( 'MantisCoreMediaWiki' );
+					\Flickerbox\Plugin::child( 'MantisCoreMediaWiki' );
 					break;
 				case 'twiki':
-					plugin_child( 'MantisCoreTwiki' );
+					\Flickerbox\Plugin::child( 'MantisCoreTwiki' );
 					break;
 				case 'WikkaWiki':
-					plugin_child( 'MantisCoreWikkaWiki' );
+					\Flickerbox\Plugin::child( 'MantisCoreWikkaWiki' );
 					break;
 				case 'xwiki':
-					plugin_child( 'MantisCoreXwiki' );
+					\Flickerbox\Plugin::child( 'MantisCoreXwiki' );
 					break;
 			}
 	
 			if( is_null( \Flickerbox\Event::signal( 'EVENT_WIKI_INIT' ) ) ) {
-				config_set_global( 'wiki_enable', OFF );
+				\Flickerbox\Config::set_global( 'wiki_enable', OFF );
 			}
 		}
 	}

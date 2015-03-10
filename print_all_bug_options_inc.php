@@ -35,8 +35,6 @@ if( !defined( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'database_api.php' );
-require_api( 'user_api.php' );
 
 /**
  * this function only gets the field names, by appending strings
@@ -88,7 +86,7 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 
 	# protected account check
 	if( $p_error_if_protected ) {
-		user_ensure_unprotected( $p_user_id );
+		\Flickerbox\User::ensure_unprotected( $p_user_id );
 	}
 
 	if( \Flickerbox\Utility::is_blank( $p_redirect_url ) ) {
@@ -100,10 +98,10 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 	$t_field_name_count = count( $t_field_name_arr );
 
 	# Grab the data
-	$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . db_param();
-	$t_result = db_query( $t_query, array( $p_user_id ) );
+	$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
 
-	$t_row = db_fetch_array( $t_result );
+	$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 	## OOPS, No entry in the database yet.	Lets make one
 	if( !$t_row ) {
@@ -118,14 +116,14 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 				INTO {user_print_pref}
 				(user_id, print_pref)
 				VALUES
-				(' . db_param() . ',' . db_param() . ')';
-		db_query( $t_query, array( $p_user_id, $t_default ) );
+				(' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
+		\Flickerbox\Database::query( $t_query, array( $p_user_id, $t_default ) );
 
 		# Rerun select query
-		$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_user_id ) );
+		$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
 
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 	}
 
 	# putting the query result into an array with the same size as $t_fields_arr

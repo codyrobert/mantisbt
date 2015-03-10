@@ -25,7 +25,7 @@
 \Flickerbox\Form::security_validate( 'plugin_graph_config_edit' );
 
 auth_reauthenticate( );
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 $f_library = \Flickerbox\GPC::get_int( 'eczlibrary', ON );
 
@@ -36,23 +36,23 @@ $f_summary_graphs_per_row = \Flickerbox\GPC::get_int( 'summary_graphs_per_row', 
 $f_jpgraph_antialias = \Flickerbox\GPC::get_int( 'jpgraph_antialias', ON );
 $f_font = \Flickerbox\GPC::get_string( 'font', '' );
 
-if( plugin_config_get( 'eczlibrary' ) != $f_library ) {
-	plugin_config_set( 'eczlibrary', $f_library );
+if( \Flickerbox\Plugin::config_get( 'eczlibrary' ) != $f_library ) {
+	\Flickerbox\Plugin::config_set( 'eczlibrary', $f_library );
 }
 
-if( plugin_config_get( 'window_width' ) != $f_window_width ) {
-	plugin_config_set( 'window_width', $f_window_width );
+if( \Flickerbox\Plugin::config_get( 'window_width' ) != $f_window_width ) {
+	\Flickerbox\Plugin::config_set( 'window_width', $f_window_width );
 }
 
-if( plugin_config_get( 'bar_aspect' ) != $f_bar_aspect ) {
-	plugin_config_set( 'bar_aspect', $f_bar_aspect );
+if( \Flickerbox\Plugin::config_get( 'bar_aspect' ) != $f_bar_aspect ) {
+	\Flickerbox\Plugin::config_set( 'bar_aspect', $f_bar_aspect );
 }
 
-if( plugin_config_get( 'summary_graphs_per_row' ) != $f_summary_graphs_per_row ) {
-	plugin_config_set( 'summary_graphs_per_row', $f_summary_graphs_per_row );
+if( \Flickerbox\Plugin::config_get( 'summary_graphs_per_row' ) != $f_summary_graphs_per_row ) {
+	\Flickerbox\Plugin::config_set( 'summary_graphs_per_row', $f_summary_graphs_per_row );
 }
 
-if( plugin_config_get( 'font' ) != $f_font ) {
+if( \Flickerbox\Plugin::config_get( 'font' ) != $f_font ) {
 	switch( $f_font ) {
 		case 'arial':
 		case 'verdana':
@@ -63,24 +63,24 @@ if( plugin_config_get( 'font' ) != $f_font ) {
 		case 'veraserif':
 		case 'courier':
 		case 'veramono':
-			plugin_config_set( 'font', $f_font );
+			\Flickerbox\Plugin::config_set( 'font', $f_font );
 			break;
 		default:
-			plugin_config_set( 'font', 'arial' );
+			\Flickerbox\Plugin::config_set( 'font', 'arial' );
 	}
 }
 
 if( \Flickerbox\Current_User::is_administrator() ) {
 	$f_jpgraph_path = \Flickerbox\GPC::get_string( 'jpgraph_path', '' );
-	if( plugin_config_get( 'jpgraph_path' ) != $f_jpgraph_path ) {
-		plugin_config_set( 'jpgraph_path', $f_jpgraph_path );
+	if( \Flickerbox\Plugin::config_get( 'jpgraph_path' ) != $f_jpgraph_path ) {
+		\Flickerbox\Plugin::config_set( 'jpgraph_path', $f_jpgraph_path );
 	}
 }
 
-if( plugin_config_get( 'jpgraph_antialias' ) != $f_jpgraph_antialias ) {
-	plugin_config_set( 'jpgraph_antialias', $f_jpgraph_antialias );
+if( \Flickerbox\Plugin::config_get( 'jpgraph_antialias' ) != $f_jpgraph_antialias ) {
+	\Flickerbox\Plugin::config_set( 'jpgraph_antialias', $f_jpgraph_antialias );
 }
 
 \Flickerbox\Form::security_purge( 'plugin_graph_config_edit' );
 
-print_successful_redirect( plugin_page( 'config', true ) );
+\Flickerbox\Print_Util::successful_redirect( \Flickerbox\Plugin::page( 'config', true ) );

@@ -53,51 +53,47 @@ if( !defined( 'BUG_VIEW_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bug_api.php' );
-require_api( 'columns_api.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\HTML::require_css( 'status_config.php' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'id' );
 
-bug_ensure_exists( $f_bug_id );
+\Flickerbox\Bug::ensure_exists( $f_bug_id );
 
-$t_bug = bug_get( $f_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 
 # In case the current project is not the same project of the bug we are
 # viewing, override the current project. This ensures all config_get and other
 # per-project function calls use the project ID of this bug.
 $g_project_override = $t_bug->project_id;
 
-\Flickerbox\Access::ensure_bug_level( config_get( 'view_bug_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ), $f_bug_id );
 
-$f_history = \Flickerbox\GPC::get_bool( 'history', config_get( 'history_default_visible' ) );
+$f_history = \Flickerbox\GPC::get_bool( 'history', \Flickerbox\Config::mantis_get( 'history_default_visible' ) );
 
-$t_fields = config_get( $t_fields_config_option );
-$t_fields = columns_filter_disabled( $t_fields );
+$t_fields = \Flickerbox\Config::mantis_get( $t_fields_config_option );
+$t_fields = \Flickerbox\Columns::filter_disabled( $t_fields );
 
 \Flickerbox\Compress::enable();
 
 if( $t_show_page_header ) {
-	\Flickerbox\HTML::page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
-	print_recently_visited();
+	\Flickerbox\HTML::page_top( \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+	\Flickerbox\Print_Util::recently_visited();
 }
 
-$t_action_button_position = config_get( 'action_button_position' );
+$t_action_button_position = \Flickerbox\Config::mantis_get( 'action_button_position' );
 
-$t_bugslist = \Flickerbox\GPC::get_cookie( config_get( 'bug_list_cookie' ), false );
+$t_bugslist = \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'bug_list_cookie' ), false );
 
 $t_show_versions = \Flickerbox\Version::should_show_product_version( $t_bug->project_id );
 $t_show_product_version = $t_show_versions && in_array( 'product_version', $t_fields );
 $t_show_fixed_in_version = $t_show_versions && in_array( 'fixed_in_version', $t_fields );
 $t_show_product_build = $t_show_versions && in_array( 'product_build', $t_fields )
-	&& ( config_get( 'enable_product_build' ) == ON );
+	&& ( \Flickerbox\Config::mantis_get( 'enable_product_build' ) == ON );
 $t_product_build = $t_show_product_build ? \Flickerbox\String::display_line( $t_bug->build ) : '';
 $t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields )
-	&& \Flickerbox\Access::has_bug_level( config_get( 'roadmap_view_threshold' ), $f_bug_id );
+	&& \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'roadmap_view_threshold' ), $f_bug_id );
 
 $t_product_version_string  = '';
 $t_target_version_string   = '';
@@ -125,16 +121,16 @@ $t_fixed_in_version_string = \Flickerbox\String::display_line( $t_fixed_in_versi
 
 $t_bug_id = $f_bug_id;
 $t_form_title = \Flickerbox\Lang::get( 'bug_view_title' );
-$t_wiki_link = config_get_global( 'wiki_enable' ) == ON ? 'wiki.php?id=' . $f_bug_id : '';
+$t_wiki_link = \Flickerbox\Config::get_global( 'wiki_enable' ) == ON ? 'wiki.php?id=' . $f_bug_id : '';
 
-if( \Flickerbox\Access::has_bug_level( config_get( 'view_history_threshold' ), $f_bug_id ) ) {
+if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_history_threshold' ), $f_bug_id ) ) {
 	$t_history_link = 'view.php?id=' . $f_bug_id . '&history=1#history';
 } else {
 	$t_history_link = '';
 }
 
-$t_show_reminder_link = !\Flickerbox\Current_User::is_anonymous() && !bug_is_readonly( $f_bug_id ) &&
-	  \Flickerbox\Access::has_bug_level( config_get( 'bug_reminder_threshold' ), $f_bug_id );
+$t_show_reminder_link = !\Flickerbox\Current_User::is_anonymous() && !\Flickerbox\Bug::is_readonly( $f_bug_id ) &&
+	  \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'bug_reminder_threshold' ), $f_bug_id );
 $t_bug_reminder_link = 'bug_reminder_page.php?bug_id=' . $f_bug_id;
 
 $t_print_link = 'print_bug_page.php?bug_id=' . $f_bug_id;
@@ -145,41 +141,41 @@ $t_bottom_buttons_enabled = !$t_force_readonly && ( $t_action_button_position ==
 $t_show_project = in_array( 'project', $t_fields );
 $t_project_name = $t_show_project ? \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $t_bug->project_id ) ): '';
 $t_show_id = in_array( 'id', $t_fields );
-$t_formatted_bug_id = $t_show_id ? \Flickerbox\String::display_line( bug_format_id( $f_bug_id ) ) : '';
+$t_formatted_bug_id = $t_show_id ? \Flickerbox\String::display_line( \Flickerbox\Bug::format_id( $f_bug_id ) ) : '';
 
 $t_show_date_submitted = in_array( 'date_submitted', $t_fields );
-$t_date_submitted = $t_show_date_submitted ? date( config_get( 'normal_date_format' ), $t_bug->date_submitted ) : '';
+$t_date_submitted = $t_show_date_submitted ? date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_bug->date_submitted ) : '';
 
 $t_show_last_updated = in_array( 'last_updated', $t_fields );
-$t_last_updated = $t_show_last_updated ? date( config_get( 'normal_date_format' ), $t_bug->last_updated ) : '';
+$t_last_updated = $t_show_last_updated ? date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_bug->last_updated ) : '';
 
-$t_show_tags = in_array( 'tags', $t_fields ) && \Flickerbox\Access::has_global_level( config_get( 'tag_view_threshold' ) );
+$t_show_tags = in_array( 'tags', $t_fields ) && \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_view_threshold' ) );
 
-$t_bug_overdue = bug_is_overdue( $f_bug_id );
+$t_bug_overdue = \Flickerbox\Bug::is_overdue( $f_bug_id );
 
 $t_show_view_state = in_array( 'view_state', $t_fields );
 $t_bug_view_state_enum = $t_show_view_state ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'view_state', $t_bug->view_state ) ) : '';
 
-$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $f_bug_id );
+$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'due_date_view_threshold' ), $f_bug_id );
 
 if( $t_show_due_date ) {
 	if( !\Flickerbox\Date::is_null( $t_bug->due_date ) ) {
-		$t_bug_due_date = date( config_get( 'normal_date_format' ), $t_bug->due_date );
+		$t_bug_due_date = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_bug->due_date );
 	} else {
 		$t_bug_due_date = '';
 	}
 }
 
 $t_show_reporter = in_array( 'reporter', $t_fields );
-$t_show_handler = in_array( 'handler', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'view_handler_threshold' ), $f_bug_id );
+$t_show_handler = in_array( 'handler', $t_fields ) && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ), $f_bug_id );
 $t_show_additional_information = !\Flickerbox\Utility::is_blank( $t_bug->additional_information ) && in_array( 'additional_info', $t_fields );
 $t_show_steps_to_reproduce = !\Flickerbox\Utility::is_blank( $t_bug->steps_to_reproduce ) && in_array( 'steps_to_reproduce', $t_fields );
 $t_show_monitor_box = !$t_force_readonly;
 $t_show_relationships_box = !$t_force_readonly;
-$t_show_sponsorships_box = config_get( 'enable_sponsorship' ) && \Flickerbox\Access::has_bug_level( config_get( 'view_sponsorship_total_threshold' ), $f_bug_id );
-$t_show_upload_form = !$t_force_readonly && !bug_is_readonly( $f_bug_id );
+$t_show_sponsorships_box = \Flickerbox\Config::mantis_get( 'enable_sponsorship' ) && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_sponsorship_total_threshold' ), $f_bug_id );
+$t_show_upload_form = !$t_force_readonly && !\Flickerbox\Bug::is_readonly( $f_bug_id );
 $t_show_history = $f_history;
-$t_show_profiles = config_get( 'enable_profiles' );
+$t_show_profiles = \Flickerbox\Config::mantis_get( 'enable_profiles' );
 $t_show_platform = $t_show_profiles && in_array( 'platform', $t_fields );
 $t_platform = $t_show_platform ? \Flickerbox\String::display_line( $t_bug->platform ) : '';
 $t_show_os = $t_show_profiles && in_array( 'os', $t_fields );
@@ -191,7 +187,7 @@ $t_projection = $t_show_projection ? \Flickerbox\String::display_line( \Flickerb
 $t_show_eta = in_array( 'eta', $t_fields );
 $t_eta = $t_show_eta ? \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'eta', $t_bug->eta ) ) : '';
 $t_show_attachments = in_array( 'attachments', $t_fields );
-$t_can_attach_tag = $t_show_tags && !$t_force_readonly && \Flickerbox\Access::has_bug_level( config_get( 'tag_attach_threshold' ), $f_bug_id );
+$t_can_attach_tag = $t_show_tags && !$t_force_readonly && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'tag_attach_threshold' ), $f_bug_id );
 $t_show_category = in_array( 'category_id', $t_fields );
 $t_category = $t_show_category ? \Flickerbox\String::display_line( \Flickerbox\Category::full_name( $t_bug->category_id ) ) : '';
 $t_show_priority = in_array( 'priority', $t_fields );
@@ -207,7 +203,7 @@ $t_resolution = $t_show_resolution ? \Flickerbox\String::display_line( \Flickerb
 $t_show_summary = in_array( 'summary', $t_fields );
 $t_show_description = in_array( 'description', $t_fields );
 
-$t_summary = $t_show_summary ? bug_format_summary( $f_bug_id, SUMMARY_FIELD ) : '';
+$t_summary = $t_show_summary ? \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_FIELD ) : '';
 $t_description = $t_show_description ? \Flickerbox\String::display_links( $t_bug->description ) : '';
 $t_steps_to_reproduce = $t_show_steps_to_reproduce ? \Flickerbox\String::display_links( $t_bug->steps_to_reproduce ) : '';
 $t_additional_information = $t_show_additional_information ? \Flickerbox\String::display_links( $t_bug->additional_information ) : '';
@@ -231,15 +227,15 @@ echo $t_form_title;
 echo '&#160;<span class="small">';
 
 # Jump to Bugnotes
-print_bracket_link( '#bugnotes', \Flickerbox\Lang::get( 'jump_to_bugnotes' ), false, 'jump-to-bugnotes' );
+\Flickerbox\Print_Util::bracket_link( '#bugnotes', \Flickerbox\Lang::get( 'jump_to_bugnotes' ), false, 'jump-to-bugnotes' );
 
 # Send Bug Reminder
 if( $t_show_reminder_link ) {
-	print_bracket_link( $t_bug_reminder_link, \Flickerbox\Lang::get( 'bug_reminder' ), false, 'bug-reminder' );
+	\Flickerbox\Print_Util::bracket_link( $t_bug_reminder_link, \Flickerbox\Lang::get( 'bug_reminder' ), false, 'bug-reminder' );
 }
 
 if( !\Flickerbox\Utility::is_blank( $t_wiki_link ) ) {
-	print_bracket_link( $t_wiki_link, \Flickerbox\Lang::get( 'wiki' ), false, 'wiki' );
+	\Flickerbox\Print_Util::bracket_link( $t_wiki_link, \Flickerbox\Lang::get( 'wiki' ), false, 'wiki' );
 }
 
 foreach ( $t_links as $t_plugin => $t_hooks ) {
@@ -247,13 +243,13 @@ foreach ( $t_links as $t_plugin => $t_hooks ) {
 		if( is_array( $t_hook ) ) {
 			foreach( $t_hook as $t_label => $t_href ) {
 				if( is_numeric( $t_label ) ) {
-					print_bracket_link_prepared( $t_href );
+					\Flickerbox\Print_Util::bracket_link_prepared( $t_href );
 				} else {
-					print_bracket_link( $t_href, $t_label );
+					\Flickerbox\Print_Util::bracket_link( $t_href, $t_label );
 				}
 			}
 		} else {
-			print_bracket_link_prepared( $t_hook );
+			\Flickerbox\Print_Util::bracket_link_prepared( $t_hook );
 		}
 	}
 }
@@ -268,11 +264,11 @@ if( $t_bugslist ) {
 	$t_index = array_search( $f_bug_id, $t_bugslist );
 	if( false !== $t_index ) {
 		if( isset( $t_bugslist[$t_index-1] ) ) {
-			print_bracket_link( 'view.php?id='.$t_bugslist[$t_index-1], '&lt;&lt;', false, 'previous-bug' );
+			\Flickerbox\Print_Util::bracket_link( 'view.php?id='.$t_bugslist[$t_index-1], '&lt;&lt;', false, 'previous-bug' );
 		}
 
 		if( isset( $t_bugslist[$t_index+1] ) ) {
-			print_bracket_link( 'view.php?id='.$t_bugslist[$t_index+1], '&gt;&gt;', false, 'next-bug' );
+			\Flickerbox\Print_Util::bracket_link( 'view.php?id='.$t_bugslist[$t_index+1], '&gt;&gt;', false, 'next-bug' );
 		}
 	}
 	echo '</span></td>';
@@ -285,13 +281,13 @@ echo '<td class="right alternate-views-links" colspan="2">';
 if( !\Flickerbox\Utility::is_blank( $t_history_link ) ) {
 	# History
 	echo '<span class="small">';
-	print_bracket_link( $t_history_link, \Flickerbox\Lang::get( 'bug_history' ), false, 'bug-history' );
+	\Flickerbox\Print_Util::bracket_link( $t_history_link, \Flickerbox\Lang::get( 'bug_history' ), false, 'bug-history' );
 	echo '</span>';
 }
 
 # Print Bug
 echo '<span class="small">';
-print_bracket_link( $t_print_link, \Flickerbox\Lang::get( 'print' ), false, 'print' );
+\Flickerbox\Print_Util::bracket_link( $t_print_link, \Flickerbox\Lang::get( 'print' ), false, 'print' );
 echo '</span>';
 echo '</td>';
 echo '</tr>';
@@ -366,7 +362,7 @@ if( $t_show_reporter ) {
 	# Reporter
 	echo '<th class="bug-reporter category">', \Flickerbox\Lang::get( 'reporter' ), '</th>';
 	echo '<td class="bug-reporter">';
-	print_user_with_subject( $t_bug->reporter_id, $t_bug_id );
+	\Flickerbox\Print_Util::user_with_subject( $t_bug->reporter_id, $t_bug_id );
 	echo '</td>';
 	echo '<td colspan="', $t_spacer, '">&#160;</td>';
 
@@ -386,7 +382,7 @@ if( $t_show_handler || $t_show_due_date ) {
 	if( $t_show_handler ) {
 		echo '<th class="bug-assigned-to category">', \Flickerbox\Lang::get( 'assigned_to' ), '</th>';
 		echo '<td class="bug-assigned-to">';
-		print_user_with_subject( $t_bug->handler_id, $t_bug_id );
+		\Flickerbox\Print_Util::user_with_subject( $t_bug->handler_id, $t_bug_id );
 		echo '</td>';
 	} else {
 		$t_spacer += 2;
@@ -680,7 +676,7 @@ if( $t_can_attach_tag ) {
 	echo '<tr>';
 	echo '<th class="bug-attach-tags category">', \Flickerbox\Lang::get( 'tag_attach_long' ), '</th>';
 	echo '<td class="bug-attach-tags" colspan="5">';
-	print_tag_attach_form( $t_bug_id );
+	\Flickerbox\Print_Util::tag_attach_form( $t_bug_id );
 	echo '</td></tr>';
 }
 
@@ -718,7 +714,7 @@ if( $t_show_attachments ) {
 	echo '<tr id="attachments">';
 	echo '<th class="bug-attachments category">', \Flickerbox\Lang::get( 'attached_files' ), '</th>';
 	echo '<td class="bug-attachments" colspan="5">';
-	print_bug_attachments_list( $t_bug_id );
+	\Flickerbox\Print_Util::bug_attachments_list( $t_bug_id );
 	echo '</td></tr>';
 }
 
@@ -771,8 +767,8 @@ if( 'ASC' == \Flickerbox\Current_User::get_pref( 'bugnote_order' ) ) {
 \Flickerbox\Event::signal( 'EVENT_VIEW_BUG_EXTRA', array( $f_bug_id ) );
 
 # Time tracking statistics
-if( config_get( 'time_tracking_enabled' ) &&
-	\Flickerbox\Access::has_bug_level( config_get( 'time_tracking_view_threshold' ), $f_bug_id ) ) {
+if( \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) &&
+	\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_view_threshold' ), $f_bug_id ) ) {
 	define( 'BUGNOTE_STATS_INC_ALLOW', true );
 	include( $t_mantis_dir . 'bugnote_stats_inc.php' );
 }

@@ -40,15 +40,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 $f_project_id = \Flickerbox\GPC::get_int( 'project_id', \Flickerbox\Helper::get_current_project() );
 
 # Check if project documentation feature is enabled.
-if( OFF == config_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
+if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
 	\Flickerbox\Access::denied();
 }
 
@@ -58,11 +54,11 @@ $g_project_override = $f_project_id;
 $t_user_id = \Flickerbox\Auth::get_current_user_id();
 $t_pub = VS_PUBLIC;
 $t_priv = VS_PRIVATE;
-$t_admin = config_get_global( 'admin_site_threshold' );
+$t_admin = \Flickerbox\Config::get_global( 'admin_site_threshold' );
 
 if( $f_project_id == ALL_PROJECTS ) {
 	# Select all the projects that the user has access to
-	$t_projects = user_get_accessible_projects( $t_user_id );
+	$t_projects = \Flickerbox\User::get_accessible_projects( $t_user_id );
 } else {
 	# Select the specific project
 	$t_projects = array( $f_project_id );
@@ -70,7 +66,7 @@ if( $f_project_id == ALL_PROJECTS ) {
 
 $t_projects[] = ALL_PROJECTS; # add "ALL_PROJECTS to the list of projects to fetch
 
-$t_reqd_access = config_get( 'view_proj_doc_threshold' );
+$t_reqd_access = \Flickerbox\Config::mantis_get( 'view_proj_doc_threshold' );
 if( is_array( $t_reqd_access ) ) {
 	if( 1 == count( $t_reqd_access ) ) {
 		$t_access_clause = '= ' . array_shift( $t_reqd_access ) . ' ';
@@ -85,14 +81,14 @@ $t_query = 'SELECT pft.id, pft.project_id, pft.filename, pft.filesize, pft.title
 			FROM {project_file} pft
 				LEFT JOIN {project} pt ON pft.project_id = pt.id
 				LEFT JOIN {project_user_list} pult
-					ON pft.project_id = pult.project_id AND pult.user_id = ' . db_param() . '
-				LEFT JOIN {user} ut ON ut.id = ' . db_param() . '
+					ON pft.project_id = pult.project_id AND pult.user_id = ' . \Flickerbox\Database::param() . '
+				LEFT JOIN {user} ut ON ut.id = ' . \Flickerbox\Database::param() . '
 			WHERE pft.project_id in (' . implode( ',', $t_projects ) . ') AND
-				( ( ( pt.view_state = ' . db_param() . ' OR pt.view_state is null ) AND pult.user_id is null AND ut.access_level ' . $t_access_clause . ' ) OR
-					( ( pult.user_id = ' . db_param() . ' ) AND ( pult.access_level ' . $t_access_clause . ' ) ) OR
-					( ut.access_level >= ' . db_param() . ' ) )
+				( ( ( pt.view_state = ' . \Flickerbox\Database::param() . ' OR pt.view_state is null ) AND pult.user_id is null AND ut.access_level ' . $t_access_clause . ' ) OR
+					( ( pult.user_id = ' . \Flickerbox\Database::param() . ' ) AND ( pult.access_level ' . $t_access_clause . ' ) ) OR
+					( ut.access_level >= ' . \Flickerbox\Database::param() . ' ) )
 			ORDER BY pt.name ASC, pft.title ASC';
-$t_result = db_query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_id, $t_admin ) );
+$t_result = \Flickerbox\Database::query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_id, $t_admin ) );
 
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'docs_link' ) );
 ?>
@@ -118,13 +114,13 @@ $t_result = db_query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_i
 
 <?php
 $i = 0;
-while( $t_row = db_fetch_array( $t_result ) ) {
+while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 	$i++;
 	extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 	$v_filesize = number_format( $v_filesize );
 	$v_title = \Flickerbox\String::display( $v_title );
 	$v_description = \Flickerbox\String::display_links( $v_description );
-	$v_date_added = date( config_get( 'normal_date_format' ), $v_date_added );
+	$v_date_added = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $v_date_added );
 
 ?>
 <tr>
@@ -133,7 +129,7 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 <?php
 	$t_href = '<a href="file_download.php?file_id='.$v_id.'&amp;type=doc">';
 	echo $t_href;
-	print_file_icon( $v_filename );
+	\Flickerbox\Print_Util::file_icon( $v_filename );
 	echo '</a>&#160;' . $t_href . $v_title . '</a> (' . $v_filesize . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'bytes' ) . ')';
 ?>
 			<br />
@@ -151,11 +147,11 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 		</span>
 		<span class="floatright">
 <?php
-	if( \Flickerbox\Access::has_project_level( config_get( 'upload_project_file_threshold', null, null, $v_project_id ), $v_project_id ) ) {
+	if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold', null, null, $v_project_id ), $v_project_id ) ) {
 		echo '&#160;';
-		print_button( 'proj_doc_edit_page.php?file_id='.$v_id, \Flickerbox\Lang::get( 'edit_link' ) );
+		\Flickerbox\Print_Util::button( 'proj_doc_edit_page.php?file_id='.$v_id, \Flickerbox\Lang::get( 'edit_link' ) );
 		echo '&#160;';
-		print_button( 'proj_doc_delete.php?file_id=' . $v_id, \Flickerbox\Lang::get( 'delete_link' ) );
+		\Flickerbox\Print_Util::button( 'proj_doc_delete.php?file_id=' . $v_id, \Flickerbox\Lang::get( 'delete_link' ) );
 	}
 ?>
 		</span>

@@ -58,14 +58,10 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\HTML::require_css( 'status_config.php' );
 
-if( !config_get( 'enable_sponsorship' ) ) {
+if( !\Flickerbox\Config::mantis_get( 'enable_sponsorship' ) ) {
 	trigger_error( ERROR_SPONSORSHIP_NOT_ENABLED, ERROR );
 }
 
@@ -95,22 +91,22 @@ $t_project = \Flickerbox\Helper::get_current_project();
 <?php
 # get issues user has sponsored
 $t_user = \Flickerbox\Auth::get_current_user_id();
-$t_resolved = config_get( 'bug_resolved_status_threshold' );
-$t_payment = config_get( 'payment_enable', 0 );
+$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_payment = \Flickerbox\Config::mantis_get( 'payment_enable', 0 );
 
 $t_project_clause = \Flickerbox\Helper::project_specific_where( $t_project );
 
 $t_query = 'SELECT b.id as bug, s.id as sponsor, s.paid, b.project_id, b.fixed_in_version, b.status
 	FROM {bug} b, {sponsorship} s
-	WHERE s.user_id=' . db_param() . ' AND s.bug_id = b.id ' .
-	( $t_show_all ? '' : 'AND ( b.status < ' . db_param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
+	WHERE s.user_id=' . \Flickerbox\Database::param() . ' AND s.bug_id = b.id ' .
+	( $t_show_all ? '' : 'AND ( b.status < ' . \Flickerbox\Database::param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
 	AND ' . $t_project_clause . '
 	ORDER BY s.paid ASC, b.project_id ASC, b.fixed_in_version ASC, b.status ASC, b.id DESC';
 
-$t_result = db_query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
+$t_result = \Flickerbox\Database::query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
 
 $t_sponsors = array();
-while( $t_row = db_fetch_array( $t_result ) ) {
+while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 	$t_sponsors[] = $t_row;
 }
 
@@ -157,7 +153,7 @@ if( $t_sponsor_count === 0 ) {
 	$t_total_paid = 0;
 	for( $i = 0; $i < $t_sponsor_count; ++$i ) {
 		$t_sponsor_row = $t_sponsors[$i];
-		$t_bug = bug_get( $t_sponsor_row['bug'] );
+		$t_bug = \Flickerbox\Bug::get( $t_sponsor_row['bug'] );
 		$t_sponsor = \Flickerbox\Sponsorship::get( $t_sponsor_row['sponsor'] );
 
 		# describe bug
@@ -174,12 +170,12 @@ if( $t_sponsor_count === 0 ) {
 		$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 
 		echo '<tr class="' . $t_status_label .  '">';
-		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . bug_format_id( $t_sponsor_row['bug'] ) . '</a></td>';
+		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Flickerbox\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';
 		echo '<td>' . \Flickerbox\String::display_line( \Flickerbox\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
 		echo '<td class="right">' . $t_released_label . '&#160;</td>';
 		echo '<td><span class="issue-status" title="' . $t_resolution . '">' . $t_status . '</span></td>';
 		echo '<td>';
-		print_user( $t_bug->handler_id );
+		\Flickerbox\Print_Util::user( $t_bug->handler_id );
 		echo '</td>';
 
 		# summary
@@ -228,15 +224,15 @@ if( $t_sponsor_count === 0 ) {
 
 $t_query = 'SELECT b.id as bug, s.id as sponsor, s.paid, b.project_id, b.fixed_in_version, b.status
 	FROM {bug} b, {sponsorship} s
-	WHERE b.handler_id=' . db_param() . ' AND s.bug_id = b.id ' .
-	( $t_show_all ? '' : 'AND ( b.status < ' . db_param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
+	WHERE b.handler_id=' . \Flickerbox\Database::param() . ' AND s.bug_id = b.id ' .
+	( $t_show_all ? '' : 'AND ( b.status < ' . \Flickerbox\Database::param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
 	AND ' . $t_project_clause . '
 	ORDER BY s.paid ASC, b.project_id ASC, b.fixed_in_version ASC, b.status ASC, b.id DESC';
 
-$t_result = db_query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
+$t_result = \Flickerbox\Database::query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
 
 $t_sponsors = array();
-while( $t_row = db_fetch_array( $t_result ) ) {
+while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 	$t_sponsors[] = $t_row;
 }
 
@@ -284,7 +280,7 @@ if( $t_sponsor_count === 0 ) {
 	$t_total_paid = 0;
 	for( $i = 0; $i < $t_sponsor_count; ++$i ) {
 		$t_sponsor_row = $t_sponsors[$i];
-		$t_bug = bug_get( $t_sponsor_row['bug'] );
+		$t_bug = \Flickerbox\Bug::get( $t_sponsor_row['bug'] );
 		$t_sponsor = \Flickerbox\Sponsorship::get( $t_sponsor_row['sponsor'] );
 		$t_buglist[] = $t_sponsor_row['bug'] . ':' . $t_sponsor_row['sponsor'];
 
@@ -302,7 +298,7 @@ if( $t_sponsor_count === 0 ) {
 		$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 
 		echo '<tr class="' . $t_status_label .  '">';
-		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . bug_format_id( $t_sponsor_row['bug'] ) . '</a></td>';
+		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Flickerbox\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';
 		echo '<td>' . \Flickerbox\String::display_line( \Flickerbox\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
 		echo '<td class="right">' . $t_released_label . '&#160;</td>';
 		echo '<td><a title="' . $t_resolution . '"><span class="underline">' . $t_status . '</span>&#160;</a></td>';
@@ -316,11 +312,11 @@ if( $t_sponsor_count === 0 ) {
 
 		# describe sponsorship amount
 		echo '<td>';
-		print_user( $t_sponsor->user_id );
+		\Flickerbox\Print_Util::user( $t_sponsor->user_id );
 		echo '</td>';
 		echo '<td class="right">' . \Flickerbox\Sponsorship::format_amount( $t_sponsor->amount ) . '</td>';
 		echo '<td><select name="sponsor_' . $t_row['bug'] . '_' . $t_sponsor->id . '">';
-		print_enum_string_option_list( 'sponsorship', $t_sponsor->paid );
+		\Flickerbox\Print_Util::enum_string_option_list( 'sponsorship', $t_sponsor->paid );
 		echo '</select></td>';
 
 		echo '</tr>';

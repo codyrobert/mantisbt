@@ -36,30 +36,26 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_user_prune' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 
 
 # Delete the users who have never logged in and are older than 1 week
 $t_days_old = (int)7 * SECONDS_PER_DAY;
 
 $t_query = 'SELECT id, access_level FROM {user}
-		WHERE ( login_count = 0 ) AND ( date_created = last_visit ) AND ' . db_helper_compare_time( db_param(), '>', 'date_created', $t_days_old );
-$t_result = db_query( $t_query, array( db_now() ) );
+		WHERE ( login_count = 0 ) AND ( date_created = last_visit ) AND ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '>', 'date_created', $t_days_old );
+$t_result = \Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now() ) );
 
 if( !$t_result ) {
 	trigger_error( ERROR_GENERIC, ERROR );
 }
 
-$t_count = db_num_rows( $t_result );
+$t_count = \Flickerbox\Database::num_rows( $t_result );
 
 if( $t_count > 0 ) {
 	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_account_pruning' ),
@@ -67,13 +63,13 @@ if( $t_count > 0 ) {
 }
 
 for( $i=0; $i < $t_count; $i++ ) {
-	$t_row = db_fetch_array( $t_result );
+	$t_row = \Flickerbox\Database::fetch_array( $t_result );
 	# Don't prune accounts with a higher global access level than the current user
 	if( \Flickerbox\Access::has_global_level( $t_row['access_level'] ) ) {
-		user_delete( $t_row['id'] );
+		\Flickerbox\User::delete( $t_row['id'] );
 	}
 }
 
 \Flickerbox\Form::security_purge( 'manage_user_prune' );
 
-print_header_redirect( 'manage_user_page.php' );
+\Flickerbox\Print_Util::header_redirect( 'manage_user_page.php' );

@@ -39,18 +39,13 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'email_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'lost_pwd' );
 
 # lost password feature disabled or reset password via email disabled -> stop here!
-if( OFF == config_get( 'lost_password_feature' ) ||
-	OFF == config_get( 'send_reset_password' ) ||
-	OFF == config_get( 'enable_email_notification' ) ) {
+if( OFF == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ||
+	OFF == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ||
+	OFF == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) {
 	trigger_error( ERROR_LOST_PASSWORD_NOT_ENABLED, ERROR );
 }
 
@@ -62,12 +57,12 @@ if( auth_is_user_authenticated() ) {
 $f_username = \Flickerbox\GPC::get_string( 'username' );
 $f_email = \Flickerbox\GPC::get_string( 'email' );
 
-email_ensure_valid( $f_email );
+\Flickerbox\Email::ensure_valid( $f_email );
 
 # @todo Consider moving this query to user_api.php
-$t_query = 'SELECT id FROM {user} WHERE username = ' . db_param() . ' AND email = ' . db_param() . ' AND enabled=' . db_param();
-$t_result = db_query( $t_query, array( $f_username, $f_email, true ) );
-$t_row = db_fetch_array( $t_result );
+$t_query = 'SELECT id FROM {user} WHERE username = ' . \Flickerbox\Database::param() . ' AND email = ' . \Flickerbox\Database::param() . ' AND enabled=' . \Flickerbox\Database::param();
+$t_result = \Flickerbox\Database::query( $t_query, array( $f_username, $f_email, true ) );
+$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 if( !$t_row ) {
 	trigger_error( ERROR_LOST_PASSWORD_NOT_MATCHING_DATA, ERROR );
@@ -79,18 +74,18 @@ if( \Flickerbox\Utility::is_blank( $f_email ) ) {
 
 $t_user_id = $t_row['id'];
 
-if( user_is_protected( $t_user_id ) ) {
+if( \Flickerbox\User::is_protected( $t_user_id ) ) {
 	trigger_error( ERROR_PROTECTED_ACCOUNT, ERROR );
 }
 
-if( !user_is_lost_password_request_allowed( $t_user_id ) ) {
+if( !\Flickerbox\User::is_lost_password_request_allowed( $t_user_id ) ) {
 	trigger_error( ERROR_LOST_PASSWORD_MAX_IN_PROGRESS_ATTEMPTS_REACHED, ERROR );
 }
 
 $t_confirm_hash = auth_generate_confirm_hash( $t_user_id );
-email_send_confirm_hash_url( $t_user_id, $t_confirm_hash );
+\Flickerbox\Email::send_confirm_hash_url( $t_user_id, $t_confirm_hash );
 
-user_increment_lost_password_in_progress_count( $t_user_id );
+\Flickerbox\User::increment_lost_password_in_progress_count( $t_user_id );
 
 \Flickerbox\Form::security_purge( 'lost_pwd' );
 
@@ -116,7 +111,7 @@ $t_redirect_url = 'login_page.php';
 </tr>
 </table>
 <br />
-<?php print_bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'proceed' ) ); ?>
+<?php \Flickerbox\Print_Util::bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'proceed' ) ); ?>
 </div>
 
 <?php

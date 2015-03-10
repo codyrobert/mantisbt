@@ -37,8 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
 
@@ -53,7 +51,7 @@ if( 'delete' == $f_action ) {
 
 	# This check is to allow deleting of news items that were left orphan due to bug #3723
 	if( \Flickerbox\Project::exists( $t_row['project_id'] ) ) {
-		\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ), $t_row['project_id'] );
+		\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ), $t_row['project_id'] );
 	}
 
 	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_news_sure_msg' ), \Flickerbox\Lang::get( 'delete_news_item_button' ) );
@@ -62,7 +60,7 @@ if( 'delete' == $f_action ) {
 
 	\Flickerbox\Form::security_purge( 'news_delete' );
 
-	print_header_redirect( 'news_menu_page.php', true );
+	\Flickerbox\Print_Util::header_redirect( 'news_menu_page.php', true );
 }
 
 # Retrieve news item data and prefix with v_
@@ -71,7 +69,7 @@ if( $t_row ) {
 	extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 }
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ), $v_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ), $v_project_id );
 
 $v_headline = \Flickerbox\String::attribute( $v_headline );
 $v_body 	= \Flickerbox\String::textarea( $v_body );
@@ -85,7 +83,7 @@ $v_body 	= \Flickerbox\String::textarea( $v_body );
 	<form id="news-update-form" method="post" action="news_update.php">
 		<fieldset class="has-required">
 			<legend><span><?php echo \Flickerbox\Lang::get( 'headline' ) ?></span></legend>
-			<div class="section-link"><?php print_bracket_link( 'news_menu_page.php', \Flickerbox\Lang::get( 'go_back' ) ) ?></div>
+			<div class="section-link"><?php \Flickerbox\Print_Util::bracket_link( 'news_menu_page.php', \Flickerbox\Lang::get( 'go_back' ) ) ?></div>
 			<?php echo \Flickerbox\Form::security_field( 'news_update' ); ?>
 			<input type="hidden" name="news_id" value="<?php echo $v_id ?>" />
 			<div class="field-container">
@@ -106,7 +104,7 @@ $v_body 	= \Flickerbox\String::textarea( $v_body );
 						if( \Flickerbox\Current_User::is_administrator() ) {
 							$t_sitewide = true;
 						}
-						print_project_option_list( $v_project_id, $t_sitewide ); ?>
+						\Flickerbox\Print_Util::project_option_list( $v_project_id, $t_sitewide ); ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -120,7 +118,7 @@ $v_body 	= \Flickerbox\String::textarea( $v_body );
 				<label for=""><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
 				<span class="select">
 					<select name="view_state">
-						<?php print_enum_string_option_list( 'view_state', $v_view_state ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state', $v_view_state ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

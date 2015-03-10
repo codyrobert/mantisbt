@@ -23,7 +23,7 @@
  */
 
 auth_reauthenticate( );
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'plugin_format_title' ) );
 
@@ -32,7 +32,7 @@ auth_reauthenticate( );
 ?>
 
 <div id="formatting-config-div" class="form-container">
-	<form id="formatting-config-form" action="<?php echo plugin_page( 'config_edit' )?>" method="post">
+	<form id="formatting-config-form" action="<?php echo \Flickerbox\Plugin::page( 'config_edit' )?>" method="post">
 		<fieldset>
 			<legend><span><?php echo \Flickerbox\Lang::get( 'plugin_format_title' ) . ': ' . \Flickerbox\Lang::get( 'plugin_format_config' )?></span></legend>
 			<?php echo \Flickerbox\Form::security_field( 'plugin_format_config_edit' ) ?>
@@ -42,9 +42,9 @@ auth_reauthenticate( );
 				<br /><span class="small"><?php echo \Flickerbox\Lang::get( 'plugin_format_process_text_warning_notice' )?></span>
 				</span></label>
 				<span class="radio">
-					<label><input type="radio" name="process_text" value="1" <?php echo( ON == plugin_config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
+					<label><input type="radio" name="process_text" value="1" <?php echo( ON == \Flickerbox\Plugin::config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
 					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
-					<label><input type="radio" name="process_text" value="0" <?php echo( OFF == plugin_config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
+					<label><input type="radio" name="process_text" value="0" <?php echo( OFF == \Flickerbox\Plugin::config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
 					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
@@ -53,9 +53,9 @@ auth_reauthenticate( );
 			<div class="field-container">
 				<label><span><?php echo \Flickerbox\Lang::get( 'plugin_format_process_urls' )?></span></label>
 				<span class="radio">
-					<label><input type="radio" name="process_urls" value="1" <?php echo( ON == plugin_config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
+					<label><input type="radio" name="process_urls" value="1" <?php echo( ON == \Flickerbox\Plugin::config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
 					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
-					<label><input type="radio" name="process_urls" value="0" <?php echo( OFF == plugin_config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
+					<label><input type="radio" name="process_urls" value="0" <?php echo( OFF == \Flickerbox\Plugin::config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
 					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
@@ -67,13 +67,13 @@ auth_reauthenticate( );
 				<br />
 				<span class="small"><?php
 					printf( \Flickerbox\Lang::get( 'plugin_format_process_buglinks_info' ),
-						config_get( 'bug_link_tag' ), config_get( 'bugnote_link_tag' ) );
+						\Flickerbox\Config::mantis_get( 'bug_link_tag' ), \Flickerbox\Config::mantis_get( 'bugnote_link_tag' ) );
 				?></span>
 				</span></label>
 				<span class="radio">
-					<label><input type="radio" name="process_buglinks" value="1" <?php echo( ON == plugin_config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
+					<label><input type="radio" name="process_buglinks" value="1" <?php echo( ON == \Flickerbox\Plugin::config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
 					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
-					<label><input type="radio" name="process_buglinks" value="0" <?php echo( OFF == plugin_config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
+					<label><input type="radio" name="process_buglinks" value="0" <?php echo( OFF == \Flickerbox\Plugin::config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
 					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>

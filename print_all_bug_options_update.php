@@ -35,8 +35,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/print_all_bug_options_inc.php' );
@@ -73,9 +71,9 @@ $t_user_id = $f_user_id;
 $c_export = implode( '', $t_prefs_arr );
 
 # update preferences
-$t_query = 'UPDATE {user_print_pref} SET print_pref=' . db_param() . ' WHERE user_id=' . db_param();
+$t_query = 'UPDATE {user_print_pref} SET print_pref=' . \Flickerbox\Database::param() . ' WHERE user_id=' . \Flickerbox\Database::param();
 
-$t_result = db_query( $t_query, array( $c_export, $t_user_id ) );
+$t_result = \Flickerbox\Database::query( $t_query, array( $c_export, $t_user_id ) );
 
 \Flickerbox\Form::security_purge( 'print_all_bug_options_update' );
 
@@ -86,7 +84,7 @@ if( $t_result ) {
 } else {
 	echo '<div class="failure-msg">';
 	print \Flickerbox\Error::string( ERROR_GENERIC ) . '<br />';
-	print_bracket_link( $f_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+	\Flickerbox\Print_Util::bracket_link( $f_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
 	echo '</div>';
 }
 

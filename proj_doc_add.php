@@ -37,17 +37,15 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'proj_doc_add' );
 
 # Check if project documentation feature is enabled.
-if( OFF == config_get( 'enable_project_documentation' ) ) {
+if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
 	\Flickerbox\Access::denied();
 }
 
-\Flickerbox\Access::ensure_project_level( config_get( 'upload_project_file_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ) );
 
 $f_title = \Flickerbox\GPC::get_string( 'title' );
 $f_description = \Flickerbox\GPC::get_string( 'description' );

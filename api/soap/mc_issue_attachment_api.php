@@ -65,7 +65,7 @@ function mc_issue_attachment_add( $p_username, $p_password, $p_issue_id, $p_name
 	if( !\Flickerbox\File::allow_bug_upload( $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
-	if( !\Flickerbox\Access::has_bug_level( config_get( 'upload_bug_file_threshold' ), $p_issue_id, $t_user_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'upload_bug_file_threshold' ), $p_issue_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 	return mci_file_add( $p_issue_id, $p_name, $p_content, $p_file_type, 'bug', '', '', $t_user_id );
@@ -92,9 +92,9 @@ function mc_issue_attachment_delete( $p_username, $p_password, $p_issue_attachme
 	$t_attachment_owner = \Flickerbox\File::get_field( $p_issue_attachment_id, 'user_id' );
 	$t_current_user_is_attachment_owner = $t_attachment_owner == $t_user_id;
 	# Factor in allow_delete_own_attachments=ON|OFF
-	if( !$t_current_user_is_attachment_owner || ( $t_current_user_is_attachment_owner && !config_get( 'allow_delete_own_attachments' ) ) ) {
+	if( !$t_current_user_is_attachment_owner || ( $t_current_user_is_attachment_owner && !\Flickerbox\Config::mantis_get( 'allow_delete_own_attachments' ) ) ) {
 		# Check access against delete_attachments_threshold
-		if( !\Flickerbox\Access::has_bug_level( config_get( 'delete_attachments_threshold' ), $t_bug_id, $t_user_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'delete_attachments_threshold' ), $t_bug_id, $t_user_id ) ) {
 			return mci_soap_fault_access_denied( $t_user_id );
 		}
 	}

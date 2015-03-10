@@ -40,15 +40,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'email_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_user_create' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 
 $f_username        = \Flickerbox\GPC::get_string( 'username' );
 $f_realname        = \Flickerbox\GPC::get_string( 'realname', '' );
@@ -70,16 +66,16 @@ if( \Flickerbox\Utility::is_blank( $f_username ) ) {
 #  anyway)
 # strip extra space from real name
 $t_realname = string_normalize( $f_realname );
-user_ensure_name_valid( $f_username );
-user_ensure_realname_unique( $f_username, $f_realname );
+\Flickerbox\User::ensure_name_valid( $f_username );
+\Flickerbox\User::ensure_realname_unique( $f_username, $f_realname );
 
 if( $f_password != $f_password_verify ) {
 	trigger_error( ERROR_USER_CREATE_PASSWORD_MISMATCH, ERROR );
 }
 
-email_ensure_not_disposable( $f_email );
+\Flickerbox\Email::ensure_not_disposable( $f_email );
 
-if( ( ON == config_get( 'send_reset_password' ) ) && ( ON == config_get( 'enable_email_notification' ) ) ) {
+if( ( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
 	# Check code will be sent to the user directly via email. Dummy password set to random
 	# Create random password
 	$f_password	= auth_generate_random_password();
@@ -98,11 +94,11 @@ if( ( ON == config_get( 'send_reset_password' ) ) && ( ON == config_get( 'enable
 
 # Need to send the user creation mail in the tracker language, not in the creating admin's language
 # Park the current language name until the user has been created
-\Flickerbox\Lang::push( config_get( 'default_language' ) );
+\Flickerbox\Lang::push( \Flickerbox\Config::mantis_get( 'default_language' ) );
 
 # create the user
-$t_admin_name = user_get_name( auth_get_current_user_id() );
-$t_cookie = user_create( $f_username, $f_password, $f_email, $f_access_level, $f_protected, $f_enabled, $t_realname, $t_admin_name );
+$t_admin_name = \Flickerbox\User::get_name( auth_get_current_user_id() );
+$t_cookie = \Flickerbox\User::create( $f_username, $f_password, $f_email, $f_access_level, $f_protected, $f_enabled, $t_realname, $t_admin_name );
 
 # set language back to user language
 \Flickerbox\Lang::pop();
@@ -113,7 +109,7 @@ if( $t_cookie === false ) {
 	$t_redirect_url = 'manage_user_page.php';
 } else {
 	# ok, we created the user, get the row again
-	$t_user_id = user_get_id_by_name( $f_username );
+	$t_user_id = \Flickerbox\User::get_id_by_name( $f_username );
 	$t_redirect_url = 'manage_user_edit_page.php?user_id=' . $t_user_id;
 }
 
@@ -126,7 +122,7 @@ if( $t_cookie === false ) {
 $t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $f_access_level );
 echo \Flickerbox\Lang::get( 'created_user_part1' ) . ' <span class="bold">' . $f_username . '</span> ' . \Flickerbox\Lang::get( 'created_user_part2' ) . ' <span class="bold">' . $t_access_level . '</span><br />';
 
-print_bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+\Flickerbox\Print_Util::bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
 ?>
 </div>
 

@@ -36,20 +36,17 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_user_reset' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 
 $f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
 
-user_ensure_exists( $f_user_id );
+\Flickerbox\User::ensure_exists( $f_user_id );
 
-$t_user = user_get_row( $f_user_id );
+$t_user = \Flickerbox\User::get_row( $f_user_id );
 
 # Ensure that the account to be reset is of equal or lower access to the
 # current user.
@@ -59,9 +56,9 @@ $t_user = user_get_row( $f_user_id );
 # the account (i.e. reset failed login count)
 $t_reset = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
 if( $t_reset ) {
-	$t_result = user_reset_password( $f_user_id );
+	$t_result = \Flickerbox\User::reset_password( $f_user_id );
 } else {
-	$t_result = user_reset_failed_login_count_to_zero( $f_user_id );
+	$t_result = \Flickerbox\User::reset_failed_login_count_to_zero( $f_user_id );
 }
 
 $t_redirect_url = 'manage_user_page.php';
@@ -78,7 +75,7 @@ if( $t_reset ) {
 		echo \Flickerbox\Lang::get( 'account_reset_protected_msg' );
 	} else {
 		# SUCCESSFUL RESET
-		if( ( ON == config_get( 'send_reset_password' ) ) && ( ON == config_get( 'enable_email_notification' ) ) ) {
+		if( ( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
 			# send the new random password via email
 			echo \Flickerbox\Lang::get( 'account_reset_msg' );
 		} else {
@@ -92,6 +89,6 @@ if( $t_reset ) {
 }
 
 echo '<br />';
-print_bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+\Flickerbox\Print_Util::bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
 echo '</div>';
 \Flickerbox\HTML::page_bottom();

@@ -36,8 +36,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_delete' );
 
@@ -45,7 +43,7 @@ auth_reauthenticate();
 
 $f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'delete_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'delete_project_threshold' ), $f_project_id );
 
 $t_project_name = \Flickerbox\Project::get_name( $f_project_id );
 
@@ -63,4 +61,4 @@ if( \Flickerbox\Helper::get_current_project() == $f_project_id ) {
 	\Flickerbox\Helper::set_current_project( ALL_PROJECTS );
 }
 
-print_header_redirect( 'manage_proj_page.php' );
+\Flickerbox\Print_Util::header_redirect( 'manage_proj_page.php' );

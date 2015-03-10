@@ -26,7 +26,7 @@
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 require_once( 'schema.php' );
 
-\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
 
 \Flickerbox\HTML::page_top( 'MantisBT Administration' );
 
@@ -48,7 +48,7 @@ function print_info_row( $p_description, $p_value ) {
 <div id="admin-menu">
 	<ul class="menu">
 		<li><a href="check/index.php">Check your installation</a></li>
-	<?php if( count( $g_upgrade ) - 1 != config_get( 'database_version' ) ) { ?>
+	<?php if( count( $g_upgrade ) - 1 != \Flickerbox\Config::mantis_get( 'database_version' ) ) { ?>
 		<li><a href="install.php"><span class="bold">Upgrade your installation</span></a></li>
 	<?php } ?>
 		<li><a href="system_utils.php">System Utilities</a></li>
@@ -65,8 +65,8 @@ function print_info_row( $p_description, $p_value ) {
 			</td>
 		</tr>
 <?php
-	if( ON == config_get( 'show_version' ) ) {
-		$t_version_suffix = config_get_global( 'version_suffix' );
+	if( ON == \Flickerbox\Config::mantis_get( 'show_version' ) ) {
+		$t_version_suffix = \Flickerbox\Config::get_global( 'version_suffix' );
 	} else {
 		$t_version_suffix = '';
 	}
@@ -79,7 +79,7 @@ function print_info_row( $p_description, $p_value ) {
 			</td>
 		</tr>
 <?php
-	print_info_row( \Flickerbox\Lang::get( 'schema_version' ), config_get( 'database_version' ) );
+	print_info_row( \Flickerbox\Lang::get( 'schema_version' ), \Flickerbox\Config::mantis_get( 'database_version' ) );
 	print_info_row( \Flickerbox\Lang::get( 'adodb_version' ), $g_db->Version() );
 ?>
 		<tr>
@@ -88,9 +88,9 @@ function print_info_row( $p_description, $p_value ) {
 			</td>
 		</tr>
 <?php
-	print_info_row( \Flickerbox\Lang::get( 'site_path' ), config_get( 'absolute_path' ) );
-	print_info_row( \Flickerbox\Lang::get( 'core_path' ), config_get( 'core_path' ) );
-	print_info_row( \Flickerbox\Lang::get( 'plugin_path' ), config_get( 'plugin_path' ) );
+	print_info_row( \Flickerbox\Lang::get( 'site_path' ), \Flickerbox\Config::mantis_get( 'absolute_path' ) );
+	print_info_row( \Flickerbox\Lang::get( 'core_path' ), \Flickerbox\Config::mantis_get( 'core_path' ) );
+	print_info_row( \Flickerbox\Lang::get( 'plugin_path' ), \Flickerbox\Config::mantis_get( 'plugin_path' ) );
 ?>
 	</table>
 </div>

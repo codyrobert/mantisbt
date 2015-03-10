@@ -40,11 +40,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'bugnote_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id', 0 );
 $f_bugnote_id = \Flickerbox\GPC::get_int( 'bugnote_id', 0 );
@@ -54,14 +49,14 @@ $t_title = '';
 
 if( $f_bug_id ) {
 	$t_bug_id = $f_bug_id;
-	$t_bug_data = bug_get( $t_bug_id, true );
+	$t_bug_data = \Flickerbox\Bug::get( $t_bug_id, true );
 	$t_bug_revisions = array_reverse( \Flickerbox\Bug\Revision::list( $t_bug_id ), true );
 
 	$t_title = \Flickerbox\Lang::get( 'issue_id' ) . $t_bug_id;
 
 } else if( $f_bugnote_id ) {
-	$t_bug_id = bugnote_get_field( $f_bugnote_id, 'bug_id' );
-	$t_bug_data = bug_get( $t_bug_id, true );
+	$t_bug_id = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );
+	$t_bug_data = \Flickerbox\Bug::get( $t_bug_id, true );
 
 	$t_bug_revisions = \Flickerbox\Bug\Revision::list( $t_bug_id, REV_ANY, $f_bugnote_id );
 
@@ -75,7 +70,7 @@ if( $f_bug_id ) {
 	}
 
 	$t_bug_id = $t_bug_revisions[$f_rev_id]['bug_id'];
-	$t_bug_data = bug_get( $t_bug_id, true );
+	$t_bug_data = \Flickerbox\Bug::get( $t_bug_id, true );
 
 	$t_title = \Flickerbox\Lang::get( 'issue_id' ) . $t_bug_id;
 
@@ -94,7 +89,7 @@ function show_revision( array $p_revision ) {
 	static $s_drop_token = null;
 	static $s_user_access = null;
 	if( is_null( $s_can_drop ) ) {
-		$s_can_drop = \Flickerbox\Access::has_bug_level( config_get( 'bug_revision_drop_threshold' ), $p_revision['bug_id'] );
+		$s_can_drop = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'bug_revision_drop_threshold' ), $p_revision['bug_id'] );
 		$s_drop_token = \Flickerbox\Form::security_param( 'bug_revision_drop' );
 	}
 
@@ -110,7 +105,7 @@ function show_revision( array $p_revision ) {
 			break;
 		case REV_BUGNOTE:
 			if( is_null( $s_user_access ) ) {
-				$s_user_access = \Flickerbox\Access::has_bug_level( config_get( 'private_bugnote_threshold' ), $p_revision['bug_id'] );
+				$s_user_access = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'private_bugnote_threshold' ), $p_revision['bug_id'] );
 			}
 
 			if( !$s_user_access ) {
@@ -123,7 +118,7 @@ function show_revision( array $p_revision ) {
 			$t_label = '';
 	}
 
-	$t_by_string = sprintf( \Flickerbox\Lang::get( 'revision_by' ), \Flickerbox\String::display_line( date( config_get( 'normal_date_format' ), $p_revision['timestamp'] ) ), \Flickerbox\Prepare::user_name( $p_revision['user_id'] ) );
+	$t_by_string = sprintf( \Flickerbox\Lang::get( 'revision_by' ), \Flickerbox\String::display_line( date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $p_revision['timestamp'] ) ), \Flickerbox\Prepare::user_name( $p_revision['user_id'] ) );
 
 ?>
 
@@ -135,7 +130,7 @@ function show_revision( array $p_revision ) {
 			<td class="center" width="5%">
 <?php
 	if( $s_can_drop ) {
-		print_bracket_link( 'bug_revision_drop.php?id=' . $p_revision['id'] . $s_drop_token, \Flickerbox\Lang::get( 'revision_drop' ) );
+		\Flickerbox\Print_Util::bracket_link( 'bug_revision_drop.php?id=' . $p_revision['id'] . $s_drop_token, \Flickerbox\Lang::get( 'revision_drop' ) );
 	}
 ?>
 		</tr>
@@ -147,9 +142,9 @@ function show_revision( array $p_revision ) {
 <?php
 }
 
-\Flickerbox\HTML::page_top( bug_format_summary( $t_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Bug::format_summary( $t_bug_id, SUMMARY_CAPTION ) );
 
-print_recently_visited();
+\Flickerbox\Print_Util::recently_visited();
 
 ?>
 
@@ -159,16 +154,16 @@ print_recently_visited();
 	<div class="section-link">
 		<?php
 			if( !$f_bug_id && !$f_bugnote_id ) {
-				print_bracket_link( '?bug_id=' . $t_bug_id, \Flickerbox\Lang::get( 'all_revisions' ) );
+				\Flickerbox\Print_Util::bracket_link( '?bug_id=' . $t_bug_id, \Flickerbox\Lang::get( 'all_revisions' ) );
 			}
-			print_bracket_link( 'view.php?id=' . $t_bug_id, \Flickerbox\Lang::get( 'back_to_issue' ) );
+			\Flickerbox\Print_Util::bracket_link( 'view.php?id=' . $t_bug_id, \Flickerbox\Lang::get( 'back_to_issue' ) );
 		?>
 	</div>
 
 	<table>
 		<tr>
 			<th class="category" width="15%"><?php echo \Flickerbox\Lang::get( 'summary' ) ?></th>
-			<td colspan="3"><?php echo bug_format_summary( $t_bug_id, SUMMARY_FIELD ) ?></td>
+			<td colspan="3"><?php echo \Flickerbox\Bug::format_summary( $t_bug_id, SUMMARY_FIELD ) ?></td>
 		</tr>
 		<?php
 			foreach( $t_bug_revisions as $t_rev ) {

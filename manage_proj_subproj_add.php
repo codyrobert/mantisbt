@@ -37,8 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_subproj_add' );
 
@@ -47,7 +45,7 @@ auth_reauthenticate();
 $f_project_id    = \Flickerbox\GPC::get_int( 'project_id' );
 $f_subproject_id = \Flickerbox\GPC::get_int( 'subproject_id' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
 \Flickerbox\Project::ensure_exists( $f_project_id );
 \Flickerbox\Project::ensure_exists( $f_subproject_id );

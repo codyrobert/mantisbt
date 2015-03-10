@@ -33,15 +33,13 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
-$t_allow_perm_login = ( ON == config_get( 'allow_permanent_cookie' ) );
+$t_allow_perm_login = ( ON == \Flickerbox\Config::mantis_get( 'allow_permanent_cookie' ) );
 
 $f_username		= \Flickerbox\GPC::get_string( 'username', '' );
 $f_password		= \Flickerbox\GPC::get_string( 'password', '' );
 $f_perm_login	= $t_allow_perm_login && \Flickerbox\GPC::get_bool( 'perm_login' );
-$t_return		= \Flickerbox\String::url( \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'return', config_get( 'default_home_page' ) ) ) );
+$t_return		= \Flickerbox\String::url( \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'return', \Flickerbox\Config::mantis_get( 'default_home_page' ) ) ) );
 $f_from			= \Flickerbox\GPC::get_string( 'from', '' );
 $f_secure_session = \Flickerbox\GPC::get_bool( 'secure_session', false );
 $f_install = \Flickerbox\GPC::get_bool( 'install' );
@@ -54,7 +52,7 @@ if( $f_install ) {
 $f_username = auth_prepare_username( $f_username );
 $f_password = auth_prepare_password( $f_password );
 
-\Flickerbox\GPC::set_cookie( config_get_global( 'cookie_prefix' ) . '_secure_session', $f_secure_session ? '1' : '0' );
+\Flickerbox\GPC::set_cookie( \Flickerbox\Config::get_global( 'cookie_prefix' ) . '_secure_session', $f_secure_session ? '1' : '0' );
 
 if( auth_attempt_login( $f_username, $f_password, $f_perm_login ) ) {
 	\Flickerbox\Session::set( 'secure_session', $f_secure_session );
@@ -73,10 +71,10 @@ if( auth_attempt_login( $f_username, $f_password, $f_perm_login ) ) {
 		$t_redirect_url .= '&perm_login=' . ( $f_perm_login ? 1 : 0 );
 	}
 
-	if( HTTP_AUTH == config_get( 'login_method' ) ) {
+	if( HTTP_AUTH == \Flickerbox\Config::mantis_get( 'login_method' ) ) {
 		auth_http_prompt();
 		exit;
 	}
 }
 
-print_header_redirect( $t_redirect_url );
+\Flickerbox\Print_Util::header_redirect( $t_redirect_url );

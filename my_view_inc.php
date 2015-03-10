@@ -38,9 +38,6 @@
  * @uses string_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 $t_filter = \Flickerbox\Current_User::get_bug_filter();
 if( $t_filter === false ) {
@@ -50,11 +47,11 @@ if( $t_filter === false ) {
 $t_sort = $t_filter['sort'];
 $t_dir = $t_filter['dir'];
 
-$t_icon_path = config_get( 'icon_path' );
-$t_update_bug_threshold = config_get( 'update_bug_threshold' );
-$t_bug_resolved_status_threshold = config_get( 'bug_resolved_status_threshold' );
-$t_hide_status_default = config_get( 'hide_status_default' );
-$t_default_show_changed = config_get( 'default_show_changed' );
+$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
+$t_update_bug_threshold = \Flickerbox\Config::mantis_get( 'update_bug_threshold' );
+$t_bug_resolved_status_threshold = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_hide_status_default = \Flickerbox\Config::mantis_get( 'hide_status_default' );
+$t_default_show_changed = \Flickerbox\Config::mantis_get( 'default_show_changed' );
 
 $c_filter['assigned'] = \Flickerbox\Filter::create_assigned_to_unresolved( \Flickerbox\Helper::get_current_project(), $t_current_user_id );
 $t_url_link_parameters['assigned'] = FILTER_PROPERTY_HANDLER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
@@ -149,7 +146,7 @@ $c_filter['feedback'] = array(
 		'0' => META_FILTER_ANY,
 	),
 	FILTER_PROPERTY_STATUS => array(
-		'0' => config_get( 'bug_feedback_status' ),
+		'0' => \Flickerbox\Config::mantis_get( 'bug_feedback_status' ),
 	),
 	FILTER_PROPERTY_HIGHLIGHT_CHANGED => $t_default_show_changed,
 	FILTER_PROPERTY_REPORTER_ID => array(
@@ -174,7 +171,7 @@ $c_filter['feedback'] = array(
 		'0' => META_FILTER_ANY,
 	),
 );
-$t_url_link_parameters['feedback'] = FILTER_PROPERTY_REPORTER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_STATUS . '=' . config_get( 'bug_feedback_status' ) . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
+$t_url_link_parameters['feedback'] = FILTER_PROPERTY_REPORTER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_STATUS . '=' . \Flickerbox\Config::mantis_get( 'bug_feedback_status' ) . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
 $c_filter['verify'] = array(
 	FILTER_PROPERTY_CATEGORY_ID => array(
@@ -277,7 +274,7 @@ $t_box_title_label = \Flickerbox\Lang::get( 'my_view_title_' . $t_box_title );
 # -- Viewing range info --?>
 	<td class="form-title" colspan="2">
 <?php
-print_link( html_entity_decode( config_get( 'bug_count_hyperlink_prefix' ) ).'&' . $t_url_link_parameters[$t_box_title], $t_box_title_label, false, 'subtle' );
+\Flickerbox\Print_Util::link( html_entity_decode( \Flickerbox\Config::mantis_get( 'bug_count_hyperlink_prefix' ) ).'&' . $t_url_link_parameters[$t_box_title], $t_box_title_label, false, 'subtle' );
 
 if( count( $t_rows ) > 0 ) {
 	$v_start = $t_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] * ( $f_page_number - 1 ) + 1;
@@ -302,7 +299,7 @@ for( $i = 0;$i < $t_count; $i++ ) {
 	$t_bug = $t_rows[$i];
 
 	$t_summary = \Flickerbox\String::display_line_links( $t_bug->summary );
-	$t_last_updated = date( config_get( 'normal_date_format' ), $t_bug->last_updated );
+	$t_last_updated = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_bug->last_updated );
 
 	# choose color based on status
 	$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status, \Flickerbox\Auth::get_current_user_id(), $t_bug->project_id );
@@ -331,16 +328,16 @@ for( $i = 0;$i < $t_count; $i++ ) {
 	<td class="center nowrap my-buglist-id">
 		<span class="small">
 		<?php
-			print_bug_link( $t_bug->id );
+			\Flickerbox\Print_Util::bug_link( $t_bug->id );
 
 			echo '<br />';
 
-			if( !bug_is_readonly( $t_bug->id ) && \Flickerbox\Access::has_bug_level( $t_update_bug_threshold, $t_bug->id ) ) {
+			if( !\Flickerbox\Bug::is_readonly( $t_bug->id ) && \Flickerbox\Access::has_bug_level( $t_update_bug_threshold, $t_bug->id ) ) {
 				echo '<a class="edit" href="' . \Flickerbox\String::get_bug_update_url( $t_bug->id ) . '"><img src="' . $t_icon_path . 'update.png' . '" alt="' . \Flickerbox\Lang::get( 'update_bug_button' ) . '" /></a>';
 			}
 
-			if( ON == config_get( 'show_priority_text' ) ) {
-				print_formatted_priority_string( $t_bug );
+			if( ON == \Flickerbox\Config::mantis_get( 'show_priority_text' ) ) {
+				\Flickerbox\Print_Util::formatted_priority_string( $t_bug );
 			} else {
 				\Flickerbox\Icon::print_status_icon( $t_bug->priority );
 			}
@@ -363,7 +360,7 @@ for( $i = 0;$i < $t_count; $i++ ) {
 	# -- Summary --?>
 	<td class="left my-buglist-description">
 		<?php
-		 	if( ON == config_get( 'show_bug_project_links' ) && \Flickerbox\Helper::get_current_project() != $t_bug->project_id ) {
+		 	if( ON == \Flickerbox\Config::mantis_get( 'show_bug_project_links' ) && \Flickerbox\Helper::get_current_project() != $t_bug->project_id ) {
 				echo '<span class="small project">[', \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $t_bug->project_id ) ), '] </span>';
 			}
 			echo '<span class="small summary">' . $t_summary . '</span><br />';

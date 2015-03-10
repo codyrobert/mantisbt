@@ -42,9 +42,7 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -69,7 +67,7 @@ $t_accessible_custom_fields_ids = array();
 $t_accessible_custom_fields_names = array();
 $t_accessible_custom_fields_type = array() ;
 $t_accessible_custom_fields_values = array();
-$t_filter_cols = config_get( 'filter_custom_fields_per_row' );
+$t_filter_cols = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
 $t_custom_cols = 1;
 $t_custom_rows = 0;
 
@@ -82,7 +80,7 @@ for( $i=0; $i < $t_n_fields; $i++ ) {
 	}
 }
 
-if( ON == config_get( 'filter_by_custom_fields' ) ) {
+if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 	$t_custom_cols = $t_filter_cols;
 	$t_custom_fields = custom_field_get_linked_ids( $t_project_id );
 
@@ -98,7 +96,7 @@ if( ON == config_get( 'filter_by_custom_fields' ) ) {
 	}
 
 	if( count( $t_accessible_custom_fields_ids ) > 0 ) {
-		$t_per_row = config_get( 'filter_custom_fields_per_row' );
+		$t_per_row = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
 		$t_custom_rows = ceil( count( $t_accessible_custom_fields_ids ) / $t_per_row );
 	}
 }
@@ -116,15 +114,15 @@ if( $f_for_screen == false ) {
 }
 
 $f_default_view_type = 'simple';
-if( ADVANCED_DEFAULT == config_get( 'view_filters' ) ) {
+if( ADVANCED_DEFAULT == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_default_view_type = 'advanced';
 }
 
 $f_view_type = \Flickerbox\GPC::get_string( 'view_type', $f_default_view_type );
-if( ADVANCED_ONLY == config_get( 'view_filters' ) ) {
+if( ADVANCED_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'advanced';
 }
-if( SIMPLE_ONLY == config_get( 'view_filters' ) ) {
+if( SIMPLE_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'simple';
 }
 if( !in_array( $f_view_type, array( 'simple', 'advanced' ) ) ) {
@@ -137,9 +135,9 @@ if( 'advanced' == $f_view_type ) {
 }
 
 $t_show_product_version = \Flickerbox\Version::should_show_product_version( $t_project_id );
-$t_show_build = $t_show_product_version && ( config_get( 'enable_product_build' ) == ON );
+$t_show_build = $t_show_product_version && ( \Flickerbox\Config::mantis_get( 'enable_product_build' ) == ON );
 
-$t_show_tags = \Flickerbox\Access::has_global_level( config_get( 'tag_view_threshold' ) );
+$t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_view_threshold' ) );
 ?>
 <div class="filter-box">
 
@@ -162,11 +160,11 @@ $t_show_tags = \Flickerbox\Access::has_global_level( config_get( 'tag_view_thres
 	<?php
 		$f_switch_view_link = 'view_filters_page.php?target_field=' . $t_target_field . '&view_type=';
 
-		if( ( SIMPLE_ONLY != config_get( 'view_filters' ) ) && ( ADVANCED_ONLY != config_get( 'view_filters' ) ) ) {
+		if( ( SIMPLE_ONLY != \Flickerbox\Config::mantis_get( 'view_filters' ) ) && ( ADVANCED_ONLY != \Flickerbox\Config::mantis_get( 'view_filters' ) ) ) {
 			if( 'advanced' == $f_view_type ) {
-				print_bracket_link( $f_switch_view_link . 'simple', \Flickerbox\Lang::get( 'simple_filters' ) );
+				\Flickerbox\Print_Util::bracket_link( $f_switch_view_link . 'simple', \Flickerbox\Lang::get( 'simple_filters' ) );
 			} else {
-				print_bracket_link( $f_switch_view_link . 'advanced', \Flickerbox\Lang::get( 'advanced_filters' ) );
+				\Flickerbox\Print_Util::bracket_link( $f_switch_view_link . 'advanced', \Flickerbox\Lang::get( 'advanced_filters' ) );
 			}
 		}
 	?>
@@ -340,11 +338,11 @@ $t_show_tags = \Flickerbox\Access::has_global_level( config_get( 'tag_view_thres
 <!-- Filter row 4 (custom fields) -->
 
 <?php
-if( ON == config_get( 'filter_by_custom_fields' ) ) {
+if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 
 	# -- Custom Field Searching --
 	if( count( $t_accessible_custom_fields_ids ) > 0 ) {
-		$t_per_row = config_get( 'filter_custom_fields_per_row' );
+		$t_per_row = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
 		$t_num_rows = ceil( count( $t_accessible_custom_fields_ids ) / $t_per_row );
 		$t_base = 0;
 

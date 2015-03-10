@@ -36,18 +36,15 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'plugin_api.php' );
-require_api( 'print_api.php' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_plugin_link' ) );
 
 \Flickerbox\HTML::print_manage_menu( 'manage_plugin_page.php' );
 
-$t_plugins = plugin_find_all();
+$t_plugins = \Flickerbox\Plugin::find_all();
 uasort( $t_plugins,
 	function ( $p_p1, $p_p2 ) {
 		return strcasecmp( $p_p1->name, $p_p2->name );
@@ -58,7 +55,7 @@ $t_plugins_installed = array();
 $t_plugins_available = array();
 
 foreach( $t_plugins as $t_basename => $t_plugin ) {
-	if( plugin_is_registered( $t_basename ) ) {
+	if( \Flickerbox\Plugin::is_registered( $t_basename ) ) {
 		$t_plugins_installed[$t_basename] = $t_plugin;
 	} else {
 		$t_plugins_available[$t_basename] = $t_plugin;
@@ -112,12 +109,12 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 	$t_url = $t_plugin->url;
 	$t_requires = $t_plugin->requires;
 	$t_depends = array();
-	$t_priority = plugin_priority( $t_basename );
-	$t_protected = plugin_protected( $t_basename );
+	$t_priority = \Flickerbox\Plugin::priority( $t_basename );
+	$t_protected = \Flickerbox\Plugin::is_protected( $t_basename );
 
 	$t_name = \Flickerbox\String::display_line( $t_plugin->name.' '.$t_plugin->version );
 	if( !\Flickerbox\Utility::is_blank( $t_page ) ) {
-		$t_name = '<a href="' . \Flickerbox\String::attribute( plugin_page( $t_page, false, $t_basename ) ) . '">' . $t_name . '</a>';
+		$t_name = '<a href="' . \Flickerbox\String::attribute( \Flickerbox\Plugin::page( $t_page, false, $t_basename ) ) . '">' . $t_name . '</a>';
 	}
 
 	if( !\Flickerbox\Utility::is_blank( $t_author ) ) {
@@ -136,11 +133,11 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 		$t_url = '<br/>' . \Flickerbox\Lang::get( 'plugin_url' ) . \Flickerbox\Lang::get( 'word_separator' ) . '<a href="' . $t_url . '">' . $t_url . '</a>';
 	}
 
-	$t_upgrade = plugin_needs_upgrade( $t_plugin );
+	$t_upgrade = \Flickerbox\Plugin::needs_upgrade( $t_plugin );
 
 	if( is_array( $t_requires ) ) {
 		foreach( $t_requires as $t_plugin => $t_version ) {
-			$t_dependency = plugin_dependency( $t_plugin, $t_version );
+			$t_dependency = \Flickerbox\Plugin::dependency( $t_plugin, $t_version );
 			if( 1 == $t_dependency ) {
 				if( \Flickerbox\Utility::is_blank( $t_upgrade ) ) {
 					$t_depends[] = '<span class="small dependency_met">'.\Flickerbox\String::display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
@@ -171,7 +168,7 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 		echo '<td class="center">',
 			'<select name="priority_' . $t_basename . '"',
 				\Flickerbox\Helper::check_disabled( $t_protected ), '>',
-				print_plugin_priority_list( $t_priority ),
+				\Flickerbox\Print_Util::plugin_priority_list( $t_priority ),
 			'</select>','</td>';
 		echo '<td class="center">',
 			'<input type="checkbox" name="protected_' . $t_basename . '"',
@@ -180,12 +177,12 @@ foreach ( $t_plugins_installed as $t_basename => $t_plugin ) {
 	}
 	echo '<td class="center">';
 	if( $t_upgrade ) {
-		print_bracket_link(
+		\Flickerbox\Print_Util::bracket_link(
 			'manage_plugin_upgrade.php?name=' . $t_basename . \Flickerbox\Form::security_param( 'manage_plugin_upgrade' ),
 			\Flickerbox\Lang::get( 'plugin_upgrade' ) );
 	}
 	if( !$t_protected ) {
-		print_bracket_link(
+		\Flickerbox\Print_Util::bracket_link(
 			'manage_plugin_uninstall.php?name=' . $t_basename . \Flickerbox\Form::security_param( 'manage_plugin_uninstall' ),
 			\Flickerbox\Lang::get( 'plugin_uninstall' ) );
 	}
@@ -268,7 +265,7 @@ if( 0 < count( $t_plugins_available ) ) {
 		$t_ready = true;
 		if( is_array( $t_requires ) ) {
 			foreach( $t_requires as $t_plugin => $t_version ) {
-				$t_dependency = plugin_dependency( $t_plugin, $t_version );
+				$t_dependency = \Flickerbox\Plugin::dependency( $t_plugin, $t_version );
 				if( 1 == $t_dependency ) {
 					$t_depends[] = '<span class="small dependency_met">'.\Flickerbox\String::display_line( $t_plugins[$t_plugin]->name.' '.$t_version ).'</span>';
 				} else if( -1 == $t_dependency ) {
@@ -293,7 +290,7 @@ if( 0 < count( $t_plugins_available ) ) {
 		echo '<td class="center">',$t_depends,'</td>';
 		echo '<td class="center">';
 		if( $t_ready ) {
-			print_bracket_link(
+			\Flickerbox\Print_Util::bracket_link(
 				'manage_plugin_install.php?name=' . $t_basename . \Flickerbox\Form::security_param( 'manage_plugin_install' ),
 				\Flickerbox\Lang::get( 'plugin_install' ) );
 		}

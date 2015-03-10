@@ -37,7 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
@@ -59,8 +58,8 @@ $t_filter_cols = 7;
 $t_custom_cols = 1;
 $t_custom_rows = 0;
 
-if( ON == config_get( 'filter_by_custom_fields' ) ) {
-	$t_custom_cols = config_get( 'filter_custom_fields_per_row' );
+if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
+	$t_custom_cols = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
 	$t_custom_fields = custom_field_get_linked_ids( $t_project_id );
 
 	foreach ( $t_custom_fields as $t_cfid ) {
@@ -74,7 +73,7 @@ if( ON == config_get( 'filter_by_custom_fields' ) ) {
 	}
 
 	if( count( $t_accessible_custom_fields_ids ) > 0 ) {
-		$t_per_row = config_get( 'filter_custom_fields_per_row' );
+		$t_per_row = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
 		$t_custom_rows = ceil( count( $t_accessible_custom_fields_ids ) / $t_per_row );
 	}
 }
@@ -90,15 +89,15 @@ if( $f_for_screen == false ) {
 }
 
 $f_default_view_type = 'simple';
-if( ADVANCED_DEFAULT == config_get( 'view_filters' ) ) {
+if( ADVANCED_DEFAULT == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_default_view_type = 'advanced';
 }
 
 $f_view_type = \Flickerbox\GPC::get_string( 'view_type', $f_default_view_type );
-if( ADVANCED_ONLY == config_get( 'view_filters' ) ) {
+if( ADVANCED_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'advanced';
 }
-if( SIMPLE_ONLY == config_get( 'view_filters' ) ) {
+if( SIMPLE_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'simple';
 }
 

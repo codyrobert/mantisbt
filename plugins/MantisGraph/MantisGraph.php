@@ -21,7 +21,7 @@
 /**
  * Mantis Graph plugin
  */
-class MantisGraphPlugin extends MantisPlugin  {
+class MantisGraphPlugin extends \Flickerbox\MantisPlugin  {
 
 	/**
 	 * A method that populates the plugin information and minimum requirements.
@@ -97,7 +97,7 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 * @return array
 	 */
 	function summary_menu() {
-		return array( '<a href="' . plugin_page( 'summary_jpgraph_page' ) . '">' . plugin_langget( 'menu_advanced_summary' ) . '</a>', );
+		return array( '<a href="' . \Flickerbox\Plugin::page( 'summary_jpgraph_page' ) . '">' . \Flickerbox\Plugin::langget( 'menu_advanced_summary' ) . '</a>', );
 	}
 
 	/**
@@ -105,7 +105,7 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 * @return array
 	 */
 	function graph_filter_menu() {
-		return array( '<a href="' . plugin_page( 'bug_graph_page.php' ) . '">' . plugin_langget( 'graph_bug_page_link' ) . '</a>', );
+		return array( '<a href="' . \Flickerbox\Plugin::page( 'bug_graph_page.php' ) . '">' . \Flickerbox\Plugin::langget( 'graph_bug_page_link' ) . '</a>', );
 	}
 
 	/**
@@ -113,13 +113,13 @@ class MantisGraphPlugin extends MantisPlugin  {
 	 * @return array
 	 */
 	function summary_submenu() {
-		$t_icon_path = config_get( 'icon_path' );
-		return array( '<a href="' . \Flickerbox\Helper::mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . plugin_langget( 'synthesis_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_status.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'status_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_priority.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'priority_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_severity.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'severity_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_category.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'category_link' ) . '</a>',
-			'<a href="' . plugin_page( 'summary_graph_imp_resolution.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . plugin_langget( 'resolution_link' ) . '</a>',
+		$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
+		return array( '<a href="' . \Flickerbox\Helper::mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . \Flickerbox\Plugin::langget( 'synthesis_link' ) . '</a>',
+			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_status.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'status_link' ) . '</a>',
+			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_priority.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'priority_link' ) . '</a>',
+			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_severity.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'severity_link' ) . '</a>',
+			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_category.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'category_link' ) . '</a>',
+			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_resolution.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'resolution_link' ) . '</a>',
 		);
 	}
 }

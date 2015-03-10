@@ -43,11 +43,7 @@ namespace Flickerbox;
  * @uses version_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'database_api.php' );
-require_api( 'user_api.php' );
 
 
 class Project
@@ -68,9 +64,9 @@ class Project
 	
 		# Otherwise, check if the projects table contains at least one project.
 		$t_query = 'SELECT * FROM {project}';
-		$t_result = db_query( $t_query, array(), 1 );
+		$t_result = \Flickerbox\Database::query( $t_query, array(), 1 );
 	
-		return db_num_rows( $t_result ) == 0;
+		return \Flickerbox\Database::num_rows( $t_result ) == 0;
 	}
 	
 	/**
@@ -95,10 +91,10 @@ class Project
 			return false;
 		}
 	
-		$t_query = 'SELECT * FROM {project} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_project_id ) );
+		$t_query = 'SELECT * FROM {project} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_project_id ) );
 	
-		if( 0 == db_num_rows( $t_result ) ) {
+		if( 0 == \Flickerbox\Database::num_rows( $t_result ) ) {
 			$g_cache_project_missing[(int)$p_project_id] = true;
 	
 			if( $p_trigger_errors ) {
@@ -109,7 +105,7 @@ class Project
 			}
 		}
 	
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 	
 		$g_cache_project[(int)$p_project_id] = $t_row;
 	
@@ -137,10 +133,10 @@ class Project
 		}
 	
 		$t_query = 'SELECT * FROM {project} WHERE id IN (' . implode( ',', $c_project_id_array ) . ')';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_projects_found = array();
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$g_cache_project[(int)$t_row['id']] = $t_row;
 			$t_projects_found[(int)$t_row['id']] = true;
 		}
@@ -161,9 +157,9 @@ class Project
 	
 		if( !$g_cache_project_all ) {
 			$t_query = 'SELECT * FROM {project}';
-			$t_result = db_query( $t_query );
+			$t_result = \Flickerbox\Database::query( $t_query );
 	
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				$g_cache_project[(int)$t_row['id']] = $t_row;
 			}
 	
@@ -228,10 +224,10 @@ class Project
 	 * @return boolean
 	 */
 	static function is_name_unique( $p_name ) {
-		$t_query = 'SELECT COUNT(*) FROM {project} WHERE name=' . db_param();
-		$t_result = db_query( $t_query, array( $p_name ) );
+		$t_query = 'SELECT COUNT(*) FROM {project} WHERE name=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_name ) );
 	
-		if( 0 == db_result( $t_result ) ) {
+		if( 0 == \Flickerbox\Database::result( $t_result ) ) {
 			return true;
 		} else {
 			return false;
@@ -260,11 +256,11 @@ class Project
 	 */
 	static function includes_user( $p_project_id, $p_user_id ) {
 		$t_query = 'SELECT COUNT(*) FROM {project_user_list}
-					  WHERE project_id=' . db_param() . ' AND
-							user_id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_project_id, $p_user_id ) );
+					  WHERE project_id=' . \Flickerbox\Database::param() . ' AND
+							user_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_project_id, $p_user_id ) );
 	
-		if( 0 == db_result( $t_result ) ) {
+		if( 0 == \Flickerbox\Database::result( $t_result ) ) {
 			return false;
 		} else {
 			return true;
@@ -286,7 +282,7 @@ class Project
 			# If the provided path is the same as the default, make the path blank.
 			# This means that if the default upload path is changed, you don't have
 			# to update the upload path for every single project.
-			if( !strcmp( $p_file_path, config_get( 'absolute_path_default_upload_folder' ) ) ) {
+			if( !strcmp( $p_file_path, \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' ) ) ) {
 				$p_file_path = '';
 			} else {
 				\Flickerbox\File::ensure_valid_upload_path( $p_file_path );
@@ -319,19 +315,19 @@ class Project
 		\Flickerbox\Project::ensure_name_unique( $p_name );
 	
 		# Project does not exist yet, so we get global config
-		if( DATABASE !== config_get( 'file_upload_method', null, null, ALL_PROJECTS ) ) {
+		if( DATABASE !== \Flickerbox\Config::mantis_get( 'file_upload_method', null, null, ALL_PROJECTS ) ) {
 			$p_file_path = \Flickerbox\Project::validate_project_file_path( $p_file_path );
 		}
 	
 		$t_query = 'INSERT INTO {project}
 						( name, status, enabled, view_state, file_path, description, inherit_global )
 					  VALUES
-						( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ')';
+						( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ')';
 	
-		db_query( $t_query, array( $p_name, (int)$p_status, $c_enabled, (int)$p_view_state, $p_file_path, $p_description, $p_inherit_global ) );
+		\Flickerbox\Database::query( $t_query, array( $p_name, (int)$p_status, $c_enabled, (int)$p_view_state, $p_file_path, $p_description, $p_inherit_global ) );
 	
 		# return the id of the new project
-		return db_insert_id( db_get_table( 'project' ) );
+		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'project' ) );
 	}
 	
 	/**
@@ -342,13 +338,13 @@ class Project
 	static function delete( $p_project_id ) {
 		\Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_DELETE', array( $p_project_id ) );
 	
-		$t_email_notifications = config_get( 'enable_email_notification' );
+		$t_email_notifications = \Flickerbox\Config::mantis_get( 'enable_email_notification' );
 	
 		# temporarily disable all notifications
-		config_set_cache( 'enable_email_notification', OFF, CONFIG_TYPE_INT );
+		\Flickerbox\Config::set_cache( 'enable_email_notification', OFF, CONFIG_TYPE_INT );
 	
 		# Delete the bugs
-		bug_delete_all( $p_project_id );
+		\Flickerbox\Bug::delete_all( $p_project_id );
 	
 		# Delete associations with custom field definitions.
 		custom_field_unlink_all( $p_project_id );
@@ -372,17 +368,17 @@ class Project
 		\Flickerbox\News::delete_all( $p_project_id );
 	
 		# Delete project specific configurations
-		config_delete_project( $p_project_id );
+		\Flickerbox\Config::delete_project( $p_project_id );
 	
 		# Delete any user prefs that are project specific
 		\Flickerbox\User\Pref::delete_project( $p_project_id );
 	
 		# Delete the project entry
-		$t_query = 'DELETE FROM {project} WHERE id=' . db_param();
+		$t_query = 'DELETE FROM {project} WHERE id=' . \Flickerbox\Database::param();
 	
-		db_query( $t_query, array( $p_project_id ) );
+		\Flickerbox\Database::query( $t_query, array( $p_project_id ) );
 	
-		config_set_cache( 'enable_email_notification', $t_email_notifications, CONFIG_TYPE_INT );
+		\Flickerbox\Config::set_cache( 'enable_email_notification', $t_email_notifications, CONFIG_TYPE_INT );
 	
 		\Flickerbox\Project::clear_cache( $p_project_id );
 	}
@@ -417,28 +413,28 @@ class Project
 		$t_is_becoming_private = VS_PRIVATE == $p_view_state && VS_PRIVATE != $t_old_view_state;
 		if( $t_is_becoming_private ) {
 			$t_user_id = \Flickerbox\Auth::get_current_user_id();
-			$t_access_level = user_get_access_level( $t_user_id, $p_project_id );
-			$t_manage_project_threshold = config_get( 'manage_project_threshold' );
+			$t_access_level = \Flickerbox\User::get_access_level( $t_user_id, $p_project_id );
+			$t_manage_project_threshold = \Flickerbox\Config::mantis_get( 'manage_project_threshold' );
 		}
 	
 		if( strcasecmp( $p_name, $t_old_name ) != 0 ) {
 			\Flickerbox\Project::ensure_name_unique( $p_name );
 		}
 	
-		if( DATABASE !== config_get( 'file_upload_method', null, null, $p_project_id ) ) {
+		if( DATABASE !== \Flickerbox\Config::mantis_get( 'file_upload_method', null, null, $p_project_id ) ) {
 			$p_file_path = \Flickerbox\Project::validate_project_file_path( $p_file_path );
 		}
 	
 		$t_query = 'UPDATE {project}
-					  SET name=' . db_param() . ',
-						status=' . db_param() . ',
-						enabled=' . db_param() . ',
-						view_state=' . db_param() . ',
-						file_path=' . db_param() . ',
-						description=' . db_param() . ',
-						inherit_global=' . db_param() . '
-					  WHERE id=' . db_param();
-		db_query( $t_query, array( $p_name, (int)$p_status, $c_enabled, (int)$p_view_state, $p_file_path, $p_description, $c_inherit_global, $p_project_id ) );
+					  SET name=' . \Flickerbox\Database::param() . ',
+						status=' . \Flickerbox\Database::param() . ',
+						enabled=' . \Flickerbox\Database::param() . ',
+						view_state=' . \Flickerbox\Database::param() . ',
+						file_path=' . \Flickerbox\Database::param() . ',
+						description=' . \Flickerbox\Database::param() . ',
+						inherit_global=' . \Flickerbox\Database::param() . '
+					  WHERE id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_name, (int)$p_status, $c_enabled, (int)$p_view_state, $p_file_path, $p_description, $c_inherit_global, $p_project_id ) );
 	
 		\Flickerbox\Project::clear_cache( $p_project_id );
 	
@@ -472,10 +468,10 @@ class Project
 	 * @return integer
 	 */
 	static function get_id_by_name( $p_project_name ) {
-		$t_query = 'SELECT id FROM {project} WHERE name = ' . db_param();
-		$t_result = db_query( $t_query, array( $p_project_name ), 1 );
+		$t_query = 'SELECT id FROM {project} WHERE name = ' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_project_name ), 1 );
 	
-		$t_id = db_result( $t_result );
+		$t_id = \Flickerbox\Database::result( $t_result );
 		if( $t_id ) {
 			return $t_id;
 		} else {
@@ -552,10 +548,10 @@ class Project
 	
 		$t_query = 'SELECT access_level
 					  FROM {project_user_list}
-					  WHERE user_id=' . db_param() . ' AND project_id=' . db_param();
-		$t_result = db_query( $t_query, array( (int)$p_user_id, $p_project_id ) );
+					  WHERE user_id=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_user_id, $p_project_id ) );
 	
-		$t_level = db_result( $t_result );
+		$t_level = \Flickerbox\Database::result( $t_result );
 		if( $t_level ) {
 			return (int)$t_level;
 		} else {
@@ -570,14 +566,14 @@ class Project
 	 * @return array
 	 */
 	static function get_local_user_rows( $p_project_id ) {
-		$t_query = 'SELECT * FROM {project_user_list} WHERE project_id=' . db_param();
+		$t_query = 'SELECT * FROM {project_user_list} WHERE project_id=' . \Flickerbox\Database::param();
 	
-		$t_result = db_query( $t_query, array( (int)$p_project_id ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
 	
 		$t_user_rows = array();
-		$t_row_count = db_num_rows( $t_result );
+		$t_row_count = \Flickerbox\Database::num_rows( $t_result );
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			array_push( $t_user_rows, $t_row );
 		}
 	
@@ -616,7 +612,7 @@ class Project
 				# When a new project is created, those who meet 'private_project_threshold' are added
 				# automatically, but don't have an entry in project_user_list_table.
 				#  if they did, you would not have to add global levels.
-				$t_private_project_threshold = config_get( 'private_project_threshold' );
+				$t_private_project_threshold = \Flickerbox\Config::mantis_get( 'private_project_threshold' );
 				if( is_array( $t_private_project_threshold ) ) {
 					if( is_array( $p_access_level ) ) {
 						# both private threshold and request are arrays, use intersection
@@ -662,11 +658,11 @@ class Project
 		if( $p_include_global_users ) {
 			$t_query = 'SELECT id, username, realname, access_level
 					FROM {user}
-					WHERE enabled = ' . db_param() . '
+					WHERE enabled = ' . \Flickerbox\Database::param() . '
 						AND access_level ' . $t_global_access_clause;
 	
-			$t_result = db_query( $t_query, array( $t_on ) );
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			$t_result = \Flickerbox\Database::query( $t_query, array( $t_on ) );
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				$t_users[(int)$t_row['id']] = $t_row;
 			}
 		}
@@ -676,12 +672,12 @@ class Project
 			$t_query = 'SELECT u.id, u.username, u.realname, l.access_level
 					FROM {project_user_list} l, {user} u
 					WHERE l.user_id = u.id
-					AND u.enabled = ' . db_param() . '
-					AND l.project_id = ' . db_param();
+					AND u.enabled = ' . \Flickerbox\Database::param() . '
+					AND l.project_id = ' . \Flickerbox\Database::param();
 	
-			$t_result = db_query( $t_query, array( $t_on, $c_project_id ) );
+			$t_result = \Flickerbox\Database::query( $t_query, array( $t_on, $c_project_id ) );
 	
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				if( is_array( $p_access_level ) ) {
 					$t_keep = in_array( $t_row['access_level'], $p_access_level );
 				} else {
@@ -698,7 +694,7 @@ class Project
 			}
 		}
 	
-		user_cache_array_rows( array_keys( $t_users ) );
+		\Flickerbox\User::cache_array_rows( array_keys( $t_users ) );
 	
 		return array_values( $t_users );
 	}
@@ -710,16 +706,16 @@ class Project
 	 * @return string upload path
 	 */
 	static function get_upload_path( $p_project_id ) {
-		if( DATABASE == config_get( 'file_upload_method', null, ALL_USERS, $p_project_id ) ) {
+		if( DATABASE == \Flickerbox\Config::mantis_get( 'file_upload_method', null, ALL_USERS, $p_project_id ) ) {
 			return '';
 		}
 	
 		if( $p_project_id == ALL_PROJECTS ) {
-			$t_path = config_get( 'absolute_path_default_upload_folder', '', ALL_USERS, ALL_PROJECTS );
+			$t_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder', '', ALL_USERS, ALL_PROJECTS );
 		} else {
 			$t_path = \Flickerbox\Project::get_field( $p_project_id, 'file_path' );
 			if( \Flickerbox\Utility::is_blank( $t_path ) ) {
-				$t_path = config_get( 'absolute_path_default_upload_folder', '', ALL_USERS, $p_project_id );
+				$t_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder', '', ALL_USERS, $p_project_id );
 			}
 		}
 	
@@ -737,15 +733,15 @@ class Project
 		$t_access_level = (int)$p_access_level;
 		if( DEFAULT_ACCESS_LEVEL == $t_access_level ) {
 			# Default access level for this user
-			$t_access_level = user_get_access_level( $p_user_id );
+			$t_access_level = \Flickerbox\User::get_access_level( $p_user_id );
 		}
 	
 		$t_query = 'INSERT INTO {project_user_list}
 					    ( project_id, user_id, access_level )
 					  VALUES
-					    ( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ')';
+					    ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ')';
 	
-		db_query( $t_query, array( (int)$p_project_id, (int)$p_user_id, $t_access_level ) );
+		\Flickerbox\Database::query( $t_query, array( (int)$p_project_id, (int)$p_user_id, $t_access_level ) );
 	}
 	
 	/**
@@ -758,11 +754,11 @@ class Project
 	 */
 	static function update_user_access( $p_project_id, $p_user_id, $p_access_level ) {
 		$t_query = 'UPDATE {project_user_list}
-					  SET access_level=' . db_param() . '
-					  WHERE	project_id=' . db_param() . ' AND
-							user_id=' . db_param();
+					  SET access_level=' . \Flickerbox\Database::param() . '
+					  WHERE	project_id=' . \Flickerbox\Database::param() . ' AND
+							user_id=' . \Flickerbox\Database::param();
 	
-		db_query( $t_query, array( (int)$p_access_level, (int)$p_project_id, (int)$p_user_id ) );
+		\Flickerbox\Database::query( $t_query, array( (int)$p_access_level, (int)$p_project_id, (int)$p_user_id ) );
 	}
 	
 	/**
@@ -789,9 +785,9 @@ class Project
 	 */
 	static function remove_user( $p_project_id, $p_user_id ) {
 		$t_query = 'DELETE FROM {project_user_list}
-					  WHERE project_id=' . db_param() . ' AND user_id=' . db_param();
+					  WHERE project_id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
 	
-		db_query( $t_query, array( (int)$p_project_id, (int)$p_user_id ) );
+		\Flickerbox\Database::query( $t_query, array( (int)$p_project_id, (int)$p_user_id ) );
 	}
 	
 	/**
@@ -804,13 +800,13 @@ class Project
 	 * @return void
 	 */
 	static function remove_all_users( $p_project_id, $p_access_level_limit = null ) {
-		$t_query = 'DELETE FROM {project_user_list} WHERE project_id = ' . db_param();
+		$t_query = 'DELETE FROM {project_user_list} WHERE project_id = ' . \Flickerbox\Database::param();
 	
 		if( $p_access_level_limit !== null ) {
-			$t_query .= ' AND access_level <= ' . db_param();
-			db_query( $t_query, array( (int)$p_project_id, (int)$p_access_level_limit ) );
+			$t_query .= ' AND access_level <= ' . \Flickerbox\Database::param();
+			\Flickerbox\Database::query( $t_query, array( (int)$p_project_id, (int)$p_access_level_limit ) );
 		} else {
-			db_query( $t_query, array( (int)$p_project_id ) );
+			\Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
 		}
 	}
 	
@@ -865,7 +861,7 @@ class Project
 	 * @return string
 	 */
 	static function format_id( $p_project_id ) {
-		$t_padding = config_get( 'display_project_padding' );
+		$t_padding = \Flickerbox\Config::mantis_get( 'display_project_padding' );
 		return( utf8_str_pad( $p_project_id, $t_padding, '0', STR_PAD_LEFT ) );
 	}
 

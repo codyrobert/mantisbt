@@ -30,31 +30,31 @@
 require_once( 'test.php' );
 
 $t_config = 'main_menu_custom_options';
-$t_test = config_get( $t_config );
+$t_test = \Flickerbox\Config::mantis_get( $t_config );
 print_r( $t_config );
 print_r( $t_test );
 $t_test[0][1] = 20;
-config_set( $t_config, $t_test );
-$t_test = config_get( $t_config );
+\Flickerbox\Config::set( $t_config, $t_test );
+$t_test = \Flickerbox\Config::mantis_get( $t_config );
 print_r( $t_test );
 
 $t_config = 'default_home_page';
-$t_test = config_get( $t_config );
+$t_test = \Flickerbox\Config::mantis_get( $t_config );
 print_r( $t_config );
 print_r( $t_test );
 $t_test .= '?test';
-config_set( $t_config, $t_test );
-$t_test = config_get( $t_config );
+\Flickerbox\Config::set( $t_config, $t_test );
+$t_test = \Flickerbox\Config::mantis_get( $t_config );
 print_r( $t_test );
 
 $g_test_config = array();
 $t_config = 'test_config';
-$t_test = config_get( $t_config );
+$t_test = \Flickerbox\Config::mantis_get( $t_config );
 print_r( $t_config );
 print_r( $t_test );
 echo ' ' . (isset( $t_test[0] ) ? 'set' : 'not set' ) . ' ' . count( $t_test ) . ' ';
 $t_test[0] = 20;
-config_set( $t_config, $t_test );
-$t_test = config_get( $t_config );
+\Flickerbox\Config::set( $t_config, $t_test );
+$t_test = \Flickerbox\Config::mantis_get( $t_config );
 print_r( $t_test );
 echo ' ' . (isset( $t_test[0] ) ? 'set' : 'not set' ) . ' ' . count( $t_test ) . ' ';

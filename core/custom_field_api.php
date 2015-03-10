@@ -38,10 +38,6 @@
  * @uses utility_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'email_api.php' );
 
 $g_custom_field_types[CUSTOM_FIELD_TYPE_STRING] = 'standard';
 $g_custom_field_types[CUSTOM_FIELD_TYPE_TEXTAREA] = 'standard';
@@ -54,10 +50,10 @@ $g_custom_field_types[CUSTOM_FIELD_TYPE_LIST] = 'standard';
 $g_custom_field_types[CUSTOM_FIELD_TYPE_MULTILIST] = 'standard';
 $g_custom_field_types[CUSTOM_FIELD_TYPE_DATE] = 'standard';
 
-foreach( $g_custom_field_types as $t_type ) {
-	require_once( config_get_global( 'core_path' ) . 'cfdefs/cfdef_' . $t_type . '.php' );
+/*foreach( $g_custom_field_types as $t_type ) {
+	require_once( \Flickerbox\Config::get_global( 'core_path' ) . 'cfdefs/cfdef_' . $t_type . '.php' );
 }
-unset( $t_type );
+unset( $t_type );*/
 
 /**
  * Return true whether to display custom field
@@ -102,10 +98,10 @@ function custom_field_cache_row( $p_field_id, $p_trigger_errors = true ) {
 		return $g_cache_custom_field[$p_field_id];
 	}
 
-	$t_query = 'SELECT * FROM {custom_field} WHERE id=' . db_param();
-	$t_result = db_query( $t_query, array( $p_field_id ) );
+	$t_query = 'SELECT * FROM {custom_field} WHERE id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_id ) );
 
-	$t_row = db_fetch_array( $t_result );
+	$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 	if( !$t_row ) {
 		if( $p_trigger_errors ) {
@@ -143,9 +139,9 @@ function custom_field_cache_array_rows( array $p_cf_id_array ) {
 	}
 
 	$t_query = 'SELECT * FROM {custom_field} WHERE id IN (' . implode( ',', $c_cf_id_array ) . ')';
-	$t_result = db_query( $t_query );
+	$t_result = \Flickerbox\Database::query( $t_query );
 
-	while( $t_row = db_fetch_array( $t_result ) ) {
+	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 		$g_cache_custom_field[(int)$t_row['id']] = $t_row;
 	}
 	return;
@@ -191,9 +187,9 @@ function custom_field_is_linked( $p_field_id, $p_project_id ) {
 
 	# figure out if this bug_id/field_id combination exists
 	$t_query = 'SELECT COUNT(*) FROM {custom_field_project}
-				WHERE field_id=' . db_param() . ' AND project_id=' . db_param();
-	$t_result = db_query( $t_query, array( $p_field_id, $p_project_id ) );
-	$t_count = db_result( $t_result );
+				WHERE field_id=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_id, $p_project_id ) );
+	$t_count = \Flickerbox\Database::result( $t_result );
 
 	if( $t_count > 0 ) {
 		return true;
@@ -259,12 +255,12 @@ function custom_field_ensure_exists( $p_field_id ) {
  * @access public
  */
 function custom_field_is_name_unique( $p_name, $p_custom_field_id = null ) {
-	$t_query = 'SELECT COUNT(*) FROM {custom_field} WHERE name=' . db_param();
+	$t_query = 'SELECT COUNT(*) FROM {custom_field} WHERE name=' . \Flickerbox\Database::param();
 	if( $p_custom_field_id !== null ) {
-		$t_query .= ' AND (id <> ' . db_param() . ')';
+		$t_query .= ' AND (id <> ' . \Flickerbox\Database::param() . ')';
 	}
-	$t_result = db_query( $t_query, ( ($p_custom_field_id !== null) ? array( $p_name, $p_custom_field_id ) : array( $p_name ) ) );
-	$t_count = db_result( $t_result );
+	$t_result = \Flickerbox\Database::query( $t_query, ( ($p_custom_field_id !== null) ? array( $p_name, $p_custom_field_id ) : array( $p_name ) ) );
+	$t_count = \Flickerbox\Database::result( $t_result );
 
 	if( $t_count > 0 ) {
 		return false;
@@ -306,7 +302,7 @@ function custom_field_has_read_access( $p_field_id, $p_bug_id, $p_user_id = null
 
 	$t_access_level_r = custom_field_get_field( $p_field_id, 'access_level_r' );
 
-	$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
+	$t_project_id = \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' );
 
 	return \Flickerbox\Access::has_project_level( $t_access_level_r, $t_project_id, $p_user_id );
 }
@@ -363,7 +359,7 @@ function custom_field_has_write_access_to_project( $p_field_id, $p_project_id, $
  * @access public
  */
 function custom_field_has_write_access( $p_field_id, $p_bug_id, $p_user_id = null ) {
-	$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
+	$t_project_id = \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' );
 	return( custom_field_has_write_access_to_project( $p_field_id, $t_project_id, $p_user_id ) );
 }
 
@@ -386,11 +382,11 @@ function custom_field_create( $p_name ) {
 	custom_field_ensure_name_unique( $c_name );
 
 	$t_query = 'INSERT INTO {custom_field} ( name, possible_values )
-				  VALUES ( ' . db_param() . ',' . db_param() . ')';
+				  VALUES ( ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
 
-	db_query( $t_query, array( $c_name, '' ) );
+	\Flickerbox\Database::query( $t_query, array( $c_name, '' ) );
 
-	return db_insert_id( db_get_table( 'custom_field' ) );
+	return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'custom_field' ) );
 }
 
 /**
@@ -433,7 +429,7 @@ function custom_field_update( $p_field_id, array $p_def_array ) {
 			case 'possible_values':
 			case 'default_value':
 			case 'valid_regexp':
-				$t_update .= $t_field . '=' . db_param() . ', ';
+				$t_update .= $t_field . '=' . \Flickerbox\Database::param() . ', ';
 				$t_params[] = (string)$t_value;
 				break;
 			case 'type':
@@ -441,7 +437,7 @@ function custom_field_update( $p_field_id, array $p_def_array ) {
 			case 'access_level_rw':
 			case 'length_min':
 			case 'length_max':
-				$t_update .= $t_field  . '=' . db_param() . ', ';
+				$t_update .= $t_field  . '=' . \Flickerbox\Database::param() . ', ';
 				$t_params[] = (int)$t_value;
 				break;
 			case 'filter_by':
@@ -453,7 +449,7 @@ function custom_field_update( $p_field_id, array $p_def_array ) {
 			case 'require_update':
 			case 'require_resolved':
 			case 'require_closed':
-				$t_update .= $t_field . '=' . db_param() . ', ';
+				$t_update .= $t_field . '=' . \Flickerbox\Database::param() . ', ';
 				$t_params[] = (bool)$t_value;
 				break;
 		}
@@ -461,9 +457,9 @@ function custom_field_update( $p_field_id, array $p_def_array ) {
 
 	# If there are fields to update, execute SQL
 	if( $t_update !== '' ) {
-		$t_query = 'UPDATE {custom_field} SET ' . rtrim( $t_update, ', ' ) . ' WHERE id = ' . db_param();
+		$t_query = 'UPDATE {custom_field} SET ' . rtrim( $t_update, ', ' ) . ' WHERE id = ' . \Flickerbox\Database::param();
 		$t_params[] = $p_field_id;
-		db_query( $t_query, $t_params );
+		\Flickerbox\Database::query( $t_query, $t_params );
 
 		custom_field_clear_cache( $p_field_id );
 
@@ -490,8 +486,8 @@ function custom_field_link( $p_field_id, $p_project_id ) {
 	}
 
 	$t_query = 'INSERT INTO {custom_field_project} ( field_id, project_id )
-				  VALUES ( ' . db_param() . ', ' . db_param() . ')';
-	db_query( $t_query, array( $p_field_id, $p_project_id ) );
+				  VALUES ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ')';
+	\Flickerbox\Database::query( $t_query, array( $p_field_id, $p_project_id ) );
 
 	return true;
 }
@@ -510,8 +506,8 @@ function custom_field_link( $p_field_id, $p_project_id ) {
  */
 function custom_field_unlink( $p_field_id, $p_project_id ) {
 	$t_query = 'DELETE FROM {custom_field_project}
-				  WHERE field_id = ' . db_param() . ' AND project_id = ' . db_param();
-	db_query( $t_query, array( $p_field_id, $p_project_id ) );
+				  WHERE field_id = ' . \Flickerbox\Database::param() . ' AND project_id = ' . \Flickerbox\Database::param();
+	\Flickerbox\Database::query( $t_query, array( $p_field_id, $p_project_id ) );
 }
 
 /**
@@ -523,16 +519,16 @@ function custom_field_unlink( $p_field_id, $p_project_id ) {
  */
 function custom_field_destroy( $p_field_id ) {
 	# delete all values
-	$t_query = 'DELETE FROM {custom_field_string} WHERE field_id=' . db_param();
-	db_query( $t_query, array( $p_field_id ) );
+	$t_query = 'DELETE FROM {custom_field_string} WHERE field_id=' . \Flickerbox\Database::param();
+	\Flickerbox\Database::query( $t_query, array( $p_field_id ) );
 
 	# delete all project associations
-	$t_query = 'DELETE FROM {custom_field_project} WHERE field_id=' . db_param();
-	db_query( $t_query, array( $p_field_id ) );
+	$t_query = 'DELETE FROM {custom_field_project} WHERE field_id=' . \Flickerbox\Database::param();
+	\Flickerbox\Database::query( $t_query, array( $p_field_id ) );
 
 	# delete the definition
-	$t_query = 'DELETE FROM {custom_field} WHERE id=' .  db_param();
-	db_query( $t_query, array( $p_field_id ) );
+	$t_query = 'DELETE FROM {custom_field} WHERE id=' .  \Flickerbox\Database::param();
+	\Flickerbox\Database::query( $t_query, array( $p_field_id ) );
 
 	custom_field_clear_cache( $p_field_id );
 }
@@ -548,22 +544,22 @@ function custom_field_destroy( $p_field_id ) {
  */
 function custom_field_unlink_all( $p_project_id ) {
 	# delete all project associations
-	$t_query = 'DELETE FROM {custom_field_project} WHERE project_id=' . db_param();
-	db_query( $t_query, array( $p_project_id ) );
+	$t_query = 'DELETE FROM {custom_field_project} WHERE project_id=' . \Flickerbox\Database::param();
+	\Flickerbox\Database::query( $t_query, array( $p_project_id ) );
 }
 
 /**
  * Delete all custom values associated with the specified bug.
  * return true on success, false on failure
  *
- * To be called from bug_delete().
+ * To be called from \Flickerbox\Bug::delete().
  * @param integer $p_bug_id A bug identifier.
  * @return void
  * @access public
  */
 function custom_field_delete_all_values( $p_bug_id ) {
-	$t_query = 'DELETE FROM {custom_field_string} WHERE bug_id=' . db_param();
-	db_query( $t_query, array( $p_bug_id ) );
+	$t_query = 'DELETE FROM {custom_field_string} WHERE bug_id=' . \Flickerbox\Database::param();
+	\Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
 }
 
 /**
@@ -584,10 +580,10 @@ function custom_field_get_id_from_name( $p_field_name ) {
 		return $g_cache_name_to_id_map[$p_field_name];
 	}
 
-	$t_query = 'SELECT id FROM {custom_field} WHERE name=' . db_param();
-	$t_result = db_query( $t_query, array( $p_field_name ) );
+	$t_query = 'SELECT id FROM {custom_field} WHERE name=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_name ) );
 
-	$t_row = db_fetch_array( $t_result );
+	$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 	if( !$t_row ) {
 		$g_cache_name_to_id_map[$p_field_name] = false;
@@ -611,7 +607,7 @@ function custom_field_get_linked_ids( $p_project_id = ALL_PROJECTS ) {
 	global $g_cache_cf_linked;
 
 	if( !isset( $g_cache_cf_linked[$p_project_id] ) ) {
-		db_param_push();
+		\Flickerbox\Database::param_push();
 
 		if( ALL_PROJECTS == $p_project_id ) {
 			$t_user_id = \Flickerbox\Auth::get_current_user_id();
@@ -624,50 +620,50 @@ function custom_field_get_linked_ids( $p_project_id = ALL_PROJECTS ) {
 				FROM {custom_field} cft
 					JOIN {custom_field_project} cfpt ON cfpt.field_id = cft.id
 					JOIN {project} pt
-						ON pt.id = cfpt.project_id AND pt.enabled = ' . db_prepare_bool( true ) . '
+						ON pt.id = cfpt.project_id AND pt.enabled = ' . \Flickerbox\Database::prepare_bool( true ) . '
 					LEFT JOIN {project_user_list} pult
-						ON pult.project_id = cfpt.project_id AND pult.user_id = ' . db_param() . '
+						ON pult.project_id = cfpt.project_id AND pult.user_id = ' . \Flickerbox\Database::param() . '
 					, {user} ut
-				WHERE ut.id = ' . db_param() . '
+				WHERE ut.id = ' . \Flickerbox\Database::param() . '
 					AND (  pt.view_state = ' . VS_PUBLIC . '
 						OR pult.user_id = ut.id
 						';
 			$t_params = array( $t_user_id, $t_user_id );
 
 			# Add private access clause and related parameter
-			$t_private_access = config_get( 'private_project_threshold' );
+			$t_private_access = \Flickerbox\Config::mantis_get( 'private_project_threshold' );
 			if( is_array( $t_private_access ) ) {
 				if( 1 == count( $t_private_access ) ) {
-					$t_access_clause = '= ' . db_param();
+					$t_access_clause = '= ' . \Flickerbox\Database::param();
 					$t_params[] = array_shift( $t_private_access );
 				} else {
 					$t_access_clause = 'IN (';
 					foreach( $t_private_access as $t_elem ) {
-						$t_access_clause .= db_param() . ',';
+						$t_access_clause .= \Flickerbox\Database::param() . ',';
 						$t_params[] = $t_elem;
 					}
 					$t_access_clause = rtrim( $t_access_clause, ',' ) . ')';
 				}
 			} else {
-				$t_access_clause = '>=' . db_param();
+				$t_access_clause = '>=' . \Flickerbox\Database::param();
 				$t_params[] = $t_private_access;
 			}
 			$t_query .= 'OR ( pult.user_id IS NULL AND ut.access_level ' . $t_access_clause . ' ) )';
 		} else {
 			if( is_array( $p_project_id ) ) {
 				if( 1 == count( $p_project_id ) ) {
-					$t_project_clause = '= ' . db_param();
+					$t_project_clause = '= ' . \Flickerbox\Database::param();
 					$t_params[] = array_shift( $p_project_id );
 				} else {
 					$t_project_clause = 'IN (';
 					foreach( $p_project_id as $t_project ) {
-						$t_project_clause .= db_param() . ',';
+						$t_project_clause .= \Flickerbox\Database::param() . ',';
 						$t_params[] = $t_project;
 					}
 					$t_project_clause = rtrim( $t_project_clause, ',' ) . ')';
 				}
 			} else {
-				$t_project_clause = '= ' . db_param();
+				$t_project_clause = '= ' . \Flickerbox\Database::param();
 				$t_params[] = $p_project_id;
 			}
 			$t_query = 'SELECT cft.id
@@ -677,10 +673,10 @@ function custom_field_get_linked_ids( $p_project_id = ALL_PROJECTS ) {
 				ORDER BY sequence ASC, name ASC';
 		}
 
-		$t_result = db_query( $t_query, $t_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_params );
 		$t_ids = array();
 
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			array_push( $t_ids, $t_row['id'] );
 		}
 		custom_field_cache_array_rows( $t_ids );
@@ -702,10 +698,10 @@ function custom_field_get_ids() {
 
 	if( $g_cache_cf_list === null ) {
 		$t_query = 'SELECT * FROM {custom_field} ORDER BY name ASC';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 		$t_ids = array();
 
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$g_cache_custom_field[(int)$t_row['id']] = $t_row;
 
 			array_push( $t_ids, $t_row['id'] );
@@ -725,12 +721,12 @@ function custom_field_get_ids() {
  * @access public
  */
 function custom_field_get_project_ids( $p_field_id ) {
-	$t_query = 'SELECT project_id FROM {custom_field_project} WHERE field_id = ' . db_param();
-	$t_result = db_query( $t_query, array( $p_field_id ) );
+	$t_query = 'SELECT project_id FROM {custom_field_project} WHERE field_id = ' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_id ) );
 
 	$t_ids = array();
 
-	while( $t_row = db_fetch_array( $t_result ) ) {
+	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 		array_push( $t_ids, $t_row['project_id'] );
 	}
 
@@ -806,12 +802,12 @@ function custom_field_get_value( $p_field_id, $p_bug_id ) {
 
 	$t_query = 'SELECT ' . $t_value_field . '
 				  FROM {custom_field_string}
-				  WHERE bug_id=' . db_param() . ' AND
-				  		field_id=' . db_param();
-	$t_result = db_query( $t_query, array( $p_bug_id, $p_field_id ) );
+				  WHERE bug_id=' . \Flickerbox\Database::param() . ' AND
+				  		field_id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_bug_id, $p_field_id ) );
 
-	if( db_num_rows( $t_result ) > 0 ) {
-		return custom_field_database_to_value( db_result( $t_result ), $t_row['type'] );
+	if( \Flickerbox\Database::num_rows( $t_result ) > 0 ) {
+		return custom_field_database_to_value( \Flickerbox\Database::result( $t_result ), $t_row['type'] );
 	} else {
 		return null;
 	}
@@ -856,21 +852,21 @@ function custom_field_get_all_linked_fields( $p_bug_id ) {
 
 	# is the list in cache ?
 	if( !array_key_exists( $p_bug_id, $g_cached_custom_field_lists ) ) {
-		$c_project_id = (int)( bug_get_field( $p_bug_id, 'project_id' ) );
+		$c_project_id = (int)( \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' ) );
 
 		$t_query = 'SELECT f.name, f.type, f.access_level_r, f.default_value, f.type, s.value
 			FROM {custom_field_project} p
 				INNER JOIN {custom_field} f ON f.id = p.field_id
 				LEFT JOIN {custom_field_string} s
-					ON s.field_id = p.field_id AND s.bug_id = ' . db_param() . '
-			WHERE p.project_id = ' . db_param() . '
+					ON s.field_id = p.field_id AND s.bug_id = ' . \Flickerbox\Database::param() . '
+			WHERE p.project_id = ' . \Flickerbox\Database::param() . '
 			ORDER BY p.sequence ASC, f.name ASC';
 
-		$t_result = db_query( $t_query, array( $p_bug_id, $c_project_id) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_bug_id, $c_project_id) );
 
 		$t_custom_fields = array();
 
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 
 			if( is_null( $t_row['value'] ) ) {
 				$t_value = $t_row['default_value'];
@@ -905,11 +901,11 @@ function custom_field_get_sequence( $p_field_id, $p_project_id ) {
 
 	$t_query = 'SELECT sequence
 				  FROM {custom_field_project}
-				  WHERE field_id=' . db_param() . ' AND
-						project_id=' . db_param();
-	$t_result = db_query( $t_query, array( $p_field_id, $p_project_id ), 1 );
+				  WHERE field_id=' . \Flickerbox\Database::param() . ' AND
+						project_id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_id, $p_project_id ), 1 );
 
-	$t_row = db_fetch_array( $t_result );
+	$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 	if( !$t_row ) {
 		return false;
@@ -932,9 +928,9 @@ function custom_field_validate( $p_field_id, $p_value ) {
 	$t_query = 'SELECT name, type, possible_values, valid_regexp,
 				  		 access_level_rw, length_min, length_max, default_value
 				  FROM {custom_field}
-				  WHERE id=' . db_param();
-	$t_result = db_query( $t_query, array( $p_field_id ) );
-	$t_row = db_fetch_array( $t_result );
+				  WHERE id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_id ) );
+	$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 	$t_name = $t_row['name'];
 	$t_type = $t_row['type'];
@@ -1019,7 +1015,7 @@ function custom_field_validate( $p_field_id, $p_value ) {
 			break;
 		case CUSTOM_FIELD_TYPE_EMAIL:
 			if( $p_value !== '' ) {
-				$t_valid &= email_is_valid( $p_value );
+				$t_valid &= \Flickerbox\Email::is_valid( $p_value );
 			}
 			break;
 		default:
@@ -1059,12 +1055,12 @@ function custom_field_distinct_values( array $p_field_def, $p_project_id = ALL_P
 		return call_user_func( $g_custom_field_type_definition[$p_field_def['type']]['#function_return_distinct_values'], $p_field_def );
 	} else {
 		$t_from = '{custom_field_string} cfst';
-		$t_where1 = 'cfst.field_id = ' . db_param();
+		$t_where1 = 'cfst.field_id = ' . \Flickerbox\Database::param();
 		$t_params[] = $p_field_def['id'];
 
 		if( ALL_PROJECTS != $p_project_id ) {
 			$t_from .= ' JOIN {bug} bt ON bt.id = cfst.bug_id';
-			$t_where2 = 'AND bt.project_id = ' . db_param();
+			$t_where2 = 'AND bt.project_id = ' . \Flickerbox\Database::param();
 			$t_params[] = $p_project_id;
 		} else {
 			$t_where2 = '';
@@ -1073,10 +1069,10 @@ function custom_field_distinct_values( array $p_field_def, $p_project_id = ALL_P
 			FROM ' . $t_from . '
 			WHERE ' . $t_where1 . $t_where2 . '
 			ORDER BY cfst.value';
-		$t_result = db_query( $t_query, $t_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_params );
 		$t_row_count = 0;
 
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_row_count++;
 			if( !\Flickerbox\Utility::is_blank( trim( $t_row['value'] ) ) ) {
 				array_push( $t_return_arr, $t_row['value'] );
@@ -1165,34 +1161,34 @@ function custom_field_set_value( $p_field_id, $p_bug_id, $p_value, $p_log_insert
 	# Determine whether an existing value needs to be updated or a new value inserted
 	$t_query = 'SELECT ' . $t_value_field . '
 				  FROM {custom_field_string}
-				  WHERE field_id=' . db_param() . ' AND
-				  		bug_id=' . db_param();
-	$t_result = db_query( $t_query, array( $p_field_id, $p_bug_id ) );
+				  WHERE field_id=' . \Flickerbox\Database::param() . ' AND
+				  		bug_id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_id, $p_bug_id ) );
 
-	if( $t_row = db_fetch_array( $t_result ) ) {
+	if( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 		$t_query = 'UPDATE {custom_field_string}
-					  SET ' . $t_value_field . '=' . db_param() . '
-					  WHERE field_id=' . db_param() . ' AND
-					  		bug_id=' . db_param();
+					  SET ' . $t_value_field . '=' . \Flickerbox\Database::param() . '
+					  WHERE field_id=' . \Flickerbox\Database::param() . ' AND
+					  		bug_id=' . \Flickerbox\Database::param();
 		$t_params = array(
 			custom_field_value_to_database( $p_value, $t_type ),
 			(int)$p_field_id,
 			(int)$p_bug_id,
 		);
-		db_query( $t_query, $t_params );
+		\Flickerbox\Database::query( $t_query, $t_params );
 
 		\Flickerbox\History::log_event_direct( $p_bug_id, $t_name, custom_field_database_to_value( $t_row[$t_value_field], $t_type ), $p_value );
 	} else {
 		$t_query = 'INSERT INTO {custom_field_string}
 						( field_id, bug_id, ' . $t_value_field . ' )
 					  VALUES
-						( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ')';
+						( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ')';
 		$t_params = array(
 			(int)$p_field_id,
 			(int)$p_bug_id,
 			custom_field_value_to_database( $p_value, $t_type ),
 		);
-		db_query( $t_query, $t_params );
+		\Flickerbox\Database::query( $t_query, $t_params );
 		# Don't log history events for new bug reports or on other special occasions
 		if( $p_log_insert ) {
 			\Flickerbox\History::log_event_direct( $p_bug_id, $t_name, '', $p_value );
@@ -1201,7 +1197,7 @@ function custom_field_set_value( $p_field_id, $p_bug_id, $p_value, $p_log_insert
 
 	custom_field_clear_cache( $p_field_id );
 
-	# db_query() errors on failure so:
+	# \Flickerbox\Database::query() errors on failure so:
 	return true;
 }
 
@@ -1216,10 +1212,10 @@ function custom_field_set_value( $p_field_id, $p_bug_id, $p_value, $p_log_insert
  */
 function custom_field_set_sequence( $p_field_id, $p_project_id, $p_sequence ) {
 	$t_query = 'UPDATE {custom_field_project}
-				  SET sequence=' . db_param() . '
-				  WHERE field_id=' . db_param() . ' AND
-				  		project_id=' . db_param();
-	db_query( $t_query, array( $p_sequence, $p_field_id, $p_project_id ) );
+				  SET sequence=' . \Flickerbox\Database::param() . '
+				  WHERE field_id=' . \Flickerbox\Database::param() . ' AND
+				  		project_id=' . \Flickerbox\Database::param();
+	\Flickerbox\Database::query( $t_query, array( $p_sequence, $p_field_id, $p_project_id ) );
 
 	custom_field_clear_cache( $p_field_id );
 

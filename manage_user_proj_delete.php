@@ -36,8 +36,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_user_proj_delete' );
 
@@ -46,11 +44,11 @@ auth_reauthenticate();
 $f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
 $f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
 
-user_ensure_exists( $f_user_id );
+\Flickerbox\User::ensure_exists( $f_user_id );
 
-$t_user = user_get_row( $f_user_id );
+$t_user = \Flickerbox\User::get_row( $f_user_id );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'project_user_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'project_user_threshold' ), $f_project_id );
 \Flickerbox\Access::ensure_project_level( $t_user['access_level'], $f_project_id );
 
 $t_project_name = \Flickerbox\Project::get_name( $f_project_id );

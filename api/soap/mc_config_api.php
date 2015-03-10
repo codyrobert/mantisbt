@@ -40,14 +40,14 @@ function mc_config_get_string( $p_username, $p_password, $p_config_var ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( config_is_private( $p_config_var ) ) {
+	if( \Flickerbox\Config::is_private( $p_config_var ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Access to \'' . $p_config_var . '\' is denied' );
 	}
 
-	if( !config_is_set( $p_config_var ) ) {
+	if( !\Flickerbox\Config::is_set( $p_config_var ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Config \'' . $p_config_var . '\' is undefined' );
 	}
 
-	return config_get( $p_config_var );
+	return \Flickerbox\Config::mantis_get( $p_config_var );
 }
 

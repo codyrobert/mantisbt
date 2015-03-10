@@ -33,8 +33,6 @@ namespace Flickerbox;
  * @uses user_pref_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'plugin_api.php' );
 
 
 class Lang
@@ -58,7 +56,7 @@ class Lang
 		}
 	
 		if( $p_dir === null ) {
-			include_once( config_get( 'language_path' ) . 'strings_' . $p_lang . '.txt' );
+			include_once( \Flickerbox\Config::mantis_get( 'language_path' ) . 'strings_' . $p_lang . '.txt' );
 		} else {
 			if( is_file( $p_dir . 'strings_' . $p_lang . '.txt' ) ) {
 				include_once( $p_dir . 'strings_' . $p_lang . '.txt' );
@@ -108,7 +106,7 @@ class Lang
 	
 		# Otherwise fall back to default
 		if( !$t_lang ) {
-			$t_lang = config_get_global( 'default_language' );
+			$t_lang = \Flickerbox\Config::get_global( 'default_language' );
 		}
 	
 		if( $t_lang == 'auto' ) {
@@ -126,11 +124,11 @@ class Lang
 	 * @return string
 	 */
 	static function map_auto() {
-		$t_lang = config_get( 'fallback_language' );
+		$t_lang = \Flickerbox\Config::mantis_get( 'fallback_language' );
 	
 		if( isset( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ) ) {
 			$t_accept_langs = explode( ',', $_SERVER['HTTP_ACCEPT_LANGUAGE'] );
-			$t_auto_map = config_get( 'language_auto_map' );
+			$t_auto_map = \Flickerbox\Config::mantis_get( 'language_auto_map' );
 	
 			# Expand language map
 			$t_auto_map_exp = array();
@@ -147,7 +145,7 @@ class Lang
 				$t_tmp = explode( ';', utf8_strtolower( $t_accept_lang ) );
 	
 				if( isset( $t_auto_map_exp[trim( $t_tmp[0] )] ) ) {
-					$t_valid_langs = config_get( 'language_choices_arr' );
+					$t_valid_langs = \Flickerbox\Config::mantis_get( 'language_choices_arr' );
 					$t_found_lang = $t_auto_map_exp[trim( $t_tmp[0] )];
 	
 					if( in_array( $t_found_lang, $t_valid_langs, true ) ) {
@@ -181,7 +179,7 @@ class Lang
 	* @return boolean
 	*/
 	static function language_exists( $p_lang ) {
-		$t_valid_langs = config_get( 'language_choices_arr' );
+		$t_valid_langs = \Flickerbox\Config::mantis_get( 'language_choices_arr' );
 		$t_valid = in_array( $p_lang, $t_valid_langs, true );
 		return $t_valid;
 	}
@@ -202,14 +200,14 @@ class Lang
 		$t_lang = $p_lang;
 	
 		if( null === $t_lang ) {
-			$t_lang = config_get( 'default_language' );
+			$t_lang = \Flickerbox\Config::mantis_get( 'default_language' );
 		}
 	
 		# don't allow 'auto' as a language to be pushed onto the stack
 		#  The results from auto are always the local user, not what the
 		#  override wants, unless this is the first language setting
 		if( ( 'auto' == $t_lang ) && ( 0 < count( $g_lang_overrides ) ) ) {
-			$t_lang = config_get( 'fallback_language' );
+			$t_lang = \Flickerbox\Config::mantis_get( 'fallback_language' );
 		}
 	
 		$g_lang_overrides[] = $t_lang;
@@ -283,9 +281,9 @@ class Lang
 		if( \Flickerbox\Lang::exists( $p_string, $t_lang ) ) {
 			return $g_lang_strings[$t_lang][$p_string];
 		} else {
-			$t_plugin_current = plugin_get_current();
+			$t_plugin_current = \Flickerbox\Plugin::get_current();
 			if( !is_null( $t_plugin_current ) ) {
-				\Flickerbox\Lang::load( $t_lang, config_get( 'plugin_path' ) . $t_plugin_current . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR );
+				\Flickerbox\Lang::load( $t_lang, \Flickerbox\Config::mantis_get( 'plugin_path' ) . $t_plugin_current . DIRECTORY_SEPARATOR . 'lang' . DIRECTORY_SEPARATOR );
 				if( \Flickerbox\Lang::exists( $p_string, $t_lang ) ) {
 					return $g_lang_strings[$t_lang][$p_string];
 				}

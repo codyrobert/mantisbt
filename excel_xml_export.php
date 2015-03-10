@@ -37,10 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'columns_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'print_all_bug_options_inc.php' );
@@ -53,7 +49,7 @@ $f_export = \Flickerbox\GPC::get_string( 'export', '' );
 
 $t_export_title = excel_get_default_filename();
 
-$t_short_date_format = config_get( 'short_date_format' );
+$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
 
 # This is where we used to do the entire actual filter ourselves
 $t_page_number = \Flickerbox\GPC::get_int( 'page_number', 1 );
@@ -61,7 +57,7 @@ $t_per_page = 100;
 
 $t_result = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 if( $t_result === false ) {
-	print_header_redirect( 'view_all_set.php?type=0&print=1' );
+	\Flickerbox\Print_Util::header_redirect( 'view_all_set.php?type=0&print=1' );
 }
 
 header( 'Content-Type: application/vnd.ms-excel; charset=UTF-8' );
@@ -77,17 +73,17 @@ $t_columns = excel_get_columns();
 
 do {
 	# pre-cache custom column data
-	columns_plugin_cache_issue_data( $t_result );
+	\Flickerbox\Columns::plugin_cache_issue_data( $t_result );
 
 	foreach( $t_result as $t_row ) {
 		if( \Flickerbox\Utility::is_blank( $f_export ) || in_array( $t_row->id, $f_bug_arr ) ) {
 			echo excel_get_start_row();
 
 			foreach ( $t_columns as $t_column ) {
-				$t_custom_field = column_get_custom_field_name( $t_column );
+				$t_custom_field = \Flickerbox\Columns::column_get_custom_field_name( $t_column );
 				if( $t_custom_field !== null ) {
 					echo excel_format_custom_field( $t_row->id, $t_row->project_id, $t_custom_field );
-				} else if( column_is_plugin_column( $t_column ) ) {
+				} else if( \Flickerbox\Columns::column_is_plugin_column( $t_column ) ) {
 					echo excel_format_plugin_column_value( $t_column, $t_row );
 				} else {
 					$t_function = 'excel_format_' . $t_column;

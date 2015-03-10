@@ -36,12 +36,10 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( config_get( 'create_project_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'create_project_threshold' ) );
 
 \Flickerbox\HTML::page_top();
 
@@ -83,7 +81,7 @@ if( \Flickerbox\Project::table_empty() ) {
 				<label for="project-status"><span><?php echo \Flickerbox\Lang::get( 'status' ) ?></span></label>
 				<span class="select">
 					<select id="project-status" name="status">
-						<?php print_enum_string_option_list( 'project_status' ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'project_status' ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -105,7 +103,7 @@ if( \Flickerbox\Project::table_empty() ) {
 				<label for="project-view-state"><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
 				<span class="select">
 					<select id="project-view-state" name="view_state">
-						<?php print_enum_string_option_list( 'view_state' ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state' ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -113,11 +111,11 @@ if( \Flickerbox\Project::table_empty() ) {
 			<?php
 
 			$g_project_override = ALL_PROJECTS;
-			if( \Flickerbox\File::is_uploading_enabled() && DATABASE !== config_get( 'file_upload_method' ) ) {
+			if( \Flickerbox\File::is_uploading_enabled() && DATABASE !== \Flickerbox\Config::mantis_get( 'file_upload_method' ) ) {
 				$t_file_path = '';
 				# Don't reveal the absolute path to non-administrators for security reasons
 				if( \Flickerbox\Current_User::is_administrator() ) {
-					$t_file_path = config_get( 'absolute_path_default_upload_folder' );
+					$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
 				}
 				?>
 				<div class="field-container">

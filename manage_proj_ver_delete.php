@@ -36,8 +36,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_ver_delete' );
 
@@ -48,7 +46,7 @@ $f_version_id = \Flickerbox\GPC::get_int( 'version_id' );
 $t_version_info = \Flickerbox\Version::get( $f_version_id );
 $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $t_version_info->project_id;
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_version_info->project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_version_info->project_id );
 
 # Confirm with the user
 \Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'version_delete_sure' ) .

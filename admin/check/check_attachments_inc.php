@@ -34,11 +34,10 @@ if( !defined( 'CHECK_ATTACHMENTS_INC_ALLOW' ) ) {
 
 # MantisBT Check API
 require_once( 'check_api.php' );
-require_api( 'config_api.php' );
 
 check_print_section_header_row( 'Attachments' );
 
-$t_file_uploads_allowed = config_get_global( 'allow_file_upload' );
+$t_file_uploads_allowed = \Flickerbox\Config::get_global( 'allow_file_upload' );
 check_print_info_row(
 	'File uploads are allowed',
 	$t_file_uploads_allowed ? 'Yes' : 'No'
@@ -56,16 +55,16 @@ check_print_test_row(
 
 check_print_info_row(
 	'Maximum file upload size (per file)',
-	config_get_global( 'max_file_size' ) . ' bytes'
+	\Flickerbox\Config::get_global( 'max_file_size' ) . ' bytes'
 );
 
 check_print_test_row(
 	'max_file_size MantisBT option is less than or equal to the upload_max_filesize directive in php.ini',
-	config_get_global( 'max_file_size' ) <= \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ),
-	array( false => 'max_file_size is currently ' . htmlentities( config_get_global( 'max_file_size' ) ) . ' bytes which is greater than the limit of ' . htmlentities( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ) ) . ' bytes imposed by the php.ini directive upload_max_filesize.' )
+	\Flickerbox\Config::get_global( 'max_file_size' ) <= \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ),
+	array( false => 'max_file_size is currently ' . htmlentities( \Flickerbox\Config::get_global( 'max_file_size' ) ) . ' bytes which is greater than the limit of ' . htmlentities( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ) ) . ' bytes imposed by the php.ini directive upload_max_filesize.' )
 );
 
-$t_use_xsendfile = config_get_global( 'file_download_xsendfile_enabled' );
+$t_use_xsendfile = \Flickerbox\Config::get_global( 'file_download_xsendfile_enabled' );
 check_print_info_row(
 	'<a href="http://www.google.com/search?q=x-sendfile">X-Sendfile</a> file download technique enabled',
 	$t_use_xsendfile ? 'Yes' : 'No'
@@ -74,11 +73,11 @@ check_print_info_row(
 if( $t_use_xsendfile ) {
 	check_print_test_row(
 		'file_download_xsendfile_enabled = ON requires file_upload_method = DISK',
-		config_get_global( 'file_upload_method' ) == DISK,
+		\Flickerbox\Config::get_global( 'file_upload_method' ) == DISK,
 		array( false => 'X-Sendfile file downloading only works when files are stored on a disk.' )
 	);
 
-	$t_xsendfile_header_name = config_get_global( 'file_download_xsendfile_header_name' );
+	$t_xsendfile_header_name = \Flickerbox\Config::get_global( 'file_download_xsendfile_header_name' );
 	if( $t_xsendfile_header_name !== 'X-Sendfile' ) {
 		check_print_info_row(
 			'Alternative header name to use for X-Sendfile-like functionality',
@@ -94,11 +93,11 @@ check_print_test_warn_row(
 );
 
 if( $t_finfo_exists ) {
-	$t_fileinfo_magic_db_file = config_get_global( 'fileinfo_magic_db_file' );
+	$t_fileinfo_magic_db_file = \Flickerbox\Config::get_global( 'fileinfo_magic_db_file' );
 	if( $t_fileinfo_magic_db_file ) {
 		check_print_info_row(
 			'Name of magic.db file set with the fileinfo_magic_db_file configuration value',
-			config_get_global( 'fileinfo_magic_db_file' ) );
+			\Flickerbox\Config::get_global( 'fileinfo_magic_db_file' ) );
 		check_print_test_row(
 			'fileinfo_magic_db_file configuration value points to an existing magic.db file',
 			file_exists( $t_fileinfo_magic_db_file ) );
@@ -113,7 +112,7 @@ if( $t_finfo_exists ) {
 	);
 }
 
-$t_file_type_icons = config_get( 'file_type_icons' );
+$t_file_type_icons = \Flickerbox\Config::mantis_get( 'file_type_icons' );
 foreach( $t_file_type_icons as $t_ext => $t_filename ) {
 	$t_file_path = dirname( dirname( dirname( __FILE__ ) ) ) . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . 'fileicons' . DIRECTORY_SEPARATOR . $t_filename;
 

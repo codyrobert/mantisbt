@@ -30,7 +30,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_create' );
 
@@ -49,5 +48,5 @@ if( !is_null( $f_tag_name ) ) {
 }
 
 \Flickerbox\Form::security_purge( 'tag_create' );
-print_successful_redirect( 'manage_tags_page.php' );
+\Flickerbox\Print_Util::successful_redirect( 'manage_tags_page.php' );
 

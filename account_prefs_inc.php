@@ -40,9 +40,6 @@ if( !defined( 'ACCOUNT_PREFS_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 /**
  * Display html form to edit account preferences
@@ -64,7 +61,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 	}
 
 	# protected account check
-	if( user_is_protected( $p_user_id ) ) {
+	if( \Flickerbox\User::is_protected( $p_user_id ) ) {
 		if( $p_error_if_protected ) {
 			trigger_error( ERROR_PROTECTED_ACCOUNT, ERROR );
 		} else {
@@ -101,7 +98,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 		$t_num_proj += count( \Flickerbox\Current_User::get_accessible_subprojects( $t_projects[0] ) );
 	}
 	# Don't display "All projects" in selection list if there is only 1
-	print_project_option_list( (int)$t_pref->default_project, $t_num_proj != 1 );
+	\Flickerbox\Print_Util::project_option_list( (int)$t_pref->default_project, $t_num_proj != 1 );
 ?>
 					</select>
 				</span>
@@ -125,7 +122,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<label for="bugnote-order-asc"><span><?php echo \Flickerbox\Lang::get( 'bugnote_order_asc' ) ?></span></label>
 				<span class="label-style"></span>
 			</fieldset>
-			<?php if( ON == config_get( 'enable_email_notification' ) ) { ?>
+			<?php if( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) { ?>
 			<fieldset class="field-container">
 				<legend><label for="email-on-new"><?php echo \Flickerbox\Lang::get( 'email_on_new' ) ?></label></legend>
 				<span class="checkbox"><input id="email-on-new" type="checkbox" name="email_on_new" <?php \Flickerbox\Helper::check_checked( (int)$t_pref->email_on_new, ON ); ?> /></span>
@@ -134,7 +131,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-new-min-severity" name="email_on_new_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_new_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_new_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -147,7 +144,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-assigned-min-severity" name="email_on_assigned_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_assigned_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_assigned_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -160,7 +157,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-feedback-min-severity" name="email_on_feedback_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_feedback_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_feedback_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -173,7 +170,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-resolved-min-severity" name="email_on_resolved_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_resolved_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_resolved_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -186,7 +183,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-closed-min-severity" name="email_on_closed_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_closed_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_closed_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -199,7 +196,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-reopened-min-severity" name="email_on_reopened_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_reopened_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_reopened_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -212,7 +209,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-bugnote-min-severity" name="email_on_bugnote_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_bugnote_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_bugnote_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -225,7 +222,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-status-min-severity" name="email_on_status_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_status_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_status_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -238,7 +235,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 					<select id="email-on-priority-min-severity" name="email_on_priority_min_severity">
 						<option value="<?php echo OFF ?>"><?php echo \Flickerbox\Lang::get( 'any' ) ?></option>
 						<option disabled="disabled">-----</option>
-						<?php print_enum_string_option_list( 'severity', (int)$t_pref->email_on_priority_min_severity ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', (int)$t_pref->email_on_priority_min_severity ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -273,7 +270,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<label for="timezone"><span><?php echo \Flickerbox\Lang::get( 'timezone' ) ?></span></label>
 				<span class="select">
 					<select id="timezone" name="timezone">
-						<?php print_timezone_option_list( $t_pref->timezone ?  $t_pref->timezone  : config_get_global( 'default_timezone' ) ) ?>
+						<?php print_timezone_option_list( $t_pref->timezone ?  $t_pref->timezone  : \Flickerbox\Config::get_global( 'default_timezone' ) ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -282,7 +279,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<label for="language"><span><?php echo \Flickerbox\Lang::get( 'language' ) ?></span></label>
 				<span class="select">
 					<select id="language" name="language">
-						<?php print_language_option_list( $t_pref->language ) ?>
+						<?php \Flickerbox\Print_Util::language_option_list( $t_pref->language ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

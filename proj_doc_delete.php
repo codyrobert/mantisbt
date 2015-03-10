@@ -37,14 +37,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'proj_doc_delete' );
 
 # Check if project documentation feature is enabled.
-if( OFF == config_get( 'enable_project_documentation' ) ) {
+if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
 	\Flickerbox\Access::denied();
 }
 
@@ -52,11 +49,11 @@ $f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
 
 $t_project_id = \Flickerbox\File::get_field( $f_file_id, 'project_id', 'project' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'upload_project_file_threshold' ), $t_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id );
 
-$t_query = 'SELECT title FROM {project_file} WHERE id=' . db_param();
-$t_result = db_query( $t_query, array( $f_file_id ) );
-$t_title = db_result( $t_result );
+$t_query = 'SELECT title FROM {project_file} WHERE id=' . \Flickerbox\Database::param();
+$t_result = \Flickerbox\Database::query( $t_query, array( $f_file_id ) );
+$t_title = \Flickerbox\Database::result( $t_result );
 
 # Confirm with the user
 \Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_file_delete_msg' ) .

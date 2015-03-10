@@ -31,7 +31,7 @@ $t_heading = \Flickerbox\Lang::get( 'timeline_title' );
 
 echo '<div class="heading">' . $t_heading . '</div>';
 
-$t_short_date_format = config_get( 'short_date_format' );
+$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
 
 $t_next_days = ( $f_days - 7 ) > 0 ? $f_days - 7 : 0;
 $t_prev_link = ' [<a href="my_view_page.php?days=' . ( $f_days + 7 ) . '">' . \Flickerbox\Lang::get( 'prev' ) . '</a>]';

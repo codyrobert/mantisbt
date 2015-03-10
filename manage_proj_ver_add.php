@@ -38,8 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_ver_add' );
 
@@ -49,7 +47,7 @@ $f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
 $f_version		= \Flickerbox\GPC::get_string( 'version' );
 $f_add_and_edit = \Flickerbox\GPC::get_bool( 'add_and_edit_version' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
 if( \Flickerbox\Utility::is_blank( $f_version ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );

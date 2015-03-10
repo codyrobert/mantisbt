@@ -34,7 +34,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Log
@@ -50,7 +49,7 @@ class Log
 		global $g_log_levels;
 	
 		# check to see if logging is enabled
-		$t_sys_log = config_get_global( 'log_level' );
+		$t_sys_log = \Flickerbox\Config::get_global( 'log_level' );
 	
 		if( 0 == ( $t_sys_log & $p_level ) ) {
 			return;
@@ -97,7 +96,7 @@ class Log
 			$t_caller .= ' ' . $_SERVER['SCRIPT_NAME'];
 		}
 	
-		$t_now = date( config_get_global( 'complete_date_format' ) );
+		$t_now = date( \Flickerbox\Config::get_global( 'complete_date_format' ) );
 		$t_level = $g_log_levels[$p_level];
 	
 		$t_plugin_event = '[' . $t_level . '] ' . $t_msg;
@@ -105,7 +104,7 @@ class Log
 			\Flickerbox\Event::signal( 'EVENT_LOG', array( $t_plugin_event ) );
 		}
 	
-		$t_log_destination = config_get_global( 'log_destination' );
+		$t_log_destination = \Flickerbox\Config::get_global( 'log_destination' );
 	
 		if( \Flickerbox\Utility::is_blank( $t_log_destination ) ) {
 			$t_destination = '';
@@ -131,7 +130,7 @@ class Log
 				break;
 			case 'firebug':
 				if( !class_exists( 'FirePHP' ) ) {
-					if( file_exists( config_get_global( 'library_path' ) . 'FirePHPCore/FirePHP.class.php' ) ) {
+					if( file_exists( \Flickerbox\Config::get_global( 'library_path' ) . 'FirePHPCore/FirePHP.class.php' ) ) {
 						require_lib( 'FirePHPCore/FirePHP.class.php' );
 					}
 				}
@@ -162,11 +161,11 @@ class Log
 	 * @return void
 	 */
 	static function print_to_page() {
-		if( config_get_global( 'log_destination' ) === 'page' && auth_is_user_authenticated() && \Flickerbox\Access::has_global_level( config_get( 'show_log_threshold' ) ) ) {
+		if( \Flickerbox\Config::get_global( 'log_destination' ) === 'page' && auth_is_user_authenticated() && \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'show_log_threshold' ) ) ) {
 			global $g_log_events, $g_log_levels, $g_email_stored;
 	
 			if( $g_email_stored ) {
-				email_send_all();
+				\Flickerbox\Email::send_all();
 			}
 	
 			$t_unique_queries_count = 0;

@@ -36,8 +36,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'query_store' );
 
@@ -54,14 +52,14 @@ $t_query_redirect_url = 'query_store_page.php';
 if( \Flickerbox\Utility::is_blank( $f_query_name ) ) {
 	$t_query_redirect_url = $t_query_redirect_url . '?error_msg='
 		. urlencode( \Flickerbox\Lang::get( 'query_blank_name' ) );
-	print_header_redirect( $t_query_redirect_url );
+	\Flickerbox\Print_Util::header_redirect( $t_query_redirect_url );
 }
 
 # mantis_filters_table.name has a length of 64. Not allowing longer.
 if( !\Flickerbox\Filter::name_valid_length( $f_query_name ) ) {
 	$t_query_redirect_url = $t_query_redirect_url . '?error_msg='
 		. urlencode( \Flickerbox\Lang::get( 'query_name_too_long' ) );
-	print_header_redirect( $t_query_redirect_url );
+	\Flickerbox\Print_Util::header_redirect( $t_query_redirect_url );
 }
 
 # Check and make sure they don't already have a
@@ -71,7 +69,7 @@ foreach( $t_query_arr as $t_id => $t_name )	{
 	if( $f_query_name == $t_name ) {
 		$t_query_redirect_url = $t_query_redirect_url . '?error_msg='
 			. urlencode( \Flickerbox\Lang::get( 'query_dupe_name' ) );
-		print_header_redirect( $t_query_redirect_url );
+		\Flickerbox\Print_Util::header_redirect( $t_query_redirect_url );
 		exit;
 	}
 }
@@ -81,7 +79,7 @@ if( $f_all_projects ) {
 	$t_project_id = 0;
 }
 
-$t_filter_string = \Flickerbox\Filter::db_get_filter( \Flickerbox\GPC::get_cookie( config_get( 'view_all_cookie' ), '' ) );
+$t_filter_string = \Flickerbox\Filter::db_get_filter( \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), '' ) );
 
 $t_new_row_id = \Flickerbox\Filter::db_set_for_current_user( $t_project_id, $f_is_public,
 												$f_query_name, $t_filter_string );
@@ -91,7 +89,7 @@ $t_new_row_id = \Flickerbox\Filter::db_set_for_current_user( $t_project_id, $f_i
 if( $t_new_row_id == -1 ) {
 	$t_query_redirect_url = $t_query_redirect_url . '?error_msg='
 		. urlencode( \Flickerbox\Lang::get( 'query_store_error' ) );
-	print_header_redirect( $t_query_redirect_url );
+	\Flickerbox\Print_Util::header_redirect( $t_query_redirect_url );
 } else {
-	print_header_redirect( 'view_all_bug_page.php' );
+	\Flickerbox\Print_Util::header_redirect( 'view_all_bug_page.php' );
 }

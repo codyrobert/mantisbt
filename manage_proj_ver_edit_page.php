@@ -38,7 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
 \Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
 \Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
@@ -51,7 +50,7 @@ $f_version_id = \Flickerbox\GPC::get_int( 'version_id' );
 
 $t_version = \Flickerbox\Version::get( $f_version_id );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_version->project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_version->project_id );
 
 \Flickerbox\HTML::page_top();
 
@@ -70,7 +69,7 @@ $t_version = \Flickerbox\Version::get( $f_version_id );
 			</div>
 			<div class="field-container">
 				<label for="proj-version-date-order"><span><?php echo \Flickerbox\Lang::get( 'date_order' ) ?></span></label>
-				<span class="input"><input type="text" id="proj-version-date-order" name="date_order" class="datetime" size="32" value="<?php echo (\Flickerbox\Date::is_null( $t_version->date_order ) ? '' : \Flickerbox\String::attribute( date( config_get( 'calendar_date_format' ), $t_version->date_order ) ) ) ?>" /></span>
+				<span class="input"><input type="text" id="proj-version-date-order" name="date_order" class="datetime" size="32" value="<?php echo (\Flickerbox\Date::is_null( $t_version->date_order ) ? '' : \Flickerbox\String::attribute( date( \Flickerbox\Config::mantis_get( 'calendar_date_format' ), $t_version->date_order ) ) ) ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">

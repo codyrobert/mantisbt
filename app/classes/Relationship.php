@@ -84,10 +84,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\HTML::require_css( 'status_config.php' );
 
@@ -131,9 +127,9 @@ class Relationship
 		$t_query = 'INSERT INTO {bug_relationship}
 					( source_bug_id, destination_bug_id, relationship_type )
 					VALUES
-					( ' . db_param() . ',' . db_param() . ',' . db_param() . ')';
-		$t_result = db_query( $t_query, array( $c_src_bug_id, $c_dest_bug_id, $c_relationship_type ) );
-		$t_relationship = db_fetch_array( $t_result );
+					( ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
+		$t_result = \Flickerbox\Database::query( $t_query, array( $c_src_bug_id, $c_dest_bug_id, $c_relationship_type ) );
+		$t_relationship = \Flickerbox\Database::fetch_array( $t_result );
 	
 		$t_bug_relationship_data = new BugRelationshipData;
 		$t_bug_relationship_data->id = $t_relationship['id'];
@@ -165,12 +161,12 @@ class Relationship
 		}
 	
 		$t_query = 'UPDATE {bug_relationship}
-					SET source_bug_id=' . db_param() . ',
-						destination_bug_id=' . db_param() . ',
-						relationship_type=' . db_param() . '
-					WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $c_src_bug_id, $c_dest_bug_id, $c_relationship_type, (int)$p_relationship_id ) );
-		$t_relationship = db_fetch_array( $t_result );
+					SET source_bug_id=' . \Flickerbox\Database::param() . ',
+						destination_bug_id=' . \Flickerbox\Database::param() . ',
+						relationship_type=' . \Flickerbox\Database::param() . '
+					WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $c_src_bug_id, $c_dest_bug_id, $c_relationship_type, (int)$p_relationship_id ) );
+		$t_relationship = \Flickerbox\Database::fetch_array( $t_result );
 	
 		$t_bug_relationship_data = new BugRelationshipData;
 		$t_bug_relationship_data->id = $t_relationship['id'];
@@ -187,8 +183,8 @@ class Relationship
 	 * @return void
 	 */
 	static function delete( $p_relationship_id ) {
-		$t_query = 'DELETE FROM {bug_relationship} WHERE id=' . db_param();
-		db_query( $t_query, array( (int)$p_relationship_id ) );
+		$t_query = 'DELETE FROM {bug_relationship} WHERE id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( (int)$p_relationship_id ) );
 	}
 	
 	/**
@@ -198,9 +194,9 @@ class Relationship
 	 */
 	static function delete_all( $p_bug_id ) {
 		$t_query = 'DELETE FROM {bug_relationship}
-					WHERE source_bug_id=' . db_param() . ' OR
-					destination_bug_id=' . db_param();
-		db_query( $t_query, array( (int)$p_bug_id, (int)$p_bug_id ) );
+					WHERE source_bug_id=' . \Flickerbox\Database::param() . ' OR
+					destination_bug_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( (int)$p_bug_id, (int)$p_bug_id ) );
 	}
 	
 	/**
@@ -229,10 +225,10 @@ class Relationship
 	 * @return null|BugRelationshipData BugRelationshipData object
 	 */
 	static function get( $p_relationship_id ) {
-		$t_query = 'SELECT * FROM {bug_relationship} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( (int)$p_relationship_id ) );
+		$t_query = 'SELECT * FROM {bug_relationship} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_relationship_id ) );
 	
-		$t_relationship = db_fetch_array( $t_result );
+		$t_relationship = \Flickerbox\Database::fetch_array( $t_result );
 	
 		if( $t_relationship ) {
 			$t_bug_relationship_data = new BugRelationshipData;
@@ -258,17 +254,17 @@ class Relationship
 					{bug}.project_id
 					FROM {bug_relationship}
 					INNER JOIN {bug} ON {bug_relationship}.destination_bug_id = {bug}.id
-					WHERE source_bug_id=' . db_param() . '
+					WHERE source_bug_id=' . \Flickerbox\Database::param() . '
 					ORDER BY relationship_type, {bug_relationship}.id';
-		$t_result = db_query( $t_query, array( $p_src_bug_id ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_src_bug_id ) );
 	
-		$t_src_project_id = bug_get_field( $p_src_bug_id, 'project_id' );
+		$t_src_project_id = \Flickerbox\Bug::get_field( $p_src_bug_id, 'project_id' );
 	
 		$t_bug_relationship_data = array();
 		$t_bug_array = array();
 		$i = 0;
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_bug_relationship_data[$i] = new BugRelationshipData;
 			$t_bug_relationship_data[$i]->id = $t_row['id'];
 			$t_bug_relationship_data[$i]->src_bug_id = $t_row['source_bug_id'];
@@ -281,7 +277,7 @@ class Relationship
 		}
 	
 		if( !empty( $t_bug_array ) ) {
-			bug_cache_array_rows( $t_bug_array );
+			\Flickerbox\Bug::cache_array_rows( $t_bug_array );
 		}
 	
 		return $t_bug_relationship_data;
@@ -298,17 +294,17 @@ class Relationship
 					{bug}.project_id
 					FROM {bug_relationship}
 					INNER JOIN {bug} ON {bug_relationship}.source_bug_id = {bug}.id
-					WHERE destination_bug_id=' . db_param() . '
+					WHERE destination_bug_id=' . \Flickerbox\Database::param() . '
 					ORDER BY relationship_type, {bug_relationship}.id';
-		$t_result = db_query( $t_query, array( (int)$p_dest_bug_id ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_dest_bug_id ) );
 	
-		$t_dest_project_id = bug_get_field( $p_dest_bug_id, 'project_id' );
+		$t_dest_project_id = \Flickerbox\Bug::get_field( $p_dest_bug_id, 'project_id' );
 	
 		$t_bug_relationship_data = array();
 		$t_bug_array = array();
 		$i = 0;
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			$t_bug_relationship_data[$i] = new BugRelationshipData;
 			$t_bug_relationship_data[$i]->id = $t_row['id'];
 			$t_bug_relationship_data[$i]->src_bug_id = $t_row['source_bug_id'];
@@ -321,7 +317,7 @@ class Relationship
 		}
 	
 		if( !empty( $t_bug_array ) ) {
-			bug_cache_array_rows( $t_bug_array );
+			\Flickerbox\Bug::cache_array_rows( $t_bug_array );
 		}
 		return $t_bug_relationship_data;
 	}
@@ -357,13 +353,13 @@ class Relationship
 		$c_dest_bug_id = (int)$p_dest_bug_id;
 	
 		$t_query = 'SELECT * FROM {bug_relationship}
-					WHERE (source_bug_id=' . db_param() . ' AND destination_bug_id=' . db_param() . ')
+					WHERE (source_bug_id=' . \Flickerbox\Database::param() . ' AND destination_bug_id=' . \Flickerbox\Database::param() . ')
 					OR
-					(source_bug_id=' . db_param() . '
-					AND destination_bug_id=' . db_param() . ')';
-		$t_result = db_query( $t_query, array( $c_src_bug_id, $c_dest_bug_id, $c_dest_bug_id, $c_src_bug_id ), 1 );
+					(source_bug_id=' . \Flickerbox\Database::param() . '
+					AND destination_bug_id=' . \Flickerbox\Database::param() . ')';
+		$t_result = \Flickerbox\Database::query( $t_query, array( $c_src_bug_id, $c_dest_bug_id, $c_dest_bug_id, $c_src_bug_id ), 1 );
 	
-		if( $t_row = db_fetch_array( $t_result ) ) {
+		if( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			# return the first id
 			return $t_row['id'];
 		} else {
@@ -479,9 +475,9 @@ class Relationship
 			# verify if each bug in relation BUG_DEPENDANT is already marked as resolved
 			if( $t_relationship[$i]->type == BUG_DEPENDANT ) {
 				$t_dest_bug_id = $t_relationship[$i]->dest_bug_id;
-				$t_status = bug_get_field( $t_dest_bug_id, 'status' );
+				$t_status = \Flickerbox\Bug::get_field( $t_dest_bug_id, 'status' );
 	
-				if( $t_status < config_get( 'bug_resolved_status_threshold' ) ) {
+				if( $t_status < \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' ) ) {
 					# the bug is NOT marked as resolved/closed
 					return false;
 				}
@@ -501,8 +497,8 @@ class Relationship
 	 * @return string
 	 */
 	static function get_details( $p_bug_id, BugRelationshipData $p_relationship, $p_html = false, $p_html_preview = false, $p_show_project = false ) {
-		$t_summary_wrap_at = utf8_strlen( config_get( 'email_separator2' ) ) - 28;
-		$t_icon_path = config_get( 'icon_path' );
+		$t_summary_wrap_at = utf8_strlen( \Flickerbox\Config::mantis_get( 'email_separator2' ) ) - 28;
+		$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 	
 		if( $p_bug_id == $p_relationship->src_bug_id ) {
 			# root bug is in the source side, related bug in the destination side
@@ -519,12 +515,12 @@ class Relationship
 		}
 	
 		# related bug not existing...
-		if( !bug_exists( $t_related_bug_id ) ) {
+		if( !\Flickerbox\Bug::exists( $t_related_bug_id ) ) {
 			return '';
 		}
 	
 		# user can access to the related bug at least as a viewer
-		if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_related_project_id ), $t_related_bug_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_related_project_id ), $t_related_bug_id ) ) {
 			return '';
 		}
 	
@@ -535,21 +531,21 @@ class Relationship
 		}
 	
 		# get the information from the related bug and prepare the link
-		$t_bug = bug_get( $t_related_bug_id, false );
+		$t_bug = \Flickerbox\Bug::get( $t_related_bug_id, false );
 		$t_status_string = \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 		$t_resolution_string = \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id );
 	
 		$t_relationship_info_html = $t_td . \Flickerbox\String::no_break( $t_relationship_descr ) . '&#160;</td>';
 		if( $p_html_preview == false ) {
-			$t_relationship_info_html .= '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_related_bug_id ) . '">' . \Flickerbox\String::display_line( bug_format_id( $t_related_bug_id ) ) . '</a></td>';
+			$t_relationship_info_html .= '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_related_bug_id ) . '">' . \Flickerbox\String::display_line( \Flickerbox\Bug::format_id( $t_related_bug_id ) ) . '</a></td>';
 			$t_relationship_info_html .= '<td><span class="issue-status" title="' . \Flickerbox\String::attribute( $t_resolution_string ) . '">' . \Flickerbox\String::display_line( $t_status_string ) . '</span></td>';
 		} else {
-			$t_relationship_info_html .= $t_td . \Flickerbox\String::display_line( bug_format_id( $t_related_bug_id ) ) . '</td>';
+			$t_relationship_info_html .= $t_td . \Flickerbox\String::display_line( \Flickerbox\Bug::format_id( $t_related_bug_id ) ) . '</td>';
 			$t_relationship_info_html .= $t_td . \Flickerbox\String::display_line( $t_status_string ) . '&#160;</td>';
 		}
 	
 		$t_relationship_info_text = utf8_str_pad( $t_relationship_descr, 20 );
-		$t_relationship_info_text .= utf8_str_pad( bug_format_id( $t_related_bug_id ), 8 );
+		$t_relationship_info_text .= utf8_str_pad( \Flickerbox\Bug::format_id( $t_related_bug_id ), 8 );
 	
 		# get the handler name of the related bug
 		$t_relationship_info_html .= $t_td;
@@ -578,8 +574,8 @@ class Relationship
 		}
 	
 		# add delete link if bug not read only and user has access level
-		if( !bug_is_readonly( $p_bug_id ) && !\Flickerbox\Current_User::is_anonymous() && ( $p_html_preview == false ) ) {
-			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
+		if( !\Flickerbox\Bug::is_readonly( $p_bug_id ) && !\Flickerbox\Current_User::is_anonymous() && ( $p_html_preview == false ) ) {
+			if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $p_bug_id ) ) {
 				$t_relationship_info_html .= ' [<a class="small" href="bug_relationship_delete.php?bug_id=' . $p_bug_id . '&amp;rel_id=' . $p_relationship->id . htmlspecialchars( \Flickerbox\Form::security_param( 'bug_relationship_delete' ) ) . '">' . \Flickerbox\Lang::get( 'delete_link' ) . '</a>]';
 			}
 		}
@@ -724,10 +720,10 @@ class Relationship
 			<?php
 				\Flickerbox\Collapse::icon( 'relationships' );
 		echo \Flickerbox\Lang::get( 'bug_relationships' );
-		if( ON == config_get( 'relationship_graph_enable' ) ) {
+		if( ON == \Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
 			?>
-			<span class="small"><?php print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=relation', \Flickerbox\Lang::get( 'relation_graph' ) )?></span>
-			<span class="small"><?php print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=dependency', \Flickerbox\Lang::get( 'dependency_graph' ) )?></span>
+			<span class="small"><?php \Flickerbox\Print_Util::bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=relation', \Flickerbox\Lang::get( 'relation_graph' ) )?></span>
+			<span class="small"><?php \Flickerbox\Print_Util::bracket_link( 'bug_relationship_graph.php?bug_id=' . $p_bug_id . '&graph=dependency', \Flickerbox\Lang::get( 'dependency_graph' ) )?></span>
 			<?php
 		}
 		?>
@@ -735,9 +731,9 @@ class Relationship
 	</tr>
 	<?php
 		# bug not read-only and user authenticated
-		if( !bug_is_readonly( $p_bug_id ) ) {
+		if( !\Flickerbox\Bug::is_readonly( $p_bug_id ) ) {
 			# user access level at least updater
-			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
+			if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $p_bug_id ) ) {
 				?>
 	<tr class="row-1">
 		<th class="category" width="15%"><?php echo \Flickerbox\Lang::get( 'add_new_relationship' )?></th>
@@ -745,7 +741,7 @@ class Relationship
 			<form method="post" action="bug_relationship_add.php">
 			<?php echo \Flickerbox\Form::security_field( 'bug_relationship_add' ) ?>
 			<input type="hidden" name="src_bug_id" value="<?php echo $p_bug_id?>" size="4" />
-			<?php \Flickerbox\Relationship::list_box( config_get( 'default_bug_relationship' ) )?>
+			<?php \Flickerbox\Relationship::list_box( \Flickerbox\Config::mantis_get( 'default_bug_relationship' ) )?>
 			<input type="text" name="dest_bug_id" value="" />
 			<input type="submit" name="add_relationship" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_new_relationship_button' )?>" />
 			</form>

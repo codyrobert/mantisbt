@@ -34,8 +34,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -100,12 +98,12 @@ $t_my_filter[FILTER_PROPERTY_END_YEAR] = \Flickerbox\GPC::get_int( FILTER_PROPER
 $t_my_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_TYPE, -1 );
 $t_my_filter[FILTER_PROPERTY_RELATIONSHIP_BUG] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_BUG, 0 );
 
-$t_my_filter[FILTER_PROPERTY_HIDE_STATUS] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_HIDE_STATUS, config_get( 'hide_status_default' ) );
-$t_my_filter[FILTER_PROPERTY_STICKY] = \Flickerbox\GPC::get_bool( FILTER_PROPERTY_STICKY, config_get( 'show_sticky_issues' ) );
+$t_my_filter[FILTER_PROPERTY_HIDE_STATUS] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_HIDE_STATUS, \Flickerbox\Config::mantis_get( 'hide_status_default' ) );
+$t_my_filter[FILTER_PROPERTY_STICKY] = \Flickerbox\GPC::get_bool( FILTER_PROPERTY_STICKY, \Flickerbox\Config::mantis_get( 'show_sticky_issues' ) );
 
 $t_my_filter[FILTER_PROPERTY_SORT_FIELD_NAME] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_FIELD_NAME, '' );
 $t_my_filter[FILTER_PROPERTY_SORT_DIRECTION] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_SORT_DIRECTION, '' );
-$t_my_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_ISSUES_PER_PAGE, config_get( 'default_limit_view' ) );
+$t_my_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_ISSUES_PER_PAGE, \Flickerbox\Config::mantis_get( 'default_limit_view' ) );
 
 $t_highlight_changed = \Flickerbox\GPC::get_int( FILTER_PROPERTY_HIGHLIGHT_CHANGED, -1 );
 if( $t_highlight_changed != -1 ) {
@@ -138,7 +136,7 @@ $t_project_id = ( $t_project_id * -1 );
 $t_row_id = \Flickerbox\Filter::db_set_for_current_user( $t_project_id, false, '', $t_settings_string );
 
 # set cookie values
-\Flickerbox\GPC::set_cookie( config_get( 'view_all_cookie' ), $t_row_id, time()+config_get( 'cookie_time_length' ), config_get( 'cookie_path' ) );
+\Flickerbox\GPC::set_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), $t_row_id, time()+\Flickerbox\Config::mantis_get( 'cookie_time_length' ), \Flickerbox\Config::mantis_get( 'cookie_path' ) );
 
 # redirect to print_all or view_all page
 if( $f_print ) {
@@ -147,4 +145,4 @@ if( $f_print ) {
 	$t_redirect_url = 'view_all_bug_page.php';
 }
 
-print_header_redirect( $t_redirect_url );
+\Flickerbox\Print_Util::header_redirect( $t_redirect_url );

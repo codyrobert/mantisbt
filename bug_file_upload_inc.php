@@ -35,20 +35,19 @@ if( !defined( 'BUG_FILE_UPLOAD_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'config_api.php' );
 
 # check if we can allow the upload... bail out if we can't
 if( !\Flickerbox\File::allow_bug_upload( $f_bug_id ) ) {
 	return false;
 }
 
-$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
 ?>
 <br />
 
 <?php
 	\Flickerbox\Collapse::open( 'upload_form' );
-	$t_file_upload_max_num = max( 1, config_get( 'file_upload_max_num' ) );
+	$t_file_upload_max_num = max( 1, \Flickerbox\Config::mantis_get( 'file_upload_max_num' ) );
 ?>
 <form method="post" enctype="multipart/form-data" action="bug_file_add(.php">
 <?php echo \Flickerbox\Form::security_field( 'bug_file_add(' ) ?>
@@ -66,7 +65,7 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 	<td class="category" width="15%">
 		<?php echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'select_file' : 'select_files' ) ?>
 		<br />
-		<?php echo print_max_filesize( $t_max_file_size ); ?>
+		<?php echo \Flickerbox\Print_Util::max_filesize( $t_max_file_size ); ?>
 	</td>
 	<td width="85%">
 		<input type="hidden" name="bug_id" value="<?php echo $f_bug_id ?>" />

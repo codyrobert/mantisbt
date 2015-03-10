@@ -41,19 +41,16 @@ if( !defined( 'BUG_SPONSORSHIP_LIST_VIEW_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 #
 # Determine whether the sponsorship section should be shown.
 #
 
-if( ( config_get( 'enable_sponsorship' ) == ON ) && ( \Flickerbox\Access::has_bug_level( config_get( 'view_sponsorship_total_threshold' ), $f_bug_id ) ) ) {
+if( ( \Flickerbox\Config::mantis_get( 'enable_sponsorship' ) == ON ) && ( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_sponsorship_total_threshold' ), $f_bug_id ) ) ) {
 	$t_sponsorship_ids = \Flickerbox\Sponsorship::get_all_ids( $f_bug_id );
 
 	$t_sponsorships_exist = count( $t_sponsorship_ids ) > 0;
-	$t_can_sponsor = !bug_is_readonly( $f_bug_id ) && !\Flickerbox\Current_User::is_anonymous();
+	$t_can_sponsor = !\Flickerbox\Bug::is_readonly( $f_bug_id ) && !\Flickerbox\Current_User::is_anonymous();
 
 	$t_show_sponsorships = $t_sponsorships_exist || $t_can_sponsor;
 } else {
@@ -103,7 +100,7 @@ if( $t_show_sponsorships ) {
 				<?php echo \Flickerbox\Form::security_field( 'bug_set_sponsorship' ) ?>
 				<?php echo \Flickerbox\Sponsorship::get_currency() ?>
 				<input type="hidden" name="bug_id" value="<?php echo $f_bug_id ?>" size="4" />
-				<input type="text" name="amount" value="<?php echo config_get( 'minimum_sponsorship_amount' )  ?>" size="4" />
+				<input type="text" name="amount" value="<?php echo \Flickerbox\Config::mantis_get( 'minimum_sponsorship_amount' )  ?>" size="4" />
 				<input type="submit" class="button" name="sponsor" value="<?php echo \Flickerbox\Lang::get( 'sponsor_verb' ) ?>" />
 			</form>
 		</td>
@@ -111,7 +108,7 @@ if( $t_show_sponsorships ) {
 <?php
 	}
 
-	$t_total_sponsorship = bug_get_field( $f_bug_id, 'sponsorship_total' );
+	$t_total_sponsorship = \Flickerbox\Bug::get_field( $f_bug_id, 'sponsorship_total' );
 	if( $t_total_sponsorship > 0 ) {
 ?>
 	<tr class="row-2">
@@ -121,20 +118,20 @@ if( $t_show_sponsorships ) {
 			echo sprintf( \Flickerbox\Lang::get( 'total_sponsorship_amount' ),
 				\Flickerbox\Sponsorship::format_amount( $t_total_sponsorship ) );
 
-			if( \Flickerbox\Access::has_bug_level( config_get( 'view_sponsorship_details_threshold' ), $f_bug_id ) ) {
+			if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_sponsorship_details_threshold' ), $f_bug_id ) ) {
 				echo '<br /><br />';
 				$i = 0;
 				foreach ( $t_sponsorship_ids as $t_id ) {
 					$t_sponsorship = \Flickerbox\Sponsorship::get( $t_id );
-					$t_date_added = date( config_get( 'normal_date_format' ), $t_sponsorship->date_submitted );
+					$t_date_added = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_sponsorship->date_submitted );
 
 					echo ($i > 0) ? '<br />' : '';
 					$i++;
 
 					echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_date_added ) . \Flickerbox\Lang::get( 'word_separator' );
-					print_user( $t_sponsorship->user_id );
+					\Flickerbox\Print_Util::user( $t_sponsorship->user_id );
 					echo ' (' . \Flickerbox\Sponsorship::format_amount( $t_sponsorship->amount ) . ')';
-					if( \Flickerbox\Access::has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
+					if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id ) ) {
 						echo ' ' . \Flickerbox\Helper::get_enum_element( 'sponsorship', $t_sponsorship->paid );
 					}
 				}

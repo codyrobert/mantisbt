@@ -33,8 +33,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'columns_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -51,11 +49,11 @@ $t_sep = csv_get_separator();
 # Get bug rows according to the current filter
 $t_rows = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 if( $t_rows === false ) {
-	print_header_redirect( 'view_all_set.php?type=0' );
+	\Flickerbox\Print_Util::header_redirect( 'view_all_set.php?type=0' );
 }
 
 # pre-cache custom column data
-columns_plugin_cache_issue_data( $t_rows );
+\Flickerbox\Columns::plugin_cache_issue_data( $t_rows );
 
 $t_filename = \Flickerbox\CSV::get_default_filename();
 
@@ -74,7 +72,7 @@ header( 'Content-Disposition: attachment; filename="' . urlencode( \Flickerbox\F
 $t_columns = \Flickerbox\CSV::get_columns();
 
 # export BOM
-if( config_get( 'csv_add_bom' ) == ON ) {
+if( \Flickerbox\Config::mantis_get( 'csv_add_bom' ) == ON ) {
 	echo "\xEF\xBB\xBF";
 }
 
@@ -89,7 +87,7 @@ foreach ( $t_columns as $t_column ) {
 		$t_first_column = false;
 	}
 
-	echo column_get_title( $t_column );
+	echo \Flickerbox\Columns::column_get_title( $t_column );
 }
 
 echo $t_nl;
@@ -118,7 +116,7 @@ foreach ( $t_rows as $t_row ) {
 			$t_first_column = false;
 		}
 
-		if( column_get_custom_field_name( $t_column ) !== null || column_is_plugin_column( $t_column ) ) {
+		if( \Flickerbox\Columns::column_get_custom_field_name( $t_column ) !== null || \Flickerbox\Columns::column_is_plugin_column( $t_column ) ) {
 			ob_start();
 			$t_column_value_function = 'print_column_value';
 			\Flickerbox\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_CSV_PAGE ) );
@@ -126,7 +124,7 @@ foreach ( $t_rows as $t_row ) {
 
 			echo \Flickerbox\CSV::escape_string( $t_value );
 		} else {
-			$t_function = '\Flickerbox\CSV::format_' . $t_column;
+			$t_function = '\\Flickerbox\\CSV::format_' . $t_column;
 			echo $t_function( $t_row );
 		}
 	}

@@ -33,8 +33,6 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
 
 /**
  * Prints the title for the custom action page.
@@ -85,11 +83,11 @@ function action_update_product_build_print_fields() {
 function action_update_product_build_validate( $p_bug_id ) {
 	$t_bug_id = (int)$p_bug_id;
 
-	if( bug_is_readonly( $t_bug_id ) ) {
+	if( \Flickerbox\Bug::is_readonly( $t_bug_id ) ) {
 		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
-	if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $t_bug_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $t_bug_id ) ) {
 		return \Flickerbox\Lang::get( 'access_denied' );
 	}
 
@@ -105,6 +103,6 @@ function action_update_product_build_validate( $p_bug_id ) {
 function action_update_product_build_process( $p_bug_id ) {
 	$t_build = \Flickerbox\GPC::get_string( 'build' );
 
-	bug_set_field( $p_bug_id, 'build', $t_build );
+	\Flickerbox\Bug::set_field( $p_bug_id, 'build', $t_build );
 	return null;
 }

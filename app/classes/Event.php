@@ -32,7 +32,6 @@ namespace Flickerbox;
  * @uses plugin_api.php
  */
 
-require_api( 'plugin_api.php' );
 
 
 class Event
@@ -190,13 +189,13 @@ class Event
 		if( $p_plugin !== 0 ) {
 			global $g_plugin_cache;
 	
-			plugin_push_current( $p_plugin );
+			\Flickerbox\Plugin::push_current( $p_plugin );
 	
 			if( method_exists( $g_plugin_cache[$p_plugin], $p_callback ) ) {
 				$t_value = call_user_func_array( array( $g_plugin_cache[$p_plugin], $p_callback ), array_merge( array( $p_event ), $p_params ) );
 			}
 	
-			plugin_pop_current();
+			\Flickerbox\Plugin::pop_current();
 		} else {
 			if( function_exists( $p_callback ) ) {
 				$t_value = call_user_func_array( $p_callback, array_merge( array( $p_event ), $p_params ) );

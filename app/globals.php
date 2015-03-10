@@ -318,3 +318,234 @@ $g_cache_project_all = false;
 $g_cache_project_hierarchy = null;
 $g_cache_project_inheritance = null;
 $g_cache_show_disabled = null;
+
+
+
+# cache for config variables
+$g_cache_config = array();
+$g_cache_config_eval = array();
+$g_cache_config_access = array();
+$g_cache_bypass_lookup = array();
+$g_cache_filled = false;
+$g_cache_can_set_in_database = '';
+
+# cache environment to speed up lookups
+$g_cache_db_table_exists = false;
+
+$g_cache_config_user = null;
+$g_cache_config_project = null;
+
+
+# An array in which all executed queries are stored.  This is used for profiling
+# @global array $g_queries_array
+$g_queries_array = array();
+
+
+# Stores whether a database connection was succesfully opened.
+# @global bool $g_db_connected
+$g_db_connected = false;
+
+# Store whether to log queries ( used for show_queries_count/query list)
+# @global bool $g_db_log_queries
+$g_db_log_queries = ( 0 != ( \Flickerbox\Config::get_global( 'log_level' ) & LOG_DATABASE ) );
+
+# set adodb fetch mode
+# @global bool $ADODB_FETCH_MODE
+$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+
+
+# Tracks the query parameter count
+# @global object $g_db_param
+$g_db_param = new \Flickerbox\MantisDbParam();
+
+
+
+# reusable object of class SMTP
+$g_phpMailer = null;
+
+# Indicates whether any emails are currently stored for process during this request.
+# Note: This is only used if not sending emails via cron job
+$g_email_stored = false;
+
+
+
+
+$g_cache_user = array();
+$g_user_accessible_subprojects_cache = null;
+$g_user_accessible_projects_cache = null;
+
+
+
+
+
+$g_cache_bug = array();
+$g_cache_bug_text = array();
+
+
+
+
+# Cache variables #####
+
+$g_plugin_cache = array();
+$g_plugin_cache_priority = array();
+$g_plugin_cache_protected = array();
+$g_plugin_current = array();
+
+
+
+
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_STRING] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => null,
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
+	'#function_string_value' => null,
+	'#function_string_value_for_email' => null,
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_TEXTAREA] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => null,
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textarea',
+	'#function_string_value' => null,
+	'#function_string_value_for_email' => null,
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_NUMERIC] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => null,
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
+	'#function_string_value' => null,
+	'#function_string_value_for_email' => null,
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_FLOAT] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => null,
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
+	'#function_string_value' => null,
+	'#function_string_value_for_email' => null,
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_ENUM] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_list',
+	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_EMAIL] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => null,
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
+	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_email_value',
+	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_email_value_for_email',
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_CHECKBOX] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_value_to_database' => '\\Flickerbox\\CF_Def::prepare_list_value_to_database',
+	'#function_database_to_value' => '\\Flickerbox\\CF_Def::prepare_list_database_to_value',
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_checkbox',
+	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_RADIO] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => false,
+	'#display_length_min' => false,
+	'#display_length_max' => false,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_radio',
+	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_LIST] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_list',
+	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_MULTILIST] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_value_to_database' => '\\Flickerbox\\CF_Def::prepare_list_value_to_database',
+	'#function_database_to_value' => '\\Flickerbox\\CF_Def::prepare_list_database_to_value',
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_list',
+	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+);
+
+$g_custom_field_type_definition[CUSTOM_FIELD_TYPE_DATE] = array (
+	'#display_possible_values' => true,
+	'#display_valid_regexp' => true,
+	'#display_length_min' => true,
+	'#display_length_max' => true,
+	'#display_default_value' => true,
+	'#function_return_distinct_values' => null,
+	'#function_value_to_database' => null,
+	'#function_database_to_value' => null,
+	'#function_default_to_value' => '\\Flickerbox\\CF_Def::prepare_date_default',
+	'#function_print_input' => '\\Flickerbox\\CF_Def::input_date',
+	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_date_value',
+	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_date_value_for_email',
+);

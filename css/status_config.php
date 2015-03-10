@@ -26,7 +26,6 @@
  */
 
 @require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
-require_api( 'config_api.php' );
 
 /**
  * Send correct MIME Content-Type header for css content.
@@ -68,9 +67,9 @@ switch( $t_referer_page ) {
 		exit;
 }
 
-$t_status_string = config_get( 'status_enum_string' );
-$t_statuses = \MantisEnum::getAssocArrayIndexedByValues( $t_status_string );
-$t_colors = config_get( 'status_colors' );
+$t_status_string = \Flickerbox\Config::mantis_get( 'status_enum_string' );
+$t_statuses = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( $t_status_string );
+$t_colors = \Flickerbox\Config::mantis_get( 'status_colors' );
 $t_color_count = count( $t_colors );
 $t_color_width = ( $t_color_count > 0 ? ( round( 100/$t_color_count ) ) : 0 );
 $t_status_percents = \Flickerbox\Auth::is_user_authenticated() ? \Flickerbox\Helper::get_percentage_by_status() : array();

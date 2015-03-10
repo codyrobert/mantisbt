@@ -26,7 +26,7 @@ require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
 \Flickerbox\Form::security_validate( 'move_attachments_project_select' );
 
-\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
 
 $f_file_type         = \Flickerbox\GPC::get( 'type' );
 $f_project_to_move  = \Flickerbox\GPC::get( 'to_move', null );
@@ -49,7 +49,7 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 			$t_query = "SELECT f.*
 				FROM {project_file} f
 				WHERE content = ''
-				  AND f.project_id = " . db_param() . "
+				  AND f.project_id = " . \Flickerbox\Database::param() . "
 				ORDER BY f.filename";
 			break;
 		case 'bug':
@@ -57,7 +57,7 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 				FROM {bug_file} f
 				JOIN {bug} b ON b.id = f.bug_id
 				WHERE content = ''
-				  AND b.project_id = " . db_param() . "
+				  AND b.project_id = " . \Flickerbox\Database::param() . "
 				ORDER BY f.bug_id, f.filename";
 			break;
 	}
@@ -65,12 +65,12 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 	# Process projects list
 	foreach( $p_projects as $t_project ) {
 		# Retrieve attachments for the project
-		$t_result = db_query( $t_query, array( $t_project ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $t_project ) );
 
 		# Project upload path
 		$t_upload_path = \Flickerbox\Project::get_field( $t_project, 'file_path' );
 		if( \Flickerbox\Utility::is_blank( $t_upload_path ) ) {
-			$t_upload_path = config_get( 'absolute_path_default_upload_folder', '', ALL_USERS, $t_project );
+			$t_upload_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder', '', ALL_USERS, $t_project );
 		}
 
 		if( \Flickerbox\Utility::is_blank( $t_upload_path )
@@ -78,14 +78,14 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 			|| !is_dir( $t_upload_path )
 		) {
 			# Invalid path
-			$t_failures = db_num_rows( $t_result );
+			$t_failures = \Flickerbox\Database::num_rows( $t_result );
 			$t_data = "ERROR: Upload path '$t_upload_path' does not exist or is not accessible";
 		} else {
 			# Process attachments
 			$t_failures = 0;
 			$t_data = array();
 
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				# read file from disk
 				$t_filename = $t_row['folder'] . $t_row['diskfile'];
 
@@ -93,19 +93,19 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 					$t_status = "Original File Not Found '$t_filename'";
 					$t_failures++;
 				} else {
-					$c_content = db_prepare_binary_string( fread( fopen( $t_filename, 'rb' ), $t_row['filesize'] ) );
+					$c_content = \Flickerbox\Database::prepare_binary_string( fread( fopen( $t_filename, 'rb' ), $t_row['filesize'] ) );
 
 					# write file to db
-					if( db_is_oracle() ) {
-						db_update_blob( $t_file_table, 'content', $c_content, "id=" . (int)$t_row['id'] );
-						$t_query = "UPDATE $t_file_table SET folder='' WHERE id = " . db_param();
-						$t_result2 = db_query( $t_query, array( (int)$t_row['id'] ) );
+					if( \Flickerbox\Database::is_oracle() ) {
+						\Flickerbox\Database::update_blob( $t_file_table, 'content', $c_content, "id=" . (int)$t_row['id'] );
+						$t_query = "UPDATE $t_file_table SET folder='' WHERE id = " . \Flickerbox\Database::param();
+						$t_result2 = \Flickerbox\Database::query( $t_query, array( (int)$t_row['id'] ) );
 					} else {
 						$t_update_query = "UPDATE $t_file_table
-										SET folder = " . db_param() . ",
-										content = " . db_param() . "
-										WHERE id = " . db_param();
-						$t_result2 = db_query( $t_update_query,
+										SET folder = " . \Flickerbox\Database::param() . ",
+										content = " . \Flickerbox\Database::param() . "
+										WHERE id = " . \Flickerbox\Database::param();
+						$t_result2 = \Flickerbox\Database::query( $t_update_query,
 							array( '', $c_content, (int)$t_row['id'] )
 						);
 					}
@@ -134,7 +134,7 @@ function move_attachments_to_db( $p_type, $p_projects ) {
 		$t_moved[] = array(
 			'name'       => \Flickerbox\Project::get_name( $t_project ),
 			'path'       => $t_upload_path,
-			'rows'       => db_num_rows( $t_result ),
+			'rows'       => \Flickerbox\Database::num_rows( $t_result ),
 			'failed'     => $t_failures,
 			'data'       => $t_data,
 		);
@@ -160,7 +160,7 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 			$t_query = 'SELECT f.*
 				FROM {project_file} f
 				WHERE content <> \'\'
-				  AND f.project_id = ' . db_param() . '
+				  AND f.project_id = ' . \Flickerbox\Database::param() . '
 				ORDER BY f.filename';
 			break;
 		case 'bug':
@@ -168,7 +168,7 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 				FROM {bug_file} f
 				JOIN {bug} b ON b.id = f.bug_id
 				WHERE content <> \'\'
-				  AND b.project_id = ' . db_param() . '
+				  AND b.project_id = ' . \Flickerbox\Database::param() . '
 				ORDER BY f.bug_id, f.filename';
 			break;
 	}
@@ -176,7 +176,7 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 	# Process projects list
 	foreach( $p_projects as $t_project ) {
 		# Retrieve attachments for the project
-		$t_result = db_query( $t_query, array( $t_project ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $t_project ) );
 
 		# Project upload path
 		$t_upload_path = \Flickerbox\Project::get_upload_path( $t_project );
@@ -186,14 +186,14 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 			|| !is_writable( $t_upload_path )
 		) {
 			# Invalid path
-			$t_failures = db_num_rows( $t_result );
+			$t_failures = \Flickerbox\Database::num_rows( $t_result );
 			$t_data = 'ERROR: Upload path \'' . $t_upload_path . '\' does not exist or is not writeable';
 		} else {
 			# Process attachments
 			$t_failures = 0;
 			$t_data = array();
 
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				$t_disk_filename = $t_upload_path . $t_row['diskfile'];
 				if ( file_exists( $t_disk_filename ) ) {
 					$t_status = 'Disk File Already Exists \'' . $t_disk_filename . '\'';
@@ -206,16 +206,16 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 						switch( $p_type ) {
 							case 'project':
 								$t_update_query = 'UPDATE {project_file}
-									SET folder = ' . db_param() . ', content = \'\'
-									WHERE id = ' . db_param();
+									SET folder = ' . \Flickerbox\Database::param() . ', content = \'\'
+									WHERE id = ' . \Flickerbox\Database::param();
 								break;
 							case 'bug':
 								$t_update_query = 'UPDATE {bug_file}
-									SET folder = ' . db_param() . ', content = \'\'
-									WHERE id = ' . db_param();
+									SET folder = ' . \Flickerbox\Database::param() . ', content = \'\'
+									WHERE id = ' . \Flickerbox\Database::param();
 								break;
 						}
-						$t_update_result = db_query(
+						$t_update_result = \Flickerbox\Database::query(
 							$t_update_query,
 							array( $t_upload_path, $t_row['id'] )
 						);
@@ -248,7 +248,7 @@ function move_attachments_to_disk( $p_type, array $p_projects ) {
 		$t_moved[] = array(
 			'name'       => \Flickerbox\Project::get_name( $t_project ),
 			'path'       => $t_upload_path,
-			'rows'       => db_num_rows( $t_result ),
+			'rows'       => \Flickerbox\Database::num_rows( $t_result ),
 			'failed'     => $t_failures,
 			'data'       => $t_data,
 		);
@@ -309,7 +309,7 @@ if( empty( $t_moved ) ) {
 			foreach( $t_row['data'] as $t_data ) {
 				echo '<tr>';
 				if( $f_file_type == 'bug' ) {
-					printf( '<td>%s</td>', bug_format_id( $t_data['bug_id'] ) );
+					printf( '<td>%s</td>', \Flickerbox\Bug::format_id( $t_data['bug_id'] ) );
 				}
 				printf( '<td class="right">%s</td><td>%s</td><td>%s</td></tr>' . "\n",
 					$t_data['id'],
@@ -325,6 +325,6 @@ if( empty( $t_moved ) ) {
 	}
 }
 
-print_bracket_link( 'system_utils.php', 'Back to System Utilities' );
+\Flickerbox\Print_Util::bracket_link( 'system_utils.php', 'Back to System Utilities' );
 
 \Flickerbox\HTML::page_bottom();

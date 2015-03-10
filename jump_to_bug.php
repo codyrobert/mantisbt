@@ -28,11 +28,10 @@
  */
 
 require_once( 'core.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
 # Determine which view page to redirect back to.
 $f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
 
-print_header_redirect_view( $f_bug_id );
+\Flickerbox\Print_Util::header_redirect_view( $f_bug_id );

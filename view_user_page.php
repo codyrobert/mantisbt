@@ -38,28 +38,25 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
 # extracts the user information for the currently logged in user
 # and prefixes it with u_
 $f_user_id = \Flickerbox\GPC::get_int( 'id', auth_get_current_user_id() );
-$t_row = user_get_row( $f_user_id );
+$t_row = \Flickerbox\User::get_row( $f_user_id );
 
 extract( $t_row, EXTR_PREFIX_ALL, 'u' );
 
-$t_can_manage = \Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) &&
+$t_can_manage = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) &&
 	\Flickerbox\Access::has_global_level( $u_access_level );
-$t_can_see_realname = \Flickerbox\Access::has_project_level( config_get( 'show_user_realname_threshold' ) );
-$t_can_see_email = \Flickerbox\Access::has_project_level( config_get( 'show_user_email_threshold' ) );
+$t_can_see_realname = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_realname_threshold' ) );
+$t_can_see_email = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) );
 
 # In case we're using LDAP to get the email address... this will pull out
 #  that version instead of the one in the DB
-$u_email = user_get_email( $u_id );
-$u_realname = user_get_realname( $u_id );
+$u_email = \Flickerbox\User::get_email( $u_id );
+$u_realname = \Flickerbox\User::get_realname( $u_id );
 
 \Flickerbox\HTML::page_top();
 ?>
@@ -79,7 +76,7 @@ $u_realname = user_get_realname( $u_id );
 					print \Flickerbox\Error::string( ERROR_ACCESS_DENIED );
 				} else {
 					if( !\Flickerbox\Utility::is_blank( $u_email ) ) {
-						print_email_link( $u_email, $u_email );
+						\Flickerbox\Print_Util::email_link( $u_email, $u_email );
 					} else {
 						echo ' - ';
 					}

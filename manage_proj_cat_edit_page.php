@@ -37,8 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 auth_reauthenticate();
 
@@ -50,7 +48,7 @@ $t_assigned_to = (int)$t_row['user_id'];
 $t_project_id = (int)$t_row['project_id'];
 $t_name = $t_row['name'];
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $t_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_project_id );
 
 \Flickerbox\HTML::page_top();
 
@@ -73,7 +71,7 @@ $t_name = $t_row['name'];
 				<span class="select">
 					<select id="proj-category-assigned-to" name="assigned_to">
 						<option value="0"></option>
-						<?php print_assign_to_option_list( $t_assigned_to, $t_project_id ) ?>
+						<?php \Flickerbox\Print_Util::assign_to_option_list( $t_assigned_to, $t_project_id ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

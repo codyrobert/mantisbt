@@ -25,24 +25,24 @@
 \Flickerbox\Form::security_validate( 'plugin_format_config_edit' );
 
 auth_reauthenticate( );
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 $f_process_text = \Flickerbox\GPC::get_int( 'process_text', ON );
 $f_process_urls = \Flickerbox\GPC::get_int( 'process_urls', ON );
 $f_process_buglinks = \Flickerbox\GPC::get_int( 'process_buglinks', ON );
 
-if( plugin_config_get( 'process_text' ) != $f_process_text ) {
-	plugin_config_set( 'process_text', $f_process_text );
+if( \Flickerbox\Plugin::config_get( 'process_text' ) != $f_process_text ) {
+	\Flickerbox\Plugin::config_set( 'process_text', $f_process_text );
 }
 
-if( plugin_config_get( 'process_urls' ) != $f_process_urls ) {
-	plugin_config_set( 'process_urls', $f_process_urls );
+if( \Flickerbox\Plugin::config_get( 'process_urls' ) != $f_process_urls ) {
+	\Flickerbox\Plugin::config_set( 'process_urls', $f_process_urls );
 }
 
-if( plugin_config_get( 'process_buglinks' ) != $f_process_buglinks ) {
-	plugin_config_set( 'process_buglinks', $f_process_buglinks );
+if( \Flickerbox\Plugin::config_get( 'process_buglinks' ) != $f_process_buglinks ) {
+	\Flickerbox\Plugin::config_set( 'process_buglinks', $f_process_buglinks );
 }
 
 \Flickerbox\Form::security_purge( 'plugin_format_config_edit' );
 
-print_successful_redirect( plugin_page( 'config', true ) );
+\Flickerbox\Print_Util::successful_redirect( \Flickerbox\Plugin::page( 'config', true ) );

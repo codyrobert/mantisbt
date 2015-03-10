@@ -33,18 +33,17 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
 # Check if project documentation feature is enabled.
-if( OFF == config_get( 'enable_project_documentation' ) ||
+if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ||
 	!\Flickerbox\File::is_uploading_enabled() ||
 	!\Flickerbox\File::allow_project_upload() ) {
 	\Flickerbox\Access::denied();
 }
 
-\Flickerbox\Access::ensure_project_level( config_get( 'upload_project_file_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ) );
 
-$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
 
 \Flickerbox\HTML::page_top();
 ?>
@@ -82,7 +81,7 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 	<td class="category">
 		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'select_file' ); ?>
 		<br />
-		<?php print_max_filesize( $t_max_file_size ); ?>
+		<?php \Flickerbox\Print_Util::max_filesize( $t_max_file_size ); ?>
 	</td>
 	<td>
 		<input type="hidden" name="max_file_size" value="<?php echo $t_max_file_size ?>" />

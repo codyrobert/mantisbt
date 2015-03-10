@@ -32,7 +32,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Crypto
@@ -47,7 +46,7 @@ class Crypto
 	 */
 	static function init() {
 		if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
-			if( strlen( config_get_global( 'crypto_master_salt' ) ) < 16 ) {
+			if( strlen( \Flickerbox\Config::get_global( 'crypto_master_salt' ) ) < 16 ) {
 				trigger_error( ERROR_CRYPTO_MASTER_SALT_INVALID, ERROR );
 			}
 		}
@@ -124,7 +123,7 @@ class Crypto
 		# internal state of the PRNG, we salt the PRNG output with a known secret
 		# and hash it.
 		if( !isset( $t_random_string ) ) {
-			$t_secret_key = 'prng' . config_get_global( 'crypto_master_salt' );
+			$t_secret_key = 'prng' . \Flickerbox\Config::get_global( 'crypto_master_salt' );
 			$t_random_bytes = '';
 			for( $i = 0; $i < $p_bytes; $i += 64 ) {
 				$t_random_segment = '';

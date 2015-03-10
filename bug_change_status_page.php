@@ -44,13 +44,10 @@
 $g_allow_browser_cache = 1;
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'id' );
-$t_bug = bug_get( $f_bug_id );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id );
 
 $t_file = __FILE__;
 $t_mantis_dir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
@@ -67,9 +64,9 @@ if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 $f_new_status = \Flickerbox\GPC::get_int( 'new_status' );
 $f_reopen_flag = \Flickerbox\GPC::get_int( 'reopen_flag', OFF );
 
-$t_reopen = config_get( 'bug_reopen_status', null, null, $t_bug->project_id );
-$t_resolved = config_get( 'bug_resolved_status_threshold', null, null, $t_bug->project_id );
-$t_closed = config_get( 'bug_closed_status_threshold', null, null, $t_bug->project_id );
+$t_reopen = \Flickerbox\Config::mantis_get( 'bug_reopen_status', null, null, $t_bug->project_id );
+$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $t_bug->project_id );
+$t_closed = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold', null, null, $t_bug->project_id );
 $t_current_user_id = \Flickerbox\Auth::get_current_user_id();
 
 # Ensure user has proper access level before proceeding
@@ -77,12 +74,12 @@ if( $f_new_status == $t_reopen && $f_reopen_flag ) {
 	\Flickerbox\Access::ensure_can_reopen_bug( $t_bug, $t_current_user_id );
 } else if( $f_new_status == $t_closed ) {
 	\Flickerbox\Access::ensure_can_close_bug( $t_bug, $t_current_user_id );
-} else if( bug_is_readonly( $f_bug_id )
+} else if( \Flickerbox\Bug::is_readonly( $f_bug_id )
 	|| !\Flickerbox\Access::has_bug_level( \Flickerbox\Access::get_status_threshold( $f_new_status, $t_bug->project_id ), $f_bug_id, $t_current_user_id ) ) {
 	\Flickerbox\Access::denied();
 }
 
-$t_can_update_due_date = \Flickerbox\Access::has_bug_level( config_get( 'due_date_update_threshold' ), $f_bug_id );
+$t_can_update_due_date = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'due_date_update_threshold' ), $f_bug_id );
 if( $t_can_update_due_date ) {
 	\Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
 	\Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
@@ -93,32 +90,32 @@ if( $t_can_update_due_date ) {
 # get new issue handler if set, otherwise default to original handler
 $f_handler_id = \Flickerbox\GPC::get_int( 'handler_id', $t_bug->handler_id );
 
-if( config_get( 'bug_assigned_status' ) == $f_new_status ) {
+if( \Flickerbox\Config::mantis_get( 'bug_assigned_status' ) == $f_new_status ) {
 	$t_bug_sponsored = \Flickerbox\Sponsorship::get_amount( \Flickerbox\Sponsorship::get_all_ids( $f_bug_id ) ) > 0;
 	if( $t_bug_sponsored ) {
-		if( !\Flickerbox\Access::has_bug_level( config_get( 'assign_sponsored_bugs_threshold' ), $f_bug_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'assign_sponsored_bugs_threshold' ), $f_bug_id ) ) {
 			trigger_error( ERROR_SPONSORSHIP_ASSIGNER_ACCESS_LEVEL_TOO_LOW, ERROR );
 		}
 	}
 
 	if( $f_handler_id != NO_USER ) {
-		if( !\Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $f_bug_id, $f_handler_id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ), $f_bug_id, $f_handler_id ) ) {
 			trigger_error( ERROR_HANDLER_ACCESS_TOO_LOW, ERROR );
 		}
 
 		if( $t_bug_sponsored ) {
-			if( !\Flickerbox\Access::has_bug_level( config_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id, $f_handler_id ) ) {
+			if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_sponsored_bugs_threshold' ), $f_bug_id, $f_handler_id ) ) {
 				trigger_error( ERROR_SPONSORSHIP_HANDLER_ACCESS_LEVEL_TOO_LOW, ERROR );
 			}
 		}
 	}
 }
 
-$t_status_label = str_replace( ' ', '_', \MantisEnum::getLabel( config_get( 'status_enum_string' ), $f_new_status ) );
+$t_status_label = str_replace( ' ', '_', \Flickerbox\MantisEnum::getLabel( \Flickerbox\Config::mantis_get( 'status_enum_string' ), $f_new_status ) );
 
-\Flickerbox\HTML::page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 
-print_recently_visited();
+\Flickerbox\Print_Util::recently_visited();
 ?>
 
 <br />
@@ -159,17 +156,17 @@ if( ( $f_new_status >= $t_resolved ) && ( ( $f_new_status < $t_closed ) || ( $t_
 				<td>
 					<select name="resolution">
 			<?php
-				$t_resolution = $t_bug_is_open ? config_get( 'bug_resolution_fixed_threshold' ) : $t_current_resolution;
+				$t_resolution = $t_bug_is_open ? \Flickerbox\Config::mantis_get( 'bug_resolution_fixed_threshold' ) : $t_current_resolution;
 
 				$t_relationships = \Flickerbox\Relationship::get_all_src( $f_bug_id );
 				foreach( $t_relationships as $t_relationship ) {
 					if( $t_relationship->type == BUG_DUPLICATE ) {
-						$t_resolution = config_get( 'bug_duplicate_resolution' );
+						$t_resolution = \Flickerbox\Config::mantis_get( 'bug_duplicate_resolution' );
 						break;
 					}
 				}
 
-				print_enum_string_option_list( 'resolution', $t_resolution );
+				\Flickerbox\Print_Util::enum_string_option_list( 'resolution', $t_resolution );
 			?>
 					</select>
 				</td>
@@ -179,7 +176,7 @@ if( ( $f_new_status >= $t_resolved ) && ( ( $f_new_status < $t_closed ) || ( $t_
 <?php
 if( $f_new_status >= $t_resolved
 	&& $f_new_status < $t_closed
-	&& $t_resolution != config_get( 'bug_duplicate_resolution' ) ) { ?>
+	&& $t_resolution != \Flickerbox\Config::mantis_get( 'bug_duplicate_resolution' ) ) { ?>
 <!-- Duplicate ID -->
 			<tr>
 				<th class="category">
@@ -192,10 +189,10 @@ if( $f_new_status >= $t_resolved
 <?php } ?>
 
 <?php
-if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_assign_threshold', config_get( 'update_bug_threshold' ) ), $f_bug_id ) ) {
+if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_assign_threshold', \Flickerbox\Config::mantis_get( 'update_bug_threshold' ) ), $f_bug_id ) ) {
 	$t_suggested_handler_id = $t_bug->handler_id;
 
-	if( $t_suggested_handler_id == NO_USER && \Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $f_bug_id ) ) {
+	if( $t_suggested_handler_id == NO_USER && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ), $f_bug_id ) ) {
 		$t_suggested_handler_id = $t_current_user_id;
 	}
 ?>
@@ -207,7 +204,7 @@ if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_assign_threshold'
 				<td>
 					<select name="handler_id">
 						<option value="0"></option>
-						<?php print_assign_to_option_list( $t_suggested_handler_id, $t_bug->project_id ) ?>
+						<?php \Flickerbox\Print_Util::assign_to_option_list( $t_suggested_handler_id, $t_bug->project_id ) ?>
 					</select>
 				</td>
 			</tr>
@@ -216,13 +213,13 @@ if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_assign_threshold'
 <?php if( $t_can_update_due_date ) {
 	$t_date_to_display = '';
 	if( !\Flickerbox\Date::is_null( $t_bug->due_date ) ) {
-		$t_date_to_display = date( config_get( 'calendar_date_format' ), $t_bug->due_date );
+		$t_date_to_display = date( \Flickerbox\Config::mantis_get( 'calendar_date_format' ), $t_bug->due_date );
 	}
 ?>
 <!-- Due date -->
 			<tr>
 				<th class="category">
-					<?php print_documentation_link( 'due_date' ) ?>
+					<?php \Flickerbox\Print_Util::documentation_link( 'due_date' ) ?>
 				</th>
 				<td>
 					<?php echo '<input ' . \Flickerbox\Helper::get_tab_index() . ' type="text" id="due_date" name="due_date" class="datetime" size="20" maxlength="16" value="' . $t_date_to_display . '" />' ?>
@@ -294,8 +291,8 @@ foreach( $t_related_custom_field_ids as $t_id ) {
 <?php
 if( ( $f_new_status >= $t_resolved ) ) {
 	if( \Flickerbox\Version::should_show_product_version( $t_bug->project_id )
-		&& !bug_is_readonly( $f_bug_id )
-		&& \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $f_bug_id )
+		&& !\Flickerbox\Bug::is_readonly( $f_bug_id )
+		&& \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $f_bug_id )
 	) {
 ?>
 			<!-- Fixed in Version -->
@@ -305,7 +302,7 @@ if( ( $f_new_status >= $t_resolved ) ) {
 				</th>
 				<td>
 					<select name="fixed_in_version">
-						<?php print_version_option_list( $t_bug->fixed_in_version, $t_bug->project_id, VERSION_ALL ) ?>
+						<?php \Flickerbox\Print_Util::version_option_list( $t_bug->fixed_in_version, $t_bug->project_id, VERSION_ALL ) ?>
 					</select>
 				</td>
 			</tr>
@@ -317,7 +314,7 @@ if( ( $f_new_status >= $t_resolved ) ) {
 <?php if( ON == $f_reopen_flag ) { ?>
 <!-- Bug was re-opened -->
 <?php
-	printf( '	<input type="hidden" name="resolution" value="%s" />' . "\n", config_get( 'bug_reopen_resolution' ) );
+	printf( '	<input type="hidden" name="resolution" value="%s" />' . "\n", \Flickerbox\Config::mantis_get( 'bug_reopen_resolution' ) );
 }
 ?>
 			<!-- Bugnote -->
@@ -329,15 +326,15 @@ if( ( $f_new_status >= $t_resolved ) ) {
 					<textarea name="bugnote_text" cols="80" rows="10"></textarea>
 				</td>
 			</tr>
-<?php if( \Flickerbox\Access::has_bug_level( config_get( 'private_bugnote_threshold' ), $f_bug_id ) ) { ?>
+<?php if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'private_bugnote_threshold' ), $f_bug_id ) ) { ?>
 			<tr>
 				<th class="category">
 					<?php echo \Flickerbox\Lang::get( 'view_status' ) ?>
 				</th>
 				<td>
 <?php
-		$t_default_bugnote_view_status = config_get( 'default_bugnote_view_status' );
-		if( \Flickerbox\Access::has_bug_level( config_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
+		$t_default_bugnote_view_status = \Flickerbox\Config::mantis_get( 'default_bugnote_view_status' );
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'set_view_status_threshold' ), $f_bug_id ) ) {
 ?>
 			<input type="checkbox" name="private" <?php \Flickerbox\Helper::check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
 <?php
@@ -350,9 +347,9 @@ if( ( $f_new_status >= $t_resolved ) ) {
 			</tr>
 <?php } ?>
 
-<?php if( config_get( 'time_tracking_enabled' ) ) { ?>
-<?php 	if( \Flickerbox\Access::has_bug_level( config_get( 'private_bugnote_threshold' ), $f_bug_id ) ) { ?>
-<?php 		if( \Flickerbox\Access::has_bug_level( config_get( 'time_tracking_edit_threshold' ), $f_bug_id ) ) { ?>
+<?php if( \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) ) { ?>
+<?php 	if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'private_bugnote_threshold' ), $f_bug_id ) ) { ?>
+<?php 		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_edit_threshold' ), $f_bug_id ) ) { ?>
 			<tr>
 				<th class="category">
 					<?php echo \Flickerbox\Lang::get( 'time_tracking' ) ?>

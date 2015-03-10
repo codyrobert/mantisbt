@@ -2,7 +2,7 @@
 # Copyright (c) 2014  MantisBT Team - mantisbt-dev@lists.sourceforge.net
 # Licensed under the MIT license
 
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 \Flickerbox\HTML::page_top();
 //\Flickerbox\HTML::print_manage_menu();
@@ -10,10 +10,10 @@
 
 <br />
 <div class="form-container">
-<form action="<?php echo plugin_page( 'config' ) ?>" method="post">
+<form action="<?php echo \Flickerbox\Plugin::page( 'config' ) ?>" method="post">
 <fieldset>
 	<legend>
-		<?php echo plugin_langget( 'config_title' ) ?>
+		<?php echo \Flickerbox\Plugin::langget( 'config_title' ) ?>
 	</legend>
 
 	<?php echo \Flickerbox\Form::security_field( 'plugin_XmlImportExport_config' ) ?>
@@ -21,13 +21,13 @@
 	<!-- Import Access Level  -->
 	<div class="field-container">
 		<label for="import_threshold">
-			<span><?php echo plugin_langget( 'import_threshold' ) ?></span>
+			<span><?php echo \Flickerbox\Plugin::langget( 'import_threshold' ) ?></span>
 		</label>
 		<span class="select">
 			<select id="import_threshold" name="import_threshold"><?php
-				print_enum_string_option_list(
+				\Flickerbox\Print_Util::enum_string_option_list(
 					'access_levels',
-					plugin_config_get( 'import_threshold' )
+					\Flickerbox\Plugin::config_get( 'import_threshold' )
 				);
 			?></select>
 		</span>
@@ -37,13 +37,13 @@
 	<!-- Export Access Level  -->
 	<div class="field-container">
 		<label for="export_threshold">
-			<span><?php echo plugin_langget( 'export_threshold' ) ?></span>
+			<span><?php echo \Flickerbox\Plugin::langget( 'export_threshold' ) ?></span>
 		</label>
 		<span class="select">
 			<select id="export_threshold" name="export_threshold"><?php
-				print_enum_string_option_list(
+				\Flickerbox\Print_Util::enum_string_option_list(
 					'access_levels',
-					plugin_config_get( 'export_threshold' )
+					\Flickerbox\Plugin::config_get( 'export_threshold' )
 				);
 			?></select>
 		</span>
@@ -52,7 +52,7 @@
 
 	<!-- Update button -->
 	<div class="submit-button">
-		<input type="submit" value="<?php echo plugin_langget( 'action_update' ) ?>"/>
+		<input type="submit" value="<?php echo \Flickerbox\Plugin::langget( 'action_update' ) ?>"/>
 	</div>
 
 </fieldset>

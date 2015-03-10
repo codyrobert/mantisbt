@@ -59,9 +59,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 $t_account_verification = defined( 'ACCOUNT_VERIFICATION_INC' );
 
@@ -78,15 +75,15 @@ if( !$t_account_verification ) {
 
 # extracts the user information for the currently logged in user
 # and prefixes it with u_
-$t_row = user_get_row( \Flickerbox\Auth::get_current_user_id() );
+$t_row = \Flickerbox\User::get_row( \Flickerbox\Auth::get_current_user_id() );
 
 extract( $t_row, EXTR_PREFIX_ALL, 'u' );
 
-$t_ldap = ( LDAP == config_get( 'login_method' ) );
+$t_ldap = ( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) );
 
 # In case we're using LDAP to get the email address... this will pull out
 #  that version instead of the one in the DB
-$u_email = user_get_email( $u_id );
+$u_email = \Flickerbox\User::get_email( $u_id );
 
 # If the password is the default password, then prompt user to change it.
 $t_reset_password = $u_username == 'administrator' && \Flickerbox\Auth::does_password_match( $u_id, 'root' );
@@ -98,7 +95,7 @@ $t_verify = \Flickerbox\Utility::is_page_name( 'verify.php' );
 $t_force_pw_reset = false;
 
 if( $t_verify || $t_reset_password ) {
-	$t_can_change_password = \Flickerbox\Helper::call_custom_function( '\Flickerbox\Auth::can_change_password', array() );
+	$t_can_change_password = \Flickerbox\Helper::call_custom_function( '\\Flickerbox\\Auth::can_change_password', array() );
 
 	echo '<div id="reset-passwd-msg" class="important-msg">';
 	echo '<ul>';
@@ -132,7 +129,7 @@ if( $t_force_pw_reset ) {
 			<?php echo \Flickerbox\Form::security_field( 'account_update' );
 			\Flickerbox\HTML::print_account_menu( 'account_page.php' );
 
-			if( !\Flickerbox\Helper::call_custom_function( '\Flickerbox\Auth::can_change_password', array() ) ) {
+			if( !\Flickerbox\Helper::call_custom_function( '\\Flickerbox\\Auth::can_change_password', array() ) ) {
 				# With LDAP -->
 			?>
 			<div class="field-container">
@@ -179,19 +176,19 @@ if( $t_force_pw_reset ) {
 			<div class="field-container">
 				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'email' ) ?></span></span>
 				<span class="input"><?php
-				if( $t_ldap && ON == config_get( 'use_ldap_email' ) ) {
+				if( $t_ldap && ON == \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) {
 					# With LDAP
 					echo '<span class="field-value">' . \Flickerbox\String::display_line( $u_email ) . '</span>';
 				} else {
 					# Without LDAP
 					$t_show_update_button = true;
-					print_email_input( 'email', $u_email );
+					\Flickerbox\Print_Util::email_input( 'email', $u_email );
 				} ?>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container"><?php
-				if( $t_ldap && ON == config_get( 'use_ldap_realname' ) ) {
+				if( $t_ldap && ON == \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) {
 					# With LDAP
 					echo '<span class="display-label"><span>' . \Flickerbox\Lang::get( 'realname' ) . '</span></span>';
 					echo '<span class="input">';
@@ -220,7 +217,7 @@ if( $t_force_pw_reset ) {
 				<span class="label-style"></span>
 			</div>
 			<?php
-			$t_projects = user_get_assigned_projects( \Flickerbox\Auth::get_current_user_id() );
+			$t_projects = \Flickerbox\User::get_assigned_projects( \Flickerbox\Auth::get_current_user_id() );
 			if( count( $t_projects ) > 0 ) {
 				echo '<div class="field-container">';
 				echo '<span class="display-label"><span>' . \Flickerbox\Lang::get( 'assigned_projects' ) . '</span></span>';
@@ -248,7 +245,7 @@ if( $t_force_pw_reset ) {
 	</form>
 </div>
 <?php # check if users can't delete their own accounts
-if( ON == config_get( 'allow_account_delete' ) ) { ?>
+if( ON == \Flickerbox\Config::mantis_get( 'allow_account_delete' ) ) { ?>
 
 <!-- Delete Button -->
 <div class="form-container">

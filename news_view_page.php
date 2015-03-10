@@ -33,8 +33,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
 
@@ -47,18 +45,18 @@ $f_news_id = \Flickerbox\GPC::get_int( 'news_id', null );
 if( $f_news_id !== null ) {
 	$t_project_id = \Flickerbox\News::get_field( $f_news_id, 'project_id' );
 	if( \Flickerbox\News::is_private( $f_news_id ) ) {
-		\Flickerbox\Access::ensure_project_level(	config_get( 'private_news_threshold' ),
+		\Flickerbox\Access::ensure_project_level(	\Flickerbox\Config::mantis_get( 'private_news_threshold' ),
 						$t_project_id );
 	} else {
-		\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id );
+		\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id );
 	}
 
-	print_news_string_by_news_id( $f_news_id );
+	\Flickerbox\Print_Util::news_string_by_news_id( $f_news_id );
 }
 ?>
 
 <div id="news-menu">
-	<?php print_bracket_link( 'news_list_page.php', \Flickerbox\Lang::get( 'archives' ) ); ?>
+	<?php \Flickerbox\Print_Util::bracket_link( 'news_list_page.php', \Flickerbox\Lang::get( 'archives' ) ); ?>
 </div>
 
 <?php

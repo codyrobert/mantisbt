@@ -32,23 +32,23 @@ function mci_account_get_array_by_id( $p_user_id ) {
 	$t_result = array();
 	$t_result['id'] = $p_user_id;
 
-	if( user_exists( $p_user_id ) ) {
+	if( \Flickerbox\User::exists( $p_user_id ) ) {
 
 		$t_current_user_id = \Flickerbox\Auth::get_current_user_id();
 		$t_access_level = user_get_field ( $t_current_user_id, 'access_level' );
-		$t_can_manage = \Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) &&
+		$t_can_manage = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) &&
 			\Flickerbox\Access::has_global_level( $t_access_level );
 
 		# this deviates from the behaviour of view_user_page.php, but it is more intuitive
 		$t_is_same_user = $t_current_user_id === $p_user_id;
 
-		$t_can_see_realname = \Flickerbox\Access::has_project_level( config_get( 'show_user_realname_threshold' ) );
-		$t_can_see_email = \Flickerbox\Access::has_project_level( config_get( 'show_user_email_threshold' ) );
+		$t_can_see_realname = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_realname_threshold' ) );
+		$t_can_see_email = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) );
 
-		$t_result['name'] = user_get_field( $p_user_id, 'username' );
+		$t_result['name'] = \Flickerbox\User::get_field( $p_user_id, 'username' );
 
 		if ( $t_is_same_user || $t_can_manage || $t_can_see_realname ) {
-			$t_realname = user_get_realname( $p_user_id );
+			$t_realname = \Flickerbox\User::get_realname( $p_user_id );
 
 			if( !empty( $t_realname ) ) {
 				$t_result['real_name'] = $t_realname;
@@ -56,7 +56,7 @@ function mci_account_get_array_by_id( $p_user_id ) {
 		}
 
 		if ( $t_is_same_user || $t_can_manage || $t_can_see_email ) {
-			$t_email = user_get_email( $p_user_id );
+			$t_email = \Flickerbox\User::get_email( $p_user_id );
 
 			if( !empty( $t_email ) ) {
 				$t_result['email'] = $t_email;

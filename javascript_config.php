@@ -25,7 +25,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
 /**
  * Print array of configuration option->values for javascript.
@@ -33,7 +32,7 @@ require_api( 'config_api.php' );
  * @return void
  */
 function print_config_value( $p_config_key ) {
-	echo "config['" . $p_config_key . "'] = '" . addslashes( config_get( $p_config_key ) ) . "';\n";
+	echo "config['" . $p_config_key . "'] = '" . addslashes( \Flickerbox\Config::mantis_get( $p_config_key ) ) . "';\n";
 }
 
 # Send correct MIME Content-Type header for JavaScript content.

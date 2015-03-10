@@ -26,14 +26,14 @@
 /**
  * XmlImportExportPlugin Class
  */
-class XmlImportExportPlugin extends MantisPlugin {
+class XmlImportExportPlugin extends \Flickerbox\MantisPlugin {
 	/**
 	 * A method that populates the plugin information and minimum requirements.
 	 * @return void
 	 */
 	function register() {
-		$this->name = plugin_langget( 'title' );
-		$this->description = plugin_langget( 'description' );
+		$this->name = \Flickerbox\Plugin::langget( 'title' );
+		$this->description = \Flickerbox\Plugin::langget( 'description' );
 		$this->page = "config_page";
 
 		$this->version = '1.3.0';
@@ -74,7 +74,7 @@ class XmlImportExportPlugin extends MantisPlugin {
 	 * @return array
 	 */
 	function import_issues_menu() {
-		return array( '<a href="' . plugin_page( 'import' ) . '">' . plugin_langget( 'import' ) . '</a>', );
+		return array( '<a href="' . \Flickerbox\Plugin::page( 'import' ) . '">' . \Flickerbox\Plugin::langget( 'import' ) . '</a>', );
 	}
 
 	/**
@@ -82,10 +82,10 @@ class XmlImportExportPlugin extends MantisPlugin {
 	 * @return array
 	 */
 	function export_issues_menu() {
-		if( !\Flickerbox\Access::has_project_level( plugin_config_get( 'export_threshold' ) ) ) {
+		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Plugin::config_get( 'export_threshold' ) ) ) {
 			return array();
 		}
-		return array( '<a href="' . plugin_page( 'export' ) . '">' . plugin_langget( 'export' ) . '</a>', );
+		return array( '<a href="' . \Flickerbox\Plugin::page( 'export' ) . '">' . \Flickerbox\Plugin::langget( 'export' ) . '</a>', );
 	}
 
 	/**
@@ -96,7 +96,7 @@ class XmlImportExportPlugin extends MantisPlugin {
 		$t_result = extension_loaded( 'xmlreader' ) && extension_loaded( 'xmlwriter' );
 		if( !$t_result ) {
 			# @todo returning false should trigger some error reporting, needs rethinking error_api
-			\Flickerbox\Error::parameters( plugin_langget( 'error_no_xml' ) );
+			\Flickerbox\Error::parameters( \Flickerbox\Plugin::langget( 'error_no_xml' ) );
 			trigger_error( ERROR_PLUGIN_INSTALL_FAILED, ERROR );
 		}
 		return $t_result;

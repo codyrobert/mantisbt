@@ -36,7 +36,6 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'print_api.php' );
 
 $t_external_action = utf8_strtolower( utf8_substr( $f_action, utf8_strlen( $t_external_action_prefix ) ) );
 $t_form_fields_page = 'bug_actiongroup_' . $t_external_action . '_inc.php';

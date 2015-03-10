@@ -35,12 +35,10 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ) );
 
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'edit_news_link' ) );
 ?>
@@ -69,7 +67,7 @@ require_api( 'print_api.php' );
 				<label for="news-view-status"><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
 				<span class="select">
 					<select id="news-view-status" name="view_state">
-						<?php print_enum_string_option_list( 'view_state' ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state' ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -97,7 +95,7 @@ if( \Flickerbox\News::get_count( \Flickerbox\Helper::get_current_project(), \Fli
 				<label for="news-edit-id"><span><?php echo \Flickerbox\Lang::get( 'select_post' ) ?></span></label>
 				<span class="select">
 					<select id="news-edit-id" name="news_id">
-						<?php print_news_item_option_list() ?>
+						<?php \Flickerbox\Print_Util::news_item_option_list() ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

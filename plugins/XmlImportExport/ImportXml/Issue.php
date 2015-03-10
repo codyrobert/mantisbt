@@ -23,8 +23,6 @@
  */
 
 
-require_api( 'bug_api.php' );
-require_api( 'user_api.php' );
 require_once( 'Interface.php' );
 
 /**
@@ -62,7 +60,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 	 * @param integer $p_default_category Identifier of default category.
 	 */
 	public function __construct( $p_keep_category, $p_default_category ) {
-		$this->newbug_ = new BugData;
+		$this->newbug_ = new \Flickerbox\BugData;
 		$this->keepCategory_ = $p_keep_category;
 		$this->defaultCategory_ = $p_default_category;
 	}
@@ -257,7 +255,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 		# add bugnotes
 		if( $this->new_id_ > 0 && is_array( $t_bugnotes ) && count( $t_bugnotes ) > 0 ) {
 			foreach( $t_bugnotes as $t_bugnote ) {
-				bugnote_add(
+				\Flickerbox\Bug\Note::add(
 					$this->new_id_,
 					$t_bugnote->note,
 					$t_bugnote->time_tracking,
@@ -324,11 +322,11 @@ class ImportXml_Issue implements ImportXml_Interface {
 	 * @return integer
 	*/
 	private function get_user_id( $p_username, $p_squash_userid = 0 ) {
-		$t_user_id = user_get_id_by_name( $p_username );
+		$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
 		if( $t_user_id === false ) {
 			# user not found by username -> check real name
-			# keep in mind that the setting config_get( 'show_user_realname_threshold' ) may differ between import and export system!
-			$t_user_id = user_get_id_by_realname( $p_username );
+			# keep in mind that the setting \Flickerbox\Config::mantis_get( 'show_user_realname_threshold' ) may differ between import and export system!
+			$t_user_id = \Flickerbox\User::get_id_by_realname( $p_username );
 			if( $t_user_id === false ) {
 				# not found
 				$t_user_id = $p_squash_userid;

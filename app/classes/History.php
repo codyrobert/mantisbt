@@ -46,13 +46,7 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'bugnote_api.php' );
-require_api( 'columns_api.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'database_api.php' );
-require_api( 'user_api.php' );
 
 
 class History
@@ -83,8 +77,8 @@ class History
 			$t_query = 'INSERT INTO {bug_history}
 							( user_id, bug_id, date_modified, field_name, old_value, new_value, type )
 						VALUES
-							( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ' )';
-			db_query( $t_query, array( $p_user_id, $p_bug_id, db_now(), $c_field_name, $c_old_value, $c_new_value, $p_type ) );
+							( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
+			\Flickerbox\Database::query( $t_query, array( $p_user_id, $p_bug_id, \Flickerbox\Database::now(), $c_field_name, $c_old_value, $c_new_value, $p_type ) );
 		}
 	}
 	
@@ -97,7 +91,7 @@ class History
 	 * @return void
 	 */
 	static function log_event( $p_bug_id, $p_field_name, $p_old_value ) {
-		\Flickerbox\History::log_event_direct( $p_bug_id, $p_field_name, $p_old_value, bug_get_field( $p_bug_id, $p_field_name ) );
+		\Flickerbox\History::log_event_direct( $p_bug_id, $p_field_name, $p_old_value, \Flickerbox\Bug::get_field( $p_bug_id, $p_field_name ) );
 	}
 	
 	/**
@@ -123,8 +117,8 @@ class History
 		$t_query = 'INSERT INTO {bug_history}
 						( user_id, bug_id, date_modified, type, old_value, new_value, field_name )
 					VALUES
-						( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ',' . db_param() . ', ' . db_param() . ')';
-		db_query( $t_query, array( $t_user_id, $p_bug_id, db_now(), $p_type, $p_old_value, $p_new_value, '' ) );
+						( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ')';
+		\Flickerbox\Database::query( $t_query, array( $t_user_id, $p_bug_id, \Flickerbox\Database::now(), $p_type, $p_old_value, $p_new_value, '' ) );
 	}
 	
 	/**
@@ -136,7 +130,7 @@ class History
 	 * @return array
 	 */
 	static function get_events_array( $p_bug_id, $p_user_id = null ) {
-		$t_normal_date_format = config_get( 'normal_date_format' );
+		$t_normal_date_format = \Flickerbox\Config::mantis_get( 'normal_date_format' );
 	
 		$t_raw_history = \Flickerbox\History::get_raw_events_array( $p_bug_id, $p_user_id );
 		$t_history = array();
@@ -163,12 +157,12 @@ class History
 	 * @return array
 	 */
 	static function get_raw_events_array( $p_bug_id, $p_user_id = null, $p_start_time = null, $p_end_time = null ) {
-		$t_history_order = config_get( 'history_order' );
+		$t_history_order = \Flickerbox\Config::mantis_get( 'history_order' );
 	
 		$t_user_id = (( null === $p_user_id ) ? \Flickerbox\Auth::get_current_user_id() : $p_user_id );
 	
-		$t_roadmap_view_access_level = config_get( 'roadmap_view_threshold' );
-		$t_due_date_view_threshold = config_get( 'due_date_view_threshold' );
+		$t_roadmap_view_access_level = \Flickerbox\Config::mantis_get( 'roadmap_view_threshold' );
+		$t_due_date_view_threshold = \Flickerbox\Config::mantis_get( 'due_date_view_threshold' );
 	
 		# grab history and display by date_modified then field_name
 		# @@@ by MASC I guess it's better by id then by field_name. When we have more history lines with the same
@@ -179,16 +173,16 @@ class History
 	
 		$t_params = array( $p_bug_id );
 	
-		$t_query = 'SELECT * FROM {bug_history} WHERE bug_id=' . db_param();
+		$t_query = 'SELECT * FROM {bug_history} WHERE bug_id=' . \Flickerbox\Database::param();
 	
 		$t_where = array();
 		if ( $p_start_time !== null ) {
-			$t_where[] = 'date_modified >= ' . db_param();
+			$t_where[] = 'date_modified >= ' . \Flickerbox\Database::param();
 			$t_params[] = $p_start_time;
 		}
 	
 		if ( $p_end_time !== null ) {
-			$t_where[] = 'date_modified < ' . db_param();
+			$t_where[] = 'date_modified < ' . \Flickerbox\Database::param();
 			$t_params[] = $p_end_time;
 		}
 	
@@ -198,18 +192,18 @@ class History
 	
 		$t_query .= ' ORDER BY date_modified ' . $t_history_order . ',id';
 	
-		$t_result = db_query( $t_query, $t_params );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_params );
 		$t_raw_history = array();
 	
-		$t_private_bugnote_visible = \Flickerbox\Access::has_bug_level( config_get( 'private_bugnote_threshold' ), $p_bug_id, $t_user_id );
-		$t_tag_view_threshold = config_get( 'tag_view_threshold' );
-		$t_view_attachments_threshold = config_get( 'view_attachments_threshold' );
-		$t_show_monitor_list_threshold = config_get( 'show_monitor_list_threshold' );
-		$t_show_handler_threshold = config_get( 'view_handler_threshold' );
+		$t_private_bugnote_visible = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'private_bugnote_threshold' ), $p_bug_id, $t_user_id );
+		$t_tag_view_threshold = \Flickerbox\Config::mantis_get( 'tag_view_threshold' );
+		$t_view_attachments_threshold = \Flickerbox\Config::mantis_get( 'view_attachments_threshold' );
+		$t_show_monitor_list_threshold = \Flickerbox\Config::mantis_get( 'show_monitor_list_threshold' );
+		$t_show_handler_threshold = \Flickerbox\Config::mantis_get( 'view_handler_threshold' );
 	
-		$t_standard_fields = columns_get_standard();
+		$t_standard_fields = \Flickerbox\Columns::get_standard();
 		$j = 0;
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 	
 			if( $v_type == NORMAL_TYPE ) {
@@ -238,13 +232,13 @@ class History
 			if( $t_user_id != $v_user_id ) {
 				# bypass if user originated note
 				if( ( $v_type == BUGNOTE_ADDED ) || ( $v_type == BUGNOTE_UPDATED ) || ( $v_type == BUGNOTE_DELETED ) ) {
-					if( !$t_private_bugnote_visible && ( bugnote_get_field( $v_old_value, 'view_state' ) == VS_PRIVATE ) ) {
+					if( !$t_private_bugnote_visible && ( \Flickerbox\Bug\Note::get_field( $v_old_value, 'view_state' ) == VS_PRIVATE ) ) {
 						continue;
 					}
 				}
 	
 				if( $v_type == BUGNOTE_STATE_CHANGED ) {
-					if( !$t_private_bugnote_visible && ( bugnote_get_field( $v_new_value, 'view_state' ) == VS_PRIVATE ) ) {
+					if( !$t_private_bugnote_visible && ( \Flickerbox\Bug\Note::get_field( $v_new_value, 'view_state' ) == VS_PRIVATE ) ) {
 						continue;
 					}
 				}
@@ -277,7 +271,7 @@ class History
 	
 				# If bug doesn't exist, then we don't know whether to expose it or not based on the fact whether it was
 				# accessible to user or not.  This also simplifies client code that is accessing the history log.
-				if( !bug_exists( $t_related_bug_id ) || !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold' ), $t_related_bug_id, $t_user_id ) ) {
+				if( !\Flickerbox\Bug::exists( $t_related_bug_id ) || !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ), $t_related_bug_id, $t_user_id ) ) {
 					continue;
 				}
 			}
@@ -286,7 +280,7 @@ class History
 			$t_raw_history[$j]['userid'] = $v_user_id;
 	
 			# user_get_name handles deleted users, and username vs realname
-			$t_raw_history[$j]['username'] = user_get_name( $v_user_id );
+			$t_raw_history[$j]['username'] = \Flickerbox\User::get_name( $v_user_id );
 	
 			$t_raw_history[$j]['field'] = $v_field_name;
 			$t_raw_history[$j]['type'] = $v_type;
@@ -398,13 +392,13 @@ class History
 				if( 0 == $p_old_value ) {
 					$p_old_value = '';
 				} else {
-					$p_old_value = user_get_name( $p_old_value );
+					$p_old_value = \Flickerbox\User::get_name( $p_old_value );
 				}
 	
 				if( 0 == $p_new_value ) {
 					$p_new_value = '';
 				} else {
-					$p_new_value = user_get_name( $p_new_value );
+					$p_new_value = \Flickerbox\User::get_name( $p_new_value );
 				}
 				break;
 			case 'version':
@@ -417,13 +411,13 @@ class History
 				$t_field_localized = \Flickerbox\Lang::get( 'target_version' );
 				break;
 			case 'date_submitted':
-				$p_old_value = date( config_get( 'normal_date_format' ), $p_old_value );
-				$p_new_value = date( config_get( 'normal_date_format' ), $p_new_value );
+				$p_old_value = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $p_old_value );
+				$p_new_value = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $p_new_value );
 				$t_field_localized = \Flickerbox\Lang::get( 'date_submitted' );
 				break;
 			case 'last_updated':
-				$p_old_value = date( config_get( 'normal_date_format' ), $p_old_value );
-				$p_new_value = date( config_get( 'normal_date_format' ), $p_new_value );
+				$p_old_value = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $p_old_value );
+				$p_new_value = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $p_new_value );
 				$t_field_localized = \Flickerbox\Lang::get( 'last_update' );
 				break;
 			case 'os':
@@ -449,10 +443,10 @@ class History
 				break;
 			case 'due_date':
 				if( $p_old_value !== '' ) {
-					$p_old_value = date( config_get( 'normal_date_format' ), (int)$p_old_value );
+					$p_old_value = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), (int)$p_old_value );
 				}
 				if( $p_new_value !== '' ) {
-					$p_new_value = date( config_get( 'normal_date_format' ), (int)$p_new_value );
+					$p_new_value = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), (int)$p_new_value );
 				}
 				$t_field_localized = \Flickerbox\Lang::get( 'due_date' );
 				break;
@@ -483,7 +477,7 @@ class History
 						$t_old_value = (int)$p_old_value;
 						$t_new_value = (int)$p_new_value;
 						if( $p_linkify && \Flickerbox\Bug\Revision::exists( $t_new_value ) ) {
-							if( bugnote_exists( $t_old_value ) ) {
+							if( \Flickerbox\Bug\Note::exists( $t_old_value ) ) {
 								$t_bug_revision_view_page_argument = 'bugnote_id=' . $t_old_value . '#r' . $t_new_value;
 							} else {
 								$t_bug_revision_view_page_argument = 'rev_id=' . $t_new_value;
@@ -524,7 +518,7 @@ class History
 						}
 						break;
 					case FILE_ADDED:
-						$t_note = \Flickerbox\Lang::get( '\Flickerbox\File::add(ed' ) . ': ' . $p_old_value;
+						$t_note = \Flickerbox\Lang::get( '\\Flickerbox\\File::add(ed' ) . ': ' . $p_old_value;
 						break;
 					case FILE_DELETED:
 						$t_note = \Flickerbox\Lang::get( 'file_deleted' ) . ': ' . $p_old_value;
@@ -534,12 +528,12 @@ class History
 						$t_note = \Flickerbox\Lang::get( 'bugnote_view_state' ) . ': ' . $p_new_value . ': ' . $p_old_value;
 						break;
 					case BUG_MONITOR:
-						$p_old_value = user_get_name( $p_old_value );
+						$p_old_value = \Flickerbox\User::get_name( $p_old_value );
 						$t_note = \Flickerbox\Lang::get( 'bug_monitor' ) . ': ' . $p_old_value;
 						break;
 					case BUG_UNMONITOR:
 						if( $p_old_value !== '' ) {
-							$p_old_value = user_get_name( $p_old_value );
+							$p_old_value = \Flickerbox\User::get_name( $p_old_value );
 						}
 						$t_note = \Flickerbox\Lang::get( 'bug_end_monitor' ) . ': ' . $p_old_value;
 						break;
@@ -548,43 +542,43 @@ class History
 						break;
 					case BUG_ADD_SPONSORSHIP:
 						$t_note = \Flickerbox\Lang::get( 'sponsorship_added' );
-						$t_change = user_get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
+						$t_change = \Flickerbox\User::get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
 						break;
 					case BUG_UPDATE_SPONSORSHIP:
 						$t_note = \Flickerbox\Lang::get( 'sponsorship_updated' );
-						$t_change = user_get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
+						$t_change = \Flickerbox\User::get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
 						break;
 					case BUG_DELETE_SPONSORSHIP:
 						$t_note = \Flickerbox\Lang::get( 'sponsorship_deleted' );
-						$t_change = user_get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
+						$t_change = \Flickerbox\User::get_name( $p_old_value ) . ': ' . \Flickerbox\Sponsorship::format_amount( $p_new_value );
 						break;
 					case BUG_PAID_SPONSORSHIP:
 						$t_note = \Flickerbox\Lang::get( 'sponsorship_paid' );
-						$t_change = user_get_name( $p_old_value ) . ': ' . \Flickerbox\Helper::get_enum_element( 'sponsorship', $p_new_value );
+						$t_change = \Flickerbox\User::get_name( $p_old_value ) . ': ' . \Flickerbox\Helper::get_enum_element( 'sponsorship', $p_new_value );
 						break;
 					case BUG_ADD_RELATIONSHIP:
 						$t_note = \Flickerbox\Lang::get( 'relationship_added' );
-						$t_change = \Flickerbox\Relationship::get_description_for_history( $p_old_value ) . ' ' . bug_format_id( $p_new_value );
+						$t_change = \Flickerbox\Relationship::get_description_for_history( $p_old_value ) . ' ' . \Flickerbox\Bug::format_id( $p_new_value );
 						break;
 					case BUG_REPLACE_RELATIONSHIP:
 						$t_note = \Flickerbox\Lang::get( 'relationship_replaced' );
-						$t_change = \Flickerbox\Relationship::get_description_for_history( $p_old_value ) . ' ' . bug_format_id( $p_new_value );
+						$t_change = \Flickerbox\Relationship::get_description_for_history( $p_old_value ) . ' ' . \Flickerbox\Bug::format_id( $p_new_value );
 						break;
 					case BUG_DEL_RELATIONSHIP:
 						$t_note = \Flickerbox\Lang::get( 'relationship_deleted' );
 	
 						# Fix for #7846: There are some cases where old value is empty, this may be due to an old bug.
 						if( !\Flickerbox\Utility::is_blank( $p_old_value ) && $p_old_value > 0 ) {
-							$t_change = \Flickerbox\Relationship::get_description_for_history( $p_old_value ) . ' ' . bug_format_id( $p_new_value );
+							$t_change = \Flickerbox\Relationship::get_description_for_history( $p_old_value ) . ' ' . \Flickerbox\Bug::format_id( $p_new_value );
 						} else {
-							$t_change = bug_format_id( $p_new_value );
+							$t_change = \Flickerbox\Bug::format_id( $p_new_value );
 						}
 						break;
 					case BUG_CLONED_TO:
-						$t_note = \Flickerbox\Lang::get( 'bug_cloned_to' ) . ': ' . bug_format_id( $p_new_value );
+						$t_note = \Flickerbox\Lang::get( 'bug_cloned_to' ) . ': ' . \Flickerbox\Bug::format_id( $p_new_value );
 						break;
 					case BUG_CREATED_FROM:
-						$t_note = \Flickerbox\Lang::get( 'bug_created_from' ) . ': ' . bug_format_id( $p_new_value );
+						$t_note = \Flickerbox\Lang::get( 'bug_created_from' ) . ': ' . \Flickerbox\Bug::format_id( $p_new_value );
 						break;
 					case TAG_ATTACHED:
 						$t_note = \Flickerbox\Lang::get( 'tag_history_attached' ) . ': ' . $p_old_value;
@@ -621,8 +615,8 @@ class History
 	 * @return void
 	 */
 	static function delete( $p_bug_id ) {
-		$t_query = 'DELETE FROM {bug_history} WHERE bug_id=' . db_param();
-		db_query( $t_query, array( $p_bug_id ) );
+		$t_query = 'DELETE FROM {bug_history} WHERE bug_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
 	}
 
 

@@ -73,28 +73,28 @@ function print_test_result( $p_result, $p_hard_fail = true, $p_message = '' ) {
 	echo "\n";
 }
 
-$t_result = @db_connect( config_get_global( 'dsn', false ), config_get_global( 'hostname' ),
-	config_get_global( 'db_username' ), config_get_global( 'db_password' ),
-	config_get_global( 'database_name' ) );
+$t_result = @\Flickerbox\Database::connect( \Flickerbox\Config::get_global( 'dsn', false ), \Flickerbox\Config::get_global( 'hostname' ),
+	\Flickerbox\Config::get_global( 'db_username' ), \Flickerbox\Config::get_global( 'db_password' ),
+	\Flickerbox\Config::get_global( 'database_name' ) );
 
 if( false == $t_result ) {
 	echo 'Opening connection to database ' .
-		config_get_global( 'database_name' ) .
-		' on host ' . config_get_global( 'hostname' ) .
-		' with username ' . config_get_global( 'db_username' ) .
-		' failed: ' . db_error_msg() . "\n";
+		\Flickerbox\Config::get_global( 'database_name' ) .
+		' on host ' . \Flickerbox\Config::get_global( 'hostname' ) .
+		' with username ' . \Flickerbox\Config::get_global( 'db_username' ) .
+		' failed: ' . \Flickerbox\Database::error_msg() . "\n";
 	exit( 1 );
 }
 
 # TODO: Enhance this check to support the mode where this script is called on an empty database.
 # check to see if the new installer was used
-if( -1 == config_get( 'database_version', -1 ) ) {
+if( -1 == \Flickerbox\Config::mantis_get( 'database_version', -1 ) ) {
 		echo 'Upgrade from the current installed MantisBT version is no longer supported.  If you are using MantisBT version older than 1.0.0, then upgrade to v1.0.0 first.';
 		exit( 1 );
 }
 
 # read control variables with defaults
-$t_db_type = config_get_global( 'db_type' );
+$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
 
 # install the tables
 if( !preg_match( '/^[a-zA-Z0-9_]+$/', $t_db_type ) ||
@@ -109,7 +109,7 @@ $g_db = ADONewConnection( $t_db_type );
 
 echo "\nPost 1.0 schema changes\n";
 echo 'Connecting to database... ';
-$t_result = @$g_db->Connect( config_get_global( 'hostname' ), config_get_global( 'db_username' ), config_get_global( 'db_password' ), config_get_global( 'database_name' ) );
+$t_result = @$g_db->Connect( \Flickerbox\Config::get_global( 'hostname' ), \Flickerbox\Config::get_global( 'db_username' ), \Flickerbox\Config::get_global( 'db_password' ), \Flickerbox\Config::get_global( 'database_name' ) );
 
 if( false == $t_result ) {
 	echo 'Failed.' . "\n";
@@ -119,7 +119,7 @@ if( false == $t_result ) {
 echo 'OK' . "\n";
 
 $g_db_connected = true; # fake out database access routines used by config_get
-$t_last_update = config_get( 'database_version', -1, ALL_USERS, ALL_PROJECTS );
+$t_last_update = \Flickerbox\Config::mantis_get( 'database_version', -1, ALL_USERS, ALL_PROJECTS );
 $t_last_id = count( $g_upgrade ) - 1;
 $i = $t_last_update + 1;
 $t_count_done = 0;
@@ -174,7 +174,7 @@ while( ( $i <= $t_last_id ) && !$g_failed ) {
 
 	if( $t_ret == 2 ) {
 		print_test_result( GOOD );
-		config_set( 'database_version', $i );
+		\Flickerbox\Config::set( 'database_version', $i );
 	} else {
 		print_test_result( BAD, true, $t_sqlarray[0] . '<br />' . $g_db->ErrorMsg() );
 	}

@@ -32,7 +32,6 @@ if( !defined( 'CHECK_INTEGRITY_INC_ALLOW' ) ) {
 
 # MantisBT Check API
 require_once( 'check_api.php' );
-require_api( 'config_api.php' );
 
 $t_this_directory = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;
 if( file_exists( $t_this_directory . 'integrity_release_blobs.php' ) ) {
@@ -165,7 +164,7 @@ if( !$t_can_perform_integrity_check ) {
 	return;
 }
 
-$t_absolute_base_dir = realpath( config_get_global( 'absolute_path' ) ) . DIRECTORY_SEPARATOR;
+$t_absolute_base_dir = realpath( \Flickerbox\Config::get_global( 'absolute_path' ) ) . DIRECTORY_SEPARATOR;
 $t_ignore_files = array(
 	'.git/',
 	'admin/integrity_commit_blobs.php',
@@ -183,23 +182,23 @@ $t_ignore_files = array(
 );
 check_file_integrity_recursive( $t_absolute_base_dir, $t_absolute_base_dir, '', $t_ignore_files );
 
-$t_base_dir = realpath( config_get_global( 'core_path' ) ) . DIRECTORY_SEPARATOR;
+$t_base_dir = realpath( \Flickerbox\Config::get_global( 'core_path' ) ) . DIRECTORY_SEPARATOR;
 $t_ignore_files = array(
 	'core/classes/'
 );
 check_file_integrity_recursive( $t_base_dir, $t_base_dir, 'core/', $t_ignore_files );
 
-$t_base_dir = realpath( config_get_global( 'class_path' ) ) . DIRECTORY_SEPARATOR;
+$t_base_dir = realpath( \Flickerbox\Config::get_global( 'class_path' ) ) . DIRECTORY_SEPARATOR;
 check_file_integrity_recursive( $t_base_dir, $t_base_dir, 'core/classes/' );
 
-$t_base_dir = realpath( config_get_global( 'library_path' ) ) . DIRECTORY_SEPARATOR;
+$t_base_dir = realpath( \Flickerbox\Config::get_global( 'library_path' ) ) . DIRECTORY_SEPARATOR;
 $t_ignore_files = array(
 	'library/jpgraph/',
 	'library/FirePHPCore/'
 );
 check_file_integrity_recursive( $t_base_dir, $t_base_dir, 'library/', $t_ignore_files );
 
-$t_base_dir = realpath( config_get_global( 'language_path' ) ) . DIRECTORY_SEPARATOR;
+$t_base_dir = realpath( \Flickerbox\Config::get_global( 'language_path' ) ) . DIRECTORY_SEPARATOR;
 check_file_integrity_recursive( $t_base_dir, $t_base_dir, 'lang/' );
 
 $t_builtin_plugins = array(

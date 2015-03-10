@@ -32,7 +32,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Icon
@@ -45,8 +44,8 @@ class Icon
 	 * @access public
 	 */
 	static function get_status_icon( $p_icon ) {
-		$t_icon_path = config_get( 'icon_path' );
-		$t_status_icon_arr = config_get( 'status_icon_arr' );
+		$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
+		$t_status_icon_arr = \Flickerbox\Config::mantis_get( 'status_icon_arr' );
 		$t_priotext = \Flickerbox\Helper::get_enum_element( 'priority', $p_icon );
 		if( isset( $t_status_icon_arr[$p_icon] ) && !\Flickerbox\Utility::is_blank( $t_status_icon_arr[$p_icon] ) ) {
 			return '<img src="' . $t_icon_path . $t_status_icon_arr[$p_icon] . '" alt="" title="' . $t_priotext . '" />';
@@ -80,9 +79,9 @@ class Icon
 	 * @access public
 	 */
 	static function print_sort_icon( $p_dir, $p_sort_by, $p_field ) {
-		$t_icon_path = config_get( 'icon_path' );
-		$t_sort_icon_arr = config_get( 'sort_icon_arr' );
-		$t_status_icon_arr = config_get( 'status_icon_arr' );
+		$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
+		$t_sort_icon_arr = \Flickerbox\Config::mantis_get( 'sort_icon_arr' );
+		$t_status_icon_arr = \Flickerbox\Config::mantis_get( 'status_icon_arr' );
 	
 		if( $p_sort_by != $p_field ) {
 			return;

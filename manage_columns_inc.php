@@ -38,8 +38,6 @@ if( !defined( 'MANAGE_COLUMNS_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'columns_api.php' );
-require_api( 'print_api.php' );
 
 $t_manage_page = defined( 'MANAGE_COLUMNS' );
 $t_account_page = defined( 'ACCOUNT_COLUMNS' );
@@ -53,7 +51,7 @@ if( $t_manage_page ) {
 	$t_user_id = \Flickerbox\Auth::get_current_user_id();
 }
 
-$t_columns = columns_get_all( $t_project_id );
+$t_columns = \Flickerbox\Columns::get_all( $t_project_id );
 $t_all = implode( ', ', $t_columns );
 
 $t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_CSV_PAGE, false, $t_user_id );
@@ -139,7 +137,7 @@ $t_excel = implode( ', ', $t_columns );
 			<input type="hidden" name="manage_page" value="<?php echo $t_manage_page ?>" />
 
 			<select name="other_project_id">
-				<?php print_project_option_list( null, true, $t_project_id ); ?>
+				<?php \Flickerbox\Print_Util::project_option_list( null, true, $t_project_id ); ?>
 			</select>
 
 			<?php # Skip "Copy From" if the current project is ALL PROJECTS, the current page is management page, and the user is not administrator

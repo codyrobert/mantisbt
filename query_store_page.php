@@ -37,7 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -48,7 +47,7 @@ require_api( 'config_api.php' );
 <br />
 <div id="save-filter">
 <?php
-$t_query_to_store = \Flickerbox\Filter::db_get_filter( \Flickerbox\GPC::get_cookie( config_get( 'view_all_cookie' ), '' ) );
+$t_query_to_store = \Flickerbox\Filter::db_get_filter( \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), '' ) );
 $t_query_arr = \Flickerbox\Filter::db_get_available_queries();
 
 # Let's just see if any of the current filters are the
@@ -71,7 +70,7 @@ print \Flickerbox\Lang::get( 'query_name_label' ) . \Flickerbox\Lang::get( 'word
 <?php echo \Flickerbox\Form::security_field( 'query_store' ) ?>
 <input type="text" name="query_name" /><br />
 <?php
-if( \Flickerbox\Access::has_project_level( config_get( 'stored_query_create_shared_threshold' ) ) ) {
+if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_create_shared_threshold' ) ) ) {
 	print '<input type="checkbox" name="is_public" value="on" /> ';
 	print \Flickerbox\Lang::get( 'make_public' );
 	print '<br />';

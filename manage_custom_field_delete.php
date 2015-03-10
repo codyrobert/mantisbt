@@ -37,14 +37,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_custom_field_delete' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 
 $f_field_id	= \Flickerbox\GPC::get_int( 'field_id' );
 $f_return = strip_tags( \Flickerbox\GPC::get_string( 'return', 'manage_custom_field_page.php' ) );

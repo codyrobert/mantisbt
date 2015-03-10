@@ -36,20 +36,18 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_custom_field_create' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 
 $f_name	= \Flickerbox\GPC::get_string( 'name' );
 
 $t_field_id = custom_field_create( $f_name );
 
-if( ON == config_get( 'custom_field_edit_after_create' ) ) {
+if( ON == \Flickerbox\Config::mantis_get( 'custom_field_edit_after_create' ) ) {
 	$t_redirect_url = 'manage_custom_field_edit_page.php?field_id=' . $t_field_id;
 } else {
 	$t_redirect_url = 'manage_custom_field_page.php';

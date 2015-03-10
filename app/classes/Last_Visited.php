@@ -34,9 +34,6 @@ namespace Flickerbox;
  * @uses tokens_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
 
 
 class Last_Visited
@@ -49,7 +46,7 @@ class Last_Visited
 	 * @access public
 	 */
 	static function enabled() {
-		return !( 0 == config_get( 'recently_visited_count' ) || \Flickerbox\Current_User::is_anonymous() );
+		return !( 0 == \Flickerbox\Config::mantis_get( 'recently_visited_count' ) || \Flickerbox\Current_User::is_anonymous() );
 	}
 	
 	/**
@@ -72,7 +69,7 @@ class Last_Visited
 		} else {
 			$t_ids = explode( ',', $p_issue_id . ',' . $t_value );
 			$t_ids = array_unique( $t_ids );
-			$t_ids = array_slice( $t_ids, 0, config_get( 'recently_visited_count' ) );
+			$t_ids = array_slice( $t_ids, 0, \Flickerbox\Config::mantis_get( 'recently_visited_count' ) );
 			$t_value = implode( ',', $t_ids );
 		}
 	
@@ -102,7 +99,7 @@ class Last_Visited
 		# visited to track, then he/she will get the extra entries until visiting an issue.
 		$t_ids = explode( ',', $t_value );
 	
-		bug_cache_array_rows( $t_ids );
+		\Flickerbox\Bug::cache_array_rows( $t_ids );
 		return $t_ids;
 	}
 

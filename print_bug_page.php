@@ -50,17 +50,13 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'columns_api.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
-bug_ensure_exists( $f_bug_id );
+\Flickerbox\Bug::ensure_exists( $f_bug_id );
 
-$t_bug = bug_get( $f_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 
 $t_selected_project = \Flickerbox\Helper::get_current_project();
 if( $t_bug->project_id != $t_selected_project ) {
@@ -69,10 +65,10 @@ if( $t_bug->project_id != $t_selected_project ) {
 	$g_project_override = $t_bug->project_id;
 }
 
-\Flickerbox\Access::ensure_bug_level( config_get( 'view_bug_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ), $f_bug_id );
 
-$t_fields = config_get( 'bug_print_page_fields' );
-$t_fields = columns_filter_disabled( $t_fields );
+$t_fields = \Flickerbox\Config::mantis_get( 'bug_print_page_fields' );
+$t_fields = \Flickerbox\Columns::filter_disabled( $t_fields );
 
 \Flickerbox\Compress::enable();
 
@@ -83,8 +79,8 @@ $t_show_date_submitted = in_array( 'date_submitted', $t_fields );
 $t_show_last_updated = in_array( 'last_updated', $t_fields );
 $t_show_view_state = in_array( 'view_state', $t_fields );
 $t_show_reporter = in_array( 'reporter', $t_fields );
-$t_show_handler = in_array( 'handler', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'view_handler_threshold' ), $f_bug_id );
-$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $f_bug_id );
+$t_show_handler = in_array( 'handler', $t_fields ) && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ), $f_bug_id );
+$t_show_due_date = in_array( 'due_date', $t_fields ) && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'due_date_view_threshold' ), $f_bug_id );
 $t_show_priority = in_array( 'priority', $t_fields );
 $t_show_severity = in_array( 'severity', $t_fields );
 $t_show_reproducibility = in_array( 'reproducibility', $t_fields );
@@ -97,25 +93,25 @@ $t_show_projection = in_array( 'projection', $t_fields );
 $t_show_eta = in_array( 'eta', $t_fields );
 $t_show_versions = \Flickerbox\Version::should_show_product_version( $t_bug->project_id );
 $t_show_product_version = $t_show_versions && in_array( 'product_version', $t_fields );
-$t_show_product_build = $t_show_versions && in_array( 'product_build', $t_fields ) && config_get( 'enable_product_build' );
+$t_show_product_build = $t_show_versions && in_array( 'product_build', $t_fields ) && \Flickerbox\Config::mantis_get( 'enable_product_build' );
 $t_show_fixed_in_version = $t_show_versions && in_array( 'fixed_in_version', $t_fields );
-$t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields ) && \Flickerbox\Access::has_bug_level( config_get( 'roadmap_view_threshold' ), $f_bug_id );
+$t_show_target_version = $t_show_versions && in_array( 'target_version', $t_fields ) && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'roadmap_view_threshold' ), $f_bug_id );
 $t_show_summary = in_array( 'summary', $t_fields );
 $t_show_description = in_array( 'description', $t_fields );
 $t_show_steps_to_reproduce = in_array( 'steps_to_reproduce', $t_fields );
 $t_show_additional_information = in_array( 'additional_info', $t_fields );
 $t_show_tags = in_array( 'tags', $t_fields );
 $t_show_attachments = in_array( 'attachments', $t_fields );
-$t_show_history = \Flickerbox\Access::has_bug_level( config_get( 'view_history_threshold' ), $f_bug_id );
+$t_show_history = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_history_threshold' ), $f_bug_id );
 
-$t_window_title = \Flickerbox\String::display_line( config_get( 'window_title' ) );
+$t_window_title = \Flickerbox\String::display_line( \Flickerbox\Config::mantis_get( 'window_title' ) );
 $t_project_name = $t_show_project ? \Flickerbox\String::display_line( \Flickerbox\Project::get_name( $t_bug->project_id ) ) : '';
-$t_formatted_bug_id = $t_show_id ? bug_format_id( $f_bug_id ) : '';
+$t_formatted_bug_id = $t_show_id ? \Flickerbox\Bug::format_id( $f_bug_id ) : '';
 $t_category_name = $t_show_category ? \Flickerbox\String::display_line( \Flickerbox\Category::full_name( $t_bug->category_id ) ) : '';
 $t_severity = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'severity', $t_bug->severity ) );
 $t_reproducibility = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'reproducibility', $t_bug->reproducibility ) );
-$t_date_submitted = $t_show_date_submitted ? \Flickerbox\String::display_line( date( config_get( 'normal_date_format' ), $t_bug->date_submitted ) ) : '';
-$t_last_updated = $t_show_last_updated ? \Flickerbox\String::display_line( date( config_get( 'normal_date_format' ), $t_bug->last_updated ) ) : '';
+$t_date_submitted = $t_show_date_submitted ? \Flickerbox\String::display_line( date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_bug->date_submitted ) ) : '';
+$t_last_updated = $t_show_last_updated ? \Flickerbox\String::display_line( date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_bug->last_updated ) ) : '';
 $t_platform = \Flickerbox\String::display_line( $t_bug->platform );
 $t_os = \Flickerbox\String::display_line( $t_bug->os );
 $t_os_version = \Flickerbox\String::display_line( $t_bug->os_build );
@@ -126,7 +122,7 @@ $t_resolution = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_e
 $t_product_build = \Flickerbox\String::display_line( $t_bug->build );
 $t_projection = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'projection', $t_bug->projection ) );
 $t_eta = \Flickerbox\String::display_line( \Flickerbox\Helper::get_enum_element( 'eta', $t_bug->eta ) );
-$t_summary = \Flickerbox\String::display_line_links( bug_format_summary( $f_bug_id, SUMMARY_FIELD ) );
+$t_summary = \Flickerbox\String::display_line_links( \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_FIELD ) );
 $t_description = \Flickerbox\String::display_links( $t_bug->description );
 $t_steps_to_reproduce = \Flickerbox\String::display_links( $t_bug->steps_to_reproduce );
 $t_additional_information = \Flickerbox\String::display_links( $t_bug->additional_information );
@@ -134,7 +130,7 @@ $t_view_state = $t_show_view_state ? \Flickerbox\Helper::get_enum_element( 'view
 
 if( $t_show_due_date ) {
 	if( !\Flickerbox\Date::is_null( $t_bug->due_date ) ) {
-		$t_due_date = date( config_get( 'normal_date_format' ), $t_bug->due_date );
+		$t_due_date = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_bug->due_date );
 	} else {
 		$t_due_date = '';
 	}
@@ -152,7 +148,7 @@ $t_fixed_in_version =
 	$t_show_fixed_in_version ?
 		\Flickerbox\String::display_line( \Flickerbox\Prepare::version_string( $t_bug->project_id, \Flickerbox\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id ) ) ) : '';
 
-\Flickerbox\HTML::page_top1( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top1( \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 \Flickerbox\HTML::head_end();
 \Flickerbox\HTML::body_begin();
 
@@ -207,7 +203,7 @@ if( $t_show_reporter ) {
 	echo '<tr class="print">';
 	echo '<th class="print-category">', \Flickerbox\Lang::get( 'reporter' ), '</th>';
 	echo '<td class="print">';
-	print_user_with_subject( $t_bug->reporter_id, $f_bug_id );
+	\Flickerbox\Print_Util::user_with_subject( $t_bug->reporter_id, $f_bug_id );
 	echo '</td>';
 	echo '<td class="print" colspan="4">&#160;</td>';
 	echo '</tr>';
@@ -225,7 +221,7 @@ if( $t_show_handler || $t_show_due_date ) {
 	if( $t_show_handler ) {
 		echo '<th class="print-category">', \Flickerbox\Lang::get( 'assigned_to' ), '</th>';
 		echo '<td class="print">';
-		print_user_with_subject( $t_bug->handler_id, $f_bug_id );
+		\Flickerbox\Print_Util::user_with_subject( $t_bug->handler_id, $f_bug_id );
 		echo '</td>';
 	} else {
 		$t_spacer += 2;
@@ -495,7 +491,7 @@ if( $t_show_attachments ) {
 
 	$t_attachments = \Flickerbox\File::get_visible_attachments( $f_bug_id );
 	$t_first_attachment = true;
-	$t_path = config_get_global( 'path' );
+	$t_path = \Flickerbox\Config::get_global( 'path' );
 
 	foreach ( $t_attachments as $t_attachment ) {
 		if( $t_first_attachment ) {
@@ -507,7 +503,7 @@ if( $t_show_attachments ) {
 		$c_filename = \Flickerbox\String::display_line( $t_attachment['display_name'] );
 		$c_download_url = $t_path . htmlspecialchars( $t_attachment['download_url'] );
 		$c_filesize = number_format( $t_attachment['size'] );
-		$c_date_added = date( config_get( 'normal_date_format' ), $t_attachment['date_added'] );
+		$c_date_added = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_attachment['date_added'] );
 		if( isset( $t_attachment['icon'] ) ) {
 			echo '<img src="', $t_attachment['icon']['url'], '" alt="', $t_attachment['icon']['alt'], '" />&#160;';
 		}
@@ -544,7 +540,7 @@ if( $t_show_history ) {
 		echo '<tr class="print">';
 		echo '<td class="print">', $t_item['date'], '</td>';
 		echo '<td class="print">';
-		print_user( $t_item['userid'] );
+		\Flickerbox\Print_Util::user( $t_item['userid'] );
 		echo '</td>';
 		echo '<td class="print">', \Flickerbox\String::display( $t_item['note'] ), '</td>';
 		echo '<td class="print">', \Flickerbox\String::display_line_links( $t_item['change'] ), '</td>';

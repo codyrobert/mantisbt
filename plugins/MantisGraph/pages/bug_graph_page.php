@@ -30,56 +30,54 @@
  */
 
 require_once( 'core.php' );
-plugin_require_api( 'core/Period.php' );
-require_api( 'config_api.php' );
-require_api( 'plugin_api.php' );
+\Flickerbox\Plugin::require_api( 'core/Period.php' );
 
 \Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
 \Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
 \Flickerbox\HTML::require_js( 'jscalendar/calendar-setup.js' );
 \Flickerbox\HTML::require_css( 'calendar-blue.css' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
 
 $f_interval = \Flickerbox\GPC::get_int( 'interval', 0 );
 $t_today = date( 'Y-m-d' );
 $f_type = \Flickerbox\GPC::get_int( 'graph_type', 0 );
 $f_show_as_table = \Flickerbox\GPC::get_bool( 'show_table', false );
 
-\Flickerbox\HTML::page_top1( plugin_langget( 'graph_page' ) );
-$t_path = config_get( 'path' );
+\Flickerbox\HTML::page_top1( \Flickerbox\Plugin::langget( 'graph_page' ) );
+$t_path = \Flickerbox\Config::mantis_get( 'path' );
 \Flickerbox\HTML::page_top2();
 
 $t_period = new Period();
 $t_period->set_period_from_selector( 'interval' );
 $t_types = array(
-				0 => plugin_langget( 'select' ),
-				2 => plugin_langget( 'select_bystatus' ),
-				3 => plugin_langget( 'select_summbystatus' ),
-				4 => plugin_langget( 'select_bycat' ),
-				6 => plugin_langget( 'select_both' ),
+				0 => \Flickerbox\Plugin::langget( 'select' ),
+				2 => \Flickerbox\Plugin::langget( 'select_bystatus' ),
+				3 => \Flickerbox\Plugin::langget( 'select_summbystatus' ),
+				4 => \Flickerbox\Plugin::langget( 'select_bycat' ),
+				6 => \Flickerbox\Plugin::langget( 'select_both' ),
 		   );
 
 $t_show = array(
-				0 => plugin_langget( 'show_as_graph' ),
-				1 => plugin_langget( 'show_as_table' ),
+				0 => \Flickerbox\Plugin::langget( 'show_as_graph' ),
+				1 => \Flickerbox\Plugin::langget( 'show_as_table' ),
 		  );
 ?>
-		<form id="graph_form" method="post" action="<?php echo plugin_page( 'bug_graph_page.php' ); ?>">
+		<form id="graph_form" method="post" action="<?php echo \Flickerbox\Plugin::page( 'bug_graph_page.php' ); ?>">
 			<table class="width100" cellspacing="1">
 
 				<tr>
 					<td>
-						<?php echo get_dropdown( $t_types, 'graph_type', $f_type ); ?>
+						<?php echo \Flickerbox\Print_Util::get_dropdown( $t_types, 'graph_type', $f_type ); ?>
 					</td>
 					<td>
 						<?php echo $t_period->period_selector( 'interval' ); ?>
 					</td>
 					<td>
-						<?php echo get_dropdown( $t_show, 'show_table', $f_show_as_table ? 1 : 0 ); ?>
+						<?php echo \Flickerbox\Print_Util::get_dropdown( $t_show, 'show_table', $f_show_as_table ? 1 : 0 ); ?>
 					</td>
 					<td>
-						<input type="submit" class="button" name="show" value="<?php echo plugin_langget( 'show_graph' ); ?>"/>
+						<input type="submit" class="button" name="show" value="<?php echo \Flickerbox\Plugin::langget( 'show_graph' ); ?>"/>
 					</td>
 				</tr>
 			</table>
@@ -87,7 +85,7 @@ $t_show = array(
 <?php
 # build the graphs if both an interval and graph type are selected
 if( ( 0 != $f_type ) && ( $f_interval > 0 ) && ( \Flickerbox\GPC::get( 'show', '' ) != '') ) {
-	$t_width = plugin_config_get( 'window_width' );
+	$t_width = \Flickerbox\Plugin::config_get( 'window_width' );
 	$t_summary = ( $f_type % 2 ) != 0;
 	$t_body = (int)( $f_type / 2 );
 	$f_start = $t_period->get_start_formatted();
@@ -95,10 +93,10 @@ if( ( 0 != $f_type ) && ( $f_interval > 0 ) && ( \Flickerbox\GPC::get( 'show', '
 	if( ($t_body == 1 ) || ($t_body == 3) ) {
 		if( $f_show_as_table ) {
 			include(
-				config_get_global( 'plugin_path' ) . plugin_get_current() . '/pages/bug_graph_bystatus.php'
+				\Flickerbox\Config::get_global( 'plugin_path' ) . \Flickerbox\Plugin::get_current() . '/pages/bug_graph_bystatus.php'
 			);
 		} else {
-			echo '<br /><img src="' . plugin_page( 'bug_graph_bystatus.php' )
+			echo '<br /><img src="' . \Flickerbox\Plugin::page( 'bug_graph_bystatus.php' )
 				. '&amp;width=600&amp;interval=' . $f_interval
 				. '&amp;start_date=' . $f_start . '&amp;end_date=' . $f_end
 				. '&amp;summary=' . $t_summary . '&amp;show_table=0" alt="Bug Graph" />';
@@ -106,9 +104,9 @@ if( ( 0 != $f_type ) && ( $f_interval > 0 ) && ( \Flickerbox\GPC::get( 'show', '
 	}
 	if( ($t_body == 2 ) || ($t_body == 3) ) {
 		if( $f_show_as_table ) {
-			include( config_get_global( 'plugin_path' ) . plugin_get_current() .  '/pages/bug_graph_bycategory.php' );
+			include( \Flickerbox\Config::get_global( 'plugin_path' ) . \Flickerbox\Plugin::get_current() .  '/pages/bug_graph_bycategory.php' );
 		} else {
-			echo '<br /><img src="' . plugin_page( 'bug_graph_bycategory.php' )
+			echo '<br /><img src="' . \Flickerbox\Plugin::page( 'bug_graph_bycategory.php' )
 				. '&amp;width=600&amp;interval=' . $f_interval
 				. '&amp;start_date=' . $f_start . '&amp;end_date=' . $f_end
 				. '&amp;summary=' . $t_summary . '&amp;show_table=0" alt="Bug Graph" />';

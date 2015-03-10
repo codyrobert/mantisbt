@@ -37,13 +37,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_custom_fields_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 
 $f_field_id	= \Flickerbox\GPC::get_int( 'field_id' );
 $f_return	= strip_tags( \Flickerbox\GPC::get_string( 'return', 'manage_custom_field_page.php' ) );
@@ -73,7 +71,7 @@ $t_definition = custom_field_get_definition( $f_field_id );
 				<label for="custom-field-type"><span><?php echo \Flickerbox\Lang::get( 'custom_field_type' ) ?></span></label>
 				<span class="select">
 					<select id="custom-field-type" name="type">
-						<?php print_enum_string_option_list( 'custom_field_type', (int)$t_definition['type'] ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'custom_field_type', (int)$t_definition['type'] ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -99,7 +97,7 @@ $t_definition = custom_field_get_definition( $f_field_id );
 				<label for="custom-field-access-level-r"><span><?php echo \Flickerbox\Lang::get( 'custom_field_access_level_r' ) ?></span></label>
 				<span class="select">
 					<select id="custom-field-access-level-r" name="access_level_r">
-						<?php print_enum_string_option_list( 'access_levels', (int)$t_definition['access_level_r'] ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'access_levels', (int)$t_definition['access_level_r'] ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -108,7 +106,7 @@ $t_definition = custom_field_get_definition( $f_field_id );
 				<label for="custom-field-access-level-rw"><span><?php echo \Flickerbox\Lang::get( 'custom_field_access_level_rw' ) ?></span></label>
 				<span class="select">
 					<select id="custom-field-access-level-rw" name="access_level_rw">
-						<?php print_enum_string_option_list( 'access_levels', (int)$t_definition['access_level_rw'] ) ?>
+						<?php \Flickerbox\Print_Util::enum_string_option_list( 'access_levels', (int)$t_definition['access_level_rw'] ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -201,7 +199,7 @@ $t_definition = custom_field_get_definition( $f_field_id );
 	<div id="custom-field-link-project" class="field-container">
 		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'link_custom_field_to_project_title' ) ?></span></span>
 		<div class="display-value">
-			<?php print_custom_field_projects_list( $f_field_id ) ?>
+			<?php \Flickerbox\Print_Util::custom_field_projects_list( $f_field_id ) ?>
 		</div>
 		<span class="label-style"></span>
 	</div>
@@ -213,7 +211,7 @@ $t_definition = custom_field_get_definition( $f_field_id );
 				<label for="custom-field-project-id"><span><?php echo \Flickerbox\Lang::get( 'projects_title_label' ) ?></span></label>
 				<span class="select">
 					<select id="custom-field-project-id" name="project_id[]" multiple="multiple" size="5">
-						<?php print_project_option_list( null, false ); ?>
+						<?php \Flickerbox\Print_Util::project_option_list( null, false ); ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

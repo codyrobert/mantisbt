@@ -49,11 +49,7 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'bugnote_api.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -102,8 +98,8 @@ if( $f_type_page == 'html' ) {
 
 $f_bug_arr = explode( ',', $f_export );
 $t_count_exported = 0;
-$t_date_format = config_get( 'normal_date_format' );
-$t_short_date_format = config_get( 'short_date_format' );
+$t_date_format = \Flickerbox\Config::mantis_get( 'normal_date_format' );
+$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
 
 $t_lang_bug_view_title = \Flickerbox\Lang::get( 'bug_view_title' );
 $t_lang_id = \Flickerbox\Lang::get( 'id' );
@@ -145,9 +141,9 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 
 	if( $j % 50 == 0 ) {
 		# to save ram as report will list data once, clear cache after 50 bugs
-		bug_text_clear_cache();
-		bug_clear_cache();
-		bugnote_clear_cache();
+		\Flickerbox\Bug::text_clear_cache();
+		\Flickerbox\Bug::clear_cache();
+		\Flickerbox\Bug\Note::clear_cache();
 	}
 
 	# display the available and selected bugs
@@ -226,7 +222,7 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_reporter ) ?>
 	</td>
 	<td class="print">
-		<?php print_user_with_subject( $t_bug->reporter_id, $t_id ) ?>
+		<?php \Flickerbox\Print_Util::user_with_subject( $t_bug->reporter_id, $t_id ) ?>
 	</td>
 	<td class="print-category">
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_platform ) ?>
@@ -234,12 +230,12 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 	<td class="print">
 		<?php echo \Flickerbox\String::display_line( $t_bug->platform ) ?>
 	</td>
-<?php if( \Flickerbox\Access::has_bug_level( config_get( 'due_date_view_threshold' ), $t_id ) ) { ?>
+<?php if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'due_date_view_threshold' ), $t_id ) ) { ?>
 	<td class="print-category">
 		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_due_date ) ?>
 	</td>
 <?php
-		if( bug_is_overdue( $t_id ) ) { ?>
+		if( \Flickerbox\Bug::is_overdue( $t_id ) ) { ?>
 		<td class="print-overdue">
 <?php
 		} else { ?>
@@ -261,8 +257,8 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 	</td>
 	<td class="print">
 		<?php
-			if( \Flickerbox\Access::has_bug_level( config_get( 'view_handler_threshold' ), $t_id ) ) {
-				print_user_with_subject( $t_bug->handler_id, $t_id );
+			if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ), $t_id ) ) {
+				\Flickerbox\Print_Util::user_with_subject( $t_bug->handler_id, $t_id );
 			}
 		?>
 	</td>
@@ -449,7 +445,7 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 		<?php
 			$t_attachments = \Flickerbox\File::get_visible_attachments( $t_id );
 			$t_first_attachment = true;
-			$t_path = config_get_global( 'path' );
+			$t_path = \Flickerbox\Config::get_global( 'path' );
 
 			foreach ( $t_attachments as $t_attachment ) {
 				if( $t_first_attachment ) {
@@ -479,7 +475,7 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 <?php
 	$t_user_bugnote_limit = 0;
 
-	$t_bugnotes = bugnote_get_all_visible_bugnotes( $t_id, $t_user_bugnote_order, $t_user_bugnote_limit );
+	$t_bugnotes = \Flickerbox\Bug\Note::get_all_visible_bugnotes( $t_id, $t_user_bugnote_order, $t_user_bugnote_limit );
 ?>
 <tr><td class="print" colspan="6">
 <table class="width100" cellspacing="1">
@@ -518,12 +514,12 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 		<table class="hide" cellspacing="1">
 		<tr>
 			<td class="print">
-				(<?php echo bugnote_format_id( $t_bugnote->id ) ?>)
+				(<?php echo \Flickerbox\Bug\Note::format_id( $t_bugnote->id ) ?>)
 			</td>
 		</tr>
 		<tr>
 			<td class="print">
-				<?php print_user( $t_bugnote->reporter_id ) ?>&#160;&#160;&#160;
+				<?php \Flickerbox\Print_Util::user( $t_bugnote->reporter_id ) ?>&#160;&#160;&#160;
 			</td>
 		</tr>
 		<tr>

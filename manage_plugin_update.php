@@ -35,19 +35,16 @@
 define( 'PLUGINS_DISABLED', true );
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_plugin_update' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_plugin_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 $t_query = 'SELECT basename FROM {plugin}';
-$t_result = db_query( $t_query );
+$t_result = \Flickerbox\Database::query( $t_query );
 
-while( $t_row = db_fetch_array( $t_result ) ) {
+while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 	$t_basename = $t_row['basename'];
 
 	$f_change = \Flickerbox\GPC::get_bool( 'change_'.$t_basename, 0 );
@@ -59,12 +56,12 @@ while( $t_row = db_fetch_array( $t_result ) ) {
 	$f_priority = \Flickerbox\GPC::get_int( 'priority_'.$t_basename, 3 );
 	$f_protected = \Flickerbox\GPC::get_bool( 'protected_'.$t_basename, 0 );
 
-	$t_query = 'UPDATE {plugin} SET priority=' . db_param() . ', protected=' . db_param() .
-		' WHERE basename=' . db_param();
+	$t_query = 'UPDATE {plugin} SET priority=' . \Flickerbox\Database::param() . ', protected=' . \Flickerbox\Database::param() .
+		' WHERE basename=' . \Flickerbox\Database::param();
 
-	db_query( $t_query, array( $f_priority, $f_protected, $t_basename ) );
+	\Flickerbox\Database::query( $t_query, array( $f_priority, $f_protected, $t_basename ) );
 }
 
 \Flickerbox\Form::security_purge( 'manage_plugin_update' );
 
-print_successful_redirect( 'manage_plugin_page.php' );
+\Flickerbox\Print_Util::successful_redirect( 'manage_plugin_page.php' );

@@ -39,9 +39,6 @@ $g_bypass_headers = true; # suppress headers as we will send our own later
 define( 'COMPRESSION_DISABLED', true );
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -74,20 +71,20 @@ $c_file_id = (integer)$f_file_id;
 $t_query = '';
 switch( $f_type ) {
 	case 'bug':
-		$t_query = 'SELECT * FROM {bug_file} WHERE id=' . db_param();
+		$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Flickerbox\Database::param();
 		break;
 	case 'doc':
-		$t_query = 'SELECT * FROM {project_file} WHERE id=' . db_param();
+		$t_query = 'SELECT * FROM {project_file} WHERE id=' . \Flickerbox\Database::param();
 		break;
 	default:
 		\Flickerbox\Access::denied();
 }
-$t_result = db_query( $t_query, array( $c_file_id ) );
-$t_row = db_fetch_array( $t_result );
+$t_result = \Flickerbox\Database::query( $t_query, array( $c_file_id ) );
+$t_row = \Flickerbox\Database::fetch_array( $t_result );
 extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 
 if( $f_type == 'bug' ) {
-	$t_project_id = bug_get_field( $v_bug_id, 'project_id' );
+	$t_project_id = \Flickerbox\Bug::get_field( $v_bug_id, 'project_id' );
 } else {
 	$t_project_id = $v_project_id;
 }
@@ -101,11 +98,11 @@ switch( $f_type ) {
 		break;
 	case 'doc':
 		# Check if project documentation feature is enabled.
-		if( OFF == config_get( 'enable_project_documentation' ) ) {
+		if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
 			\Flickerbox\Access::denied();
 		}
 
-		\Flickerbox\Access::ensure_project_level( config_get( 'view_proj_doc_threshold' ), $v_project_id );
+		\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_proj_doc_threshold' ), $v_project_id );
 		break;
 }
 
@@ -137,7 +134,7 @@ header( 'Expires: ' . gmdate( 'D, d M Y H:i:s \G\M\T', time() ) );
 
 header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s \G\M\T', $v_date_added ) );
 
-$t_upload_method = config_get( 'file_upload_method' );
+$t_upload_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
 $t_filename = \Flickerbox\File::get_display_name( $v_filename );
 
 # Content headers

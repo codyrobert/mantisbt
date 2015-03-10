@@ -24,7 +24,7 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Access::ensure_project_level( plugin_config_get( 'export_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Plugin::config_get( 'export_threshold' ) );
 
 auth_ensure_user_authenticated( );
 \Flickerbox\Helper::begin_long_process( );
@@ -55,9 +55,9 @@ header( 'Content-Transfer-Encoding: BASE64;' );
 header( 'Content-Disposition: attachment; filename="' . $t_filename . '"' );
 
 $t_version = MANTIS_VERSION;
-$t_url = config_get( 'path' );
-$t_bug_link = config_get( 'bug_link_tag' );
-$t_bugnote_link = config_get( 'bugnote_link_tag' );
+$t_url = \Flickerbox\Config::mantis_get( 'path' );
+$t_bug_link = \Flickerbox\Config::mantis_get( 'bug_link_tag' );
+$t_bugnote_link = \Flickerbox\Config::mantis_get( 'bugnote_link_tag' );
 
 $t_writer = new XMLWriter;
 
@@ -80,7 +80,7 @@ $t_ignore = array(
 );
 
 # properties that we want to export are 'protected'
-$t_columns = array_keys( \Flickerbox\Utility::getClassProperties( 'BugData', 'protected' ) );
+$t_columns = array_keys( \Flickerbox\Utility::getClassProperties( '\\Flickerbox\\BugData', 'protected' ) );
 
 # export the rows
 foreach( $t_result as $t_row ) {
@@ -101,7 +101,7 @@ foreach( $t_result as $t_row ) {
 			case 'reporter_id':
 			case 'handler_id':
 				$t_element_name = substr( $t_element, 0, - 3 );
-				$t_element_data = user_get_name( $t_value );
+				$t_element_data = \Flickerbox\User::get_name( $t_value );
 
 				$t_writer->startElement( $t_element_name );
 				$t_writer->writeAttribute( 'id', $t_value );
@@ -176,7 +176,7 @@ foreach( $t_result as $t_row ) {
 	}
 
 	# fetch and export bugnotes
-	$t_bugnotes = bugnote_get_all_bugnotes( $t_row->id );
+	$t_bugnotes = \Flickerbox\Bug\Note::get_all_bugnotes( $t_row->id );
 	if( is_array( $t_bugnotes ) && count( $t_bugnotes ) > 0 ) {
 		$t_writer->startElement( 'bugnotes' );
 		foreach ( $t_bugnotes as $t_bugnote ) {
@@ -186,7 +186,7 @@ foreach( $t_result as $t_row ) {
 			# reporter
 			$t_writer->startElement( 'reporter' );
 			$t_writer->writeAttribute( 'id', $t_bugnote->reporter_id );
-			$t_writer->text( user_get_name( $t_bugnote->reporter_id ) );
+			$t_writer->text( \Flickerbox\User::get_name( $t_bugnote->reporter_id ) );
 			$t_writer->endElement( );
 			# bug note
 			$t_writer->writeElement( 'note', $t_bugnote->note );
@@ -212,7 +212,7 @@ foreach( $t_result as $t_row ) {
 	}
 
 	# fetch and export attachments
-	$t_attachments = bug_get_attachments( $t_row->id );
+	$t_attachments = \Flickerbox\Bug::get_attachments( $t_row->id );
 	if( is_array( $t_attachments ) && count( $t_attachments ) > 0 ) {
 		$t_writer->startElement( 'attachments' );
 		foreach ( $t_attachments as $t_attachment ) {
@@ -242,8 +242,8 @@ foreach( $t_result as $t_row ) {
 	$t_writer->endElement(); # issue
 
 	# Save memory by clearing cache
-	# bug_clear_cache();
-	# bug_text_clear_cache();
+	# \Flickerbox\Bug::clear_cache();
+	# \Flickerbox\Bug::text_clear_cache();
 }
 
 $t_writer->endElement(); # mantis

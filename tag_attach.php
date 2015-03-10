@@ -40,9 +40,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_attach' );
 
@@ -52,13 +49,13 @@ $f_tag_string = \Flickerbox\GPC::get_string( 'tag_string' );
 
 $t_user_id = \Flickerbox\Auth::get_current_user_id();
 
-\Flickerbox\Access::ensure_bug_level( config_get( 'tag_attach_threshold' ), $f_bug_id, $t_user_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'tag_attach_threshold' ), $f_bug_id, $t_user_id );
 
 # @todo The handling of tag strings which can include multiple tags should be moved
 #     to the APIs.  This is to allow other clients of the API to support such
 #     functionality.  The access level checks should also be moved to the API.
 $t_tags = \Flickerbox\Tag::parse_string( $f_tag_string );
-$t_can_create = \Flickerbox\Access::has_global_level( config_get( 'tag_create_threshold' ) );
+$t_can_create = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_create_threshold' ) );
 
 $t_tags_create = array();
 $t_tags_attach = array();
@@ -84,7 +81,7 @@ if( 0 < $f_tag_select && \Flickerbox\Tag::exists( $f_tag_select ) ) {
 
 # failed to attach at least one tag
 if( count( $t_tags_failed ) > 0 ) {
-	\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'tag_attach_long' ) . ' ' . bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+	\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'tag_attach_long' ) . ' ' . \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 ?>
 <br/>
 <table class="width75">
@@ -96,7 +93,7 @@ if( count( $t_tags_failed ) > 0 ) {
 	$t_tag_string = '';
 	foreach( $t_tags_attach as $t_tag_row ) {
 		if( !\Flickerbox\Utility::is_blank( $t_tag_string ) ) {
-			$t_tag_string .= config_get( 'tag_separator' );
+			$t_tag_string .= \Flickerbox\Config::mantis_get( 'tag_separator' );
 		}
 		$t_tag_string .= $t_tag_row['name'];
 	}
@@ -111,7 +108,7 @@ if( count( $t_tags_failed ) > 0 ) {
 		echo '<td>', \Flickerbox\String::html_specialchars( $t_tag_row['name'] ), '</td></tr>';
 
 		if( !\Flickerbox\Utility::is_blank( $t_tag_string ) ) {
-			$t_tag_string .= config_get( 'tag_separator' );
+			$t_tag_string .= \Flickerbox\Config::mantis_get( 'tag_separator' );
 		}
 		$t_tag_string .= $t_tag_row['name'];
 	}
@@ -121,7 +118,7 @@ if( count( $t_tags_failed ) > 0 ) {
 	<th class="category"><?php echo \Flickerbox\Lang::get( 'tag_attach_long' ) ?></th>
 	<td>
 <?php
-	print_tag_attach_form( $f_bug_id, $t_tag_string );
+	\Flickerbox\Print_Util::tag_attach_form( $f_bug_id, $t_tag_string );
 ?>
 	</td>
 	</tr>
@@ -145,5 +142,5 @@ if( count( $t_tags_failed ) > 0 ) {
 
 	\Flickerbox\Form::security_purge( 'tag_attach' );
 
-	print_successful_redirect_to_bug( $f_bug_id );
+	\Flickerbox\Print_Util::successful_redirect_to_bug( $f_bug_id );
 }

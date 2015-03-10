@@ -36,8 +36,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_ver_copy' );
 
@@ -51,8 +49,8 @@ $f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
 \Flickerbox\Project::ensure_exists( $f_project_id );
 \Flickerbox\Project::ensure_exists( $f_other_project_id );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_other_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_other_project_id );
 
 if( $f_copy_from ) {
 	$t_src_project_id = $f_other_project_id;
@@ -74,4 +72,4 @@ foreach ( $t_rows as $t_row ) {
 
 \Flickerbox\Form::security_purge( 'manage_proj_ver_copy' );
 
-print_header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );
+\Flickerbox\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

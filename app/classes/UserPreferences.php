@@ -215,7 +215,7 @@ class UserPreferences {
 	 */
 	public function __get( $p_string ) {
 		if( is_null( $this->$p_string ) ) {
-			$this->$p_string = config_get( self::$_default_mapping[$p_string][0], null, $this->pref_user_id, $this->pref_project_id );
+			$this->$p_string = \Flickerbox\Config::mantis_get( self::$_default_mapping[$p_string][0], null, $this->pref_user_id, $this->pref_project_id );
 		}
 		switch( self::$_default_mapping[$p_string][1] ) {
 			case 'int':
@@ -232,7 +232,7 @@ class UserPreferences {
 	 */
 	function Get( $p_string ) {
 		if( is_null( $this->$p_string ) ) {
-			$this->$p_string = config_get( self::$_default_mapping[$p_string][0], null, $this->pref_user_id, $this->pref_project_id );
+			$this->$p_string = \Flickerbox\Config::mantis_get( self::$_default_mapping[$p_string][0], null, $this->pref_user_id, $this->pref_project_id );
 		}
 		return $this->$p_string;
 	}

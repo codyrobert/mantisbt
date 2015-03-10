@@ -40,9 +40,7 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -53,15 +51,15 @@ $f_temp_filter			= \Flickerbox\GPC::get_bool( 'temporary' );
 
 # validate filter type
 $f_default_view_type = 'simple';
-if( ADVANCED_DEFAULT == config_get( 'view_filters' ) ) {
+if( ADVANCED_DEFAULT == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_default_view_type = 'advanced';
 }
 
 $f_view_type = \Flickerbox\GPC::get_string( 'view_type', $f_default_view_type );
-if( ADVANCED_ONLY == config_get( 'view_filters' ) ) {
+if( ADVANCED_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'advanced';
 }
-if( SIMPLE_ONLY == config_get( 'view_filters' ) ) {
+if( SIMPLE_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'simple';
 }
 if( !in_array( $f_view_type, array( 'simple', 'advanced' ) ) ) {
@@ -228,7 +226,7 @@ $f_match_type = \Flickerbox\GPC::get_int( FILTER_PROPERTY_MATCH_TYPE, FILTER_MAT
 
 # these are only single values, even when doing advanced filtering
 $f_per_page				= \Flickerbox\GPC::get_int( FILTER_PROPERTY_ISSUES_PER_PAGE, -1 );
-$f_highlight_changed	= \Flickerbox\GPC::get_int( FILTER_PROPERTY_HIGHLIGHT_CHANGED, config_get( 'default_show_changed' ) );
+$f_highlight_changed	= \Flickerbox\GPC::get_int( FILTER_PROPERTY_HIGHLIGHT_CHANGED, \Flickerbox\Config::mantis_get( 'default_show_changed' ) );
 $f_sticky_issues		= \Flickerbox\GPC::get_bool( FILTER_PROPERTY_STICKY );
 
 # sort direction
@@ -353,14 +351,14 @@ if( $f_temp_filter ) {
 }
 
 if( $f_type < 0 ) {
-	print_header_redirect( 'view_all_bug_page.php' );
+	\Flickerbox\Print_Util::header_redirect( 'view_all_bug_page.php' );
 }
 
-$t_hide_status_default = config_get( 'hide_status_default' );
+$t_hide_status_default = \Flickerbox\Config::mantis_get( 'hide_status_default' );
 
 # show bugs per page
 if( $f_per_page < 0 ) {
-	$f_per_page = config_get( 'default_limit_view' );
+	$f_per_page = \Flickerbox\Config::mantis_get( 'default_limit_view' );
 }
 
 # combine sort settings
@@ -404,7 +402,7 @@ if( ( $f_type == 3 ) && ( $f_source_query_id == -1 ) ) {
 # 	26: $f_show_profile
 
 # Set new filter values.  These are stored in a cookie
-$t_view_all_cookie_id = \Flickerbox\GPC::get_cookie( config_get( 'view_all_cookie' ), '' );
+$t_view_all_cookie_id = \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), '' );
 $t_view_all_cookie = \Flickerbox\Filter::db_get_filter( $t_view_all_cookie_id );
 
 # process the cookie if it exists, it may be blank in a new install
@@ -426,7 +424,7 @@ if( !\Flickerbox\Utility::is_blank( $t_view_all_cookie ) ) {
 }
 
 $t_cookie_version = FILTER_VERSION;
-$t_default_show_changed = config_get( 'default_show_changed' );
+$t_default_show_changed = \Flickerbox\Config::mantis_get( 'default_show_changed' );
 
 # Clear the source query id.  Since we have entered new filter criteria.
 $t_setting_arr['_source_query_id'] = '';
@@ -560,7 +558,7 @@ $t_setting_arr = \Flickerbox\Filter::ensure_valid_filter( $t_setting_arr );
 # Remove any statuses that should be excluded by the hide_status field
 if( $f_view_type == 'advanced' ) {
 	if( $t_setting_arr[FILTER_PROPERTY_HIDE_STATUS][0] > 0 ) {
-		$t_statuses = \MantisEnum::getValues( config_get( 'status_enum_string' ) );
+		$t_statuses = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
 		foreach( $t_statuses as $t_key=>$t_val ) {
 			if( $t_val < $t_setting_arr[FILTER_PROPERTY_HIDE_STATUS][0] ) {
 				$t_keep_statuses[$t_key] = $t_val;
@@ -591,7 +589,7 @@ if( !$f_temp_filter ) {
 	$t_row_id = \Flickerbox\Filter::db_set_for_current_user( $t_project_id, false, '', $t_settings_string );
 
 	# set cookie values
-	\Flickerbox\GPC::set_cookie( config_get( 'view_all_cookie' ), $t_row_id, time()+config_get( 'cookie_time_length' ), config_get( 'cookie_path' ) );
+	\Flickerbox\GPC::set_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), $t_row_id, time()+\Flickerbox\Config::mantis_get( 'cookie_time_length' ), \Flickerbox\Config::mantis_get( 'cookie_path' ) );
 }
 
 # redirect to print_all or view_all page
@@ -605,4 +603,4 @@ if( $f_temp_filter ) {
 	$t_token_id = \Flickerbox\Token::set( TOKEN_FILTER, $t_settings_serialized );
 	$t_redirect_url = $t_redirect_url . '?filter=' . $t_token_id;
 }
-print_header_redirect( $t_redirect_url );
+\Flickerbox\Print_Util::header_redirect( $t_redirect_url );

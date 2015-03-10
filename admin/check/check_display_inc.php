@@ -32,34 +32,33 @@ if( !defined( 'CHECK_DISPLAY_INC_ALLOW' ) ) {
 
 # MantisBT Check API
 require_once( 'check_api.php' );
-require_api( 'config_api.php' );
 
 check_print_section_header_row( 'Display' );
 
 check_print_test_row(
 	'bug_link_tag is not blank/null',
-	config_get_global( 'bug_link_tag' ),
+	\Flickerbox\Config::get_global( 'bug_link_tag' ),
 	array( false => 'The value of the bug_link_tag option cannot be blank/null.' )
 );
 
 check_print_test_row(
 	'bugnote_link_tag is not blank/null',
-	config_get_global( 'bugnote_link_tag' ),
+	\Flickerbox\Config::get_global( 'bugnote_link_tag' ),
 	array( false => 'The value of the bugnote_link_tag option cannot be blank/null.' )
 );
 
-if( plugin_is_installed( 'MantisGraph' ) ) {
-	plugin_push_current( 'MantisGraph' );
+if( \Flickerbox\Plugin::is_installed( 'MantisGraph' ) ) {
+	\Flickerbox\Plugin::push_current( 'MantisGraph' );
 
 	check_print_test_row(
 		'Checking GD library is enabled, and version 2...',
 		\Flickerbox\Utility::get_gd_version() == 2
 	);
 
-	if( plugin_config_get( 'eczlibrary', ON ) == OFF ) {
-		$t_jpgraph_path = plugin_config_get( 'jpgraph_path' );
+	if( \Flickerbox\Plugin::config_get( 'eczlibrary', ON ) == OFF ) {
+		$t_jpgraph_path = \Flickerbox\Plugin::config_get( 'jpgraph_path' );
 		if( $t_jpgraph_path == '' ) {
-			$t_jpgraph_path = config_get( 'absolute_path' ) . 'library/jpgraph';
+			$t_jpgraph_path = \Flickerbox\Config::mantis_get( 'absolute_path' ) . 'library/jpgraph';
 		}
 		$t_jpgraph_path .= '/jpgraph.php';
 
@@ -81,7 +80,7 @@ if( plugin_is_installed( 'MantisGraph' ) ) {
 				$t_jpgraph_version );
 		}
 
-		$t_jpgraph_antialias = plugin_config_get( 'jpgraph_antialias', OFF );
+		$t_jpgraph_antialias = \Flickerbox\Plugin::config_get( 'jpgraph_antialias', OFF );
 		if( $t_jpgraph_antialias ) {
 			check_print_test_row(
 				'jpgraph anti-aliasing requires the php-bundled GD library',
@@ -89,5 +88,5 @@ if( plugin_is_installed( 'MantisGraph' ) ) {
 				array( false => 'The functionality requires the imageantialias() function' ) );
 		}
 	}
-	plugin_pop_current();
+	\Flickerbox\Plugin::pop_current();
 }

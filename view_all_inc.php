@@ -40,9 +40,6 @@ if( !defined( 'VIEW_ALL_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'columns_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 $t_filter = \Flickerbox\Current_User::get_bug_filter();
 \Flickerbox\Filter::init( $t_filter );
@@ -52,7 +49,7 @@ list( $t_dir, ) = explode( ',', $g_filter['dir'] );
 
 $g_checkboxes_exist = false;
 
-$t_icon_path = config_get( 'icon_path' );
+$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 
 # Improve performance by caching category data in one pass
 if( \Flickerbox\Helper::get_current_project() > 0 ) {
@@ -68,7 +65,7 @@ $g_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_VIEW_PAGE )
 
 $t_col_count = count( $g_columns );
 
-$t_filter_position = config_get( 'filter_position' );
+$t_filter_position = \Flickerbox\Config::mantis_get( 'filter_position' );
 
 # -- ====================== FILTER FORM ========================= --
 if( ( $t_filter_position & FILTER_POSITION_TOP ) == FILTER_POSITION_TOP ) {
@@ -79,7 +76,7 @@ if( ( $t_filter_position & FILTER_POSITION_TOP ) == FILTER_POSITION_TOP ) {
 
 # -- ====================== BUG LIST ============================ --
 
-$t_status_legend_position = config_get( 'status_legend_position' );
+$t_status_legend_position = \Flickerbox\Config::mantis_get( 'status_legend_position' );
 
 if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_position == STATUS_LEGEND_POSITION_BOTH ) {
 	\Flickerbox\HTML::status_legend();
@@ -111,11 +108,11 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 		<?php
 			# -- Print and Export links --
 			echo '&#160;';
-			print_bracket_link( 'print_all_bug_page.php', \Flickerbox\Lang::get( 'print_all_bug_page_link' ) );
+			\Flickerbox\Print_Util::bracket_link( 'print_all_bug_page.php', \Flickerbox\Lang::get( 'print_all_bug_page_link' ) );
 			echo '&#160;';
-			print_bracket_link( 'csv_export.php', \Flickerbox\Lang::get( 'csv_export' ) );
+			\Flickerbox\Print_Util::bracket_link( 'csv_export.php', \Flickerbox\Lang::get( 'csv_export' ) );
 			echo '&#160;';
-			print_bracket_link( 'excel_xml_export.php', \Flickerbox\Lang::get( 'excel_export' ) );
+			\Flickerbox\Print_Util::bracket_link( 'excel_xml_export.php', \Flickerbox\Lang::get( 'excel_export' ) );
 
 			$t_event_menu_options = $t_links = \Flickerbox\Event::signal( 'EVENT_MENU_FILTER' );
 
@@ -127,7 +124,7 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 
 					foreach ( $t_callback_menu_options as $t_menu_option ) {
 						if( $t_menu_option ) {
-							print_bracket_link_prepared( $t_menu_option );
+							\Flickerbox\Print_Util::bracket_link_prepared( $t_menu_option );
 						}
 					}
 				}
@@ -137,7 +134,7 @@ if( $t_status_legend_position == STATUS_LEGEND_POSITION_TOP || $t_status_legend_
 		<span class="floatright small"><?php
 			# -- Page number links --
 			$f_filter	= \Flickerbox\GPC::get_int( 'filter', 0 );
-			print_page_links( 'view_all_bug_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter );
+			\Flickerbox\Print_Util::page_links( 'view_all_bug_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter );
 		?> </span>
 	</td>
 </tr>
@@ -170,7 +167,7 @@ function write_bug_rows( array $p_rows ) {
 	$t_in_stickies = ( $g_filter && ( 'on' == $g_filter[FILTER_PROPERTY_STICKY] ) );
 
 	# pre-cache custom column data
-	columns_plugin_cache_issue_data( $p_rows );
+	\Flickerbox\Columns::plugin_cache_issue_data( $p_rows );
 
 	# -- Loop over bug rows --
 
@@ -223,7 +220,7 @@ write_bug_rows( $t_rows );
 		if( $g_checkboxes_exist ) {
 ?>
 			<select name="action">
-				<?php print_all_bug_action_option_list( $t_unique_project_ids ) ?>
+				<?php \Flickerbox\Print_Util::all_bug_action_option_list( $t_unique_project_ids ) ?>
 			</select>
 			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'ok' ); ?>" />
 <?php
@@ -234,7 +231,7 @@ write_bug_rows( $t_rows );
 			<span class="floatright small">
 				<?php
 					$f_filter	= \Flickerbox\GPC::get_int( 'filter', 0 );
-					print_page_links( 'view_all_bug_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter );
+					\Flickerbox\Print_Util::page_links( 'view_all_bug_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter );
 				?>
 			</span>
 		</td>

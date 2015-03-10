@@ -35,8 +35,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'adm_config_set' );
 
@@ -51,7 +49,7 @@ if( \Flickerbox\Utility::is_blank( $f_config_option ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
-\Flickerbox\Access::ensure_global_level( config_get( 'set_configuration_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'set_configuration_threshold' ) );
 
 if( $f_project_id != ALL_PROJECTS ) {
 	\Flickerbox\Project::ensure_exists( $f_project_id );
@@ -59,20 +57,20 @@ if( $f_project_id != ALL_PROJECTS ) {
 
 # make sure that configuration option specified is a valid one.
 $t_not_found_value = '***CONFIG OPTION NOT FOUND***';
-if( config_get_global( $f_config_option, $t_not_found_value ) === $t_not_found_value ) {
+if( \Flickerbox\Config::get_global( $f_config_option, $t_not_found_value ) === $t_not_found_value ) {
 	\Flickerbox\Error::parameters( $f_config_option );
 	trigger_error( ERROR_CONFIG_OPT_NOT_FOUND, ERROR );
 }
 
 # make sure that configuration option specified can be stored in the database
-if( !config_can_set_in_database( $f_config_option ) ) {
+if( !\Flickerbox\Config::can_set_in_database( $f_config_option ) ) {
 	\Flickerbox\Error::parameters( $f_config_option );
 	trigger_error( ERROR_CONFIG_OPT_CANT_BE_SET_IN_DB, ERROR );
 }
 
 # For 'default', behavior is based on the global variable's type
 if( $f_type == CONFIG_TYPE_DEFAULT ) {
-	$t_config_global_value = config_get_global( $f_config_option );
+	$t_config_global_value = \Flickerbox\Config::get_global( $f_config_option );
 	if( is_string( $t_config_global_value ) ) {
 		$t_type = CONFIG_TYPE_STRING;
 	} else if( is_int( $t_config_global_value ) ) {
@@ -104,11 +102,11 @@ switch( $t_type ) {
 		break;
 }
 
-config_set( $f_config_option, $t_value, $f_user_id, $f_project_id );
+\Flickerbox\Config::set( $f_config_option, $t_value, $f_user_id, $f_project_id );
 
 \Flickerbox\Form::security_purge( 'adm_config_set' );
 
-print_successful_redirect( 'adm_config_report.php' );
+\Flickerbox\Print_Util::successful_redirect( 'adm_config_report.php' );
 
 
 /**

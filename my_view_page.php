@@ -19,11 +19,11 @@ if( \Flickerbox\Current_User::get_pref( 'refresh_delay' ) > 0 ) {
 
 $f_page_number		= \Flickerbox\GPC::get_int( 'page_number', 1 );
 
-$t_per_page = \Flickerbox\Config::get( 'my_view_bug_count' );
+$t_per_page = \Flickerbox\Config::mantis_get( 'my_view_bug_count' );
 $t_bug_count = null;
 $t_page_count = null;
 
-$t_boxes = \Flickerbox\Config::get( 'my_view_boxes' );
+$t_boxes = \Flickerbox\Config::mantis_get( 'my_view_boxes' );
 asort( $t_boxes );
 reset( $t_boxes );
 #print_r ($t_boxes);
@@ -39,7 +39,7 @@ $t_project_id = \Flickerbox\Helper::get_current_project();
 <table class="hide" cellspacing="3" cellpadding="0">
 <?php
 $t_number_of_boxes = count( $t_boxes );
-$t_boxes_position = config_get( 'my_view_boxes_fixed_position' );
+$t_boxes_position = \Flickerbox\Config::mantis_get( 'my_view_boxes_fixed_position' );
 $t_counter = 0;
 
 while( list( $t_box_title, $t_box_display ) = each( $t_boxes ) ) {
@@ -47,14 +47,14 @@ while( list( $t_box_title, $t_box_display ) = each( $t_boxes ) ) {
 		# don't display bugs that are set as 0
 		$t_number_of_boxes = $t_number_of_boxes - 1;
 	} else if( $t_box_title == 'assigned' && ( \Flickerbox\Current_User::is_anonymous()
-		|| !\Flickerbox\Access::has_project_level( \Flickerbox\Config::get( 'handle_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
+		|| !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
 		# don't display "Assigned to Me" bugs to users that bugs can't be assigned to
 		$t_number_of_boxes = $t_number_of_boxes - 1;
-	} else if( $t_box_title == 'monitored' && ( \Flickerbox\Current_User::is_anonymous() or !\Flickerbox\Access::has_project_level( \Flickerbox\Config::get( 'monitor_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
+	} else if( $t_box_title == 'monitored' && ( \Flickerbox\Current_User::is_anonymous() or !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
 		# don't display "Monitored by Me" bugs to users that can't monitor bugs
 		$t_number_of_boxes = $t_number_of_boxes - 1;
 	} else if( in_array( $t_box_title, array( 'reported', 'feedback', 'verify' ) ) &&
-		( \Flickerbox\Current_User::is_anonymous() or !\Flickerbox\Access::has_project_level( \Flickerbox\Config::get( 'report_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
+		( \Flickerbox\Current_User::is_anonymous() or !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
 		# don't display "Reported by Me" bugs to users that can't report bugs
 		$t_number_of_boxes = $t_number_of_boxes - 1;
 	} else {

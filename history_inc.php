@@ -37,10 +37,8 @@ if( !defined( 'HISTORY_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
-$t_access_level_needed = config_get( 'view_history_threshold' );
+$t_access_level_needed = \Flickerbox\Config::mantis_get( 'view_history_threshold' );
 if( !\Flickerbox\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
 	return;
 }
@@ -87,7 +85,7 @@ if( !\Flickerbox\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
 				<?php echo $t_item['date'] ?>
 			</td>
 			<td class="small-caption">
-				<?php print_user( $t_item['userid'] ) ?>
+				<?php \Flickerbox\Print_Util::user( $t_item['userid'] ) ?>
 			</td>
 			<td class="small-caption">
 				<?php echo \Flickerbox\String::display( $t_item['note'] ) ?>

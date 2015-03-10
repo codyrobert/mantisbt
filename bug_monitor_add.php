@@ -38,15 +38,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_monitor_add' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
-$t_bug = bug_get( $f_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 $f_username = \Flickerbox\GPC::get_string( 'username', '' );
 
 $t_logged_in_user_id = \Flickerbox\Auth::get_current_user_id();
@@ -54,9 +50,9 @@ $t_logged_in_user_id = \Flickerbox\Auth::get_current_user_id();
 if( \Flickerbox\Utility::is_blank( $f_username ) ) {
 	$t_user_id = $t_logged_in_user_id;
 } else {
-	$t_user_id = user_get_id_by_name( $f_username );
+	$t_user_id = \Flickerbox\User::get_id_by_name( $f_username );
 	if( $t_user_id === false ) {
-		$t_user_id = user_get_id_by_realname( $f_username );
+		$t_user_id = \Flickerbox\User::get_id_by_realname( $f_username );
 
 		if( $t_user_id === false ) {
 			\Flickerbox\Error::parameters( $f_username );
@@ -65,11 +61,11 @@ if( \Flickerbox\Utility::is_blank( $f_username ) ) {
 	}
 }
 
-if( user_is_anonymous( $t_user_id ) ) {
+if( \Flickerbox\User::is_anonymous( $t_user_id ) ) {
 	trigger_error( ERROR_PROTECTED_ACCOUNT, E_USER_ERROR );
 }
 
-bug_ensure_exists( $f_bug_id );
+\Flickerbox\Bug::ensure_exists( $f_bug_id );
 
 if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
@@ -78,13 +74,13 @@ if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 }
 
 if( $t_logged_in_user_id == $t_user_id ) {
-	\Flickerbox\Access::ensure_bug_level( config_get( 'monitor_bug_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' ), $f_bug_id );
 } else {
-	\Flickerbox\Access::ensure_bug_level( config_get( 'monitor_add_others_bug_threshold' ), $f_bug_id );
+	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'monitor_add_others_bug_threshold' ), $f_bug_id );
 }
 
-bug_monitor( $f_bug_id, $t_user_id );
+\Flickerbox\Bug::monitor( $f_bug_id, $t_user_id );
 
 \Flickerbox\Form::security_purge( 'bug_monitor_add' );
 
-print_successful_redirect_to_bug( $f_bug_id );
+\Flickerbox\Print_Util::successful_redirect_to_bug( $f_bug_id );

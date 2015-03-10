@@ -172,19 +172,19 @@ $t_prefix_defaults = array(
 	) ,
 );
 foreach( $t_prefix_defaults['oci8'] as $t_key => $t_value ) {
-	$t_prefix_defaults['other'][$t_key] = config_get( $t_key, '' );
+	$t_prefix_defaults['other'][$t_key] = \Flickerbox\Config::mantis_get( $t_key, '' );
 }
 
 if( $t_config_exists && $t_install_state <= 1 ) {
 	# config already exists - probably an upgrade
-	$f_dsn                    = config_get( 'dsn', '' );
-	$f_hostname               = config_get( 'hostname', '' );
-	$f_db_type                = config_get( 'db_type', '' );
-	$f_database_name          = config_get( 'database_name', '' );
-	$f_db_schema              = config_get( 'db_schema', '' );
-	$f_db_username            = config_get( 'db_username', '' );
-	$f_db_password            = config_get( 'db_password', '' );
-	$f_timezone               = config_get( 'default_timezone', '' );
+	$f_dsn                    = \Flickerbox\Config::mantis_get( 'dsn', '' );
+	$f_hostname               = \Flickerbox\Config::mantis_get( 'hostname', '' );
+	$f_db_type                = \Flickerbox\Config::mantis_get( 'db_type', '' );
+	$f_database_name          = \Flickerbox\Config::mantis_get( 'database_name', '' );
+	$f_db_schema              = \Flickerbox\Config::mantis_get( 'db_schema', '' );
+	$f_db_username            = \Flickerbox\Config::mantis_get( 'db_username', '' );
+	$f_db_password            = \Flickerbox\Config::mantis_get( 'db_password', '' );
+	$f_timezone               = \Flickerbox\Config::mantis_get( 'default_timezone', '' );
 
 	# Set default prefix/suffix form variables ($f_db_table_XXX)
 	foreach( $t_prefix_defaults['other'] as $t_key => $t_value ) {
@@ -192,17 +192,17 @@ if( $t_config_exists && $t_install_state <= 1 ) {
 	}
 } else {
 	# read control variables with defaults
-	$f_dsn                = \Flickerbox\GPC::get( 'dsn', config_get( 'dsn', '' ) );
-	$f_hostname           = \Flickerbox\GPC::get( 'hostname', config_get( 'hostname', 'localhost' ) );
-	$f_db_type            = \Flickerbox\GPC::get( 'db_type', config_get( 'db_type', '' ) );
-	$f_database_name      = \Flickerbox\GPC::get( 'database_name', config_get( 'database_name', 'bugtracker' ) );
-	$f_db_schema          = \Flickerbox\GPC::get( 'db_schema', config_get( 'db_schema', '' ) );
-	$f_db_username        = \Flickerbox\GPC::get( 'db_username', config_get( 'db_username', '' ) );
-	$f_db_password        = \Flickerbox\GPC::get( 'db_password', config_get( 'db_password', '' ) );
+	$f_dsn                = \Flickerbox\GPC::get( 'dsn', \Flickerbox\Config::mantis_get( 'dsn', '' ) );
+	$f_hostname           = \Flickerbox\GPC::get( 'hostname', \Flickerbox\Config::mantis_get( 'hostname', 'localhost' ) );
+	$f_db_type            = \Flickerbox\GPC::get( 'db_type', \Flickerbox\Config::mantis_get( 'db_type', '' ) );
+	$f_database_name      = \Flickerbox\GPC::get( 'database_name', \Flickerbox\Config::mantis_get( 'database_name', 'bugtracker' ) );
+	$f_db_schema          = \Flickerbox\GPC::get( 'db_schema', \Flickerbox\Config::mantis_get( 'db_schema', '' ) );
+	$f_db_username        = \Flickerbox\GPC::get( 'db_username', \Flickerbox\Config::mantis_get( 'db_username', '' ) );
+	$f_db_password        = \Flickerbox\GPC::get( 'db_password', \Flickerbox\Config::mantis_get( 'db_password', '' ) );
 	if( CONFIGURED_PASSWORD == $f_db_password ) {
-		$f_db_password = config_get( 'db_password' );
+		$f_db_password = \Flickerbox\Config::mantis_get( 'db_password' );
 	}
-	$f_timezone           = \Flickerbox\GPC::get( 'timezone', config_get( 'default_timezone' ) );
+	$f_timezone           = \Flickerbox\GPC::get( 'timezone', \Flickerbox\Config::mantis_get( 'default_timezone' ) );
 
 	# Set default prefix/suffix form variables ($f_db_table_XXX)
 	$t_prefix_type = $f_db_type == 'oci8' ? $f_db_type : 'other';
@@ -238,7 +238,7 @@ if( $t_config_exists ) {
 			'database connection settings do not exist?' );
 
 		print_test( 'Checking PHP support for database type',
-			db_check_database_support( $f_db_type ), true,
+			\Flickerbox\Database::check_database_support( $f_db_type ), true,
 			'database is not supported by PHP. Check that it has been compiled into your server.' );
 
 		if( $f_db_type == 'mssql' ) {
@@ -254,7 +254,7 @@ if( $t_config_exists ) {
 		$g_db_connected = true;
 	}
 
-	$t_cur_version = config_get( 'database_version', -1 );
+	$t_cur_version = \Flickerbox\Config::mantis_get( 'database_version', -1 );
 
 	if( $t_cur_version > 1 ) {
 		$g_database_upgrade = true;
@@ -342,7 +342,7 @@ if( 2 == $t_install_state ) {
 <?php
 	print_test( 'Setting Database Type', '' !== $f_db_type, true, 'database type is blank?' );
 
-	print_test( 'Checking PHP support for database type', db_check_database_support( $f_db_type ), true, 'database is not supported by PHP. Check that it has been compiled into your server.' );
+	print_test( 'Checking PHP support for database type', \Flickerbox\Database::check_database_support( $f_db_type ), true, 'database is not supported by PHP. Check that it has been compiled into your server.' );
 
 	# ADOdb library version check
 	# PostgreSQL, Oracle and MSSQL require at least 5.19. MySQL should be fine
@@ -421,7 +421,7 @@ if( 2 == $t_install_state ) {
 		# the check only works on mysql if the database is open
 		$t_version_info = @$g_db->ServerInfo();
 	} else {
-		print_test_result( BAD, true, 'Does administrative user have access to the database? ( ' . db_error_msg() . ' )' );
+		print_test_result( BAD, true, 'Does administrative user have access to the database? ( ' . \Flickerbox\Database::error_msg() . ' )' );
 	}
 	?>
 </tr>
@@ -447,7 +447,7 @@ if( 2 == $t_install_state ) {
 				print_test_result( GOOD );
 			}
 		} else {
-			print_test_result( BAD, false, 'Database user doesn\'t have access to the database ( ' . db_error_msg() . ' )' );
+			print_test_result( BAD, false, 'Database user doesn\'t have access to the database ( ' . \Flickerbox\Database::error_msg() . ' )' );
 		}
 		?>
 </tr>
@@ -665,7 +665,7 @@ if( !$g_database_upgrade ) {
 	}
 
 	# Default timezone, get PHP setting if not defined in Mantis
-	$t_tz = config_get_global( 'default_timezone' );
+	$t_tz = \Flickerbox\Config::get_global( 'default_timezone' );
 	if( \Flickerbox\Utility::is_blank( $t_tz ) ) {
 		$t_tz = @date_default_timezone_get();
 	}
@@ -762,7 +762,7 @@ if( 3 == $t_install_state ) {
 
 				if( !$t_rs ) {
 					$t_result = false;
-					print_test_result( BAD, true, 'Does administrative user have access to create the database? ( ' . db_error_msg() . ' )' );
+					print_test_result( BAD, true, 'Does administrative user have access to create the database? ( ' . \Flickerbox\Database::error_msg() . ' )' );
 					$t_install_state--; # db creation failed, allow user to re-enter user/password info
 				} else {
 					print_test_result( GOOD );
@@ -775,7 +775,7 @@ if( 3 == $t_install_state ) {
 					print_test_result( GOOD );
 					$t_db_open = true;
 				} else {
-					$t_error = db_error_msg();
+					$t_error = \Flickerbox\Database::error_msg();
 					if( $f_db_type == 'oci8' ) {
 						$t_db_exists = preg_match( '/ORA-01920/', $t_error );
 					} else {
@@ -783,9 +783,9 @@ if( 3 == $t_install_state ) {
 					}
 
 					if( $t_db_exists ) {
-						print_test_result( BAD, false, 'Database already exists? ( ' . db_error_msg() . ' )' );
+						print_test_result( BAD, false, 'Database already exists? ( ' . \Flickerbox\Database::error_msg() . ' )' );
 					} else {
-						print_test_result( BAD, true, 'Does administrative user have access to create the database? ( ' . db_error_msg() . ' )' );
+						print_test_result( BAD, true, 'Does administrative user have access to create the database? ( ' . \Flickerbox\Database::error_msg() . ' )' );
 						$t_install_state--; # db creation failed, allow user to re-enter user/password info
 					}
 				}
@@ -816,7 +816,7 @@ if( 3 == $t_install_state ) {
 		if( $t_result == true ) {
 			print_test_result( GOOD );
 		} else {
-			print_test_result( BAD, false, 'Database user doesn\'t have access to the database ( ' . db_error_msg() . ' )' );
+			print_test_result( BAD, false, 'Database user doesn\'t have access to the database ( ' . \Flickerbox\Database::error_msg() . ' )' );
 		}
 		$g_db->Close();
 	?>
@@ -829,12 +829,12 @@ if( 3 == $t_install_state ) {
 		$g_db_connected = false;
 
 		# fake out database access routines used by config_get
-		config_set_global( 'db_type', $f_db_type );
+		\Flickerbox\Config::set_global( 'db_type', $f_db_type );
 
 		# Initialize table prefixes as specified by user
-		config_set_global( 'db_table_prefix', $f_db_table_prefix );
-		config_set_global( 'db_table_plugin_prefix', $f_db_table_plugin_prefix );
-		config_set_global( 'db_table_suffix', $f_db_table_suffix );
+		\Flickerbox\Config::set_global( 'db_table_prefix', $f_db_table_prefix );
+		\Flickerbox\Config::set_global( 'db_table_plugin_prefix', $f_db_table_plugin_prefix );
+		\Flickerbox\Config::set_global( 'db_table_suffix', $f_db_table_suffix );
 		# database_api references this
 		require_once( dirname( __FILE__ ) . '/schema.php' );
 		$g_db = ADONewConnection( $f_db_type );
@@ -844,7 +844,7 @@ if( 3 == $t_install_state ) {
 
 			# fake out database access routines used by config_get
 		}
-		$t_last_update = config_get( 'database_version', -1, ALL_USERS, ALL_PROJECTS );
+		$t_last_update = \Flickerbox\Config::mantis_get( 'database_version', -1, ALL_USERS, ALL_PROJECTS );
 		$t_last_id = count( $g_upgrade ) - 1;
 		$i = $t_last_update + 1;
 		if( $f_log_queries ) {
@@ -993,7 +993,7 @@ if( 3 == $t_install_state ) {
 				echo '</td>';
 				if( $t_ret == 2 ) {
 					print_test_result( GOOD );
-					config_set( 'database_version', $i );
+					\Flickerbox\Config::set( 'database_version', $i );
 				} else {
 					$t_all_sql = '';
 					foreach ( $t_sqlarray as $t_single_sql ) {
@@ -1007,7 +1007,7 @@ if( 3 == $t_install_state ) {
 		}
 		if( $f_log_queries ) {
 			# add a query to set the database version
-			echo 'INSERT INTO ' . db_get_table( 'config' ) . ' ( value, type, access_reqd, config_id, project_id, user_id ) VALUES (\'' . $t_last_id . '\', 1, 90, \'database_version\', 0, 0 );' . PHP_EOL;
+			echo 'INSERT INTO ' . \Flickerbox\Database::get_table( 'config' ) . ' ( value, type, access_reqd, config_id, project_id, user_id ) VALUES (\'' . $t_last_id . '\', 1, 90, \'database_version\', 0, 0 );' . PHP_EOL;
 			echo '</pre><br /><p style="color:red">Your database has not been created yet. Please create the database, then install the tables and data using the information above before proceeding.</p></td></tr>';
 		}
 	}
@@ -1127,12 +1127,12 @@ if( 5 == $t_install_state ) {
 		}
 	} else {
 		# already exists, see if the information is the same
-		if( ( $f_hostname != config_get( 'hostname', '' ) ) ||
-			( $f_db_type != config_get( 'db_type', '' ) ) ||
-			( $f_database_name != config_get( 'database_name', '' ) ) ||
-			( $f_db_schema != config_get( 'db_schema', '' ) ) ||
-			( $f_db_username != config_get( 'db_username', '' ) ) ||
-			( $f_db_password != config_get( 'db_password', '' ) ) ) {
+		if( ( $f_hostname != \Flickerbox\Config::mantis_get( 'hostname', '' ) ) ||
+			( $f_db_type != \Flickerbox\Config::mantis_get( 'db_type', '' ) ) ||
+			( $f_database_name != \Flickerbox\Config::mantis_get( 'database_name', '' ) ) ||
+			( $f_db_schema != \Flickerbox\Config::mantis_get( 'db_schema', '' ) ) ||
+			( $f_db_username != \Flickerbox\Config::mantis_get( 'db_username', '' ) ) ||
+			( $f_db_password != \Flickerbox\Config::mantis_get( 'db_password', '' ) ) ) {
 			print_test_result( BAD, false, 'file ' . $t_config_filename . ' already exists and has different settings' );
 		} else {
 			print_test_result( GOOD, false );
@@ -1207,7 +1207,7 @@ if( 6 == $t_install_state ) {
 	if( $t_result == true ) {
 		print_test_result( GOOD );
 	} else {
-		print_test_result( BAD, false, 'Database user does not have access to the database ( ' . db_error_msg() . ' )' );
+		print_test_result( BAD, false, 'Database user does not have access to the database ( ' . \Flickerbox\Database::error_msg() . ' )' );
 	}
 
 	if( $f_db_type == 'db2' ) {
@@ -1223,13 +1223,13 @@ if( 6 == $t_install_state ) {
 		checking ability to SELECT records
 	</td>
 	<?php
-	$t_query = 'SELECT COUNT(*) FROM ' . db_get_table( 'config' );
+	$t_query = 'SELECT COUNT(*) FROM ' . \Flickerbox\Database::get_table( 'config' );
 	$t_result = @$g_db->Execute( $t_query );
 
 	if( $t_result != false ) {
 		print_test_result( GOOD );
 	} else {
-		print_test_result( BAD, true, 'Database user does not have SELECT access to the database ( ' . db_error_msg() . ' )' );
+		print_test_result( BAD, true, 'Database user does not have SELECT access to the database ( ' . \Flickerbox\Database::error_msg() . ' )' );
 	}
 	?>
 </tr>
@@ -1238,13 +1238,13 @@ if( 6 == $t_install_state ) {
 		checking ability to INSERT records
 	</td>
 	<?php
-		$t_query = 'INSERT INTO ' . db_get_table( 'config' ) . ' ( value, type, access_reqd, config_id, project_id, user_id ) VALUES (\'test\', 1, 90, \'database_test\', 20, 0 )';
+		$t_query = 'INSERT INTO ' . \Flickerbox\Database::get_table( 'config' ) . ' ( value, type, access_reqd, config_id, project_id, user_id ) VALUES (\'test\', 1, 90, \'database_test\', 20, 0 )';
 	$t_result = @$g_db->Execute( $t_query );
 
 	if( $t_result != false ) {
 		print_test_result( GOOD );
 	} else {
-		print_test_result( BAD, true, 'Database user does not have INSERT access to the database ( ' . db_error_msg() . ' )' );
+		print_test_result( BAD, true, 'Database user does not have INSERT access to the database ( ' . \Flickerbox\Database::error_msg() . ' )' );
 	}
 	?>
 </tr>
@@ -1253,13 +1253,13 @@ if( 6 == $t_install_state ) {
 		checking ability to UPDATE records
 	</td>
 	<?php
-		$t_query = 'UPDATE ' . db_get_table( 'config' ) . ' SET value=\'test_update\' WHERE config_id=\'database_test\'';
+		$t_query = 'UPDATE ' . \Flickerbox\Database::get_table( 'config' ) . ' SET value=\'test_update\' WHERE config_id=\'database_test\'';
 	$t_result = @$g_db->Execute( $t_query );
 
 	if( $t_result != false ) {
 		print_test_result( GOOD );
 	} else {
-		print_test_result( BAD, true, 'Database user does not have UPDATE access to the database ( ' . db_error_msg() . ' )' );
+		print_test_result( BAD, true, 'Database user does not have UPDATE access to the database ( ' . \Flickerbox\Database::error_msg() . ' )' );
 	}
 	?>
 </tr>
@@ -1268,13 +1268,13 @@ if( 6 == $t_install_state ) {
 		checking ability to DELETE records
 	</td>
 	<?php
-		$t_query = 'DELETE FROM ' . db_get_table( 'config' ) . ' WHERE config_id=\'database_test\'';
+		$t_query = 'DELETE FROM ' . \Flickerbox\Database::get_table( 'config' ) . ' WHERE config_id=\'database_test\'';
 	$t_result = @$g_db->Execute( $t_query );
 
 	if( $t_result != false ) {
 		print_test_result( GOOD );
 	} else {
-		print_test_result( BAD, true, 'Database user does not have DELETE access to the database ( ' . db_error_msg() . ' )' );
+		print_test_result( BAD, true, 'Database user does not have DELETE access to the database ( ' . \Flickerbox\Database::error_msg() . ' )' );
 	}
 	?>
 </tr>

@@ -35,7 +35,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 \Flickerbox\Compress::enable();
@@ -45,7 +44,7 @@ $t_redirect_url = 'query_view_page.php';
 $t_delete_url = 'query_delete.php';
 
 if( !\Flickerbox\Filter::db_can_delete_filter( $f_query_id ) ) {
-	print_header_redirect( $t_redirect_url );
+	\Flickerbox\Print_Util::header_redirect( $t_redirect_url );
 }
 
 \Flickerbox\HTML::page_top();

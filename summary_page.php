@@ -38,40 +38,36 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 $f_project_id = \Flickerbox\GPC::get_int( 'project_id', \Flickerbox\Helper::get_current_project() );
 
 # Override the current page to make sure we get the appropriate project-specific configuration
 $g_project_override = $f_project_id;
 
-\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
 
 $t_user_id = \Flickerbox\Auth::get_current_user_id();
 
-$t_project_ids = user_get_all_accessible_projects( $t_user_id, $f_project_id );
+$t_project_ids = \Flickerbox\User::get_all_accessible_projects( $t_user_id, $f_project_id );
 $t_specific_where = \Flickerbox\Helper::project_specific_where( $f_project_id, $t_user_id );
 
-$t_resolved = config_get( 'bug_resolved_status_threshold' );
+$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
 # the issue may have passed through the status we consider resolved
 #  (e.g., bug is CLOSED, not RESOLVED). The linkage to the history field
 #  will look up the most recent 'resolved' status change and return it as well
 $t_query = 'SELECT b.id, b.date_submitted, b.last_updated, MAX(h.date_modified) as hist_update, b.status
 	FROM {bug} b LEFT JOIN {bug_history} h
-		ON b.id = h.bug_id  AND h.type=0 AND h.field_name=\'status\' AND h.new_value=' . db_param() . '
-		WHERE b.status >=' . db_param() . ' AND ' . $t_specific_where . '
+		ON b.id = h.bug_id  AND h.type=0 AND h.field_name=\'status\' AND h.new_value=' . \Flickerbox\Database::param() . '
+		WHERE b.status >=' . \Flickerbox\Database::param() . ' AND ' . $t_specific_where . '
 		GROUP BY b.id, b.status, b.date_submitted, b.last_updated
 		ORDER BY b.id ASC';
-$t_result = db_query( $t_query, array( $t_resolved, $t_resolved ) );
+$t_result = \Flickerbox\Database::query( $t_query, array( $t_resolved, $t_resolved ) );
 $t_bug_count = 0;
 
 $t_bug_id       = 0;
 $t_largest_diff = 0;
 $t_total_time   = 0;
-while( $t_row = db_fetch_array( $t_result ) ) {
+while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 	$t_bug_count++;
 	$t_date_submitted = $t_row['date_submitted'];
 	$t_id = $t_row['id'];
@@ -186,7 +182,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 			<td><?php echo \Flickerbox\Lang::get( 'longest_open_bug' ) ?></td>
 			<td><?php
 				if( $t_bug_id > 0 ) {
-					print_bug_link( $t_bug_id );
+					\Flickerbox\Print_Util::bug_link( $t_bug_id );
 				}
 			?></td>
 		</tr>
@@ -230,7 +226,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<td class="right"><?php echo \Flickerbox\Lang::get( 'balance' ); ?></td>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_date( config_get( 'date_partitions' ) ) ?>
+		<?php \Flickerbox\Summary::print_by_date( \Flickerbox\Config::mantis_get( 'date_partitions' ) ) ?>
 	</table>
 
 	<!-- MOST ACTIVE -->
@@ -298,7 +294,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				<td class="right"><?php echo \Flickerbox\Lang::get( 'total' ); ?></td>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_reporter_effectiveness( config_get( 'severity_enum_string' ), config_get( 'resolution_enum_string' ) ) ?>
+		<?php \Flickerbox\Summary::print_reporter_effectiveness( \Flickerbox\Config::mantis_get( 'severity_enum_string' ), \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 </div>
@@ -312,7 +308,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 			<tr class="row-category2">
 				<th><?php echo \Flickerbox\Lang::get( 'reporter_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = \MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
+					$t_resolutions = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
 						echo '<td class="right">', \Flickerbox\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
@@ -322,7 +318,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_reporter_resolution( config_get( 'resolution_enum_string' ) ) ?>
+		<?php \Flickerbox\Summary::print_reporter_resolution( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 	<!-- DEVELOPER BY RESOLUTION -->
@@ -331,7 +327,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 			<tr class="row-category2">
 				<th><?php echo \Flickerbox\Lang::get( 'developer_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = \MantisEnum::getValues( config_get( 'resolution_enum_string' ) );
+					$t_resolutions = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
 						echo '<td class="right">', \Flickerbox\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
@@ -341,7 +337,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 				?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_developer_resolution( config_get( 'resolution_enum_string' ) ) ?>
+		<?php \Flickerbox\Summary::print_developer_resolution( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 </div>

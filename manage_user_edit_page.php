@@ -40,23 +40,20 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 
 $f_username = \Flickerbox\GPC::get_string( 'username', '' );
 
 if( \Flickerbox\Utility::is_blank( $f_username ) ) {
 	$t_user_id = \Flickerbox\GPC::get_int( 'user_id' );
 } else {
-	$t_user_id = user_get_id_by_name( $f_username );
+	$t_user_id = \Flickerbox\User::get_id_by_name( $f_username );
 	if( $t_user_id === false ) {
 		# If we can't find the user by name, attempt to find by email.
-		$t_user_id = user_get_id_by_email( $f_username );
+		$t_user_id = \Flickerbox\User::get_id_by_email( $f_username );
 		if( $t_user_id === false ) {
 			\Flickerbox\Error::parameters( $f_username );
 			trigger_error( ERROR_USER_BY_NAME_NOT_FOUND, ERROR );
@@ -64,13 +61,13 @@ if( \Flickerbox\Utility::is_blank( $f_username ) ) {
 	}
 }
 
-$t_user = user_get_row( $t_user_id );
+$t_user = \Flickerbox\User::get_row( $t_user_id );
 
 # Ensure that the account to be updated is of equal or lower access to the
 # current user.
 \Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
 
-$t_ldap = ( LDAP == config_get( 'login_method' ) );
+$t_ldap = ( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) );
 
 \Flickerbox\HTML::page_top();
 
@@ -95,11 +92,11 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 
 			<!-- Realname -->
 			<div class="field-container"><?php
-			if( $t_ldap && ON == config_get( 'use_ldap_realname' ) ) {
+			if( $t_ldap && ON == \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) {
 				# With LDAP
 				echo '<span class="display-label"><span>' . \Flickerbox\Lang::get( 'realname_label' ) . '</span></span>';
 				echo '<span class="input">';
-				echo \Flickerbox\String::display_line( user_get_realname( $t_user_id ) );
+				echo \Flickerbox\String::display_line( \Flickerbox\User::get_realname( $t_user_id ) );
 				echo '</span>';
 			} else {
 				# Without LDAP ?>
@@ -111,15 +108,15 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 			</div>
 			<!-- Email -->
 			<div class="field-container"><?php
-			if( $t_ldap && ON == config_get( 'use_ldap_email' ) ) {
+			if( $t_ldap && ON == \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) {
 				# With LDAP
 				echo '<span class="display-label"><span>' . \Flickerbox\Lang::get( 'email_label' ) . '</span></span>';
-				echo '<span class="input">' . \Flickerbox\String::display_line( user_get_email( $t_user_id ) ) . '</span>';
+				echo '<span class="input">' . \Flickerbox\String::display_line( \Flickerbox\User::get_email( $t_user_id ) ) . '</span>';
 			} else {
 				# Without LDAP
 				echo '<label for="email-field"><span>' . \Flickerbox\Lang::get( 'email_label' ) . '</span></label>';
 				echo '<span class="input">';
-				print_email_input( 'email', $t_user['email'] );
+				\Flickerbox\Print_Util::email_input( 'email', $t_user['email'] );
 				echo '</span>';
 			} ?>
 				<span class="label-style"></span>
@@ -130,10 +127,10 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 				<span class="select">
 					<select id="edit-access-level" name="access_level"><?php
 						$t_access_level = $t_user['access_level'];
-						if( !\MantisEnum::hasValue( config_get( 'access_levels_enum_string' ), $t_access_level ) ) {
-							$t_access_level = config_get( 'default_new_account_access_level' );
+						if( !\Flickerbox\MantisEnum::hasValue( \Flickerbox\Config::mantis_get( 'access_levels_enum_string' ), $t_access_level ) ) {
+							$t_access_level = \Flickerbox\Config::mantis_get( 'default_new_account_access_level' );
 						}
-						print_project_access_levels_option_list( (int)$t_access_level ); ?>
+						\Flickerbox\Print_Util::project_access_levels_option_list( (int)$t_access_level ); ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -150,7 +147,7 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 				<span class="checkbox"><input id="edit-protected" type="checkbox" name="protected" <?php \Flickerbox\Helper::check_checked( (int)$t_user['protected'], ON ); ?> /></span>
 				<span class="label-style"></span>
 			</div><?php
-			if( config_get( 'enable_email_notification' ) == ON ) {
+			if( \Flickerbox\Config::mantis_get( 'enable_email_notification' ) == ON ) {
 				echo '<div class="field-container">';
 				echo '<label for="send-email"><span>' . \Flickerbox\Lang::get( 'notify_user' ) . '</span></label>';
 				echo '<span class="checkbox"><input id="send-email" type="checkbox" name="send_email_notification" checked="checked" /></span>';
@@ -168,8 +165,8 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 
 $t_reset = $t_user['id'] != auth_get_current_user_id()
 	&& \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
-$t_unlock = OFF != config_get( 'max_failed_login_count' ) && $t_user['failed_login_count'] > 0;
-$t_delete = !( ( user_is_administrator( $t_user_id ) && ( user_count_level( config_get_global( 'admin_site_threshold' ) ) <= 1 ) ) );
+$t_unlock = OFF != \Flickerbox\Config::mantis_get( 'max_failed_login_count' ) && $t_user['failed_login_count'] > 0;
+$t_delete = !( ( \Flickerbox\User::is_administrator( $t_user_id ) && ( \Flickerbox\User::count_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) ) <= 1 ) ) );
 
 if( $t_reset || $t_unlock || $t_delete ) {
 ?>
@@ -206,7 +203,7 @@ if( $t_reset || $t_unlock || $t_delete ) {
 <?php if( $t_reset ) { ?>
 <div class="important-msg">
 <?php
-	if( ( ON == config_get( 'send_reset_password' ) ) && ( ON == config_get( 'enable_email_notification' ) ) ) {
+	if( ( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
 		echo \Flickerbox\Lang::get( 'reset_password_msg' );
 	} else {
 		echo \Flickerbox\Lang::get( 'reset_password_msg2' );
@@ -216,14 +213,14 @@ if( $t_reset || $t_unlock || $t_delete ) {
 <?php } ?>
 
 <!-- PROJECT ACCESS (if permissions allow) and user is not ADMINISTRATOR -->
-<?php if( \Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) &&
-	!user_is_administrator( $t_user_id ) ) {
+<?php if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) &&
+	!\Flickerbox\User::is_administrator( $t_user_id ) ) {
 ?>
 <div class="form-container">
 	<h2><?php echo \Flickerbox\Lang::get( 'add_user_title' ) ?></h2>
 	<div class="field-container">
 		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'assigned_projects_label' ) ?></span></span>
-		<div class="input"><?php print_project_user_list( $t_user['id'] ) ?></div>
+		<div class="input"><?php \Flickerbox\Print_Util::project_user_list( $t_user['id'] ) ?></div>
 		<span class="label-style"></span>
 	</div>
 	<form id="manage-user-project-add-form" method="post" action="manage_user_proj_add.php">
@@ -234,7 +231,7 @@ if( $t_reset || $t_unlock || $t_delete ) {
 				<label for="add-user-project-id"><span><?php echo \Flickerbox\Lang::get( 'unassigned_projects_label' ) ?></span></label>
 				<span class="select">
 					<select id="add-user-project-id" name="project_id[]" multiple="multiple" size="5">
-						<?php print_project_user_list_option_list2( $t_user['id'] ) ?>
+						<?php \Flickerbox\Print_Util::project_user_list_option_list2( $t_user['id'] ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -243,7 +240,7 @@ if( $t_reset || $t_unlock || $t_delete ) {
 				<label for="add-user-project-access"><span><?php echo \Flickerbox\Lang::get( 'access_level_label' ) ?></span></label>
 				<span class="select">
 					<select id="add-user-project-access" name="access_level">
-						<?php print_project_access_levels_option_list( (int)config_get( 'default_new_account_access_level' ) ) ?>
+						<?php \Flickerbox\Print_Util::project_access_levels_option_list( (int)\Flickerbox\Config::mantis_get( 'default_new_account_access_level' ) ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

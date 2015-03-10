@@ -38,12 +38,10 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 auth_reauthenticate();
 
-if( !config_get( 'relationship_graph_enable' ) ) {
+if( !\Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
 	\Flickerbox\Access::denied();
 }
 

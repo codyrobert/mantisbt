@@ -22,7 +22,7 @@
  * Process XML Import
  */
 
-$t_plugin_path = config_get( 'plugin_path' );
+$t_plugin_path = \Flickerbox\Config::mantis_get( 'plugin_path' );
 require_once( $t_plugin_path . 'XmlImportExport/ImportXml.php' );
 
 \Flickerbox\Form::security_validate( 'plugin_xml_import_action' );
@@ -42,7 +42,7 @@ $t_importer = new ImportXML( $f_file, $f_strategy, $f_fallback, $f_keepcategory,
 
 \Flickerbox\Form::security_purge( 'plugin_xml_import_action' );
 
-\Flickerbox\HTML::page_top( plugin_langget( 'import' ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Plugin::langget( 'import' ) );
 
 \Flickerbox\HTML::print_manage_menu( 'manage_import_issues_page.php' );
 

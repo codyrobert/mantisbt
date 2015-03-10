@@ -87,11 +87,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 
 class HTML
@@ -104,7 +99,7 @@ class HTML
 	 * @return void
 	 */
 	static function set_rss_link( $p_rss_feed_url ) {
-		if( OFF != config_get( 'rss_enabled' ) ) {
+		if( OFF != \Flickerbox\Config::mantis_get( 'rss_enabled' ) ) {
 			global $g_rss_feed_url;
 			$g_rss_feed_url = $p_rss_feed_url;
 		}
@@ -165,7 +160,7 @@ class HTML
 		\Flickerbox\HTML::head_begin();
 	
 		\Flickerbox\HTML::content_type();
-		$t_meta = config_get_global( 'meta_include_file' );
+		$t_meta = \Flickerbox\Config::get_global( 'meta_include_file' );
 		if( !\Flickerbox\Utility::is_blank( $t_meta ) ) {
 			include( $t_meta );
 		}
@@ -178,7 +173,7 @@ class HTML
 		\Flickerbox\HTML::css();
 		\Flickerbox\HTML::rss_link();
 	
-		$t_favicon_image = config_get( 'favicon_image' );
+		$t_favicon_image = \Flickerbox\Config::mantis_get( 'favicon_image' );
 		if( !\Flickerbox\Utility::is_blank( $t_favicon_image ) ) {
 			echo "\t", '<link rel="shortcut icon" href="', \Flickerbox\Helper::mantis_url( $t_favicon_image ), '" type="image/x-icon" />', "\n";
 		}
@@ -197,14 +192,14 @@ class HTML
 	static function page_top2() {
 		\Flickerbox\HTML::page_top2a();
 	
-		if( !db_is_connected() ) {
+		if( !\Flickerbox\Database::is_connected() ) {
 			return;
 		}
 	
 		if( \Flickerbox\Auth::is_user_authenticated() ) {
 			\Flickerbox\HTML::login_info();
 	
-			if( ON == config_get( 'show_project_menu_bar' ) ) {
+			if( ON == \Flickerbox\Config::mantis_get( 'show_project_menu_bar' ) ) {
 				\Flickerbox\HTML::print_project_menu_bar();
 				echo '<br />';
 			}
@@ -247,13 +242,13 @@ class HTML
 	 * @return void
 	 */
 	static function page_bottom1( $p_file = null ) {
-		if( !db_is_connected() ) {
+		if( !\Flickerbox\Database::is_connected() ) {
 			return;
 		}
 	
 		\Flickerbox\Event::signal( 'EVENT_LAYOUT_CONTENT_END' );
 		echo '</div>', "\n";
-		if( config_get( 'show_footer_menu' ) ) {
+		if( \Flickerbox\Config::mantis_get( 'show_footer_menu' ) ) {
 			echo '<br />';
 			\Flickerbox\HTML::print_menu();
 		}
@@ -313,7 +308,7 @@ class HTML
 	 */
 	static function title( $p_page_title = null ) {
 		$t_page_title = \Flickerbox\String::html_specialchars( $p_page_title );
-		$t_title = \Flickerbox\String::html_specialchars( config_get( 'window_title' ) );
+		$t_title = \Flickerbox\String::html_specialchars( \Flickerbox\Config::mantis_get( 'window_title' ) );
 		echo "\t", '<title>';
 		if( empty( $t_page_title ) ) {
 			echo $t_title;
@@ -343,12 +338,12 @@ class HTML
 	 */
 	static function css() {
 		global $g_stylesheets_included;
-		\Flickerbox\HTML::css_link( config_get( 'css_include_file' ) );
+		\Flickerbox\HTML::css_link( \Flickerbox\Config::mantis_get( 'css_include_file' ) );
 		\Flickerbox\HTML::css_link( 'jquery-ui-1.11.2.min.css' );
 		\Flickerbox\HTML::css_link( 'common_config.php' );
 		# Add right-to-left css if needed
 		if( \Flickerbox\Lang::get( 'directionality' ) == 'rtl' ) {
-			\Flickerbox\HTML::css_link( config_get( 'css_rtl_include_file' ) );
+			\Flickerbox\HTML::css_link( \Flickerbox\Config::mantis_get( 'css_rtl_include_file' ) );
 		}
 		foreach( $g_stylesheets_included as $t_stylesheet_path ) {
 			\Flickerbox\HTML::css_link( $t_stylesheet_path );
@@ -377,7 +372,7 @@ class HTML
 	 * @return boolean
 	 */
 	static function meta_redirect( $p_url, $p_time = null, $p_sanitize = true ) {
-		if( ON == config_get_global( 'stop_on_errors' ) && \Flickerbox\Error::handled() ) {
+		if( ON == \Flickerbox\Config::get_global( 'stop_on_errors' ) && \Flickerbox\Error::handled() ) {
 			return false;
 		}
 	
@@ -385,7 +380,7 @@ class HTML
 			$p_time = \Flickerbox\Current_User::get_pref( 'redirect_delay' );
 		}
 	
-		$t_url = config_get( 'path' );
+		$t_url = \Flickerbox\Config::mantis_get( 'path' );
 		if( $p_sanitize ) {
 			$t_url .= \Flickerbox\String::sanitize_url( $p_url );
 		} else {
@@ -459,9 +454,9 @@ class HTML
 	 * @return void
 	 */
 	static function top_banner() {
-		$t_page = config_get( 'top_include_page' );
-		$t_logo_image = config_get( 'logo_image' );
-		$t_logo_url = config_get( 'logo_url' );
+		$t_page = \Flickerbox\Config::mantis_get( 'top_include_page' );
+		$t_logo_image = \Flickerbox\Config::mantis_get( 'logo_image' );
+		$t_logo_url = \Flickerbox\Config::mantis_get( 'logo_url' );
 	
 		if( \Flickerbox\Utility::is_blank( $t_logo_image ) ) {
 			$t_show_logo = false;
@@ -479,9 +474,9 @@ class HTML
 		} else if( $t_show_logo ) {
 			echo '<div id="banner">';
 			if( $t_show_url ) {
-				echo '<a id="logo-link" href="', config_get( 'logo_url' ), '">';
+				echo '<a id="logo-link" href="', \Flickerbox\Config::mantis_get( 'logo_url' ), '">';
 			}
-			$t_alternate_text = \Flickerbox\String::html_specialchars( config_get( 'window_title' ) );
+			$t_alternate_text = \Flickerbox\String::html_specialchars( \Flickerbox\Config::mantis_get( 'window_title' ) );
 			echo '<img id="logo-image" alt="', $t_alternate_text, '" src="' . \Flickerbox\Helper::mantis_url( $t_logo_image ) . '" />';
 			if( $t_show_url ) {
 				echo '</a>';
@@ -500,7 +495,7 @@ class HTML
 	static function login_info() {
 		$t_username = \Flickerbox\Current_User::get_field( 'username' );
 		$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', \Flickerbox\Current_User::get_access_level() );
-		$t_now = date( config_get( 'complete_date_format' ) );
+		$t_now = date( \Flickerbox\Config::mantis_get( 'complete_date_format' ) );
 		$t_realname = \Flickerbox\Current_User::get_field( 'realname' );
 	
 		echo '<div class="info-bar">' . "\n";
@@ -517,7 +512,7 @@ class HTML
 	
 			echo "\t" . '<span id="logged-anon-label">' . \Flickerbox\Lang::get( 'anonymous' ) . '</span>' . "\n";
 			echo "\t" . '<span id="login-link"><a href="' . \Flickerbox\Helper::mantis_url( 'login_page.php?return=' . $t_return_page ) . '">' . \Flickerbox\Lang::get( 'login_link' ) . '</a></span>' . "\n";
-			if( config_get_global( 'allow_signup' ) == ON ) {
+			if( \Flickerbox\Config::get_global( 'allow_signup' ) == ON ) {
 				echo "\t" . '<span id="signup-link"><a href="' . \Flickerbox\Helper::mantis_url( 'signup_page.php' ) . '">' . \Flickerbox\Lang::get( 'signup_link' ) . '</a></span>' . "\n";
 			}
 		} else {
@@ -531,7 +526,7 @@ class HTML
 		echo '</div>' . "\n";
 	
 		# RSS feed
-		if( OFF != config_get( 'rss_enabled' ) ) {
+		if( OFF != \Flickerbox\Config::mantis_get( 'rss_enabled' ) ) {
 			echo '<div id="rss-feed">' . "\n";
 			# Link to RSS issues feed for the selected project, including authentication details.
 			echo "\t" . '<a href="' . htmlspecialchars( \Flickerbox\RSS::get_issues_feed_url() ) . '">' . "\n";
@@ -558,7 +553,7 @@ class HTML
 	
 			echo '<label for="form-set-project-id">' . \Flickerbox\Lang::get( 'email_project' ) . '</label>';
 			echo '<select id="form-set-project-id" name="project_id">';
-			print_project_option_list( join( ';', \Flickerbox\Helper::get_current_project_trace() ), true, null, true );
+			\Flickerbox\Print_Util::project_option_list( join( ';', \Flickerbox\Helper::get_current_project_trace() ), true, null, true );
 			echo '</select> ';
 			echo '<input type="submit" class="button" value="' . \Flickerbox\Lang::get( 'switch' ) . '" />';
 			echo '</fieldset>';
@@ -575,7 +570,7 @@ class HTML
 	
 				# Force reload of current page, except if we got here after
 				# creating the first project
-				$t_redirect_url = str_replace( config_get( 'short_path' ), '', $_SERVER['REQUEST_URI'] );
+				$t_redirect_url = str_replace( \Flickerbox\Config::mantis_get( 'short_path' ), '', $_SERVER['REQUEST_URI'] );
 				if( 'manage_proj_create.php' != $t_redirect_url ) {
 					\Flickerbox\HTML::meta_redirect( $t_redirect_url, 0, false );
 				}
@@ -592,7 +587,7 @@ class HTML
 	 * @return void
 	 */
 	static function bottom_banner() {
-		$t_page = config_get( 'bottom_include_page' );
+		$t_page = \Flickerbox\Config::mantis_get( 'bottom_include_page' );
 	
 		if( !\Flickerbox\Utility::is_blank( $t_page ) && file_exists( $t_page ) && !is_dir( $t_page ) ) {
 			include( $t_page );
@@ -613,7 +608,7 @@ class HTML
 		}
 	
 		echo \Flickerbox\Lang::get( 'operation_successful' ).'<br />';
-		print_bracket_link( $p_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+		\Flickerbox\Print_Util::bracket_link( $p_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
 		echo '</div>';
 	}
 	
@@ -644,7 +639,7 @@ class HTML
 			!( \Flickerbox\Utility::is_page_name( 'verify.php' ) || \Flickerbox\Utility::is_page_name( 'account_update.php' ) ) &&
 			!\Flickerbox\HTML::is_auto_refresh() ) {
 			$t_user_id = \Flickerbox\Auth::get_current_user_id();
-			user_update_last_visit( $t_user_id );
+			\Flickerbox\User::update_last_visit( $t_user_id );
 		}
 	
 		echo '<div id="footer">' . "\n";
@@ -666,8 +661,8 @@ class HTML
 		# Show MantisBT version and copyright statement
 		$t_version_suffix = '';
 		$t_copyright_years = ' 2000 - ' . date( 'Y' );
-		if( config_get( 'show_version' ) == ON ) {
-			$t_version_suffix = ' ' . htmlentities( MANTIS_VERSION . ' ' . config_get_global( 'version_suffix' ) );
+		if( \Flickerbox\Config::mantis_get( 'show_version' ) == ON ) {
+			$t_version_suffix = ' ' . htmlentities( MANTIS_VERSION . ' ' . \Flickerbox\Config::get_global( 'version_suffix' ) );
 		}
 	
 		echo '<address id="mantisbt-copyright">' . "\n";
@@ -675,7 +670,7 @@ class HTML
 		echo 'Copyright &copy;' . $t_copyright_years . ' MantisBT Team';
 	
 		# Show optional user-specified custom copyright statement
-		$t_copyright_statement = config_get( 'copyright_statement' );
+		$t_copyright_statement = \Flickerbox\Config::mantis_get( 'copyright_statement' );
 		if( $t_copyright_statement ) {
 			echo "\t" . '<address id="user-copyright">' . $t_copyright_statement . '</address>' . "\n";
 		}
@@ -684,7 +679,7 @@ class HTML
 	
 		# Show contact information
 		if( !\Flickerbox\Utility::is_page_name( 'login_page' ) ) {
-			$t_webmaster_email = config_get( 'webmaster_email' );
+			$t_webmaster_email = \Flickerbox\Config::mantis_get( 'webmaster_email' );
 			if( !\Flickerbox\Utility::is_blank( $t_webmaster_email ) ) {
 				$t_webmaster_contact_information = sprintf( \Flickerbox\Lang::get( 'webmaster_contact_information' ), \Flickerbox\String::html_specialchars( $t_webmaster_email ) );
 				echo "\t" . '<address id="webmaster-contact-information">' . $t_webmaster_contact_information . '</address>' . "\n";
@@ -694,24 +689,24 @@ class HTML
 		\Flickerbox\Event::signal( 'EVENT_LAYOUT_PAGE_FOOTER' );
 	
 		# Print horizontal rule if any debugging statistics follow
-		if( config_get( 'show_timer' ) || config_get( 'show_memory_usage' ) || config_get( 'show_queries_count' ) ) {
+		if( \Flickerbox\Config::mantis_get( 'show_timer' ) || \Flickerbox\Config::mantis_get( 'show_memory_usage' ) || \Flickerbox\Config::mantis_get( 'show_queries_count' ) ) {
 			echo "\t" . '<hr />' . "\n";
 		}
 	
 		# Print the page execution time
-		if( config_get( 'show_timer' ) ) {
+		if( \Flickerbox\Config::mantis_get( 'show_timer' ) ) {
 			$t_page_execution_time = sprintf( \Flickerbox\Lang::get( 'page_execution_time' ), number_format( microtime( true ) - $g_request_time, 4 ) );
 			echo "\t" . '<p id="page-execution-time">' . $t_page_execution_time . '</p>' . "\n";
 		}
 	
 		# Print the page memory usage
-		if( config_get( 'show_memory_usage' ) ) {
+		if( \Flickerbox\Config::mantis_get( 'show_memory_usage' ) ) {
 			$t_page_memory_usage = sprintf( \Flickerbox\Lang::get( 'memory_usage_in_kb' ), number_format( memory_get_peak_usage() / 1024 ) );
 			echo "\t" . '<p id="page-memory-usage">' . $t_page_memory_usage . '</p>' . "\n";
 		}
 	
 		# Determine number of unique queries executed
-		if( config_get( 'show_queries_count' ) ) {
+		if( \Flickerbox\Config::mantis_get( 'show_queries_count' ) ) {
 			$t_total_queries_count = count( $g_queries_array );
 			$t_unique_queries_count = 0;
 			$t_total_query_execution_time = 0;
@@ -729,7 +724,7 @@ class HTML
 	
 			$t_total_queries_executed = sprintf( \Flickerbox\Lang::get( 'total_queries_executed' ), $t_total_queries_count );
 			echo "\t" . '<p id="total-queries-count">' . $t_total_queries_executed . '</p>' . "\n";
-			if( config_get_global( 'db_log_queries' ) ) {
+			if( \Flickerbox\Config::get_global( 'db_log_queries' ) ) {
 				$t_unique_queries_executed = sprintf( \Flickerbox\Lang::get( 'unique_queries_executed' ), $t_unique_queries_count );
 				echo "\t" . '<p id="unique-queries-count">' . $t_unique_queries_executed . '</p>' . "\n";
 			}
@@ -768,7 +763,7 @@ class HTML
 			if( function_exists( 'fastcgi_finish_request' ) ) {
 				fastcgi_finish_request();
 			}
-			email_send_all();
+			\Flickerbox\Email::send_all();
 		}
 	}
 	
@@ -778,7 +773,7 @@ class HTML
 	 * @return array
 	 */
 	static function prepare_custom_menu_options( $p_config ) {
-		$t_custom_menu_options = config_get( $p_config );
+		$t_custom_menu_options = \Flickerbox\Config::mantis_get( $p_config );
 		$t_options = array();
 	
 		foreach( $t_custom_menu_options as $t_custom_option ) {
@@ -805,7 +800,7 @@ class HTML
 			$t_menu_options = array();
 	
 			# Main Page
-			if( config_get( 'news_enabled' ) == ON ) {
+			if( \Flickerbox\Config::mantis_get( 'news_enabled' ) == ON ) {
 				$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'main_page.php' ) . '">' . \Flickerbox\Lang::get( 'main_link' ) . '</a>';
 			}
 	
@@ -830,32 +825,32 @@ class HTML
 			$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'view_all_bug_page.php">' ) . \Flickerbox\Lang::get( 'view_bugs_link' ) . '</a>';
 	
 			# Report Bugs
-			if( \Flickerbox\Access::has_project_level( config_get( 'report_bug_threshold' ) ) ) {
+			if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ) ) ) {
 				$t_menu_options[] = \Flickerbox\String::get_bug_report_link();
 			}
 	
 			# Changelog Page
-			if( \Flickerbox\Access::has_project_level( config_get( 'view_changelog_threshold' ) ) ) {
+			if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_changelog_threshold' ) ) ) {
 				$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'changelog_page.php">' ) . \Flickerbox\Lang::get( 'changelog_link' ) . '</a>';
 			}
 	
 			# Roadmap Page
-			if( \Flickerbox\Access::has_project_level( config_get( 'roadmap_view_threshold' ) ) ) {
+			if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'roadmap_view_threshold' ) ) ) {
 				$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'roadmap_page.php">' ) . \Flickerbox\Lang::get( 'roadmap_link' ) . '</a>';
 			}
 	
 			# Summary Page
-			if( \Flickerbox\Access::has_project_level( config_get( 'view_summary_threshold' ) ) ) {
+			if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) ) ) {
 				$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'summary_page.php">' ) . \Flickerbox\Lang::get( 'summary_link' ) . '</a>';
 			}
 	
 			# Project Documentation Page
-			if( ON == config_get( 'enable_project_documentation' ) ) {
+			if( ON == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
 				$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'proj_doc_page.php">' ) . \Flickerbox\Lang::get( 'docs_link' ) . '</a>';
 			}
 	
 			# Project Wiki
-			if( config_get_global( 'wiki_enable' ) == ON ) {
+			if( \Flickerbox\Config::get_global( 'wiki_enable' ) == ON ) {
 				$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'wiki.php?type=project&amp;id=' ) . $t_current_project . '">' . \Flickerbox\Lang::get( 'wiki' ) . '</a>';
 			}
 	
@@ -874,17 +869,17 @@ class HTML
 			}
 	
 			# Manage Users (admins) or Manage Project (managers) or Manage Custom Fields
-			if( \Flickerbox\Access::has_global_level( config_get( 'manage_site_threshold' ) ) ) {
+			if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_site_threshold' ) ) ) {
 				$t_link = \Flickerbox\Helper::mantis_url( 'manage_overview_page.php' );
 				$t_menu_options[] = '<a class="manage-menu-link" href="' . $t_link . '">' . \Flickerbox\Lang::get( 'manage_link' ) . '</a>';
 			} else {
-				$t_show_access = min( config_get( 'manage_user_threshold' ), config_get( 'manage_project_threshold' ), config_get( 'manage_custom_fields_threshold' ) );
+				$t_show_access = min( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ), \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 				if( \Flickerbox\Access::has_global_level( $t_show_access ) || \Flickerbox\Access::has_any_project( $t_show_access ) ) {
 					$t_current_project = \Flickerbox\Helper::get_current_project();
-					if( \Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) ) {
+					if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) ) {
 						$t_link = \Flickerbox\Helper::mantis_url( 'manage_user_page.php' );
 					} else {
-						if( \Flickerbox\Access::has_project_level( config_get( 'manage_project_threshold' ), $t_current_project ) && ( $t_current_project <> ALL_PROJECTS ) ) {
+						if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_current_project ) && ( $t_current_project <> ALL_PROJECTS ) ) {
 							$t_link = \Flickerbox\Helper::mantis_url( 'manage_proj_edit_page.php?project_id=' ) . $t_current_project;
 						} else {
 							$t_link = \Flickerbox\Helper::mantis_url( 'manage_proj_page.php' );
@@ -895,7 +890,7 @@ class HTML
 			}
 	
 			# News Page
-			if( \Flickerbox\News::is_enabled() && \Flickerbox\Access::has_project_level( config_get( 'manage_news_threshold' ) ) ) {
+			if( \Flickerbox\News::is_enabled() && \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ) ) ) {
 				# Admin can edit news for All Projects (site-wide)
 				if( ALL_PROJECTS != \Flickerbox\Helper::get_current_project() || \Flickerbox\Current_User::is_administrator() ) {
 					$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'news_menu_page.php">' ) . \Flickerbox\Lang::get( 'edit_news_link' ) . '</a>';
@@ -914,7 +909,7 @@ class HTML
 			$t_menu_options = array_merge( $t_menu_options, $t_custom_options );
 	
 			# Time Tracking / Billing
-			if( config_get( 'time_tracking_enabled' ) && \Flickerbox\Access::has_global_level( config_get( 'time_tracking_reporting_threshold' ) ) ) {
+			if( \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) && \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'time_tracking_reporting_threshold' ) ) ) {
 				$t_menu_options[] = '<a href="' . \Flickerbox\Helper::mantis_url( 'billing_page.php">' ) . \Flickerbox\Lang::get( 'time_tracking_billing_link' ) . '</a>';
 			}
 	
@@ -1026,27 +1021,27 @@ class HTML
 	 */
 	static function print_manage_menu( $p_page = '' ) {
 		$t_pages = array();
-		if( \Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) ) {
 			$t_pages['manage_user_page.php'] = array( 'url'   => 'manage_user_page.php', 'label' => 'manage_users_link' );
 		}
-		if( \Flickerbox\Access::has_project_level( config_get( 'manage_project_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ) ) ) {
 			$t_pages['manage_proj_page.php'] = array( 'url'   => 'manage_proj_page.php', 'label' => 'manage_projects_link' );
 		}
-		if( \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) ) ) {
 			$t_pages['manage_tags_page.php'] = array( 'url'   => 'manage_tags_page.php', 'label' => 'manage_tags_link' );
 		}
-		if( \Flickerbox\Access::has_global_level( config_get( 'manage_custom_fields_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) ) ) {
 			$t_pages['manage_custom_field_page.php'] = array( 'url'   => 'manage_custom_field_page.php', 'label' => 'manage_custom_field_link' );
 		}
-		if( config_get( 'enable_profiles' ) == ON && \Flickerbox\Access::has_global_level( config_get( 'manage_global_profile_threshold' ) ) ) {
+		if( \Flickerbox\Config::mantis_get( 'enable_profiles' ) == ON && \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) ) ) {
 			$t_pages['manage_prof_menu_page.php'] = array( 'url'   => 'manage_prof_menu_page.php', 'label' => 'manage_global_profiles_link' );
 		}
-		if( \Flickerbox\Access::has_global_level( config_get( 'manage_plugin_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) ) ) {
 			$t_pages['manage_plugin_page.php'] = array( 'url'   => 'manage_plugin_page.php', 'label' => 'manage_plugin_link' );
 		}
 	
-		if( \Flickerbox\Access::has_project_level( config_get( 'manage_configuration_threshold' ) ) ) {
-			if( \Flickerbox\Access::has_global_level( config_get( 'view_configuration_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_configuration_threshold' ) ) ) {
+			if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'view_configuration_threshold' ) ) ) {
 				$t_pages['adm_config_report.php'] = array( 'url'   => 'adm_config_report.php', 'label' => 'manage_config_link' );
 			} else {
 				$t_pages['adm_permissions_report.php'] = array( 'url'   => 'adm_permissions_report.php', 'label' => 'manage_config_link' );
@@ -1097,13 +1092,13 @@ class HTML
 	 * @return void
 	 */
 	static function print_manage_config_menu( $p_page = '' ) {
-		if( !\Flickerbox\Access::has_project_level( config_get( 'manage_configuration_threshold' ) ) ) {
+		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_configuration_threshold' ) ) ) {
 			return;
 		}
 	
 		$t_pages = array();
 	
-		if( \Flickerbox\Access::has_global_level( config_get( 'view_configuration_threshold' ) ) ) {
+		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'view_configuration_threshold' ) ) ) {
 			$t_pages['adm_config_report.php'] = array( 'url'   => 'adm_config_report.php',
 			                                           'label' => 'configuration_report' );
 		}
@@ -1117,7 +1112,7 @@ class HTML
 		$t_pages['manage_config_workflow_page.php'] = array( 'url'   => 'manage_config_workflow_page.php',
 		                                                     'label' => 'manage_workflow_config' );
 	
-		if( config_get( 'relationship_graph_enable' ) ) {
+		if( \Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
 			$t_pages['manage_config_workflow_graph_page.php'] = array( 'url'   => 'manage_config_workflow_graph_page.php',
 			                                                           'label' => 'manage_workflow_graph' );
 		}
@@ -1176,11 +1171,11 @@ class HTML
 		$t_pages['account_prefs_page.php'] = array( 'url'=>'account_prefs_page.php', 'label'=>'change_preferences_link' );
 		$t_pages['account_manage_columns_page.php'] = array( 'url'=>'account_manage_columns_page.php', 'label'=>'manage_columns_config' );
 	
-		if( config_get( 'enable_profiles' ) == ON && \Flickerbox\Access::has_project_level( config_get( 'add_profile_threshold' ) ) ) {
+		if( \Flickerbox\Config::mantis_get( 'enable_profiles' ) == ON && \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'add_profile_threshold' ) ) ) {
 			$t_pages['account_prof_menu_page.php'] = array( 'url'=>'account_prof_menu_page.php', 'label'=>'manage_profiles_link' );
 		}
 	
-		if( config_get( 'enable_sponsorship' ) == ON && \Flickerbox\Access::has_project_level( config_get( 'view_sponsorship_total_threshold' ) ) && !\Flickerbox\Current_User::is_anonymous() ) {
+		if( \Flickerbox\Config::mantis_get( 'enable_sponsorship' ) == ON && \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_sponsorship_total_threshold' ) ) && !\Flickerbox\Current_User::is_anonymous() ) {
 			$t_pages['account_sponsor_page.php'] = array( 'url'=>'account_sponsor_page.php', 'label'=>'my_sponsorship' );
 		}
 	
@@ -1229,11 +1224,11 @@ class HTML
 	 */
 	static function print_doc_menu( $p_page = '' ) {
 		# User Documentation
-		$t_doc_url = config_get( 'manual_url' );
+		$t_doc_url = \Flickerbox\Config::mantis_get( 'manual_url' );
 		if( is_null( parse_url( $t_doc_url, PHP_URL_SCHEME ) ) ) {
 			# URL has no scheme, so it is relative to MantisBT root
 			if( \Flickerbox\Utility::is_blank( $t_doc_url ) ||
-				!file_exists( config_get_global( 'absolute_path' ) . $t_doc_url )
+				!file_exists( \Flickerbox\Config::get_global( 'absolute_path' ) . $t_doc_url )
 			) {
 				# Local documentation not available, use online docs
 				$t_doc_url = 'http://www.mantisbt.org/documentation.php';
@@ -1342,12 +1337,12 @@ class HTML
 			}
 		}
 	
-		$t_status_array = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
-		$t_status_names = \MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Lang::get( 'status_enum_string' ) );
+		$t_status_array = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
+		$t_status_names = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Lang::get( 'status_enum_string' ) );
 	
 		# read through the list and eliminate unused ones for the selected project
 		# assumes that all status are are in the enum array
-		$t_workflow = config_get( 'status_enum_workflow' );
+		$t_workflow = \Flickerbox\Config::mantis_get( 'status_enum_workflow' );
 		if( !empty( $t_workflow ) ) {
 			foreach( $t_status_array as $t_status => $t_name ) {
 				if( !isset( $t_workflow[$t_status] ) ) {
@@ -1384,17 +1379,17 @@ class HTML
 		echo '<tr>';
 	
 		# draw the status bar
-		$t_status_enum_string = config_get( 'status_enum_string' );
+		$t_status_enum_string = \Flickerbox\Config::mantis_get( 'status_enum_string' );
 		foreach( $t_status_array as $t_status => $t_name ) {
 			$t_val = isset( $t_status_names[$t_status] ) ? $t_status_names[$t_status] : $t_status_array[$t_status];
-			$t_status_label = \MantisEnum::getLabel( $t_status_enum_string, $t_status );
+			$t_status_label = \Flickerbox\MantisEnum::getLabel( $t_status_enum_string, $t_status );
 	
 			echo '<td class="small-caption ' . $t_status_label . '-color">' . $t_val . '</td>';
 		}
 	
 		echo '</tr>';
 		echo '</table>';
-		if( ON == config_get( 'status_percentage_legend' ) ) {
+		if( ON == \Flickerbox\Config::mantis_get( 'status_percentage_legend' ) ) {
 			\Flickerbox\HTML::status_percentage_legend();
 		}
 	}
@@ -1405,8 +1400,8 @@ class HTML
 	 */
 	static function status_percentage_legend() {
 		$t_status_percents = \Flickerbox\Helper::get_percentage_by_status();
-		$t_status_enum_string = config_get( 'status_enum_string' );
-		$t_enum_values = \MantisEnum::getValues( $t_status_enum_string );
+		$t_status_enum_string = \Flickerbox\Config::mantis_get( 'status_enum_string' );
+		$t_enum_values = \Flickerbox\MantisEnum::getValues( $t_status_enum_string );
 		$t_enum_count = count( $t_enum_values );
 	
 		$t_bug_count = array_sum( $t_status_percents );
@@ -1423,7 +1418,7 @@ class HTML
 				$t_percent = ( isset( $t_status_percents[$t_status] ) ?  $t_status_percents[$t_status] : 0 );
 	
 				if( $t_percent > 0 ) {
-					$t_status_label = \MantisEnum::getLabel( $t_status_enum_string, $t_status );
+					$t_status_label = \Flickerbox\MantisEnum::getLabel( $t_status_enum_string, $t_status );
 					echo '<td class="small-caption-center ' . $t_status_label . '-color ' . $t_status_label . '-percentage">' . $t_percent . '%</td>';
 				}
 			}
@@ -1477,7 +1472,7 @@ class HTML
 	 * @return void
 	 */
 	static function button_bug_update( $p_bug_id ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $p_bug_id ) ) {
 			\Flickerbox\HTML::button( \Flickerbox\String::get_bug_update_page(), \Flickerbox\Lang::get( 'update_bug_button' ), array( 'bug_id' => $p_bug_id ) );
 		}
 	}
@@ -1487,27 +1482,27 @@ class HTML
 	 * This code is similar to print_status_option_list except
 	 * there is no masking, except for the current state
 	 *
-	 * @param BugData $p_bug A valid bug object.
+	 * @param \Flickerbox\BugData $p_bug A valid bug object.
 	 * @return void
 	 */
-	static function button_bug_change_status( BugData $p_bug ) {
+	static function button_bug_change_status( \Flickerbox\BugData $p_bug ) {
 		$t_current_access = \Flickerbox\Access::get_project_level( $p_bug->project_id );
 	
 		# User must have rights to change status to use this button
-		if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_status_threshold' ), $p_bug->id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_status_threshold' ), $p_bug->id ) ) {
 			return;
 		}
 	
-		$t_enum_list = get_status_option_list(
+		$t_enum_list = \Flickerbox\Print_Util::get_status_option_list(
 			$t_current_access,
 			$p_bug->status,
 			false,
 			# Add close if user is bug's reporter, still has rights to report issues
 			# (to prevent users downgraded to viewers from updating issues) and
 			# reporters are allowed to close their own issues
-			(  bug_is_user_reporter( $p_bug->id, \Flickerbox\Auth::get_current_user_id() )
-			&& \Flickerbox\Access::has_bug_level( config_get( 'report_bug_threshold' ), $p_bug->id )
-			&& ON == config_get( 'allow_reporter_close' )
+			(  \Flickerbox\Bug::is_user_reporter( $p_bug->id, \Flickerbox\Auth::get_current_user_id() )
+			&& \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ), $p_bug->id )
+			&& ON == \Flickerbox\Config::mantis_get( 'allow_reporter_close' )
 			),
 			$p_bug->project_id );
 	
@@ -1543,20 +1538,20 @@ class HTML
 	
 	/**
 	 * Print Assign To: combo box of possible handlers
-	 * @param BugData $p_bug Bug object.
+	 * @param \Flickerbox\BugData $p_bug Bug object.
 	 * @return void
 	 */
-	static function button_bug_assign_to( BugData $p_bug ) {
+	static function button_bug_assign_to( \Flickerbox\BugData $p_bug ) {
 		# make sure status is allowed of assign would cause auto-set-status
 		# workflow implementation
-		if( ON == config_get( 'auto_set_status_to_assigned' )
-			&& !bug_check_workflow( $p_bug->status, config_get( 'bug_assigned_status' ) )
+		if( ON == \Flickerbox\Config::mantis_get( 'auto_set_status_to_assigned' )
+			&& !\Flickerbox\Bug::check_workflow( $p_bug->status, \Flickerbox\Config::mantis_get( 'bug_assigned_status' ) )
 		) {
 			return;
 		}
 	
 		# make sure current user has access to modify bugs.
-		if( !\Flickerbox\Access::has_bug_level( config_get( 'update_bug_assign_threshold', config_get( 'update_bug_threshold' ) ), $p_bug->id ) ) {
+		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_assign_threshold', \Flickerbox\Config::mantis_get( 'update_bug_threshold' ) ), $p_bug->id ) ) {
 			return;
 		}
 	
@@ -1565,7 +1560,7 @@ class HTML
 		$t_default_assign_to = null;
 	
 		if( ( $p_bug->handler_id != $t_current_user_id )
-			&& \Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $p_bug->id, $t_current_user_id )
+			&& \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ), $p_bug->id, $t_current_user_id )
 		) {
 			$t_options[] = array(
 				$t_current_user_id,
@@ -1575,8 +1570,8 @@ class HTML
 		}
 	
 		if( ( $p_bug->handler_id != $p_bug->reporter_id )
-			&& user_exists( $p_bug->reporter_id )
-			&& \Flickerbox\Access::has_bug_level( config_get( 'handle_bug_threshold' ), $p_bug->id, $p_bug->reporter_id )
+			&& \Flickerbox\User::exists( $p_bug->reporter_id )
+			&& \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ), $p_bug->id, $p_bug->reporter_id )
 		) {
 			$t_options[] = array(
 				$p_bug->reporter_id,
@@ -1628,7 +1623,7 @@ class HTML
 		}
 	
 		# 0 means currently selected
-		print_assign_to_option_list( 0, $p_bug->project_id );
+		\Flickerbox\Print_Util::assign_to_option_list( 0, $p_bug->project_id );
 		echo '</select>';
 	
 		$t_bug_id = \Flickerbox\String::attribute( $p_bug->id );
@@ -1642,8 +1637,8 @@ class HTML
 	 * @param integer $p_bug_id A valid bug identifier.
 	 * @return void
 	 */
-	static function button_bug_move( $p_bug_id ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'move_bug_threshold' ), $p_bug_id ) ) {
+	static function button_bug_move_bug( $p_bug_id ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'move_bug_threshold' ), $p_bug_id ) ) {
 			\Flickerbox\HTML::button( 'bug_actiongroup_page.php', \Flickerbox\Lang::get( 'move_bug_button' ), array( 'bug_arr[]' => $p_bug_id, 'action' => 'MOVE' ) );
 		}
 	}
@@ -1654,19 +1649,19 @@ class HTML
 	 * @return void
 	 */
 	static function button_bug_create_child( $p_bug_id ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'report_bug_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ), $p_bug_id ) ) {
 			\Flickerbox\HTML::button( \Flickerbox\String::get_bug_report_url(), \Flickerbox\Lang::get( 'create_child_bug_button' ), array( 'm_id' => $p_bug_id ) );
 		}
 	}
 	
 	/**
 	 * Print a button to reopen the given bug
-	 * @param BugData $p_bug A valid bug object.
+	 * @param \Flickerbox\BugData $p_bug A valid bug object.
 	 * @return void
 	 */
-	static function button_bug_reopen( BugData $p_bug ) {
+	static function button_bug_reopen( \Flickerbox\BugData $p_bug ) {
 		if( \Flickerbox\Access::can_reopen_bug( $p_bug ) ) {
-			$t_reopen_status = config_get( 'bug_reopen_status', null, null, $p_bug->project_id );
+			$t_reopen_status = \Flickerbox\Config::mantis_get( 'bug_reopen_status', null, null, $p_bug->project_id );
 			\Flickerbox\HTML::button(
 				'bug_change_status_page.php',
 				\Flickerbox\Lang::get( 'reopen_bug_button' ),
@@ -1677,13 +1672,13 @@ class HTML
 	/**
 	 * Print a button to close the given bug
 	 * Only if user can close bugs and workflow allows moving them to that status
-	 * @param BugData $p_bug A valid bug object.
+	 * @param \Flickerbox\BugData $p_bug A valid bug object.
 	 * @return void
 	 */
-	static function button_bug_close( BugData $p_bug ) {
-		$t_closed_status = config_get( 'bug_closed_status_threshold', null, null, $p_bug->project_id );
+	static function button_bug_close( \Flickerbox\BugData $p_bug ) {
+		$t_closed_status = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold', null, null, $p_bug->project_id );
 		if( \Flickerbox\Access::can_close_bug( $p_bug )
-			&& bug_check_workflow( $p_bug->status, $t_closed_status )
+			&& \Flickerbox\Bug::check_workflow( $p_bug->status, $t_closed_status )
 		) {
 			\Flickerbox\HTML::button(
 				'bug_change_status_page.php',
@@ -1698,7 +1693,7 @@ class HTML
 	 * @return void
 	 */
 	static function button_bug_monitor( $p_bug_id ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'monitor_bug_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' ), $p_bug_id ) ) {
 			\Flickerbox\HTML::button( 'bug_monitor_add.php', \Flickerbox\Lang::get( 'monitor_bug_button' ), array( 'bug_id' => $p_bug_id ) );
 		}
 	}
@@ -1719,7 +1714,7 @@ class HTML
 	 * @return void
 	 */
 	static function button_bug_stick( $p_bug_id ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'set_bug_sticky_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'set_bug_sticky_threshold' ), $p_bug_id ) ) {
 			\Flickerbox\HTML::button( 'bug_stick.php', \Flickerbox\Lang::get( 'stick_bug_button' ), array( 'bug_id' => $p_bug_id, 'action' => 'stick' ) );
 		}
 	}
@@ -1730,7 +1725,7 @@ class HTML
 	 * @return void
 	 */
 	static function button_bug_unstick( $p_bug_id ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'set_bug_sticky_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'set_bug_sticky_threshold' ), $p_bug_id ) ) {
 			\Flickerbox\HTML::button( 'bug_stick.php', \Flickerbox\Lang::get( 'unstick_bug_button' ), array( 'bug_id' => $p_bug_id, 'action' => 'unstick' ) );
 		}
 	}
@@ -1741,7 +1736,7 @@ class HTML
 	 * @return void
 	 */
 	static function button_bug_delete( $p_bug_id ) {
-		if( \Flickerbox\Access::has_bug_level( config_get( 'delete_bug_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'delete_bug_threshold' ), $p_bug_id ) ) {
 			\Flickerbox\HTML::button( 'bug_actiongroup_page.php', \Flickerbox\Lang::get( 'delete_bug_button' ), array( 'bug_arr[]' => $p_bug_id, 'action' => 'DELETE' ) );
 		}
 	}
@@ -1752,8 +1747,8 @@ class HTML
 	 * @return void
 	 */
 	static function button_wiki( $p_bug_id ) {
-		if( config_get_global( 'wiki_enable' ) == ON ) {
-			if( \Flickerbox\Access::has_bug_level( config_get( 'update_bug_threshold' ), $p_bug_id ) ) {
+		if( \Flickerbox\Config::get_global( 'wiki_enable' ) == ON ) {
+			if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $p_bug_id ) ) {
 				\Flickerbox\HTML::button( 'wiki.php', \Flickerbox\Lang::get_defaulted( 'Wiki' ), array( 'id' => $p_bug_id, 'type' => 'issue' ), 'get' );
 			}
 		}
@@ -1765,10 +1760,10 @@ class HTML
 	 * @return void
 	 */
 	static function buttons_view_bug_page( $p_bug_id ) {
-		$t_readonly = bug_is_readonly( $p_bug_id );
-		$t_sticky = config_get( 'set_bug_sticky_threshold' );
+		$t_readonly = \Flickerbox\Bug::is_readonly( $p_bug_id );
+		$t_sticky = \Flickerbox\Config::mantis_get( 'set_bug_sticky_threshold' );
 	
-		$t_bug = bug_get( $p_bug_id );
+		$t_bug = \Flickerbox\Bug::get( $p_bug_id );
 	
 		echo '<table><tr class="details-buttons">';
 		if( !$t_readonly ) {
@@ -1793,7 +1788,7 @@ class HTML
 		# MONITOR/UNMONITOR button
 		if( !\Flickerbox\Current_User::is_anonymous() ) {
 			echo '<td>';
-			if( user_is_monitoring_bug( \Flickerbox\Auth::get_current_user_id(), $p_bug_id ) ) {
+			if( \Flickerbox\User::is_monitoring_bug( \Flickerbox\Auth::get_current_user_id(), $p_bug_id ) ) {
 				\Flickerbox\HTML::button_bug_unmonitor( $p_bug_id );
 			} else {
 				\Flickerbox\HTML::button_bug_monitor( $p_bug_id );
@@ -1804,7 +1799,7 @@ class HTML
 		# STICK/UNSTICK button
 		if( \Flickerbox\Access::has_bug_level( $t_sticky, $p_bug_id ) ) {
 			echo '<td>';
-			if( !bug_get_field( $p_bug_id, 'sticky' ) ) {
+			if( !\Flickerbox\Bug::get_field( $p_bug_id, 'sticky' ) ) {
 				\Flickerbox\HTML::button_bug_stick( $p_bug_id );
 			} else {
 				\Flickerbox\HTML::button_bug_unstick( $p_bug_id );
@@ -1831,7 +1826,7 @@ class HTML
 	
 		# MOVE button
 		echo '<td>';
-		\Flickerbox\HTML::button_bug_move( $p_bug_id );
+		\Flickerbox\HTML::button_bug_move_bug( $p_bug_id );
 		echo '</td>';
 	
 		# DELETE button
@@ -1857,7 +1852,7 @@ class HTML
 	 * Build CSS including project or even user-specific colors ?
 	 */
 	static function get_status_css_class( $p_status, $p_user = null, $p_project = null ) {
-		return \Flickerbox\String::attribute( \MantisEnum::getLabel( config_get( 'status_enum_string', null, $p_user, $p_project ), $p_status ) . '-color' );
+		return \Flickerbox\String::attribute( \Flickerbox\MantisEnum::getLabel( \Flickerbox\Config::mantis_get( 'status_enum_string', null, $p_user, $p_project ), $p_status ) . '-color' );
 	}
 
 

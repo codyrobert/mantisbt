@@ -36,7 +36,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'query_delete' );
 
@@ -47,7 +46,7 @@ $f_query_id = \Flickerbox\GPC::get_int( 'source_query_id' );
 $t_redirect_url = 'query_view_page.php';
 
 if( !\Flickerbox\Filter::db_can_delete_filter( $f_query_id ) ) {
-	print_header_redirect( $t_redirect_url );
+	\Flickerbox\Print_Util::header_redirect( $t_redirect_url );
 } else {
 	\Flickerbox\HTML::page_top();
 	filter_db_delete_filter( $f_query_id );

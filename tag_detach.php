@@ -30,7 +30,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'tag_detach' );
 
@@ -43,4 +42,4 @@ $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
 \Flickerbox\Form::security_purge( 'tag_detach' );
 
-print_successful_redirect_to_bug( $f_bug_id );
+\Flickerbox\Print_Util::successful_redirect_to_bug( $f_bug_id );

@@ -36,14 +36,11 @@
 $g_login_anonymous = false;
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 # check if at least one way to get here is enabled
-if( OFF == config_get( 'allow_signup' ) &&
-	OFF == config_get( 'lost_password_feature' ) &&
-	OFF == config_get( 'send_reset_password' ) ) {
+if( OFF == \Flickerbox\Config::mantis_get( 'allow_signup' ) &&
+	OFF == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) &&
+	OFF == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) {
 	trigger_error( ERROR_LOST_PASSWORD_NOT_ENABLED, ERROR );
 }
 
@@ -55,7 +52,7 @@ if( auth_is_user_authenticated() ) {
 	auth_logout();
 
 	# reload the page after logout
-	print_header_redirect( 'verify.php?id=' . $f_user_id . '&confirm_hash=' . $f_confirm_hash );
+	\Flickerbox\Print_Util::header_redirect( 'verify.php?id=' . $f_user_id . '&confirm_hash=' . $f_confirm_hash );
 }
 
 $t_calculated_confirm_hash = auth_generate_confirm_hash( $f_user_id );
@@ -67,13 +64,13 @@ if( $f_confirm_hash != $t_calculated_confirm_hash ) {
 # set a temporary cookie so the login information is passed between pages.
 auth_set_cookies( $f_user_id, false );
 
-user_reset_failed_login_count_to_zero( $f_user_id );
-user_reset_lost_password_in_progress_count_to_zero( $f_user_id );
+\Flickerbox\User::reset_failed_login_count_to_zero( $f_user_id );
+\Flickerbox\User::reset_lost_password_in_progress_count_to_zero( $f_user_id );
 
 # fake login so the user can set their password
-auth_attempt_script_login( user_get_field( $f_user_id, 'username' ) );
+auth_attempt_script_login( \Flickerbox\User::get_field( $f_user_id, 'username' ) );
 
-user_increment_login_count( $f_user_id );
+\Flickerbox\User::increment_login_count( $f_user_id );
 
 
 define( 'ACCOUNT_VERIFICATION_INC', true );

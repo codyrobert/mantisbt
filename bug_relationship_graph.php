@@ -37,22 +37,19 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 # If relationship graphs were made disabled, we disallow any access to
 # this script.
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
-if( ON != config_get( 'relationship_graph_enable' ) ) {
+if( ON != \Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
 	\Flickerbox\Access::denied();
 }
 
 $f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
 $f_type			= \Flickerbox\GPC::get_string( 'graph', 'relation' );
-$f_orientation	= \Flickerbox\GPC::get_string( 'orientation', config_get( 'relationship_graph_orientation' ) );
+$f_orientation	= \Flickerbox\GPC::get_string( 'orientation', \Flickerbox\Config::mantis_get( 'relationship_graph_orientation' ) );
 
 if( 'relation' == $f_type ) {
 	$t_graph_type = 'relation';
@@ -70,7 +67,7 @@ if( 'horizontal' == $f_orientation ) {
 	$t_graph_horizontal = false;
 }
 
-$t_bug = bug_get( $f_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 
 if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
@@ -78,11 +75,11 @@ if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	$g_project_override = $t_bug->project_id;
 }
 
-\Flickerbox\Access::ensure_bug_level( config_get( 'view_bug_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ), $f_bug_id );
 
 \Flickerbox\Compress::enable();
 
-\Flickerbox\HTML::page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 ?>
 <br />
 
@@ -102,15 +99,15 @@ if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	<!-- Links -->
 	<td class="right">
 		<!-- View Issue -->
-		<span class="small"><?php print_bracket_link( 'view.php?id=' . $f_bug_id, \Flickerbox\Lang::get( 'view_issue' ) ) ?></span>
+		<span class="small"><?php \Flickerbox\Print_Util::bracket_link( 'view.php?id=' . $f_bug_id, \Flickerbox\Lang::get( 'view_issue' ) ) ?></span>
 
 		<!-- Relation/Dependency Graph Switch -->
 		<span class="small">
 <?php
 		if( $t_graph_relation ) {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency', \Flickerbox\Lang::get( 'dependency_graph' ) );
+			\Flickerbox\Print_Util::bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency', \Flickerbox\Lang::get( 'dependency_graph' ) );
 		} else {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=relation', \Flickerbox\Lang::get( 'relation_graph' ) );
+			\Flickerbox\Print_Util::bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=relation', \Flickerbox\Lang::get( 'relation_graph' ) );
 		}
 ?>
 		</span>
@@ -121,9 +118,9 @@ if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 		<span class="small">
 <?php
 		if( $t_graph_horizontal ) {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=vertical', \Flickerbox\Lang::get( 'vertical' ) );
+			\Flickerbox\Print_Util::bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=vertical', \Flickerbox\Lang::get( 'vertical' ) );
 		} else {
-			print_bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=horizontal', \Flickerbox\Lang::get( 'horizontal' ) );
+			\Flickerbox\Print_Util::bracket_link( 'bug_relationship_graph.php?bug_id=' . $f_bug_id . '&graph=dependency&orientation=horizontal', \Flickerbox\Lang::get( 'horizontal' ) );
 		}
 ?>
 		</span>
@@ -138,12 +135,12 @@ if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	<td colspan="2">
 <?php
 	if( $t_graph_relation ) {
-		$t_graph = relgraph_generate_rel_graph( $f_bug_id );
+		$t_graph = \Flickerbox\Relationship\Graph::generate_rel_graph( $f_bug_id );
 	} else {
-		$t_graph = relgraph_generate_dep_graph( $f_bug_id, $t_graph_horizontal );
+		$t_graph = \Flickerbox\Relationship\Graph::generate_dep_graph( $f_bug_id, $t_graph_horizontal );
 	}
 
-	relgraph_output_map( $t_graph, 'relationship_graph_map' );
+	\Flickerbox\Relationship\Graph::output_map( $t_graph, 'relationship_graph_map' );
 ?>
 		<div class="center relationship-graph">
 			<img src="bug_relationship_graph_img.php?bug_id=<?php echo $f_bug_id ?>&amp;graph=<?php echo $t_graph_type ?>&amp;orientation=<?php echo $t_graph_orientation ?>"

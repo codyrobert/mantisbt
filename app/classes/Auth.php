@@ -46,10 +46,6 @@ namespace Flickerbox;
  */
 
 
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 
 class Auth
@@ -70,7 +66,7 @@ class Auth
 			# check for access enabled
 			#  This also makes sure the cookie is valid
 			if( OFF == \Flickerbox\Current_User::get_field( 'enabled' ) ) {
-				print_header_redirect( 'logout_page.php' );
+				\Flickerbox\Print_Util::header_redirect( 'logout_page.php' );
 			}
 		} else {
 			# not logged in
@@ -81,7 +77,7 @@ class Auth
 				$p_return_page = $_SERVER['REQUEST_URI'];
 			}
 			$p_return_page = \Flickerbox\String::url( $p_return_page );
-			print_header_redirect( 'login_page.php?return=' . $p_return_page );
+			\Flickerbox\Print_Util::header_redirect( 'login_page.php?return=' . $p_return_page );
 		}
 	}
 	
@@ -108,7 +104,7 @@ class Auth
 	 * @access public
 	 */
 	static function prepare_username( $p_username ) {
-		switch( config_get( 'login_method' ) ) {
+		switch( \Flickerbox\Config::mantis_get( 'login_method' ) ) {
 			case BASIC_AUTH:
 				$f_username = $_SERVER['REMOTE_USER'];
 				break;
@@ -140,7 +136,7 @@ class Auth
 	 * @access public
 	 */
 	static function prepare_password( $p_password ) {
-		switch( config_get( 'login_method' ) ) {
+		switch( \Flickerbox\Config::mantis_get( 'login_method' ) ) {
 			case BASIC_AUTH:
 				$f_password = $_SERVER['PHP_AUTH_PW'];
 				break;
@@ -177,7 +173,7 @@ class Auth
 	 * @access private
 	 */
 	static function auto_create_user( $p_username, $p_password ) {
-		$t_login_method = config_get( 'login_method' );
+		$t_login_method = \Flickerbox\Config::mantis_get( 'login_method' );
 	
 		if( $t_login_method == BASIC_AUTH ) {
 			$t_auto_create = true;
@@ -189,14 +185,14 @@ class Auth
 	
 		if( $t_auto_create ) {
 			# attempt to create the user
-			$t_cookie_string = user_create( $p_username, md5( $p_password ) );
+			$t_cookie_string = \Flickerbox\User::create( $p_username, md5( $p_password ) );
 			if( $t_cookie_string === false ) {
 				# it didn't work
 				return false;
 			}
 	
 			# ok, we created the user, get the row again
-			return user_get_id_by_name( $p_username );
+			return \Flickerbox\User::get_id_by_name( $p_username );
 		}
 	
 		return false;
@@ -215,7 +211,7 @@ class Auth
 	 * @access public
 	 */
 	static function attempt_login( $p_username, $p_password, $p_perm_login = false ) {
-		$t_user_id = user_get_id_by_name( $p_username );
+		$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
 	
 		if( $t_user_id === false ) {
 			$t_user_id = \Flickerbox\Auth::auto_create_user( $p_username, $p_password );
@@ -225,31 +221,31 @@ class Auth
 		}
 	
 		# check for disabled account
-		if( !user_is_enabled( $t_user_id ) ) {
+		if( !\Flickerbox\User::is_enabled( $t_user_id ) ) {
 			return false;
 		}
 	
 		# max. failed login attempts achieved...
-		if( !user_is_login_request_allowed( $t_user_id ) ) {
+		if( !\Flickerbox\User::is_login_request_allowed( $t_user_id ) ) {
 			return false;
 		}
 	
 		# check for anonymous login
-		if( !user_is_anonymous( $t_user_id ) ) {
+		if( !\Flickerbox\User::is_anonymous( $t_user_id ) ) {
 			# anonymous login didn't work, so check the password
 	
 			if( !\Flickerbox\Auth::does_password_match( $t_user_id, $p_password ) ) {
-				user_increment_failed_login_count( $t_user_id );
+				\Flickerbox\User::increment_failed_login_count( $t_user_id );
 				return false;
 			}
 		}
 	
 		# ok, we're good to login now
 		# increment login count
-		user_increment_login_count( $t_user_id );
+		\Flickerbox\User::increment_login_count( $t_user_id );
 	
-		user_reset_failed_login_count_to_zero( $t_user_id );
-		user_reset_lost_password_in_progress_count_to_zero( $t_user_id );
+		\Flickerbox\User::reset_failed_login_count_to_zero( $t_user_id );
+		\Flickerbox\User::reset_lost_password_in_progress_count_to_zero( $t_user_id );
 	
 		# set the cookies
 		\Flickerbox\Auth::set_cookies( $t_user_id, $p_perm_login );
@@ -280,9 +276,9 @@ class Auth
 		$t_username = $p_username;
 		$t_password = $p_password;
 	
-		$t_anon_allowed = config_get( 'allow_anonymous_login' );
+		$t_anon_allowed = \Flickerbox\Config::mantis_get( 'allow_anonymous_login' );
 		if( $t_anon_allowed == ON ) {
-			$t_anonymous_account = config_get( 'anonymous_account' );
+			$t_anonymous_account = \Flickerbox\Config::mantis_get( 'anonymous_account' );
 		} else {
 			$t_anonymous_account = '';
 		}
@@ -299,7 +295,7 @@ class Auth
 			$t_password = null;
 		}
 	
-		$t_user_id = user_get_id_by_name( $t_username );
+		$t_user_id = \Flickerbox\User::get_id_by_name( $t_username );
 		if( $t_user_id === false ) {
 			$t_user_id = \Flickerbox\Auth::auto_create_user( $t_username, $p_password );
 			if( $t_user_id === false ) {
@@ -307,7 +303,7 @@ class Auth
 			}
 		}
 	
-		$t_user = user_get_row( $t_user_id );
+		$t_user = \Flickerbox\User::get_row( $t_user_id );
 	
 		# check for disabled account
 		if( OFF == $t_user['enabled'] ) {
@@ -325,7 +321,7 @@ class Auth
 		# With cases like RSS feeds and MantisConnect there is a login per operation, hence, there is no
 		# real significance of incrementing login count.
 		# increment login count
-		# user_increment_login_count( $t_user_id );
+		# \Flickerbox\User::increment_login_count( $t_user_id );
 		# set the cookies
 		$g_script_login_cookie = $t_user['cookie_string'];
 	
@@ -345,7 +341,7 @@ class Auth
 		global $g_cache_current_user_id, $g_cache_cookie_valid;
 	
 		# clear cached userid
-		user_clear_cache( $g_cache_current_user_id );
+		\Flickerbox\User::clear_cache( $g_cache_current_user_id );
 		\Flickerbox\Current_User::set( null );
 		$g_cache_cookie_valid = null;
 	
@@ -354,7 +350,7 @@ class Auth
 			\Flickerbox\Helper::clear_pref_cookies();
 		}
 	
-		if( HTTP_AUTH == config_get( 'login_method' ) ) {
+		if( HTTP_AUTH == \Flickerbox\Config::mantis_get( 'login_method' ) ) {
 			\Flickerbox\Auth::http_set_logout_pending( true );
 		}
 	
@@ -367,7 +363,7 @@ class Auth
 	 * @access public
 	 */
 	static function automatic_logon_bypass_form() {
-		switch( config_get( 'login_method' ) ) {
+		switch( \Flickerbox\Config::mantis_get( 'login_method' ) ) {
 			case HTTP_AUTH:
 				return true;
 		}
@@ -381,7 +377,7 @@ class Auth
 	 * @access public
 	 */
 	static function get_password_max_size() {
-		switch( config_get( 'login_method' ) ) {
+		switch( \Flickerbox\Config::mantis_get( 'login_method' ) ) {
 			# Max password size cannot be bigger than the database field
 			case PLAIN:
 			case BASIC_AUTH:
@@ -403,13 +399,13 @@ class Auth
 	 * @access public
 	 */
 	static function does_password_match( $p_user_id, $p_test_password ) {
-		$t_configured_login_method = config_get( 'login_method' );
+		$t_configured_login_method = \Flickerbox\Config::mantis_get( 'login_method' );
 	
 		if( LDAP == $t_configured_login_method ) {
 			return \Flickerbox\LDAP::authenticate( $p_user_id, $p_test_password );
 		}
 	
-		$t_password = user_get_field( $p_user_id, 'password' );
+		$t_password = \Flickerbox\User::get_field( $p_user_id, 'password' );
 		$t_login_methods = array(
 			MD5,
 			CRYPT,
@@ -431,7 +427,7 @@ class Auth
 				# Check for migration to another login method and test whether the password was encrypted
 				# with our previously insecure implementation of the CRYPT method
 				if( ( $t_login_method != $t_configured_login_method ) || (( CRYPT == $t_configured_login_method ) && utf8_substr( $t_password, 0, 2 ) == utf8_substr( $p_test_password, 0, 2 ) ) ) {
-					user_set_password( $p_user_id, $p_test_password, true );
+					\Flickerbox\User::set_password( $p_user_id, $p_test_password, true );
 				}
 	
 				return true;
@@ -457,7 +453,7 @@ class Auth
 	 * @access public
 	 */
 	static function process_plain_password( $p_password, $p_salt = null, $p_method = null ) {
-		$t_login_method = config_get( 'login_method' );
+		$t_login_method = \Flickerbox\Config::mantis_get( 'login_method' );
 		if( $p_method !== null ) {
 			$t_login_method = $p_method;
 		}
@@ -500,10 +496,10 @@ class Auth
 	 * @access public
 	 */
 	static function generate_confirm_hash( $p_user_id ) {
-		$t_password = user_get_field( $p_user_id, 'password' );
-		$t_last_visit = user_get_field( $p_user_id, 'last_visit' );
+		$t_password = \Flickerbox\User::get_field( $p_user_id, 'password' );
+		$t_last_visit = \Flickerbox\User::get_field( $p_user_id, 'last_visit' );
 	
-		$t_confirm_hash_raw = hash( 'whirlpool', 'confirm_hash' . config_get_global( 'crypto_master_salt' ) . $t_password . $t_last_visit, true );
+		$t_confirm_hash_raw = hash( 'whirlpool', 'confirm_hash' . \Flickerbox\Config::get_global( 'crypto_master_salt' ) . $t_password . $t_last_visit, true );
 		# Note: We truncate the last 8 bits from the hash output so that base64
 		# encoding can be performed without any trailing padding.
 		$t_confirm_hash_base64_encoded = base64_encode( substr( $t_confirm_hash_raw, 0, 63 ) );
@@ -521,9 +517,9 @@ class Auth
 	 * @return void
 	 */
 	static function set_cookies( $p_user_id, $p_perm_login = false ) {
-		$t_cookie_string = user_get_field( $p_user_id, 'cookie_string' );
+		$t_cookie_string = \Flickerbox\User::get_field( $p_user_id, 'cookie_string' );
 	
-		$t_cookie_name = config_get( 'string_cookie' );
+		$t_cookie_name = \Flickerbox\Config::mantis_get( 'string_cookie' );
 	
 		if( $p_perm_login ) {
 			# set permanent cookie (1 year)
@@ -547,8 +543,8 @@ class Auth
 	
 		# clear cookie, if not logged in from script
 		if( $g_script_login_cookie == null ) {
-			$t_cookie_name = config_get( 'string_cookie' );
-			$t_cookie_path = config_get( 'cookie_path' );
+			$t_cookie_name = \Flickerbox\Config::mantis_get( 'string_cookie' );
+			$t_cookie_path = \Flickerbox\Config::mantis_get( 'cookie_path' );
 	
 			\Flickerbox\GPC::clear_cookie( $t_cookie_name, $t_cookie_path );
 			$t_cookies_cleared = true;
@@ -579,10 +575,10 @@ class Auth
 	 * @access public
 	 */
 	static function is_cookie_string_unique( $p_cookie_string ) {
-		$t_query = 'SELECT COUNT(*) FROM {user} WHERE cookie_string=' . db_param();
-		$t_result = db_query( $t_query, array( $p_cookie_string ) );
+		$t_query = 'SELECT COUNT(*) FROM {user} WHERE cookie_string=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_cookie_string ) );
 	
-		$t_count = db_result( $t_result );
+		$t_count = \Flickerbox\Database::result( $t_result );
 	
 		if( $t_count > 0 ) {
 			return false;
@@ -614,20 +610,20 @@ class Auth
 		}
 	
 		# fetch user cookie
-		$t_cookie_name = config_get( 'string_cookie' );
+		$t_cookie_name = \Flickerbox\Config::mantis_get( 'string_cookie' );
 		$t_cookie = \Flickerbox\GPC::get_cookie( $t_cookie_name, '' );
 	
 		# if cookie not found, and anonymous login enabled, use cookie of anonymous account.
 		if( \Flickerbox\Utility::is_blank( $t_cookie ) ) {
-			if( $p_login_anonymous && ON == config_get( 'allow_anonymous_login' ) ) {
+			if( $p_login_anonymous && ON == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
 				if( $g_cache_anonymous_user_cookie_string === null ) {
-					if( function_exists( 'db_is_connected' ) && db_is_connected() ) {
+					if( function_exists( 'db_is_connected' ) && \Flickerbox\Database::is_connected() ) {
 	
 						# get anonymous information if database is available
-						$t_query = 'SELECT id, cookie_string FROM {user} WHERE username = ' . db_param();
-						$t_result = db_query( $t_query, array( config_get( 'anonymous_account' ) ) );
+						$t_query = 'SELECT id, cookie_string FROM {user} WHERE username = ' . \Flickerbox\Database::param();
+						$t_result = \Flickerbox\Database::query( $t_query, array( \Flickerbox\Config::mantis_get( 'anonymous_account' ) ) );
 	
-						if( $t_row = db_fetch_array( $t_result ) ) {
+						if( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 							$t_cookie = $t_row['cookie_string'];
 	
 							$g_cache_anonymous_user_cookie_string = $t_cookie;
@@ -652,9 +648,9 @@ class Auth
 	static function set_tokens( $p_user_id ) {
 		$t_auth_token = \Flickerbox\Token::get( TOKEN_AUTHENTICATED, $p_user_id );
 		if( null == $t_auth_token ) {
-			\Flickerbox\Token::set( TOKEN_AUTHENTICATED, true, config_get_global( 'reauthentication_expiry' ), $p_user_id );
+			\Flickerbox\Token::set( TOKEN_AUTHENTICATED, true, \Flickerbox\Config::get_global( 'reauthentication_expiry' ), $p_user_id );
 		} else {
-			\Flickerbox\Token::touch( $t_auth_token['id'], config_get_global( 'reauthentication_expiry' ) );
+			\Flickerbox\Token::touch( $t_auth_token['id'], \Flickerbox\Config::get_global( 'reauthentication_expiry' ) );
 		}
 	}
 	
@@ -667,20 +663,20 @@ class Auth
 	 * @access public
 	 */
 	static function reauthenticate() {
-		if( config_get_global( 'reauthentication' ) == OFF || BASIC_AUTH == config_get( 'login_method' ) || HTTP_AUTH == config_get( 'login_method' ) ) {
+		if( \Flickerbox\Config::get_global( 'reauthentication' ) == OFF || BASIC_AUTH == \Flickerbox\Config::mantis_get( 'login_method' ) || HTTP_AUTH == \Flickerbox\Config::mantis_get( 'login_method' ) ) {
 			return true;
 		}
 	
 		$t_auth_token = \Flickerbox\Token::get( TOKEN_AUTHENTICATED );
 		if( null != $t_auth_token ) {
-			\Flickerbox\Token::touch( $t_auth_token['id'], config_get_global( 'reauthentication_expiry' ) );
+			\Flickerbox\Token::touch( $t_auth_token['id'], \Flickerbox\Config::get_global( 'reauthentication_expiry' ) );
 			return true;
 		} else {
-			$t_anon_account = config_get( 'anonymous_account' );
-			$t_anon_allowed = config_get( 'allow_anonymous_login' );
+			$t_anon_account = \Flickerbox\Config::mantis_get( 'anonymous_account' );
+			$t_anon_allowed = \Flickerbox\Config::mantis_get( 'allow_anonymous_login' );
 	
 			$t_user_id = \Flickerbox\Auth::get_current_user_id();
-			$t_username = user_get_field( $t_user_id, 'username' );
+			$t_username = \Flickerbox\User::get_field( $t_user_id, 'username' );
 	
 			# check for anonymous login
 			if( ON == $t_anon_allowed && $t_anon_account == $t_username ) {
@@ -731,8 +727,8 @@ class Auth
 			<?php
 				# CSRF protection not required here - user needs to enter password
 				# (confirmation step) before the form is accepted.
-				print_hidden_inputs( $_POST );
-				print_hidden_inputs( $_GET );
+				\Flickerbox\Print_Util::hidden_inputs( $_POST );
+				\Flickerbox\Print_Util::hidden_inputs( $_GET );
 			?>
 	
 				<input type="hidden" name="_authenticate" value="1" />
@@ -766,7 +762,7 @@ class Auth
 		global $g_cache_current_user_id;
 	
 		# fail if DB isn't accessible
-		if( !db_is_connected() ) {
+		if( !\Flickerbox\Database::is_connected() ) {
 			return false;
 		}
 	
@@ -780,17 +776,17 @@ class Auth
 			return true;
 		}
 	
-		if( user_search_cache( 'cookie_string', $p_cookie_string ) ) {
+		if( \Flickerbox\User::search_cache( 'cookie_string', $p_cookie_string ) ) {
 			return true;
 		}
 	
 		# look up cookie in the database to see if it is valid
-		$t_query = 'SELECT * FROM {user} WHERE cookie_string=' . db_param();
-		$t_result = db_query( $t_query, array( $p_cookie_string ) );
+		$t_query = 'SELECT * FROM {user} WHERE cookie_string=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_cookie_string ) );
 	
 		# return true if a matching cookie was found
-		if( 1 == db_num_rows( $t_result ) ) {
-			user_cache_database_result( db_fetch_array( $t_result ) );
+		if( 1 == \Flickerbox\Database::num_rows( $t_result ) ) {
+			\Flickerbox\User::cache_database_result( \Flickerbox\Database::fetch_array( $t_result ) );
 			return true;
 		} else {
 			return false;
@@ -811,17 +807,17 @@ class Auth
 	
 		$t_cookie_string = \Flickerbox\Auth::get_current_user_cookie();
 	
-		if( $t_result = user_search_cache( 'cookie_string', $t_cookie_string ) ) {
+		if( $t_result = \Flickerbox\User::search_cache( 'cookie_string', $t_cookie_string ) ) {
 			$t_user_id = (int)$t_result['id'];
 			\Flickerbox\Current_User::set( $t_user_id );
 			return $t_user_id;
 		}
 	
 		# @todo error with an error saying they aren't logged in? Or redirect to the login page maybe?
-		$t_query = 'SELECT id FROM {user} WHERE cookie_string=' . db_param();
-		$t_result = db_query( $t_query, array( $t_cookie_string ) );
+		$t_query = 'SELECT id FROM {user} WHERE cookie_string=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $t_cookie_string ) );
 	
-		$t_user_id = (int)db_result( $t_result );
+		$t_user_id = (int)\Flickerbox\Database::result( $t_result );
 	
 		# The cookie was invalid. Clear the cookie (to allow people to log in again)
 		# and give them an Access Denied message.
@@ -849,7 +845,7 @@ class Auth
 		header( 'status: 401 Unauthorized' );
 	
 		echo '<p class="center error-msg">' . \Flickerbox\Error::string( ERROR_ACCESS_DENIED ) . '</p>';
-		print_bracket_link( 'main_page.php', \Flickerbox\Lang::get( 'proceed' ) );
+		\Flickerbox\Print_Util::bracket_link( 'main_page.php', \Flickerbox\Lang::get( 'proceed' ) );
 	
 		exit;
 	}
@@ -862,12 +858,12 @@ class Auth
 	 * @return void
 	 */
 	static function http_set_logout_pending( $p_pending ) {
-		$t_cookie_name = config_get( 'logout_cookie' );
+		$t_cookie_name = \Flickerbox\Config::mantis_get( 'logout_cookie' );
 	
 		if( $p_pending ) {
 			\Flickerbox\GPC::set_cookie( $t_cookie_name, '1', false );
 		} else {
-			$t_cookie_path = config_get( 'cookie_path' );
+			$t_cookie_path = \Flickerbox\Config::mantis_get( 'cookie_path' );
 			\Flickerbox\GPC::clear_cookie( $t_cookie_name, $t_cookie_path );
 		}
 	}
@@ -879,7 +875,7 @@ class Auth
 	 * @access public
 	 */
 	static function http_is_logout_pending() {
-		$t_cookie_name = config_get( 'logout_cookie' );
+		$t_cookie_name = \Flickerbox\Config::mantis_get( 'logout_cookie' );
 		$t_cookie = \Flickerbox\GPC::get_cookie( $t_cookie_name, '' );
 	
 		return( $t_cookie > '' );

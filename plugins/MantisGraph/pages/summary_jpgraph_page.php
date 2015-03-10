@@ -24,7 +24,7 @@
  */
 
 require_once( 'core.php' );
-\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
 
 \Flickerbox\HTML::page_top();
 ?>
@@ -36,8 +36,8 @@ require_once( 'core.php' );
 $t_graphs = array( 'summary_graph_cumulative_bydate', 'summary_graph_bydeveloper', 'summary_graph_byreporter',
 		'summary_graph_byseverity', 'summary_graph_bystatus', 'summary_graph_byresolution',
 		'summary_graph_bycategory', 'summary_graph_bypriority' );
-$t_wide = plugin_config_get( 'summary_graphs_per_row' );
-$t_width = plugin_config_get( 'window_width' );
+$t_wide = \Flickerbox\Plugin::config_get( 'summary_graphs_per_row' );
+$t_width = \Flickerbox\Plugin::config_get( 'window_width' );
 $t_graph_width = (int)( ( $t_width - 50 ) / $t_wide );
 
 \Flickerbox\Token::delete( TOKEN_GRAPH );
@@ -58,7 +58,7 @@ $t_graph_width = (int)( ( $t_width - 50 ) / $t_wide );
 			print( "<tr>\n" );
 		}
 		echo '<td>';
-		printf( '<img src="%s.php&amp;width=%d" alt="" />', plugin_page( $t_graphs[$t_pos] ), $t_graph_width );
+		printf( '<img src="%s.php&amp;width=%d" alt="" />', \Flickerbox\Plugin::page( $t_graphs[$t_pos] ), $t_graph_width );
 		echo '</td>';
 		if( ( $t_wide - 1 ) == ( $t_pos % $t_wide ) ) {
 			print( "</tr>\n" );

@@ -37,27 +37,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_user_delete' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 
 $f_user_id	= \Flickerbox\GPC::get_int( 'user_id' );
 
-$t_user = user_get_row( $f_user_id );
+$t_user = \Flickerbox\User::get_row( $f_user_id );
 
 # Ensure that the account to be deleted is of equal or lower access to the
 # current user.
 \Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
 
 # check that we are not deleting the last administrator account
-$t_admin_threshold = config_get_global( 'admin_site_threshold' );
-if( user_is_administrator( $f_user_id ) &&
-	 user_count_level( $t_admin_threshold ) <= 1 ) {
+$t_admin_threshold = \Flickerbox\Config::get_global( 'admin_site_threshold' );
+if( \Flickerbox\User::is_administrator( $f_user_id ) &&
+	 \Flickerbox\User::count_level( $t_admin_threshold ) <= 1 ) {
 	trigger_error( ERROR_USER_CHANGE_LAST_ADMIN, ERROR );
 }
 
@@ -66,14 +63,14 @@ if( user_is_administrator( $f_user_id ) &&
 # of users who have just deleted their own accounts.
 if( auth_get_current_user_id() == $f_user_id ) {
 	\Flickerbox\Form::security_purge( 'manage_user_delete' );
-	print_header_redirect( 'account_delete.php?account_delete_token=' . \Flickerbox\Form::security_token( 'account_delete' ), true, false );
+	\Flickerbox\Print_Util::header_redirect( 'account_delete.php?account_delete_token=' . \Flickerbox\Form::security_token( 'account_delete' ), true, false );
 }
 
 \Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_account_sure_msg' ) .
 	'<br/>' . \Flickerbox\Lang::get( 'username_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_user['username'],
 	\Flickerbox\Lang::get( 'delete_account_button' ) );
 
-user_delete( $f_user_id );
+\Flickerbox\User::delete( $f_user_id );
 
 \Flickerbox\Form::security_purge( 'manage_user_delete' );
 

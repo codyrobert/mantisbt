@@ -37,27 +37,24 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 $f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
 
-$t_bug = bug_get( $f_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
 if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
-if( bug_is_readonly( $f_bug_id ) ) {
+if( \Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
 	\Flickerbox\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-\Flickerbox\Access::ensure_bug_level( config_get( 'bug_reminder_threshold' ), $f_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'bug_reminder_threshold' ), $f_bug_id );
 
-\Flickerbox\HTML::page_top( bug_format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Flickerbox\HTML::page_top( \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 ?>
 
 <?php # Send reminder Form BEGIN ?>
@@ -79,16 +76,16 @@ if( bug_is_readonly( $f_bug_id ) ) {
 	<td>
 		<select name="to[]" multiple="multiple" size="12" class="width20">
 			<?php
-			$t_project_id = bug_get_field( $f_bug_id, 'project_id' );
-			$t_access_level = config_get( 'reminder_receive_threshold' );
+			$t_project_id = \Flickerbox\Bug::get_field( $f_bug_id, 'project_id' );
+			$t_access_level = \Flickerbox\Config::mantis_get( 'reminder_receive_threshold' );
 			if( $t_bug->view_state === VS_PRIVATE ) {
-				$t_private_bug_threshold = config_get( 'private_bug_threshold' );
+				$t_private_bug_threshold = \Flickerbox\Config::mantis_get( 'private_bug_threshold' );
 				if( $t_private_bug_threshold > $t_access_level ) {
 					$t_access_level = $t_private_bug_threshold;
 				}
 			}
 			$t_selected_user_id = 0;
-			print_user_option_list( $t_selected_user_id, $t_project_id, $t_access_level );
+			\Flickerbox\Print_Util::user_option_list( $t_selected_user_id, $t_project_id, $t_access_level );
 			?>
 		</select>
 	</td>
@@ -113,10 +110,10 @@ if( bug_is_readonly( $f_bug_id ) ) {
 	<td>
 		<?php
 			echo \Flickerbox\Lang::get( 'reminder_explain' ) . ' ';
-			if( ON == config_get( 'reminder_recipients_monitor_bug' ) ) {
+			if( ON == \Flickerbox\Config::mantis_get( 'reminder_recipients_monitor_bug' ) ) {
 				echo \Flickerbox\Lang::get( 'reminder_monitor' ) . ' ';
 			}
-			if( ON == config_get( 'store_reminders' ) ) {
+			if( ON == \Flickerbox\Config::mantis_get( 'store_reminders' ) ) {
 				echo \Flickerbox\Lang::get( 'reminder_store' );
 			}
 		?>

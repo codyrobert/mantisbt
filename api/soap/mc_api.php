@@ -195,8 +195,8 @@ function mci_check_login( $p_username, $p_password ) {
  * @return boolean indicating whether user has readonly access
  */
 function mci_has_readonly_access( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-	$t_access_level = user_get_access_level( $p_user_id, $p_project_id );
-	return( $t_access_level >= config_get( 'webservice_readonly_access_level_threshold' ) );
+	$t_access_level = \Flickerbox\User::get_access_level( $p_user_id, $p_project_id );
+	return( $t_access_level >= \Flickerbox\Config::mantis_get( 'webservice_readonly_access_level_threshold' ) );
 }
 
 /**
@@ -206,8 +206,8 @@ function mci_has_readonly_access( $p_user_id, $p_project_id = ALL_PROJECTS ) {
  * @return boolean indicating whether user has readwrite access
  */
 function mci_has_readwrite_access( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-	$t_access_level = user_get_access_level( $p_user_id, $p_project_id );
-	return( $t_access_level >= config_get( 'webservice_readwrite_access_level_threshold' ) );
+	$t_access_level = \Flickerbox\User::get_access_level( $p_user_id, $p_project_id );
+	return( $t_access_level >= \Flickerbox\Config::mantis_get( 'webservice_readwrite_access_level_threshold' ) );
 }
 
 /**
@@ -218,7 +218,7 @@ function mci_has_readwrite_access( $p_user_id, $p_project_id = ALL_PROJECTS ) {
  * @return boolean indicating whether user has the required access
  */
 function mci_has_access( $p_access_level, $p_user_id, $p_project_id = ALL_PROJECTS ) {
-	$t_access_level = user_get_access_level( $p_user_id, $p_project_id );
+	$t_access_level = \Flickerbox\User::get_access_level( $p_user_id, $p_project_id );
 	return( $t_access_level >= (int)$p_access_level );
 }
 
@@ -229,8 +229,8 @@ function mci_has_access( $p_access_level, $p_user_id, $p_project_id = ALL_PROJEC
  * @return boolean indicating whether user has the required access
  */
 function mci_has_administrator_access( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-	$t_access_level = user_get_access_level( $p_user_id, $p_project_id );
-	return( $t_access_level >= config_get( 'webservice_admin_access_level_threshold' ) );
+	$t_access_level = \Flickerbox\User::get_access_level( $p_user_id, $p_project_id );
+	return( $t_access_level >= \Flickerbox\Config::mantis_get( 'webservice_admin_access_level_threshold' ) );
 }
 
 /**
@@ -285,9 +285,9 @@ function mci_get_user_id( stdClass $p_user ) {
 	if( isset( $p_user['id'] ) && (int)$p_user['id'] != 0 ) {
 		$t_user_id = (int)$p_user['id'];
 	} elseif( isset( $p_user['name'] ) ) {
-		$t_user_id = user_get_id_by_name( $p_user['name'] );
+		$t_user_id = \Flickerbox\User::get_id_by_name( $p_user['name'] );
 	} elseif( isset( $p_user['email'] ) ) {
-		$t_user_id = user_get_id_by_email( $p_user['email'] );
+		$t_user_id = \Flickerbox\User::get_id_by_email( $p_user['email'] );
 	}
 
 	return $t_user_id;
@@ -301,7 +301,7 @@ function mci_get_user_id( stdClass $p_user ) {
 function mci_get_user_lang( $p_user_id ) {
 	$t_lang = \Flickerbox\User\Pref::get_pref( $p_user_id, 'language' );
 	if( $t_lang == 'auto' ) {
-		$t_lang = config_get( 'fallback_language' );
+		$t_lang = \Flickerbox\Config::mantis_get( 'fallback_language' );
 	}
 	return $t_lang;
 }
@@ -408,7 +408,7 @@ function mci_sanitize_xml_string ( $p_input ) {
  * @return MantisBT URL terminated by a /.
  */
 function mci_get_mantis_path() {
-	return config_get( 'path' );
+	return \Flickerbox\Config::mantis_get( 'path' );
 }
 
 /**
@@ -419,10 +419,10 @@ function mci_get_mantis_path() {
  * @return string
  */
 function mci_helper_get_enum_element( $p_enum_name, $p_val, $p_lang ) {
-	$t_enum_string = config_get( $p_enum_name . '_enum_string' );
+	$t_enum_string = \Flickerbox\Config::mantis_get( $p_enum_name . '_enum_string' );
 	$t_localized_enum_string = \Flickerbox\Lang::get( $p_enum_name . '_enum_string', $p_lang );
 
-	return \MantisEnum::getLocalizedLabel( $t_enum_string, $t_localized_enum_string, $p_val );
+	return \Flickerbox\MantisEnum::getLocalizedLabel( $t_enum_string, $t_localized_enum_string, $p_val );
 }
 
 /**
@@ -440,7 +440,7 @@ function mci_user_get_accessible_subprojects( $p_user_id, $p_parent_project_id, 
 	}
 
 	$t_result = array();
-	foreach( user_get_accessible_subprojects( $p_user_id, $p_parent_project_id ) as $t_subproject_id ) {
+	foreach( \Flickerbox\User::get_accessible_subprojects( $p_user_id, $p_parent_project_id ) as $t_subproject_id ) {
 		$t_subproject_row = \Flickerbox\Project::cache_row( $t_subproject_id );
 		$t_subproject = array();
 		$t_subproject['id'] = $t_subproject_id;
@@ -502,7 +502,7 @@ function mci_filter_db_get_available_queries( $p_project_id = null, $p_user_id =
 	}
 
 	# If the user doesn't have access rights to stored queries, just return
-	if( !\Flickerbox\Access::has_project_level( config_get( 'stored_query_use_threshold' ) ) ) {
+	if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_use_threshold' ) ) ) {
 		return $t_overall_query_arr;
 	}
 
@@ -510,17 +510,17 @@ function mci_filter_db_get_available_queries( $p_project_id = null, $p_user_id =
 	# first, we can override any query that has the same name as a private query
 	# with that private one
 	$t_query = 'SELECT * FROM {filters}
-					WHERE (project_id=' . db_param() . '
+					WHERE (project_id=' . \Flickerbox\Database::param() . '
 						OR project_id=0)
 					AND name!=\'\'
-					AND (is_public = ' . db_param() . '
-						OR user_id = ' . db_param() . ')
+					AND (is_public = ' . \Flickerbox\Database::param() . '
+						OR user_id = ' . \Flickerbox\Database::param() . ')
 					ORDER BY is_public DESC, name ASC';
-	$t_result = db_query( $t_query, array( $t_project_id, true, $t_user_id ) );
-	$t_query_count = db_num_rows( $t_result );
+	$t_result = \Flickerbox\Database::query( $t_query, array( $t_project_id, true, $t_user_id ) );
+	$t_query_count = \Flickerbox\Database::num_rows( $t_result );
 
 	for( $i = 0;$i < $t_query_count;$i++ ) {
-		$t_row = db_fetch_array( $t_result );
+		$t_row = \Flickerbox\Database::fetch_array( $t_result );
 
 		$t_filter_detail = explode( '#', $t_row['filter_string'], 2 );
 		if( !isset($t_filter_detail[1]) ) {
@@ -575,7 +575,7 @@ function mci_project_version_as_array( array $p_version ) {
  * @return String the string time entry to be added to the bugnote, in 'HH:mm' format
  */
 function mci_get_time_tracking_from_note( $p_issue_id, array $p_note ) {
-	if( !\Flickerbox\Access::has_bug_level( config_get( 'time_tracking_view_threshold' ), $p_issue_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_view_threshold' ), $p_issue_id ) ) {
 		return '00:00';
 	}
 
@@ -583,7 +583,7 @@ function mci_get_time_tracking_from_note( $p_issue_id, array $p_note ) {
 		return '00:00';
 	}
 
-	return db_minutes_to_hhmm( $p_note['time_tracking'] );
+	return \Flickerbox\Database::minutes_to_hhmm( $p_note['time_tracking'] );
 }
 
 /**
@@ -609,7 +609,7 @@ function mc_error_handler( $p_type, $p_error, $p_file, $p_line, array $p_context
 
 	# flush any language overrides to return to user's natural default
 	if( function_exists( 'db_is_connected' ) ) {
-		if( db_is_connected() ) {
+		if( \Flickerbox\Database::is_connected() ) {
 			\Flickerbox\Lang::push( \Flickerbox\Lang::get_default() );
 		}
 	}
@@ -732,7 +732,7 @@ function mci_soap_fault_login_failed() {
  */
 function mci_soap_fault_access_denied( $p_user_id = 0, $p_detail = '' ) {
 	if( $p_user_id ) {
-		$t_user_name = user_get_name( $p_user_id );
+		$t_user_name = \Flickerbox\User::get_name( $p_user_id );
 		$t_reason = 'Access denied for user '. $t_user_name . '.';
 	} else {
 		$t_reason = 'Access denied';

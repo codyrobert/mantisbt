@@ -38,14 +38,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'proj_doc_update' );
 
 # Check if project documentation feature is enabled.
-if( OFF == config_get( 'enable_project_documentation' ) ||
+if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ||
 	!\Flickerbox\File::is_uploading_enabled() ||
 	!\Flickerbox\File::allow_project_upload() ) {
 	\Flickerbox\Access::denied();
@@ -58,7 +55,7 @@ $f_file = gpc_get_file( 'file' );
 
 $t_project_id = \Flickerbox\File::get_field( $f_file_id, 'project_id', 'project' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'upload_project_file_threshold' ), $t_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id );
 
 if( \Flickerbox\Utility::is_blank( $f_title ) ) {
 	\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'title' ) );
@@ -78,12 +75,12 @@ if( isset( $f_file['tmp_name'] ) && is_uploaded_file( $f_file['tmp_name'] ) ) {
 
 	# prepare variables for insertion
 	$t_file_size = filesize( $f_file['tmp_name'] );
-	$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), config_get( 'max_file_size' ) );
+	$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
 	if( $t_file_size > $t_max_file_size ) {
 		trigger_error( ERROR_FILE_TOO_BIG, ERROR );
 	}
 
-	$t_method = config_get( 'file_upload_method' );
+	$t_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
 	switch( $t_method ) {
 		case DISK:
 			\Flickerbox\File::ensure_valid_upload_path( $t_file_path );
@@ -94,27 +91,27 @@ if( isset( $f_file['tmp_name'] ) && is_uploaded_file( $f_file['tmp_name'] ) ) {
 			if( !move_uploaded_file( $f_file['tmp_name'], $t_disk_file_name ) ) {
 				trigger_error( ERROR_FILE_MOVE_FAILED, ERROR );
 			}
-			chmod( $t_disk_file_name, config_get( 'attachments_file_permissions' ) );
+			chmod( $t_disk_file_name, \Flickerbox\Config::mantis_get( 'attachments_file_permissions' ) );
 
 			$c_content = '';
 			break;
 		case DATABASE:
-			$c_content = db_prepare_binary_string( fread( fopen( $f_file['tmp_name'], 'rb' ), $f_file['size'] ) );
+			$c_content = \Flickerbox\Database::prepare_binary_string( fread( fopen( $f_file['tmp_name'], 'rb' ), $f_file['size'] ) );
 			break;
 		default:
 			# @todo Such errors should be checked in the admin checks
 			trigger_error( ERROR_GENERIC, ERROR );
 	}
 	$t_query = 'UPDATE {project_file}
-		SET title=' . db_param() . ', description=' . db_param() . ', date_added=' . db_param() . ',
-			filename=' . db_param() . ', filesize=' . db_param() . ', file_type=' .db_param() . ', content=' .db_param() . '
-			WHERE id=' . db_param();
-	$t_result = db_query( $t_query, array( $f_title, $f_description, db_now(), $f_file['name'], $t_file_size, $f_file['type'], $c_content, $f_file_id ) );
+		SET title=' . \Flickerbox\Database::param() . ', description=' . \Flickerbox\Database::param() . ', date_added=' . \Flickerbox\Database::param() . ',
+			filename=' . \Flickerbox\Database::param() . ', filesize=' . \Flickerbox\Database::param() . ', file_type=' .\Flickerbox\Database::param() . ', content=' .\Flickerbox\Database::param() . '
+			WHERE id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $f_title, $f_description, \Flickerbox\Database::now(), $f_file['name'], $t_file_size, $f_file['type'], $c_content, $f_file_id ) );
 } else {
 	$t_query = 'UPDATE {project_file}
-			SET title=' . db_param() . ', description=' . db_param() . '
-			WHERE id=' . db_param();
-	$t_result = db_query( $t_query, array( $f_title, $f_description, $f_file_id ) );
+			SET title=' . \Flickerbox\Database::param() . ', description=' . \Flickerbox\Database::param() . '
+			WHERE id=' . \Flickerbox\Database::param();
+	$t_result = \Flickerbox\Database::query( $t_query, array( $f_title, $f_description, $f_file_id ) );
 }
 
 if( !$t_result ) {

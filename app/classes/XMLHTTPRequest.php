@@ -35,9 +35,6 @@ namespace Flickerbox;
  * @uses profile_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 
 class XMLHTTPRequest

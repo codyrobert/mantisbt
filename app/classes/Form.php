@@ -37,7 +37,6 @@ namespace Flickerbox;
  * @uses session_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Form
@@ -62,7 +61,7 @@ class Form
 	 * @return string Security token string
 	 */
 	static function security_token( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == config_get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
 			return '';
 		}
 	
@@ -98,7 +97,7 @@ class Form
 	 * @return string Hidden form element to output
 	 */
 	static function security_field( $p_form_name, $p_security_token = null ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == config_get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
 			return '';
 		}
 	
@@ -123,7 +122,7 @@ class Form
 	 * @return string Hidden form element to output
 	 */
 	static function security_param( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == config_get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
 			return '';
 		}
 	
@@ -145,7 +144,7 @@ class Form
 	 * @return boolean Form is valid
 	 */
 	static function security_validate( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == config_get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
 			return true;
 		}
 	
@@ -188,7 +187,7 @@ class Form
 	 * @return void
 	 */
 	static function security_purge( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == config_get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
 			return;
 		}
 	

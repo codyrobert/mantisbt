@@ -35,7 +35,6 @@ namespace Flickerbox;
  * @uses user_pref_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Date
@@ -176,11 +175,11 @@ class Date
 	 */
 	static function print_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0 ) {
 		$t_current = date( 'Y' );
-		$t_forward_years = config_get( 'forward_year_count' );
+		$t_forward_years = \Flickerbox\Config::mantis_get( 'forward_year_count' );
 	
 		$t_start_year = $p_start;
 		if( $t_start_year == 0 ) {
-			$t_backward_years = config_get( 'backward_year_count' );
+			$t_backward_years = \Flickerbox\Config::mantis_get( 'backward_year_count' );
 			$t_start_year = $t_current - $t_backward_years;
 		}
 	

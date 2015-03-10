@@ -37,10 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'email_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'signup' );
 
@@ -58,12 +54,12 @@ if( auth_is_user_authenticated() ) {
 }
 
 # Check to see if signup is allowed
-if( OFF == config_get_global( 'allow_signup' ) ) {
-	print_header_redirect( 'login_page.php' );
+if( OFF == \Flickerbox\Config::get_global( 'allow_signup' ) ) {
+	\Flickerbox\Print_Util::header_redirect( 'login_page.php' );
 	exit;
 }
 
-if( ON == config_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 	&&
+if( ON == \Flickerbox\Config::mantis_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 	&&
 			\Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() ) ) {
 	# captcha image requires GD library and related option to ON
 	require_lib( 'securimage/securimage.php' );
@@ -74,11 +70,11 @@ if( ON == config_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_vers
 	}
 }
 
-email_ensure_not_disposable( $f_email );
+\Flickerbox\Email::ensure_not_disposable( $f_email );
 
 # notify the selected group a new user has signed-up
-if( user_signup( $f_username, $f_email ) ) {
-	email_notify_new_account( $f_username, $f_email );
+if( \Flickerbox\User::signup( $f_username, $f_email ) ) {
+	\Flickerbox\Email::notify_new_account( $f_username, $f_email );
 }
 
 \Flickerbox\Form::security_purge( 'signup' );
@@ -106,7 +102,7 @@ if( user_signup( $f_username, $f_email ) ) {
 
 <br />
 <div class="center">
-	<?php print_bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'proceed' ) ); ?>
+	<?php \Flickerbox\Print_Util::bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'proceed' ) ); ?>
 </div>
 
 <?php

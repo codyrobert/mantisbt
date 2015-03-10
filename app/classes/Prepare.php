@@ -36,8 +36,6 @@ namespace Flickerbox;
  * @uses version_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'user_api.php' );
 
 
 class Prepare
@@ -50,7 +48,7 @@ class Prepare
 	 * @return string
 	 */
 	static function email_link( $p_email, $p_text ) {
-		if( !\Flickerbox\Access::has_project_level( config_get( 'show_user_email_threshold' ) ) ) {
+		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
 			return \Flickerbox\String::display_line( $p_text );
 		}
 	
@@ -74,9 +72,9 @@ class Prepare
 			return '';
 		}
 	
-		$t_username = user_get_name( $p_user_id );
+		$t_username = \Flickerbox\User::get_name( $p_user_id );
 		$t_username = \Flickerbox\String::display_line( $t_username );
-		if( user_exists( $p_user_id ) && user_get_field( $p_user_id, 'enabled' ) ) {
+		if( \Flickerbox\User::exists( $p_user_id ) && \Flickerbox\User::get_field( $p_user_id, 'enabled' ) ) {
 			return '<a class="user" href="' . \Flickerbox\String::sanitize_url( 'view_user_page.php?id=' . $p_user_id, true ) . '">' . $t_username . '</a>';
 		} else {
 			return '<del class="user">' . $t_username . '</del>';
@@ -98,8 +96,8 @@ class Prepare
 	
 		$t_version_text = \Flickerbox\Version::full_name( $p_version_id, null, $p_project_id );
 	
-		if( \Flickerbox\Access::has_project_level( config_get( 'show_version_dates_threshold' ), $p_project_id ) ) {
-			$t_short_date_format = config_get( 'short_date_format' );
+		if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_version_dates_threshold' ), $p_project_id ) ) {
+			$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
 	
 			$t_version = \Flickerbox\Version::get( $p_version_id );
 			$t_version_text .= ' (' . date( $t_short_date_format, $t_version->date_order ) . ')';

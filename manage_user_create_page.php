@@ -35,14 +35,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 
-$t_ldap = ( LDAP == config_get( 'login_method' ) );
+$t_ldap = ( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) );
 
 \Flickerbox\HTML::page_top();
 
@@ -60,22 +58,22 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 				<span class="input"><input type="text" id="user-username" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" /></span>
 				<span class="label-style"></span>
 			</div><?php
-			if( !$t_ldap || config_get( 'use_ldap_realname' ) == OFF ) { ?>
+			if( !$t_ldap || \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) == OFF ) { ?>
 			<div class="field-container">
 				<label for="user-realname"><span><?php echo \Flickerbox\Lang::get( 'realname' ) ?></span></label>
 				<span class="input"><input type="text" id="user-realname" name="realname" size="32" maxlength="<?php echo DB_FIELD_SIZE_REALNAME;?>" /></span>
 				<span class="label-style"></span>
 			</div><?php
 			}
-			if( !$t_ldap || config_get( 'use_ldap_email' ) == OFF ) { ?>
+			if( !$t_ldap || \Flickerbox\Config::mantis_get( 'use_ldap_email' ) == OFF ) { ?>
 			<div class="field-container">
 				<label for="email-field"><span><?php echo \Flickerbox\Lang::get( 'email' ) ?></span></label>
-				<span class="input"><?php print_email_input( 'email', '' ) ?></span>
+				<span class="input"><?php \Flickerbox\Print_Util::email_input( 'email', '' ) ?></span>
 				<span class="label-style"></span>
 			</div><?php
 			}
 
-			if( OFF == config_get( 'send_reset_password' ) ) { ?>
+			if( OFF == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) { ?>
 			<div class="field-container">
 				<label for="user-password"><span><?php echo \Flickerbox\Lang::get( 'password' ) ?></span></label>
 				<span class="input"><input type="password" id="user-password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" /></span>
@@ -91,7 +89,7 @@ $t_ldap = ( LDAP == config_get( 'login_method' ) );
 				<label for="user-access-level"><span><?php echo \Flickerbox\Lang::get( 'access_level' ) ?></span></label>
 				<span class="select">
 					<select id="user-access-level" name="access_level">
-						<?php print_project_access_levels_option_list( config_get( 'default_new_account_access_level' ) ) ?>
+						<?php \Flickerbox\Print_Util::project_access_levels_option_list( \Flickerbox\Config::mantis_get( 'default_new_account_access_level' ) ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

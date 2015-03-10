@@ -35,9 +35,7 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_custom_field_update' );
 
@@ -50,8 +48,8 @@ $f_sequence	= \Flickerbox\GPC::get_int( 'sequence' );
 # We should check both since we are in the project section and an
 #  admin might raise the first threshold and not realize they need
 #  to raise the second
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
-\Flickerbox\Access::ensure_project_level( config_get( 'custom_field_link_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'custom_field_link_threshold' ), $f_project_id );
 
 custom_field_set_sequence( $f_field_id, $f_project_id, $f_sequence );
 

@@ -39,10 +39,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 \Flickerbox\HTML::require_css( 'login.css' );
 
 $f_error                 = \Flickerbox\GPC::get_bool( 'error' );
@@ -51,22 +47,22 @@ $f_return                = \Flickerbox\String::sanitize_url( \Flickerbox\GPC::ge
 $f_username              = \Flickerbox\GPC::get_string( 'username', '' );
 $f_perm_login            = \Flickerbox\GPC::get_bool( 'perm_login', false );
 $f_secure_session        = \Flickerbox\GPC::get_bool( 'secure_session', false );
-$f_secure_session_cookie = \Flickerbox\GPC::get_cookie( config_get_global( 'cookie_prefix' ) . '_secure_session', null );
+$f_secure_session_cookie = \Flickerbox\GPC::get_cookie( \Flickerbox\Config::get_global( 'cookie_prefix' ) . '_secure_session', null );
 
 # Set username to blank if invalid to prevent possible XSS exploits
-if( !user_is_name_valid( $f_username ) ) {
+if( !\Flickerbox\User::is_name_valid( $f_username ) ) {
 	$f_username = '';
 }
 
-$t_session_validation = ( ON == config_get_global( 'session_validation' ) );
+$t_session_validation = ( ON == \Flickerbox\Config::get_global( 'session_validation' ) );
 
 # If user is already authenticated and not anonymous
 if( auth_is_user_authenticated() && !\Flickerbox\Current_User::is_anonymous() ) {
 	# If return URL is specified redirect to it; otherwise use default page
 	if( !\Flickerbox\Utility::is_blank( $f_return ) ) {
-		print_header_redirect( $f_return, false, false, true );
+		\Flickerbox\Print_Util::header_redirect( $f_return, false, false, true );
 	} else {
-		print_header_redirect( config_get( 'default_home_page' ) );
+		\Flickerbox\Print_Util::header_redirect( \Flickerbox\Config::mantis_get( 'default_home_page' ) );
 	}
 }
 
@@ -74,7 +70,7 @@ if( auth_is_user_authenticated() && !\Flickerbox\Current_User::is_anonymous() ) 
 if( auth_automatic_logon_bypass_form() ) {
 	$t_uri = 'login.php';
 
-	if( ON == config_get( 'allow_anonymous_login' ) ) {
+	if( ON == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
 		$t_uri = 'login_anon.php';
 	}
 
@@ -82,7 +78,7 @@ if( auth_automatic_logon_bypass_form() ) {
 		$t_uri .= '?return=' . \Flickerbox\String::url( $f_return );
 	}
 
-	print_header_redirect( $t_uri );
+	\Flickerbox\Print_Util::header_redirect( $t_uri );
 	exit;
 }
 
@@ -132,11 +128,11 @@ if( $f_error || $f_cookie_error ) {
 
 $t_warnings = array();
 $t_upgrade_required = false;
-if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ ) .'/admin' ) ) {
+if( \Flickerbox\Config::get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ ) .'/admin' ) ) {
 	# Generate a warning if default user administrator/root is valid.
-	$t_admin_user_id = user_get_id_by_name( 'administrator' );
+	$t_admin_user_id = \Flickerbox\User::get_id_by_name( 'administrator' );
 	if( $t_admin_user_id !== false ) {
-		if( user_is_enabled( $t_admin_user_id ) && auth_does_password_match( $t_admin_user_id, 'root' ) ) {
+		if( \Flickerbox\User::is_enabled( $t_admin_user_id ) && auth_does_password_match( $t_admin_user_id, 'root' ) ) {
 			$t_warnings[] = \Flickerbox\Lang::get( 'warning_default_administrator_account_present' );
 		}
 	}
@@ -155,11 +151,11 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 	}
 
 	$t_config = 'show_detailed_errors';
-	if( config_get( $t_config ) != OFF ) {
+	if( \Flickerbox\Config::mantis_get( $t_config ) != OFF ) {
 		$t_warnings[] = debug_setting_message( 'security', $t_config, 'OFF' );
 	}
 	$t_config = 'display_errors';
-	$t_errors = config_get_global( $t_config );
+	$t_errors = \Flickerbox\Config::get_global( $t_config );
 	if( $t_errors[E_USER_ERROR] != DISPLAY_ERROR_HALT ) {
 		$t_warnings[] = debug_setting_message(
 			'integrity',
@@ -169,7 +165,7 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 
 	# since admin directory and db_upgrade lists are available check for missing db upgrades
 	# if db version is 0, we do not have a valid database.
-	$t_db_version = config_get( 'database_version', 0 );
+	$t_db_version = \Flickerbox\Config::mantis_get( 'database_version', 0 );
 	if( $t_db_version == 0 ) {
 		$t_warnings[] = \Flickerbox\Lang::get( 'error_database_no_schema_version' );
 	}
@@ -210,21 +206,21 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 			# CSRF protection not required here - form does not result in modifications
 			echo '<ul id="login-links">';
 
-			if( ON == config_get( 'allow_anonymous_login' ) ) {
+			if( ON == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
 				echo '<li><a href="login_anon.php?return=' . \Flickerbox\String::url( $f_return ) . '">' . \Flickerbox\Lang::get( 'login_anonymously' ) . '</a></li>';
 			}
 
-			if( ( ON == config_get_global( 'allow_signup' ) ) &&
-				( LDAP != config_get_global( 'login_method' ) ) &&
-				( ON == config_get( 'enable_email_notification' ) )
+			if( ( ON == \Flickerbox\Config::get_global( 'allow_signup' ) ) &&
+				( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
+				( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) )
 			) {
 				echo '<li><a href="signup_page.php">', \Flickerbox\Lang::get( 'signup_link' ), '</a></li>';
 			}
 			# lost password feature disabled or reset password via email disabled -> stop here!
-			if( ( LDAP != config_get_global( 'login_method' ) ) &&
-				( ON == config_get( 'lost_password_feature' ) ) &&
-				( ON == config_get( 'send_reset_password' ) ) &&
-				( ON == config_get( 'enable_email_notification' ) ) ) {
+			if( ( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
+				( ON == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ) &&
+				( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) &&
+				( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
 				echo '<li><a href="lost_pwd_page.php">', \Flickerbox\Lang::get( 'lost_password_link' ), '</a></li>';
 			}
 			?>
@@ -239,7 +235,7 @@ if( config_get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ 
 				<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" class="<?php echo $t_password_field_autofocus ?>" /></span>
 				<span class="label-style"></span>
 			</div>
-			<?php if( ON == config_get( 'allow_permanent_cookie' ) ) { ?>
+			<?php if( ON == \Flickerbox\Config::mantis_get( 'allow_permanent_cookie' ) ) { ?>
 			<div class="field-container">
 				<label for="remember-login"><span><?php echo \Flickerbox\Lang::get( 'save_login' ) ?></span></label>
 				<span class="input"><input id="remember-login" type="checkbox" name="perm_login" <?php echo ( $f_perm_login ? 'checked="checked" ' : '' ) ?>/></span>

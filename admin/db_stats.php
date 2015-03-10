@@ -25,7 +25,7 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
 
 \Flickerbox\HTML::page_top();
 
@@ -52,8 +52,8 @@ function print_info_row( $p_description, $p_value ) {
 function helper_table_row_count( $p_table ) {
 	$t_table = $p_table;
 	$t_query = 'SELECT COUNT(*) FROM ' . $t_table;
-	$t_result = db_query( $t_query );
-	$t_count = db_result( $t_result );
+	$t_result = \Flickerbox\Database::query( $t_query );
+	$t_count = \Flickerbox\Database::result( $t_result );
 
 	return $t_count;
 }
@@ -69,8 +69,8 @@ function helper_table_row_count( $p_table ) {
 		<thead>
 		<tbody>
 <?php
-foreach( db_get_table_list() as $t_table ) {
-	if( db_table_exists( $t_table ) ) {
+foreach( \Flickerbox\Database::get_table_list() as $t_table ) {
+	if( \Flickerbox\Database::table_exists( $t_table ) ) {
 			print_info_row( $t_table, helper_table_row_count( $t_table ) );
 	}
 }

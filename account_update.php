@@ -41,10 +41,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'email_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'account_update' );
 
@@ -74,28 +70,28 @@ $t_email_updated = false;
 $t_password_updated = false;
 $t_realname_updated = false;
 
-$t_ldap = ( LDAP == config_get( 'login_method' ) );
+$t_ldap = ( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) );
 
 # Update email (but only if LDAP isn't being used)
-if( !( $t_ldap && config_get( 'use_ldap_email' ) ) ) {
-	email_ensure_valid( $f_email );
-	email_ensure_not_disposable( $f_email );
+if( !( $t_ldap && \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) ) {
+	\Flickerbox\Email::ensure_valid( $f_email );
+	\Flickerbox\Email::ensure_not_disposable( $f_email );
 
-	if( $f_email != user_get_email( $t_user_id ) ) {
-		user_set_email( $t_user_id, $f_email );
+	if( $f_email != \Flickerbox\User::get_email( $t_user_id ) ) {
+		\Flickerbox\User::set_email( $t_user_id, $f_email );
 		$t_email_updated = true;
 	}
 }
 
 # Update real name (but only if LDAP isn't being used)
-if( !( $t_ldap && config_get( 'use_ldap_realname' ) ) ) {
+if( !( $t_ldap && \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) ) {
 	# strip extra spaces from real name
 	$t_realname = string_normalize( $f_realname );
-	if( $t_realname != user_get_field( $t_user_id, 'realname' ) ) {
+	if( $t_realname != \Flickerbox\User::get_field( $t_user_id, 'realname' ) ) {
 		# checks for problems with realnames
-		$t_username = user_get_field( $t_user_id, 'username' );
-		user_ensure_realname_unique( $t_username, $t_realname );
-		user_set_realname( $t_user_id, $t_realname );
+		$t_username = \Flickerbox\User::get_field( $t_user_id, 'username' );
+		\Flickerbox\User::ensure_realname_unique( $t_username, $t_realname );
+		\Flickerbox\User::set_realname( $t_user_id, $t_realname );
 		$t_realname_updated = true;
 	}
 }
@@ -110,7 +106,7 @@ if( !\Flickerbox\Utility::is_blank( $f_password ) ) {
 		}
 
 		if( !auth_does_password_match( $t_user_id, $f_password ) ) {
-			user_set_password( $t_user_id, $f_password );
+			\Flickerbox\User::set_password( $t_user_id, $f_password );
 			$t_password_updated = true;
 		}
 	}

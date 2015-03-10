@@ -37,8 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_cat_update' );
 
@@ -49,7 +47,7 @@ $f_project_id		= \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
 $f_name				= trim( \Flickerbox\GPC::get_string( 'name' ) );
 $f_assigned_to		= \Flickerbox\GPC::get_int( 'assigned_to', 0 );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
 if( \Flickerbox\Utility::is_blank( $f_name ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );

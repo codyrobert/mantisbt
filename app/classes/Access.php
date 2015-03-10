@@ -42,12 +42,6 @@ namespace Flickerbox;
  * @uses user_api.php
  */
 
-require_api( 'bug_api.php' );
-require_api( 'bugnote_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 
 class Access
@@ -68,7 +62,7 @@ class Access
 					$t_return_page .= '?' . $_SERVER['QUERY_STRING'];
 				}
 				$t_return_page = \Flickerbox\String::url( \Flickerbox\String::sanitize_url( $t_return_page ) );
-				print_header_redirect( 'login_page.php?return=' . $t_return_page );
+				\Flickerbox\Print_Util::header_redirect( 'login_page.php?return=' . $t_return_page );
 			}
 		} else {
 			if( \Flickerbox\Current_User::is_anonymous() ) {
@@ -79,15 +73,15 @@ class Access
 					}
 					$t_return_page = \Flickerbox\String::url( \Flickerbox\String::sanitize_url( $t_return_page ) );
 					echo '<p class="center">' . \Flickerbox\Error::string( ERROR_ACCESS_DENIED ) . '</p><p class="center">';
-					print_bracket_link( \Flickerbox\Helper::mantis_url( 'login_page.php' ) . '?return=' . $t_return_page, \Flickerbox\Lang::get( 'click_to_login' ) );
+					\Flickerbox\Print_Util::bracket_link( \Flickerbox\Helper::mantis_url( 'login_page.php' ) . '?return=' . $t_return_page, \Flickerbox\Lang::get( 'click_to_login' ) );
 					echo '</p><p class="center">';
-					print_bracket_link( \Flickerbox\Helper::mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
+					\Flickerbox\Print_Util::bracket_link( \Flickerbox\Helper::mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
 					echo '</p>';
 				}
 			} else {
 				echo '<p class="center">' . \Flickerbox\Error::string( ERROR_ACCESS_DENIED ) . '</p>';
 				echo '<p class="center">';
-				print_bracket_link( \Flickerbox\Helper::mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
+				\Flickerbox\Print_Util::bracket_link( \Flickerbox\Helper::mantis_url( 'main_page.php' ), \Flickerbox\Lang::get( 'proceed' ) );
 				echo '</p>';
 			}
 		}
@@ -108,9 +102,9 @@ class Access
 		}
 	
 		if( !in_array( (int)$p_project_id, $g_cache_access_matrix_project_ids ) ) {
-			$t_query = 'SELECT user_id, access_level FROM {project_user_list} WHERE project_id=' . db_param();
-			$t_result = db_query( $t_query, array( (int)$p_project_id ) );
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			$t_query = 'SELECT user_id, access_level FROM {project_user_list} WHERE project_id=' . \Flickerbox\Database::param();
+			$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				$g_cache_access_matrix[(int)$t_row['user_id']][(int)$p_project_id] = (int)$t_row['access_level'];
 			}
 	
@@ -138,13 +132,13 @@ class Access
 		global $g_cache_access_matrix, $g_cache_access_matrix_user_ids;
 	
 		if( !in_array( (int)$p_user_id, $g_cache_access_matrix_user_ids ) ) {
-			$t_query = 'SELECT project_id, access_level FROM {project_user_list} WHERE user_id=' . db_param();
-			$t_result = db_query( $t_query, array( (int)$p_user_id ) );
+			$t_query = 'SELECT project_id, access_level FROM {project_user_list} WHERE user_id=' . \Flickerbox\Database::param();
+			$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_user_id ) );
 	
 			# make sure we always have an array to return
 			$g_cache_access_matrix[(int)$p_user_id] = array();
 	
-			while( $t_row = db_fetch_array( $t_result ) ) {
+			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 				$g_cache_access_matrix[(int)$p_user_id][(int)$t_row['project_id']] = (int)$t_row['access_level'];
 			}
 	
@@ -192,7 +186,7 @@ class Access
 			return false;
 		}
 	
-		return user_get_field( $p_user_id, 'access_level' );
+		return \Flickerbox\User::get_field( $p_user_id, 'access_level' );
 	}
 	
 	/**
@@ -259,7 +253,7 @@ class Access
 	
 		$t_global_access_level = \Flickerbox\Access::get_global_level( $p_user_id );
 	
-		if( ALL_PROJECTS == $p_project_id || user_is_administrator( $p_user_id ) ) {
+		if( ALL_PROJECTS == $p_project_id || \Flickerbox\User::is_administrator( $p_user_id ) ) {
 			return $t_global_access_level;
 		} else {
 			$t_project_access_level = \Flickerbox\Access::get_local_level( $p_user_id, $p_project_id );
@@ -272,7 +266,7 @@ class Access
 				# If the project is private and the user isn't listed, then they
 				# must have the private_project_threshold access level to get in.
 				if( VS_PRIVATE == $t_project_view_state ) {
-					if( \Flickerbox\Access::compare_level( $t_global_access_level, config_get( 'private_project_threshold', null, null, ALL_PROJECTS ) ) ) {
+					if( \Flickerbox\Access::compare_level( $t_global_access_level, \Flickerbox\Config::mantis_get( 'private_project_threshold', null, null, ALL_PROJECTS ) ) ) {
 						return $t_global_access_level;
 					} else {
 						return ANYBODY;
@@ -381,13 +375,13 @@ class Access
 			return false;
 		}
 	
-		$t_project_id = bug_get_field( $p_bug_id, 'project_id' );
-		$t_bug_is_user_reporter = bug_is_user_reporter( $p_bug_id, $p_user_id );
+		$t_project_id = \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' );
+		$t_bug_is_user_reporter = \Flickerbox\Bug::is_user_reporter( $p_bug_id, $p_user_id );
 		$t_access_level = \Flickerbox\Access::get_project_level( $t_project_id, $p_user_id );
 	
 		# check limit_Reporter (Issue #4769)
 		# reporters can view just issues they reported
-		$t_limit_reporters = config_get( 'limit_reporters', null, $p_user_id, $t_project_id );
+		$t_limit_reporters = \Flickerbox\Config::mantis_get( 'limit_reporters', null, $p_user_id, $t_project_id );
 		if( $t_limit_reporters && !$t_bug_is_user_reporter ) {
 			# Here we only need to check that the current user has an access level
 			# higher than the lowest needed to report issues (report_bug_threshold).
@@ -395,7 +389,7 @@ class Access
 			# build a static array holding that threshold for each project
 			static $s_thresholds = array();
 			if( !isset( $s_thresholds[$t_project_id] ) ) {
-				$t_report_bug_threshold = config_get( 'report_bug_threshold', null, $p_user_id, $t_project_id );
+				$t_report_bug_threshold = \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, $p_user_id, $t_project_id );
 				if( !is_array( $t_report_bug_threshold ) ) {
 					$s_thresholds[$t_project_id] = $t_report_bug_threshold + 1;
 				} else if( empty( $t_report_bug_threshold ) ) {
@@ -412,8 +406,8 @@ class Access
 	
 		# If the bug is private and the user is not the reporter, then
 		# they must also have higher access than private_bug_threshold
-		if( !$t_bug_is_user_reporter && bug_get_field( $p_bug_id, 'view_state' ) == VS_PRIVATE ) {
-			$t_private_bug_threshold = config_get( 'private_bug_threshold', null, $p_user_id, $t_project_id );
+		if( !$t_bug_is_user_reporter && \Flickerbox\Bug::get_field( $p_bug_id, 'view_state' ) == VS_PRIVATE ) {
+			$t_private_bug_threshold = \Flickerbox\Config::mantis_get( 'private_bug_threshold', null, $p_user_id, $t_project_id );
 			return \Flickerbox\Access::compare_level( $t_access_level, $t_private_bug_threshold )
 				&& \Flickerbox\Access::compare_level( $t_access_level, $p_access_level );
 		}
@@ -453,13 +447,13 @@ class Access
 			$p_user_id = \Flickerbox\Auth::get_current_user_id();
 		}
 	
-		$t_bug_id = bugnote_get_field( $p_bugnote_id, 'bug_id' );
-		$t_project_id = bug_get_field( $t_bug_id, 'project_id' );
+		$t_bug_id = \Flickerbox\Bug\Note::get_field( $p_bugnote_id, 'bug_id' );
+		$t_project_id = \Flickerbox\Bug::get_field( $t_bug_id, 'project_id' );
 	
 		# If the bug is private and the user is not the reporter, then the
 		# the user must also have higher access than private_bug_threshold
-		if( bugnote_get_field( $p_bugnote_id, 'view_state' ) == VS_PRIVATE && !bugnote_is_user_reporter( $p_bugnote_id, $p_user_id ) ) {
-			$t_private_bugnote_threshold = config_get( 'private_bugnote_threshold', null, $p_user_id, $t_project_id );
+		if( \Flickerbox\Bug\Note::get_field( $p_bugnote_id, 'view_state' ) == VS_PRIVATE && !\Flickerbox\Bug\Note::is_user_reporter( $p_bugnote_id, $p_user_id ) ) {
+			$t_private_bugnote_threshold = \Flickerbox\Config::mantis_get( 'private_bugnote_threshold', null, $p_user_id, $t_project_id );
 			$p_access_level = max( $p_access_level, $t_private_bugnote_threshold );
 		}
 	
@@ -484,13 +478,13 @@ class Access
 	
 	/**
 	 * Check if the specified bug can be closed
-	 * @param BugData      $p_bug     Bug to check access against.
+	 * @param \Flickerbox\BugData      $p_bug     Bug to check access against.
 	 * @param integer|null $p_user_id Integer representing user id, defaults to null to use current user.
 	 * @return boolean true if user can close the bug
 	 * @access public
 	 */
-	static function can_close_bug( BugData $p_bug, $p_user_id = null ) {
-		if( bug_is_closed( $p_bug->id ) ) {
+	static function can_close_bug( \Flickerbox\BugData $p_bug, $p_user_id = null ) {
+		if( \Flickerbox\Bug::is_closed( $p_bug->id ) ) {
 			# Can't close a bug that's already closed
 			return false;
 		}
@@ -501,14 +495,14 @@ class Access
 	
 		# If allow_reporter_close is enabled, then reporters can close their own bugs
 		# if they are in resolved status
-		if( ON == config_get( 'allow_reporter_close', null, null, $p_bug->project_id )
-			&& bug_is_user_reporter( $p_bug->id, $p_user_id )
-			&& bug_is_resolved( $p_bug->id )
+		if( ON == \Flickerbox\Config::mantis_get( 'allow_reporter_close', null, null, $p_bug->project_id )
+			&& \Flickerbox\Bug::is_user_reporter( $p_bug->id, $p_user_id )
+			&& \Flickerbox\Bug::is_resolved( $p_bug->id )
 		) {
 			return true;
 		}
 	
-		$t_closed_status = config_get( 'bug_closed_status_threshold', null, null, $p_bug->project_id );
+		$t_closed_status = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold', null, null, $p_bug->project_id );
 		$t_closed_status_threshold = \Flickerbox\Access::get_status_threshold( $t_closed_status, $p_bug->project_id );
 		return \Flickerbox\Access::has_bug_level( $t_closed_status_threshold, $p_bug->id, $p_user_id );
 	}
@@ -516,12 +510,12 @@ class Access
 	/**
 	 * Make sure that the user can close the specified bug
 	 * @see access_can_close_bug
-	 * @param BugData      $p_bug     Bug to check access against.
+	 * @param \Flickerbox\BugData      $p_bug     Bug to check access against.
 	 * @param integer|null $p_user_id Integer representing user id, defaults to null to use current user.
 	 * @access public
 	 * @return void
 	 */
-	static function ensure_can_close_bug( BugData $p_bug, $p_user_id = null ) {
+	static function ensure_can_close_bug( \Flickerbox\BugData $p_bug, $p_user_id = null ) {
 		if( !\Flickerbox\Access::can_close_bug( $p_bug, $p_user_id ) ) {
 			\Flickerbox\Access::denied();
 		}
@@ -529,13 +523,13 @@ class Access
 	
 	/**
 	 * Check if the specified bug can be reopened
-	 * @param BugData      $p_bug     Bug to check access against.
+	 * @param \Flickerbox\BugData      $p_bug     Bug to check access against.
 	 * @param integer|null $p_user_id Integer representing user id, defaults to null to use current user.
 	 * @return boolean whether user has access to reopen bugs
 	 * @access public
 	 */
-	static function can_reopen_bug( BugData $p_bug, $p_user_id = null ) {
-		if( !bug_is_resolved( $p_bug->id ) ) {
+	static function can_reopen_bug( \Flickerbox\BugData $p_bug, $p_user_id = null ) {
+		if( !\Flickerbox\Bug::is_resolved( $p_bug->id ) ) {
 			# Can't reopen a bug that's not resolved
 			return false;
 		}
@@ -546,17 +540,17 @@ class Access
 	
 		# If allow_reporter_reopen is enabled, then reporters can always reopen
 		# their own bugs as long as their access level is reporter or above
-		if( ON == config_get( 'allow_reporter_reopen', null, null, $p_bug->project_id )
-			&& bug_is_user_reporter( $p_bug->id, $p_user_id )
-			&& \Flickerbox\Access::has_project_level( config_get( 'report_bug_threshold', null, $p_user_id, $p_bug->project_id ), $p_bug->project_id, $p_user_id )
+		if( ON == \Flickerbox\Config::mantis_get( 'allow_reporter_reopen', null, null, $p_bug->project_id )
+			&& \Flickerbox\Bug::is_user_reporter( $p_bug->id, $p_user_id )
+			&& \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, $p_user_id, $p_bug->project_id ), $p_bug->project_id, $p_user_id )
 		) {
 			return true;
 		}
 	
 		# Other users's access level must allow them to reopen bugs
-		$t_reopen_bug_threshold = config_get( 'reopen_bug_threshold', null, null, $p_bug->project_id );
+		$t_reopen_bug_threshold = \Flickerbox\Config::mantis_get( 'reopen_bug_threshold', null, null, $p_bug->project_id );
 		if( \Flickerbox\Access::has_bug_level( $t_reopen_bug_threshold, $p_bug->id, $p_user_id ) ) {
-			$t_reopen_status = config_get( 'bug_reopen_status', null, null, $p_bug->project_id );
+			$t_reopen_status = \Flickerbox\Config::mantis_get( 'bug_reopen_status', null, null, $p_bug->project_id );
 	
 			# User must be allowed to change status to reopen status
 			$t_reopen_status_threshold = \Flickerbox\Access::get_status_threshold( $t_reopen_status, $p_bug->project_id );
@@ -570,12 +564,12 @@ class Access
 	 * Make sure that the user can reopen the specified bug.
 	 * Calls access_denied if user has no access to terminate script
 	 * @see access_can_reopen_bug
-	 * @param BugData      $p_bug     Bug to check access against.
+	 * @param \Flickerbox\BugData      $p_bug     Bug to check access against.
 	 * @param integer|null $p_user_id Integer representing user id, defaults to null to use current user.
 	 * @access public
 	 * @return void
 	 */
-	static function ensure_can_reopen_bug( BugData $p_bug, $p_user_id = null ) {
+	static function ensure_can_reopen_bug( \Flickerbox\BugData $p_bug, $p_user_id = null ) {
 		if( !\Flickerbox\Access::can_reopen_bug( $p_bug, $p_user_id ) ) {
 			\Flickerbox\Access::denied();
 		}
@@ -622,14 +616,14 @@ class Access
 	 * @access public
 	 */
 	static function get_status_threshold( $p_status, $p_project_id = ALL_PROJECTS ) {
-		$t_thresh_array = config_get( 'set_status_threshold', null, null, $p_project_id );
+		$t_thresh_array = \Flickerbox\Config::mantis_get( 'set_status_threshold', null, null, $p_project_id );
 		if( isset( $t_thresh_array[(int)$p_status] ) ) {
 			return (int)$t_thresh_array[(int)$p_status];
 		} else {
-			if( $p_status == config_get( 'bug_submit_status', null, null, $p_project_id ) ) {
-				return config_get( 'report_bug_threshold', null, null, $p_project_id );
+			if( $p_status == \Flickerbox\Config::mantis_get( 'bug_submit_status', null, null, $p_project_id ) ) {
+				return \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, null, $p_project_id );
 			} else {
-				return config_get( 'update_bug_status_threshold', null, null, $p_project_id );
+				return \Flickerbox\Config::mantis_get( 'update_bug_status_threshold', null, null, $p_project_id );
 			}
 		}
 	}

@@ -38,10 +38,8 @@ if( !defined( 'BUGNOTE_STATS_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bugnote_api.php' );
-require_api( 'config_api.php' );
 
-if( OFF == config_get( 'time_tracking_enabled' ) ) {
+if( OFF == \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) ) {
 	return;
 }
 ?>
@@ -119,10 +117,10 @@ $f_get_bugnote_stats_button = \Flickerbox\GPC::get_string( 'get_bugnote_stats_bu
 		# Retrieve time tracking information
 		$t_from = $t_bugnote_stats_from_y . '-' . $t_bugnote_stats_from_m . '-' . $t_bugnote_stats_from_d;
 		$t_to = $t_bugnote_stats_to_y . '-' . $t_bugnote_stats_to_m . '-' . $t_bugnote_stats_to_d;
-		$t_bugnote_stats = bugnote_stats_get_events_array( $f_bug_id, $t_from, $t_to );
+		$t_bugnote_stats = \Flickerbox\Bug\Note::stats_get_events_array( $f_bug_id, $t_from, $t_to );
 
 		# Sort the array by user/real name
-		if( ON == config_get( 'show_realname' ) ) {
+		if( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) ) {
 			$t_name_field = 'realname';
 		} else {
 			$t_name_field = 'username';
@@ -149,7 +147,7 @@ $f_get_bugnote_stats_button = \Flickerbox\GPC::get_string( 'get_bugnote_stats_bu
 		$t_sum_in_minutes = 0;
 		foreach ( $t_bugnote_stats as $t_item ) {
 			$t_sum_in_minutes += $t_item['sum_time_tracking'];
-			$t_item['sum_time_tracking'] = db_minutes_to_hhmm( $t_item['sum_time_tracking'] );
+			$t_item['sum_time_tracking'] = \Flickerbox\Database::minutes_to_hhmm( $t_item['sum_time_tracking'] );
 ?>
 	<tr>
 		<td class="small-caption">
@@ -167,7 +165,7 @@ $f_get_bugnote_stats_button = \Flickerbox\GPC::get_string( 'get_bugnote_stats_bu
 			<?php echo \Flickerbox\Lang::get( 'total_time' ) ?>
 		</td>
 		<td class="small-caption bold">
-			<?php echo db_minutes_to_hhmm( $t_sum_in_minutes ) ?>
+			<?php echo \Flickerbox\Database::minutes_to_hhmm( $t_sum_in_minutes ) ?>
 		</td>
 	</tr>
 </table>

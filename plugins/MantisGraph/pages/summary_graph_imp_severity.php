@@ -24,16 +24,16 @@
 
 require_once( 'core.php' );
 
-plugin_require_api( 'core/graph_api.php' );
+\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'view_summary_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
 
 \Flickerbox\HTML::page_top();
 
 \Flickerbox\HTML::print_summary_menu( 'summary_page.php' );
 echo '<br />';
 \Flickerbox\HTML::print_summary_submenu();
-$t_width = plugin_config_get( 'window_width' );
+$t_width = \Flickerbox\Plugin::config_get( 'window_width' );
 $t_graph_width = (int)( ( $t_width - 50 ) * 0.6 );
 
 # gather the data for the graphs
@@ -45,22 +45,22 @@ $t_token = \Flickerbox\Token::set( TOKEN_GRAPH, json_encode( $t_metrics ) );
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo plugin_langget( 'graph_imp_severity_title' ) ?>
+		<?php echo \Flickerbox\Plugin::langget( 'graph_imp_severity_title' ) ?>
 	</td>
 </tr>
 <tr>
 	<td class="center">
-		<img src="<?php echo plugin_page( 'summary_graph_byseverity.php' )?>&amp;width=<?php echo $t_graph_width?>" alt="" />
+		<img src="<?php echo \Flickerbox\Plugin::page( 'summary_graph_byseverity.php' )?>&amp;width=<?php echo $t_graph_width?>" alt="" />
 	</td>
 </tr>
 <tr>
 	<td class="center">
-		<img src="<?php echo plugin_page( 'summary_graph_byseverity_pct.php' )?>&amp;width=<?php echo $t_graph_width?>" alt="" />
+		<img src="<?php echo \Flickerbox\Plugin::page( 'summary_graph_byseverity_pct.php' )?>&amp;width=<?php echo $t_graph_width?>" alt="" />
 	</td>
 </tr>
 <tr>
 	<td class="center">
-		<img src="<?php echo plugin_page( 'summary_graph_byseverity_mix.php' )?>&amp;width=<?php echo $t_graph_width?>" alt="" />
+		<img src="<?php echo \Flickerbox\Plugin::page( 'summary_graph_byseverity_mix.php' )?>&amp;width=<?php echo $t_graph_width?>" alt="" />
 	</td>
 </tr>
 </table>

@@ -38,8 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 $f_project_id	= \Flickerbox\GPC::get_string( 'project_id' );
 $f_make_default	= \Flickerbox\GPC::get_bool( 'make_default' );
@@ -68,12 +66,12 @@ if( $f_make_default ) {
 if( !\Flickerbox\Utility::is_blank( $c_ref ) ) {
 	$t_redirect_url = $c_ref;
 } else if( !isset( $_SERVER['HTTP_REFERER'] ) || \Flickerbox\Utility::is_blank( $_SERVER['HTTP_REFERER'] ) ) {
-	$t_redirect_url = config_get( 'default_home_page' );
+	$t_redirect_url = \Flickerbox\Config::mantis_get( 'default_home_page' );
 } else {
-	$t_home_page = config_get( 'default_home_page' );
+	$t_home_page = \Flickerbox\Config::mantis_get( 'default_home_page' );
 
 	# Check that referrer matches our address after squashing case (case insensitive compare)
-	$t_path = rtrim( config_get( 'path' ), '/' );
+	$t_path = rtrim( \Flickerbox\Config::mantis_get( 'path' ), '/' );
 	if( preg_match( '@^(' . $t_path . ')/(?:/*([^\?#]*))(.*)?$@', $_SERVER['HTTP_REFERER'], $t_matches ) ) {
 		$t_referrer_page = $t_matches[2];
 		$t_param = $t_matches[3];
@@ -109,7 +107,7 @@ if( !\Flickerbox\Utility::is_blank( $c_ref ) ) {
 	}
 }
 
-print_header_redirect( $t_redirect_url, true, true );
+\Flickerbox\Print_Util::header_redirect( $t_redirect_url, true, true );
 
 \Flickerbox\HTML::page_top1();
 \Flickerbox\HTML::meta_redirect( $t_redirect_url );

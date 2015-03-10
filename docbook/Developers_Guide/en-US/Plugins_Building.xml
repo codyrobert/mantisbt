@@ -124,23 +124,23 @@ class ExamplePlugin extends MantisPlugin {
 				New pages for your plugin should be placed in your plugin's
 				<filename>pages/</filename> directory, and should be named using only letters and
 				numbers, and must have a ".php" file extension.  To generate a URI to the new page
-				in MantisBT, the API function <function>plugin_page()</function> should be used.
+				in MantisBT, the API function <function>\Flickerbox\Plugin::page()</function> should be used.
 				Our Example plugin will create a page named <filename>foo.php</filename>, which
 				can then be accessed via <literal>plugin_page.php?page=Example/foo</literal>, the
-				same URI that <function>plugin_page()</function> would have generated:
+				same URI that <function>\Flickerbox\Plugin::page()</function> would have generated:
 			</para>
 
 			<programlisting><filename>Example/pages/foo.php</filename>
 
 &lt;?php
-echo '&lt;p&gt;Here is a link to &lt;a href="', plugin_page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
+echo '&lt;p&gt;Here is a link to &lt;a href="', \Flickerbox\Plugin::page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
 			</programlisting>
 
 			<para>
 				Adding non-PHP files, such as images or CSS stylesheets, follows a very similar
 				pattern as pages.  Files should be placed in the plugin's
 				<filename>files/</filename> directory, and can only contain a single period in
-				the name.  The file's URI is generated with the <function>plugin_file()</function>
+				the name.  The file's URI is generated with the <function>\Flickerbox\Plugin::plugin_file()</function>
 				function.  For our Example plugin, we'll create a basic CSS stylesheet, and modify
 				the previously shown page to include the stylesheet:
 			</para>
@@ -155,14 +155,14 @@ p.foo {
 			<programlisting><filename>Example/pages/foo.php</filename>
 
 &lt;?php
-echo '&lt;p&gt;Here is a link to &lt;a href="', plugin_page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
-echo '&lt;link rel="stylesheet" type="text/css" href="', plugin_file( 'foo.css' ), '"/&gt;',
+echo '&lt;p&gt;Here is a link to &lt;a href="', \Flickerbox\Plugin::page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
+echo '&lt;link rel="stylesheet" type="text/css" href="', \Flickerbox\Plugin::plugin_file( 'foo.css' ), '"/&gt;',
      '&lt;p class="foo"&gt;This is red text.&lt;/p&gt;';
 			</programlisting>
 
 			<para>
-				Note that while <function>plugin_page()</function> expects on the page's name,
-				without the extension, <function>plugin_file()</function> requires the entire
+				Note that while <function>\Flickerbox\Plugin::page()</function> expects on the page's name,
+				without the extension, <function>\Flickerbox\Plugin::plugin_file()</function> requires the entire
 				filename so that it can distinguish between <filename>foo.css</filename> and
 				a potential file <filename>foo.png</filename>.
 			</para>
@@ -288,8 +288,8 @@ class ExamplePlugin extends MantisPlugin {
 			<programlisting><filename>Example/pages/foo.php</filename>
 
 &lt;?php
-echo '&lt;p&gt;Here is a link to &lt;a href="', plugin_page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
-     '&lt;link rel="stylesheet" type="text/css" href="', plugin_file( 'foo.css' ), '"/&gt;',
+echo '&lt;p&gt;Here is a link to &lt;a href="', \Flickerbox\Plugin::page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
+     '&lt;link rel="stylesheet" type="text/css" href="', \Flickerbox\Plugin::plugin_file( 'foo.css' ), '"/&gt;',
      '&lt;p class="foo"&gt;';
 
 \Flickerbox\Event::signal( 'EVENT_EXAMPLE_FOO' );
@@ -344,9 +344,9 @@ class ExamplePlugin extends MantisPlugin {
 
 			<para>
 				Retrieving the current value of a plugin's configuration option is achieved by
-				using the plugin API's <function>plugin_config_get()</function> function, and can
+				using the plugin API's <function>\Flickerbox\Plugin::config_get()</function> function, and can
 				be set to a modified value in the database using
-				<function>plugin_config_set()</function>.  With these functions, the config option
+				<function>\Flickerbox\Plugin::config_set()</function>.  With these functions, the config option
 				is prefixed with the plugin's name, in attempt to automatically avoid conflicts in
 				naming.  Our Example plugin will demonstrate this by adding a secure form to the
 				"config_page", and handling the form on a separate page "config_update" that will
@@ -356,7 +356,7 @@ class ExamplePlugin extends MantisPlugin {
 
 			<programlisting><filename>Example/pages/config_page.php</filename>
 
-&lt;form action="&lt;?php echo plugin_page( 'config_update' ) ?&gt;" method="post"&gt;
+&lt;form action="&lt;?php echo \Flickerbox\Plugin::page( 'config_update' ) ?&gt;" method="post"&gt;
 &lt;?php echo \Flickerbox\Form::security_field( 'plugin_Example_config_update' ) ?&gt;
 
 &lt;label&gt;Foo or Bar?&lt;br/&gt;&lt;input name="foo_or_bar" value="&lt;?php echo \Flickerbox\String::attribute( $t_foo_or_bar ) ?&gt;"/&gt;&lt;/label&gt;
@@ -377,15 +377,15 @@ $f_foo_or_bar = \Flickerbox\GPC::get_string( 'foo_or_bar' );
 $f_reset = \Flickerbox\GPC::get_bool( 'reset', false );
 
 if( $f_reset ) {
-    plugin_config_delete( 'foo_or_bar' );
+    \Flickerbox\Plugin::config_delete( 'foo_or_bar' );
 } else {
     if( $f_foo_or_bar == 'foo' || $f_foo_or_bar == 'bar' ) {
-        plugin_config_set( 'foo_or_bar', $f_foo_or_bar );
+        \Flickerbox\Plugin::config_set( 'foo_or_bar', $f_foo_or_bar );
     }
 }
 
 \Flickerbox\Form::security_purge( 'plugin_Example_config_update' );
-print_successful_redirect( plugin_page( 'foo', true ) );
+\Flickerbox\Print_Util::successful_redirect( \Flickerbox\Plugin::page( 'foo', true ) );
 			</programlisting>
 
 			<para>
@@ -436,28 +436,28 @@ $s_plugin_Example_reset = "Reset Value";
 			<programlisting><filename>Example/pages/config_page.php</filename>
 &lt;?php
 
-\Flickerbox\HTML::page_top( plugin_langget( 'configuration' ) );
-$t_foo_or_bar = plugin_config_get( 'foo_or_bar' );
+\Flickerbox\HTML::page_top( \Flickerbox\Plugin::langget( 'configuration' ) );
+$t_foo_or_bar = \Flickerbox\Plugin::config_get( 'foo_or_bar' );
 
 ?&gt;
 
 &lt;br/&gt;
 
-&lt;form action="&lt;?php echo plugin_page( 'config_update' ) ?&gt;" method="post"&gt;
+&lt;form action="&lt;?php echo \Flickerbox\Plugin::page( 'config_update' ) ?&gt;" method="post"&gt;
 &lt;?php echo \Flickerbox\Form::security_field( 'plugin_Example_config_update' ) ?&gt;
 &lt;table class="width60"&gt;
 
 &lt;tr&gt;
-    &lt;td class="form-title" rowspan="2"&gt;&lt;?php echo plugin_langget( 'configuration' ) ?&gt;&lt;/td&gt;
+    &lt;td class="form-title" rowspan="2"&gt;&lt;?php echo \Flickerbox\Plugin::langget( 'configuration' ) ?&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr &lt;?php echo helper_alternate_class() ?&gt;&gt;
-    &lt;td class="category"&gt;&lt;php echo plugin_langget( 'foo_or_bar' ) ?&gt;&lt;/td&gt;
+    &lt;td class="category"&gt;&lt;php echo \Flickerbox\Plugin::langget( 'foo_or_bar' ) ?&gt;&lt;/td&gt;
     &lt;td&gt;&lt;input name="foo_or_bar" value="&lt;?php echo \Flickerbox\String::attribute( $t_foo_or_bar ) ?&gt;"/&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr &lt;?php echo helper_alternate_class() ?&gt;&gt;
-    &lt;td class="category"&gt;&lt;php echo plugin_langget( 'reset' ) ?&gt;&lt;/td&gt;
+    &lt;td class="category"&gt;&lt;php echo \Flickerbox\Plugin::langget( 'reset' ) ?&gt;&lt;/td&gt;
     &lt;td&gt;&lt;input type="checkbox" name="reset"/&gt;&lt;/td&gt;
 &lt;/tr&gt;
 

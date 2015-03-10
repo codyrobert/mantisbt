@@ -72,7 +72,7 @@ class JSON
 	static function \Flickerbox\Error::handler( $p_type, $p_error, $p_file, $p_line, array $p_context ) {
 		# flush any language overrides to return to user's natural default
 		if( function_exists( 'db_is_connected' ) ) {
-			if( db_is_connected() ) {
+			if( \Flickerbox\Database::is_connected() ) {
 				\Flickerbox\Lang::push( \Flickerbox\Lang::get_default() );
 			}
 		}

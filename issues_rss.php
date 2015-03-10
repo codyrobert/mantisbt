@@ -45,9 +45,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'user_api.php' );
 
 $f_project_id = \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
 $f_filter_id = \Flickerbox\GPC::get_int( 'filter_id', 0 );
@@ -56,7 +53,7 @@ $f_username = \Flickerbox\GPC::get_string( 'username', null );
 $f_key = \Flickerbox\GPC::get_string( 'key', null );
 
 # make sure RSS syndication is enabled.
-if( OFF == config_get( 'rss_enabled' ) ) {
+if( OFF == \Flickerbox\Config::mantis_get( 'rss_enabled' ) ) {
 	\Flickerbox\Access::denied();
 }
 
@@ -66,14 +63,14 @@ if( $f_username !== null ) {
 		\Flickerbox\Access::denied();
 	}
 } else {
-	if( OFF == config_get( 'allow_anonymous_login' ) ) {
+	if( OFF == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
 		\Flickerbox\Access::denied();
 	}
 }
 
 # Make sure that the current user has access to the selected project (if not ALL PROJECTS).
 if( $f_project_id != ALL_PROJECTS ) {
-	\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
+	\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
 }
 
 if( $f_sort === 'update' ) {
@@ -82,13 +79,13 @@ if( $f_sort === 'update' ) {
 	$c_sort_field = 'date_submitted';
 }
 
-$t_path = config_get( 'path' );
+$t_path = \Flickerbox\Config::mantis_get( 'path' );
 
 # construct rss file
 
 $t_encoding = 'utf-8';
 $t_about = $t_path;
-$t_title = config_get( 'window_title' );
+$t_title = \Flickerbox\Config::mantis_get( 'window_title' );
 $t_image_link = $t_path . 'images/mantis_logo_button.gif';
 
 # only rss 2.0
@@ -153,9 +150,9 @@ $t_page_count = 0;
 $t_issues_count = 0;
 $t_project_id = $f_project_id;
 if( $f_username !== null ) {
-	$t_user_id = user_get_id_by_name( $f_username );
+	$t_user_id = \Flickerbox\User::get_id_by_name( $f_username );
 } else {
-	$t_user_id = user_get_id_by_name( config_get( 'anonymous_account' ) );
+	$t_user_id = \Flickerbox\User::get_id_by_name( \Flickerbox\Config::mantis_get( 'anonymous_account' ) );
 }
 $t_show_sticky = null;
 
@@ -181,7 +178,7 @@ for( $i = 0; $i < $t_issues_count; $i++ ) {
 	$t_bug = $t_issues[$i];
 
 	$t_about = $t_link = $t_path . 'view.php?id=' . $t_bug->id;
-	$t_title = bug_format_id( $t_bug->id ) . ': ' . $t_bug->summary;
+	$t_title = \Flickerbox\Bug::format_id( $t_bug->id ) . ': ' . $t_bug->summary;
 
 	if( $t_bug->view_state == VS_PRIVATE ) {
 		$t_title .= ' [' . \Flickerbox\Lang::get( 'private' ) . ']';
@@ -197,9 +194,9 @@ for( $i = 0; $i < $t_issues_count; $i++ ) {
 
 	# author of item
 	$t_author = '';
-	if( \Flickerbox\Access::has_global_level( config_get( 'show_user_email_threshold' ) ) ) {
-		$t_author_name = user_get_name( $t_bug->reporter_id );
-		$t_author_email = user_get_field( $t_bug->reporter_id, 'email' );
+	if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
+		$t_author_name = \Flickerbox\User::get_name( $t_bug->reporter_id );
+		$t_author_email = \Flickerbox\User::get_field( $t_bug->reporter_id, 'email' );
 
 		if( !\Flickerbox\Utility::is_blank( $t_author_email ) ) {
 			if( !\Flickerbox\Utility::is_blank( $t_author_name ) ) {

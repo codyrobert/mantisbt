@@ -30,7 +30,6 @@ namespace Flickerbox\Project;
  * @uses database_api.php
  */
 
-require_api( 'database_api.php' );
 
 class Hierarchy
 {
@@ -50,9 +49,9 @@ class Hierarchy
 		$t_query = 'INSERT INTO {project_hierarchy}
 			                ( child_id, parent_id, inherit_parent )
 							VALUES
-							( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ' )';
+							( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
 	
-		db_query( $t_query, array( $p_child_id, $p_parent_id, $p_inherit_parent ) );
+		\Flickerbox\Database::query( $t_query, array( $p_child_id, $p_parent_id, $p_inherit_parent ) );
 	}
 	
 	/**
@@ -64,10 +63,10 @@ class Hierarchy
 	 */
 	static function update( $p_child_id, $p_parent_id, $p_inherit_parent = true ) {
 		$t_query = 'UPDATE {project_hierarchy}
-						SET inherit_parent=' . db_param() . '
-						WHERE child_id=' . db_param() . '
-							AND parent_id=' . db_param();
-		db_query( $t_query, array( $p_inherit_parent, $p_child_id, $p_parent_id ) );
+						SET inherit_parent=' . \Flickerbox\Database::param() . '
+						WHERE child_id=' . \Flickerbox\Database::param() . '
+							AND parent_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_inherit_parent, $p_child_id, $p_parent_id ) );
 	}
 	
 	/**
@@ -77,10 +76,10 @@ class Hierarchy
 	 * @return void
 	 */
 	static function remove( $p_child_id, $p_parent_id ) {
-		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . db_param() . '
-							AND parent_id = ' . db_param();
+		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . \Flickerbox\Database::param() . '
+							AND parent_id = ' . \Flickerbox\Database::param();
 	
-		db_query( $t_query, array( $p_child_id, $p_parent_id ) );
+		\Flickerbox\Database::query( $t_query, array( $p_child_id, $p_parent_id ) );
 	}
 	
 	/**
@@ -89,10 +88,10 @@ class Hierarchy
 	 * @return void
 	 */
 	static function remove_all( $p_project_id ) {
-		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . db_param() . '
-							  OR parent_id = ' . db_param();
+		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . \Flickerbox\Database::param() . '
+							  OR parent_id = ' . \Flickerbox\Database::param();
 	
-		db_query( $t_query, array( $p_project_id, $p_project_id ) );
+		\Flickerbox\Database::query( $t_query, array( $p_project_id, $p_project_id ) );
 	}
 	
 	/**
@@ -151,7 +150,7 @@ class Hierarchy
 		}
 		$g_cache_show_disabled = $p_show_disabled;
 	
-		$t_enabled_clause = $p_show_disabled ? '1=1' : 'p.enabled = ' . db_param();
+		$t_enabled_clause = $p_show_disabled ? '1=1' : 'p.enabled = ' . \Flickerbox\Database::param();
 	
 		$t_query = 'SELECT DISTINCT p.id, ph.parent_id, p.name, p.inherit_global, ph.inherit_parent
 					  FROM {project} p
@@ -160,12 +159,12 @@ class Hierarchy
 					  WHERE ' . $t_enabled_clause . '
 					  ORDER BY p.name';
 	
-		$t_result = db_query( $t_query, ( $p_show_disabled ? array() : array( true ) ) );
+		$t_result = \Flickerbox\Database::query( $t_query, ( $p_show_disabled ? array() : array( true ) ) );
 	
 		$g_cache_project_hierarchy = array();
 		$g_cache_project_inheritance = array();
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			if( null === $t_row['parent_id'] ) {
 				$t_row['parent_id'] = ALL_PROJECTS;
 			}

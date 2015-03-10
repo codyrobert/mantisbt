@@ -38,9 +38,8 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
-if( !config_get( 'enable_profiles' ) ) {
+if( !\Flickerbox\Config::mantis_get( 'enable_profiles' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
 }
 
@@ -51,7 +50,7 @@ if( !config_get( 'enable_profiles' ) ) {
 $f_profile_id	= \Flickerbox\GPC::get_int( 'profile_id' );
 
 if( \Flickerbox\Profile::is_global( $f_profile_id ) ) {
-	\Flickerbox\Access::ensure_global_level( config_get( 'manage_global_profile_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) );
 
 	$t_row = \Flickerbox\Profile::get_row( ALL_USERS, $f_profile_id );
 } else {

@@ -34,15 +34,13 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 \Flickerbox\HTML::require_css( 'login.css' );
 
 # lost password feature disabled or reset password via email disabled -> stop here!
-if( LDAP == config_get_global( 'login_method' ) ||
-	OFF == config_get( 'lost_password_feature' ) ||
-	OFF == config_get( 'send_reset_password' )  ||
-	OFF == config_get( 'enable_email_notification' ) ) {
+if( LDAP == \Flickerbox\Config::get_global( 'login_method' ) ||
+	OFF == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ||
+	OFF == \Flickerbox\Config::mantis_get( 'send_reset_password' )  ||
+	OFF == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) {
 	trigger_error( ERROR_LOST_PASSWORD_NOT_ENABLED, ERROR );
 }
 
@@ -72,7 +70,7 @@ if( LDAP == config_get_global( 'login_method' ) ||
 			</div>
 			<div class="field-container">
 				<label for="email-field"><span><?php echo \Flickerbox\Lang::get( 'email' ) ?></span></label>
-				<span class="input"><?php print_email_input( 'email', '' ) ?></span>
+				<span class="input"><?php \Flickerbox\Print_Util::email_input( 'email', '' ) ?></span>
 				<span class="label-style"></span>
 			</div>
 			<span id="lost-password-msg"><?php echo \Flickerbox\Lang::get( 'lost_password_info' ); ?></span>

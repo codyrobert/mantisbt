@@ -37,9 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'account_prefs_update' );
 
@@ -48,21 +45,21 @@ require_api( 'user_api.php' );
 $f_user_id					= \Flickerbox\GPC::get_int( 'user_id' );
 $f_redirect_url				= \Flickerbox\GPC::get_string( 'redirect_url' );
 
-user_ensure_exists( $f_user_id );
+\Flickerbox\User::ensure_exists( $f_user_id );
 
-$t_user = user_get_row( $f_user_id );
+$t_user = \Flickerbox\User::get_row( $f_user_id );
 
 # This page is currently called from the manage_* namespace and thus we
 # have to allow authorised users to update the accounts of other users.
 # TODO: split this functionality into manage_user_prefs_update.php
 if( auth_get_current_user_id() != $f_user_id ) {
-	\Flickerbox\Access::ensure_global_level( config_get( 'manage_user_threshold' ) );
+	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
 	\Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
 } else {
 	# Protected users should not be able to update the preferences of their
 	# user account. The anonymous user is always considered a protected
 	# user and hence will also not be allowed to update preferences.
-	user_ensure_unprotected( $f_user_id );
+	\Flickerbox\User::ensure_unprotected( $f_user_id );
 }
 
 $t_prefs = \Flickerbox\User\Pref::get( $f_user_id );
@@ -99,14 +96,14 @@ $t_prefs->bugnote_order = \Flickerbox\GPC::get_string( 'bugnote_order' );
 $t_prefs->email_bugnote_limit = \Flickerbox\GPC::get_int( 'email_bugnote_limit' );
 
 # make sure the delay isn't too low
-if( ( config_get( 'min_refresh_delay' ) > $t_prefs->refresh_delay )&&
+if( ( \Flickerbox\Config::mantis_get( 'min_refresh_delay' ) > $t_prefs->refresh_delay )&&
 	( $t_prefs->refresh_delay != 0 )) {
-	$t_prefs->refresh_delay = config_get( 'min_refresh_delay' );
+	$t_prefs->refresh_delay = \Flickerbox\Config::mantis_get( 'min_refresh_delay' );
 }
 
 $t_timezone = \Flickerbox\GPC::get_string( 'timezone' );
 if( in_array( $t_timezone, timezone_identifiers_list() ) ) {
-	if( $t_timezone == config_get_global( 'default_timezone' ) ) {
+	if( $t_timezone == \Flickerbox\Config::get_global( 'default_timezone' ) ) {
 		$t_prefs->timezone = '';
 	} else {
 		$t_prefs->timezone = $t_timezone;

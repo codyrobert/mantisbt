@@ -36,8 +36,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'database_api.php' );
-require_api( 'user_api.php' );
 
 
 class Profile
@@ -56,7 +54,7 @@ class Profile
 		$p_user_id = (int)$p_user_id;
 	
 		if( ALL_USERS != $p_user_id ) {
-			user_ensure_unprotected( $p_user_id );
+			\Flickerbox\User::ensure_unprotected( $p_user_id );
 		}
 	
 		# platform cannot be blank
@@ -81,10 +79,10 @@ class Profile
 		$t_query = 'INSERT INTO {user_profile}
 					    ( user_id, platform, os, os_build, description )
 					  VALUES
-					    ( ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ', ' . db_param() . ' )';
-		db_query( $t_query, array( $p_user_id, $p_platform, $p_os, $p_os_build, $p_description ) );
+					    ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
+		\Flickerbox\Database::query( $t_query, array( $p_user_id, $p_platform, $p_os, $p_os_build, $p_description ) );
 	
-		return db_insert_id( db_get_table( 'user_profile' ) );
+		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'user_profile' ) );
 	}
 	
 	/**
@@ -99,12 +97,12 @@ class Profile
 	 */
 	static function delete( $p_user_id, $p_profile_id ) {
 		if( ALL_USERS != $p_user_id ) {
-			user_ensure_unprotected( $p_user_id );
+			\Flickerbox\User::ensure_unprotected( $p_user_id );
 		}
 	
 		# Delete the profile
-		$t_query = 'DELETE FROM {user_profile} WHERE id=' . db_param() . ' AND user_id=' . db_param();
-		db_query( $t_query, array( $p_profile_id, $p_user_id ) );
+		$t_query = 'DELETE FROM {user_profile} WHERE id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
 	}
 	
 	/**
@@ -119,7 +117,7 @@ class Profile
 	 */
 	static function update( $p_user_id, $p_profile_id, $p_platform, $p_os, $p_os_build, $p_description ) {
 		if( ALL_USERS != $p_user_id ) {
-			user_ensure_unprotected( $p_user_id );
+			\Flickerbox\User::ensure_unprotected( $p_user_id );
 		}
 	
 		# platform cannot be blank
@@ -142,12 +140,12 @@ class Profile
 	
 		# Add item
 		$t_query = 'UPDATE {user_profile}
-					  SET platform=' . db_param() . ',
-					  	  os=' . db_param() . ',
-						  os_build=' . db_param() . ',
-						  description=' . db_param() . '
-					  WHERE id=' . db_param() . ' AND user_id=' . db_param();
-		db_query( $t_query, array( $p_platform, $p_os, $p_os_build, $p_description, $p_profile_id, $p_user_id ) );
+					  SET platform=' . \Flickerbox\Database::param() . ',
+					  	  os=' . \Flickerbox\Database::param() . ',
+						  os_build=' . \Flickerbox\Database::param() . ',
+						  description=' . \Flickerbox\Database::param() . '
+					  WHERE id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
+		\Flickerbox\Database::query( $t_query, array( $p_platform, $p_os, $p_os_build, $p_description, $p_profile_id, $p_user_id ) );
 	}
 	
 	/**
@@ -157,10 +155,10 @@ class Profile
 	 * @return array
 	 */
 	static function get_row( $p_user_id, $p_profile_id ) {
-		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . db_param() . ' AND user_id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_profile_id, $p_user_id ) );
+		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
 	
-		return db_fetch_array( $t_result );
+		return \Flickerbox\Database::fetch_array( $t_result );
 	}
 	
 	/**
@@ -170,10 +168,10 @@ class Profile
 	 * @todo relationship of this function to profile_get_row?
 	 */
 	static function get_row_direct( $p_profile_id ) {
-		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_profile_id ) );
+		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_profile_id ) );
 	
-		return db_fetch_array( $t_result );
+		return \Flickerbox\Database::fetch_array( $t_result );
 	}
 	
 	/**
@@ -183,20 +181,20 @@ class Profile
 	 * @return array
 	 */
 	static function get_all_rows( $p_user_id, $p_all_users = false ) {
-		$t_query_where = 'user_id = ' . db_param();
+		$t_query_where = 'user_id = ' . \Flickerbox\Database::param();
 		$t_param[] = (int)$p_user_id;
 	
 		if( $p_all_users && ALL_USERS != $p_user_id ) {
-			$t_query_where .= ' OR user_id = ' . db_param();
+			$t_query_where .= ' OR user_id = ' . \Flickerbox\Database::param();
 			$t_param[] = ALL_USERS;
 		}
 	
 		$t_query = 'SELECT * FROM {user_profile} WHERE ' . $t_query_where . ' ORDER BY platform, os, os_build';
-		$t_result = db_query( $t_query, $t_param );
+		$t_result = \Flickerbox\Database::query( $t_query, $t_param );
 	
 		$t_rows = array();
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row );
 		}
 	
@@ -238,13 +236,13 @@ class Profile
 	
 		$t_query = 'SELECT DISTINCT ' . $c_field . '
 					  FROM {user_profile}
-					  WHERE ( user_id=' . db_param() . ' ) OR ( user_id = 0 )
+					  WHERE ( user_id=' . \Flickerbox\Database::param() . ' ) OR ( user_id = 0 )
 					  ORDER BY ' . $c_field;
-		$t_result = db_query( $t_query, array( $c_user_id ) );
+		$t_result = \Flickerbox\Database::query( $t_query, array( $c_user_id ) );
 	
 		$t_rows = array();
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row[$c_field] );
 		}
 	
@@ -264,11 +262,11 @@ class Profile
 					  WHERE ' . $t_project_where . '
 					  AND up.id = b.profile_id
 					  ORDER BY up.platform, up.os, up.os_build';
-		$t_result = db_query( $t_query );
+		$t_result = \Flickerbox\Database::query( $t_query );
 	
 		$t_rows = array();
 	
-		while( $t_row = db_fetch_array( $t_result ) ) {
+		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row );
 		}
 	
@@ -281,10 +279,10 @@ class Profile
 	 * @return string
 	 */
 	static function get_default( $p_user_id ) {
-		$t_query = 'SELECT default_profile FROM {user_pref} WHERE user_id=' . db_param();
-		$t_result = db_query( $t_query, array( $p_user_id ) );
+		$t_query = 'SELECT default_profile FROM {user_pref} WHERE user_id=' . \Flickerbox\Database::param();
+		$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
 	
-		$t_default_profile = (int)db_result( $t_result, 0, 0 );
+		$t_default_profile = (int)\Flickerbox\Database::result( $t_result, 0, 0 );
 	
 		return $t_default_profile;
 	}

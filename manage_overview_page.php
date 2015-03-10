@@ -34,12 +34,11 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( config_get( 'manage_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_site_threshold' ) );
 
-$t_version_suffix = config_get_global( 'version_suffix' );
+$t_version_suffix = \Flickerbox\Config::get_global( 'version_suffix' );
 
 \Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_link' ) );
 
@@ -54,7 +53,7 @@ $t_version_suffix = config_get_global( 'version_suffix' );
 		</tr>
 		<tr>
 			<th class="category"><?php echo \Flickerbox\Lang::get( 'schema_version' ) ?></th>
-			<td><?php echo config_get( 'database_version' ) ?></td>
+			<td><?php echo \Flickerbox\Config::mantis_get( 'database_version' ) ?></td>
 		</tr>
 		<tr class="spacer">
 			<td colspan="2"></td>
@@ -66,15 +65,15 @@ $t_version_suffix = config_get_global( 'version_suffix' );
 	?>
 		<tr>
 			<th class="category"><?php echo \Flickerbox\Lang::get( 'site_path' ) ?></th>
-			<td><?php echo config_get( 'absolute_path' ) ?></td>
+			<td><?php echo \Flickerbox\Config::mantis_get( 'absolute_path' ) ?></td>
 		</tr>
 		<tr>
 			<th class="category"><?php echo \Flickerbox\Lang::get( 'core_path' ) ?></th>
-			<td><?php echo config_get( 'core_path' ) ?></td>
+			<td><?php echo \Flickerbox\Config::mantis_get( 'core_path' ) ?></td>
 		</tr>
 		<tr>
 			<th class="category"><?php echo \Flickerbox\Lang::get( 'plugin_path' ) ?></th>
-			<td><?php echo config_get( 'plugin_path' ) ?></td>
+			<td><?php echo \Flickerbox\Config::mantis_get( 'plugin_path' ) ?></td>
 		</tr>
 		<tr class="spacer">
 			<td colspan="2"></td>

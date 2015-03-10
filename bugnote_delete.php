@@ -40,18 +40,14 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'bugnote_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'bugnote_delete' );
 
 $f_bugnote_id = \Flickerbox\GPC::get_int( 'bugnote_id' );
 
-$t_bug_id = bugnote_get_field( $f_bugnote_id, 'bug_id' );
+$t_bug_id = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );
 
-$t_bug = bug_get( $t_bug_id, true );
+$t_bug = \Flickerbox\Bug::get( $t_bug_id, true );
 if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
@@ -60,19 +56,19 @@ if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 
 # Check if the current user is allowed to delete the bugnote
 $t_user_id = \Flickerbox\Auth::get_current_user_id();
-$t_reporter_id = bugnote_get_field( $f_bugnote_id, 'reporter_id' );
+$t_reporter_id = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'reporter_id' );
 
 if( $t_user_id == $t_reporter_id ) {
-	\Flickerbox\Access::ensure_bugnote_level( config_get( 'bugnote_user_delete_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( \Flickerbox\Config::mantis_get( 'bugnote_user_delete_threshold' ), $f_bugnote_id );
 } else {
-	\Flickerbox\Access::ensure_bugnote_level( config_get( 'delete_bugnote_threshold' ), $f_bugnote_id );
+	\Flickerbox\Access::ensure_bugnote_level( \Flickerbox\Config::mantis_get( 'delete_bugnote_threshold' ), $f_bugnote_id );
 }
 
 \Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_bugnote_sure_msg' ),
 						 \Flickerbox\Lang::get( 'delete_bugnote_button' ) );
 
-bugnote_delete( $f_bugnote_id );
+\Flickerbox\Bug\Note::delete( $f_bugnote_id );
 
 \Flickerbox\Form::security_purge( 'bugnote_delete' );
 
-print_successful_redirect( \Flickerbox\String::get_bug_view_url( $t_bug_id ) . '#bugnotes' );
+\Flickerbox\Print_Util::successful_redirect( \Flickerbox\String::get_bug_view_url( $t_bug_id ) . '#bugnotes' );

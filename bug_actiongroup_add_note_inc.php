@@ -38,9 +38,6 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 /**
  * Prints the title for the custom action page.
@@ -79,10 +76,10 @@ function action_add_note_print_fields() {
 			</th>
 			<td>
 <?php
-	$t_default_state = config_get( 'default_bugnote_view_status' );
-	if( \Flickerbox\Access::has_project_level( config_get( 'set_view_status_threshold' ) ) ) { ?>
+	$t_default_state = \Flickerbox\Config::mantis_get( 'default_bugnote_view_status' );
+	if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'set_view_status_threshold' ) ) ) { ?>
 				<select name="view_state">
-					<?php print_enum_string_option_list( 'view_state', $t_default_state ) ?>
+					<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state', $t_default_state ) ?>
 				</select>
 <?php
 	} else {
@@ -120,10 +117,10 @@ function action_add_note_validate( $p_bug_id ) {
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 
-	$t_add_bugnote_threshold = config_get( 'add_bugnote_threshold' );
+	$t_add_bugnote_threshold = \Flickerbox\Config::mantis_get( 'add_bugnote_threshold' );
 	$t_bug_id = $p_bug_id;
 
-	if( bug_is_readonly( $t_bug_id ) ) {
+	if( \Flickerbox\Bug::is_readonly( $t_bug_id ) ) {
 		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
@@ -143,6 +140,6 @@ function action_add_note_validate( $p_bug_id ) {
 function action_add_note_process( $p_bug_id ) {
 	$f_bugnote_text = \Flickerbox\GPC::get_string( 'bugnote_text' );
 	$f_view_state = \Flickerbox\GPC::get_int( 'view_state' );
-	bugnote_add( $p_bug_id, $f_bugnote_text, '0:00', $f_view_state != VS_PUBLIC );
+	\Flickerbox\Bug\Note::add( $p_bug_id, $f_bugnote_text, '0:00', $f_view_state != VS_PUBLIC );
 	return null;
 }

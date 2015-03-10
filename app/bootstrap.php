@@ -16,7 +16,15 @@ require APP.'autoload.php';
 require APP.'config.php';
 require APP.'constants.php';
 require APP.'config_defaults_inc.php';
+require APP.'require_functions.php';
+
+define( 'ADODB_DIR', \Flickerbox\Config::mantis_get( 'library_path' ) . 'adodb' );
+require_lib( 'adodb' . DIRECTORY_SEPARATOR . 'adodb.inc.php' );
+
+require_lib( 'phpmailer' . DIRECTORY_SEPARATOR . 'class.phpmailer.php' );
+
 require APP.'globals.php';
+
 require APP.'core.php';
 require APP.'settings.php';
 
@@ -25,4 +33,4 @@ require APP.'settings.php';
 # These can be disabled in config_inc.php, see $g_display_errors
 error_reporting( error_reporting() | E_USER_ERROR | E_USER_WARNING | E_USER_NOTICE );
 
-set_error_handler( '\Flickerbox\Error::handler' );
+set_error_handler( '\\Flickerbox\\Error::handler' );

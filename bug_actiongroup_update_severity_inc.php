@@ -34,9 +34,6 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 /**
  * Prints the title for the custom action page.
@@ -66,7 +63,7 @@ function action_update_severity_print_fields() {
 			</th>
 			<td>
 				<select name="severity">';
-					<?php print_enum_string_option_list( 'severity' ); ?>
+					<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity' ); ?>
 				</select>
 			</td>
 		</tr>
@@ -88,10 +85,10 @@ function action_update_severity_print_fields() {
  * @return string|null On failure: the reason why the action could not be validated. On success: null.
  */
 function action_update_severity_validate( $p_bug_id ) {
-	$t_update_severity_threshold = config_get( 'update_bug_threshold' );
+	$t_update_severity_threshold = \Flickerbox\Config::mantis_get( 'update_bug_threshold' );
 	$t_bug_id = $p_bug_id;
 
-	if( bug_is_readonly( $t_bug_id ) ) {
+	if( \Flickerbox\Bug::is_readonly( $t_bug_id ) ) {
 		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
@@ -110,6 +107,6 @@ function action_update_severity_validate( $p_bug_id ) {
  */
 function action_update_severity_process( $p_bug_id ) {
 	$f_severity = \Flickerbox\GPC::get_string( 'severity' );
-	bug_set_field( $p_bug_id, 'severity', $f_severity );
+	\Flickerbox\Bug::set_field( $p_bug_id, 'severity', $f_severity );
 	return null;
 }

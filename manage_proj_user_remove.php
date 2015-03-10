@@ -37,9 +37,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_proj_user_remove' );
 auth_reauthenticate();
@@ -50,8 +47,8 @@ $f_user_id = \Flickerbox\GPC::get_int( 'user_id', 0 );
 # We should check both since we are in the project section and an
 #  admin might raise the first threshold and not realize they need
 #  to raise the second
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
-\Flickerbox\Access::ensure_project_level( config_get( 'project_user_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'project_user_threshold' ), $f_project_id );
 
 if( 0 == $f_user_id ) {
 	# Confirm with the user
@@ -62,7 +59,7 @@ if( 0 == $f_user_id ) {
 	# Don't allow removal of users from the project who have a higher access level than the current user
 	\Flickerbox\Access::ensure_project_level( \Flickerbox\Access::get_project_level( $f_project_id, $f_user_id ), $f_project_id );
 
-	$t_user = user_get_row( $f_user_id );
+	$t_user = \Flickerbox\User::get_row( $f_user_id );
 
 	# Confirm with the user
 	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'remove_user_sure_msg' ) .

@@ -36,7 +36,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'user_api.php' );
 
 
 class Current_User
@@ -74,7 +73,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_access_level() {
-		return user_get_access_level( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
+		return \Flickerbox\User::get_access_level( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
 	}
 	
 	/**
@@ -85,7 +84,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_assigned_open_bug_count() {
-		return user_get_assigned_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
+		return \Flickerbox\User::get_assigned_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
 	}
 	
 	/**
@@ -96,7 +95,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_reported_open_bug_count() {
-		return user_get_reported_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
+		return \Flickerbox\User::get_reported_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
 	}
 	
 	/**
@@ -107,7 +106,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_field( $p_field_name ) {
-		return user_get_field( \Flickerbox\Auth::get_current_user_id(), $p_field_name );
+		return \Flickerbox\User::get_field( \Flickerbox\Auth::get_current_user_id(), $p_field_name );
 	}
 	
 	/**
@@ -141,7 +140,7 @@ class Current_User
 	 * @access public
 	 */
 	static function set_default_project( $p_project_id ) {
-		user_set_default_project( \Flickerbox\Auth::get_current_user_id(), $p_project_id );
+		\Flickerbox\User::set_default_project( \Flickerbox\Auth::get_current_user_id(), $p_project_id );
 	}
 	
 	/**
@@ -153,7 +152,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_accessible_projects( $p_show_disabled = false ) {
-		return user_get_accessible_projects( \Flickerbox\Auth::get_current_user_id(), $p_show_disabled );
+		return \Flickerbox\User::get_accessible_projects( \Flickerbox\Auth::get_current_user_id(), $p_show_disabled );
 	}
 	
 	/**
@@ -166,7 +165,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_accessible_subprojects( $p_project_id, $p_show_disabled = false ) {
-		return user_get_accessible_subprojects( \Flickerbox\Auth::get_current_user_id(), $p_project_id, $p_show_disabled );
+		return \Flickerbox\User::get_accessible_subprojects( \Flickerbox\Auth::get_current_user_id(), $p_project_id, $p_show_disabled );
 	}
 	
 	/**
@@ -178,7 +177,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_all_accessible_subprojects( $p_project_id ) {
-		return user_get_all_accessible_subprojects( \Flickerbox\Auth::get_current_user_id(), $p_project_id );
+		return \Flickerbox\User::get_all_accessible_subprojects( \Flickerbox\Auth::get_current_user_id(), $p_project_id );
 	}
 	
 	/**
@@ -189,7 +188,7 @@ class Current_User
 	 * @access public
 	 */
 	static function is_administrator() {
-		return user_is_administrator( \Flickerbox\Auth::get_current_user_id() );
+		return \Flickerbox\User::is_administrator( \Flickerbox\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -200,7 +199,7 @@ class Current_User
 	 * @access public
 	 */
 	static function is_protected() {
-		return user_is_protected( \Flickerbox\Auth::get_current_user_id() );
+		return \Flickerbox\User::is_protected( \Flickerbox\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -210,7 +209,7 @@ class Current_User
 	 * @access public
 	 */
 	static function is_anonymous() {
-		return user_is_anonymous( \Flickerbox\Auth::get_current_user_id() );
+		return \Flickerbox\User::is_anonymous( \Flickerbox\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -221,7 +220,7 @@ class Current_User
 	 * @return void
 	 */
 	static function ensure_unprotected() {
-		user_ensure_unprotected( \Flickerbox\Auth::get_current_user_id() );
+		\Flickerbox\User::ensure_unprotected( \Flickerbox\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -251,7 +250,7 @@ class Current_User
 			$t_filter = \Flickerbox\Filter::get_default();
 		} else {
 			$t_user_id = \Flickerbox\Auth::get_current_user_id();
-			$t_filter = user_get_bug_filter( $t_user_id, $p_project_id );
+			$t_filter = \Flickerbox\User::get_bug_filter( $t_user_id, $p_project_id );
 		}
 	
 		return $t_filter;

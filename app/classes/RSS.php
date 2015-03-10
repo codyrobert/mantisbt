@@ -36,8 +36,6 @@ namespace Flickerbox;
  * @uses user_api.php
  */
 
-require_api( 'config_api.php' );
-require_api( 'user_api.php' );
 
 
 class RSS
@@ -57,11 +55,11 @@ class RSS
 			$t_user_id = $p_user_id;
 		}
 	
-		$t_username = user_get_field( $t_user_id, 'username' );
-		$t_password = user_get_field( $t_user_id, 'password' );
-		$t_cookie = user_get_field( $t_user_id, 'cookie_string' );
+		$t_username = \Flickerbox\User::get_field( $t_user_id, 'username' );
+		$t_password = \Flickerbox\User::get_field( $t_user_id, 'password' );
+		$t_cookie = \Flickerbox\User::get_field( $t_user_id, 'cookie_string' );
 	
-		$t_key_raw = hash( 'whirlpool', 'rss_key' . config_get_global( 'crypto_master_salt' ) . $t_username . $t_password . $t_cookie, true );
+		$t_key_raw = hash( 'whirlpool', 'rss_key' . \Flickerbox\Config::get_global( 'crypto_master_salt' ) . $t_username . $t_password . $t_cookie, true );
 		# Note: We truncate the last 8 bits from the hash output so that base64
 		# encoding can be performed without any trailing padding.
 		$t_key_base64_encoded = base64_encode( substr( $t_key_raw, 0, 63 ) );
@@ -82,7 +80,7 @@ class RSS
 			return false;
 		}
 	
-		$t_user_id = user_get_id_by_name( $p_username );
+		$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
 	
 		if( false === $t_user_id ) {
 			return false;
@@ -121,15 +119,15 @@ class RSS
 			$t_project_id = (integer)$p_project_id;
 		}
 	
-		$t_user_id = user_get_id_by_name( $t_username );
+		$t_user_id = \Flickerbox\User::get_id_by_name( $t_username );
 	
 		if( $p_relative ) {
-			$t_url = config_get( 'path' );
+			$t_url = \Flickerbox\Config::mantis_get( 'path' );
 		} else {
 			$t_url = '';
 		}
 	
-		if( user_is_anonymous( $t_user_id ) ) {
+		if( \Flickerbox\User::is_anonymous( $t_user_id ) ) {
 			$t_url .= 'issues_rss.php?';
 	
 			if( $t_project_id == ALL_PROJECTS ) {
@@ -173,13 +171,13 @@ class RSS
 		if( $p_relative ) {
 			$t_rss_link = '';
 		} else {
-			$t_rss_link = config_get( 'path' );
+			$t_rss_link = \Flickerbox\Config::mantis_get( 'path' );
 		}
 	
-		$t_user_id = user_get_id_by_name( $t_username );
+		$t_user_id = \Flickerbox\User::get_id_by_name( $t_username );
 	
 		# If we have a logged in user then they can be given a 'proper' feed, complete with auth string.
-		if( user_is_anonymous( $t_user_id ) ) {
+		if( \Flickerbox\User::is_anonymous( $t_user_id ) ) {
 			$t_rss_link .= 'news_rss.php';
 	
 			if( $t_project_id != ALL_PROJECTS ) {

@@ -29,7 +29,7 @@ $t_mantis_dir = dirname( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR;
 
 require_once( $t_mantis_dir . 'core.php' );
 
-\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
 
 if( function_exists( 'xdebug_disable' ) ) {
 	xdebug_disable();
@@ -71,7 +71,7 @@ if( function_exists( 'scandir' ) ) {
 # attempt to find plugin language files
 echo '<br />Trying to find+check plugin language files...<br />';
 if( function_exists( 'scandir' ) ) {
-	checkplugins( config_get( 'plugin_path' ) );
+	checkplugins( \Flickerbox\Config::mantis_get( 'plugin_path' ) );
 } else {
 	echo 'php scandir is disabled - skipping<br />';
 }

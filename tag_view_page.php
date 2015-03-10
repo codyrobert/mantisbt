@@ -38,11 +38,8 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
-\Flickerbox\Access::ensure_global_level( config_get( 'tag_view_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'tag_view_threshold' ) );
 \Flickerbox\Compress::enable();
 
 $f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
@@ -50,9 +47,9 @@ $t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
 
 $t_name = \Flickerbox\String::display_line( $t_tag_row['name'] );
 $t_description = \Flickerbox\String::display( $t_tag_row['description'] );
-$t_can_edit = \Flickerbox\Access::has_global_level( config_get( 'tag_edit_threshold' ) );
+$t_can_edit = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) );
 $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::get_field( $f_tag_id, 'user_id' )
-	&& \Flickerbox\Access::has_global_level( config_get( 'tag_edit_own_threshold' ) );
+	&& \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_own_threshold' ) );
 
 
 \Flickerbox\HTML::page_top( sprintf( \Flickerbox\Lang::get( 'tag_details' ), $t_name ) ); ?>
@@ -60,7 +57,7 @@ $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::
 <div id="tag-view-div" class="form-container">
 	<h2><?php echo sprintf( \Flickerbox\Lang::get( 'tag_details' ), $t_name ) ?></h2>
 	<div class="section-link">
-		<?php print_bracket_link( 'search.php?tag_string='.urlencode( $t_tag_row['name'] ), sprintf( \Flickerbox\Lang::get( 'tag_filter_default' ), \Flickerbox\Tag::stats_attached( $f_tag_id ) ) ); ?>
+		<?php \Flickerbox\Print_Util::bracket_link( 'search.php?tag_string='.urlencode( $t_tag_row['name'] ), sprintf( \Flickerbox\Lang::get( 'tag_filter_default' ), \Flickerbox\Tag::stats_attached( $f_tag_id ) ) ); ?>
 	</div>
 	<div class="field-container">
 		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_id' ) ?></span></span>
@@ -74,17 +71,17 @@ $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::
 	</div>
 	<div class="field-container">
 		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_creator' ) ?></span></span>
-		<span class="display-value"><span><?php echo \Flickerbox\String::display_line( user_get_name( $t_tag_row['user_id'] ) ) ?></span></span>
+		<span class="display-value"><span><?php echo \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_tag_row['user_id'] ) ) ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
 		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_created' ) ?></span></span>
-		<span class="display-value"><span><?php echo date( config_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
+		<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
 		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_updated' ) ?></span></span>
-		<span class="display-value"><span><?php echo date( config_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
+		<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
@@ -108,7 +105,7 @@ $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::
 			$t_name = \Flickerbox\String::display_line( $t_tag['name'] );
 			$t_description = \Flickerbox\String::display_line( $t_tag['description'] );
 			$t_count = $t_tag['count'];
-			$t_link = \Flickerbox\String::html_specialchars( 'search.php?tag_string='.urlencode( '+' . $t_tag_row['name'] . config_get( 'tag_separator' ) . '+' . $t_name ) );
+			$t_link = \Flickerbox\String::html_specialchars( 'search.php?tag_string='.urlencode( '+' . $t_tag_row['name'] . \Flickerbox\Config::mantis_get( 'tag_separator' ) . '+' . $t_name ) );
 			$t_label = sprintf( \Flickerbox\Lang::get( 'tag_related_issues' ), $t_tag['count'] ); ?>
 			<tr>
 				<td><span class="tag-link"><a href="tag_view_page.php?tag_id=<?php echo $t_tag['id']; ?>" title="<?php echo $t_description; ?>"><?php echo $t_name; ?></a></span></td>

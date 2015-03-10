@@ -39,8 +39,6 @@
 
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_config_revert' );
 
@@ -54,7 +52,7 @@ $t_access = true;
 $t_revert_vars = explode( ',', $f_revert );
 array_walk( $t_revert_vars, 'trim' );
 foreach ( $t_revert_vars as $t_revert ) {
-	$t_access &= \Flickerbox\Access::has_project_level( config_get_access( $t_revert ), $f_project_id );
+	$t_access &= \Flickerbox\Access::has_project_level( \Flickerbox\Config::get_access( $t_revert ), $f_project_id );
 }
 
 if( !$t_access ) {
@@ -68,7 +66,7 @@ if( '' != $f_revert ) {
 		\Flickerbox\Lang::get( 'delete_config_button' ) );
 
 	foreach ( $t_revert_vars as $t_revert ) {
-		config_delete( $t_revert, ALL_USERS, $f_project_id );
+		\Flickerbox\Config::delete( $t_revert, ALL_USERS, $f_project_id );
 	}
 }
 

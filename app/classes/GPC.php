@@ -35,7 +35,6 @@ namespace Flickerbox;
  * @uses http_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class GPC
@@ -97,7 +96,7 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		#  otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( '\Flickerbox\GPC::get', $t_args );
+		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
 	
 		if( is_array( $t_result ) ) {
 			\Flickerbox\Error::parameters( $p_var_name );
@@ -123,7 +122,7 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		#  otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( 'gpc_get', $t_args );
+		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
 	
 		if( is_array( $t_result ) ) {
 			\Flickerbox\Error::parameters( $p_var_name );
@@ -245,7 +244,7 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		# otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( 'gpc_get', $t_args );
+		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
 	
 		# If the result isn't the default we were given or an array, error
 		if( !((( 1 < func_num_args() ) && ( $t_result === $p_default ) ) || is_array( $t_result ) ) ) {
@@ -279,7 +278,7 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		# otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( 'gpc_get', $t_args );
+		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
 	
 		# If the result isn't the default we were given or an array, error
 		if( !((( 1 < func_num_args() ) && ( $t_result === $p_default ) ) || is_array( $t_result ) ) ) {
@@ -367,14 +366,14 @@ class GPC
 		if( false === $p_expire ) {
 			$p_expire = 0;
 		} else if( true === $p_expire ) {
-			$t_cookie_length = config_get( 'cookie_time_length' );
+			$t_cookie_length = \Flickerbox\Config::mantis_get( 'cookie_time_length' );
 			$p_expire = time() + $t_cookie_length;
 		}
 		if( null === $p_path ) {
-			$p_path = config_get( 'cookie_path' );
+			$p_path = \Flickerbox\Config::mantis_get( 'cookie_path' );
 		}
 		if( null === $p_domain ) {
-			$p_domain = config_get( 'cookie_domain' );
+			$p_domain = \Flickerbox\Config::mantis_get( 'cookie_domain' );
 		}
 	
 		return setcookie( $p_name, $p_value, $p_expire, $p_path, $p_domain, $g_cookie_secure_flag_enabled, true );
@@ -389,10 +388,10 @@ class GPC
 	 */
 	static function clear_cookie( $p_name, $p_path = null, $p_domain = null ) {
 		if( null === $p_path ) {
-			$p_path = config_get( 'cookie_path' );
+			$p_path = \Flickerbox\Config::mantis_get( 'cookie_path' );
 		}
 		if( null === $p_domain ) {
-			$p_domain = config_get( 'cookie_domain' );
+			$p_domain = \Flickerbox\Config::mantis_get( 'cookie_domain' );
 		}
 	
 		if( isset( $_COOKIE[$p_name] ) ) {

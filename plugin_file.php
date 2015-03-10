@@ -31,10 +31,8 @@ $g_bypass_headers = true;
 header( 'Content-type: ' );
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'plugin_api.php' );
 
-$t_plugin_path = config_get( 'plugin_path' );
+$t_plugin_path = \Flickerbox\Config::mantis_get( 'plugin_path' );
 
 $f_file = \Flickerbox\GPC::get_string( 'file' );
 
@@ -55,6 +53,6 @@ if( !preg_match( $t_regex, $f_file, $t_matches ) ) {
 $t_basename = $t_matches[1];
 $t_file = $t_matches[2];
 
-$t_plugin = plugin_get( $t_basename );
+$t_plugin = \Flickerbox\Plugin::get( $t_basename );
 
-plugin_file_include( $t_file, $t_basename );
+\Flickerbox\Plugin::file_include( $t_file, $t_basename );

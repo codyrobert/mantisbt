@@ -34,7 +34,6 @@ namespace Flickerbox;
  * @uses utility_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Collapse

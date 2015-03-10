@@ -40,10 +40,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'bug_api.php' );
-require_api( 'config_api.php' );
-require_api( 'email_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'bug_relationship_add' );
 
@@ -52,7 +48,7 @@ $f_src_bug_id = \Flickerbox\GPC::get_int( 'src_bug_id' );
 $f_dest_bug_id_string = \Flickerbox\GPC::get_string( 'dest_bug_id' );
 
 # user has access to update the bug...
-\Flickerbox\Access::ensure_bug_level( config_get( 'update_bug_threshold' ), $f_src_bug_id );
+\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $f_src_bug_id );
 
 $f_dest_bug_id_string = str_replace( ',', '|', $f_dest_bug_id_string );
 
@@ -67,22 +63,22 @@ foreach( $f_dest_bug_id_array as $f_dest_bug_id ) {
 	}
 
 	# the related bug exists...
-	bug_ensure_exists( $f_dest_bug_id );
-	$t_dest_bug = bug_get( $f_dest_bug_id, true );
+	\Flickerbox\Bug::ensure_exists( $f_dest_bug_id );
+	$t_dest_bug = \Flickerbox\Bug::get( $f_dest_bug_id, true );
 
 	# bug is not read-only...
-	if( bug_is_readonly( $f_src_bug_id ) ) {
+	if( \Flickerbox\Bug::is_readonly( $f_src_bug_id ) ) {
 		\Flickerbox\Error::parameters( $f_src_bug_id );
 		trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 	}
 
 	# user can access to the related bug at least as viewer...
-	if( !\Flickerbox\Access::has_bug_level( config_get( 'view_bug_threshold', null, null, $t_dest_bug->project_id ), $f_dest_bug_id ) ) {
+	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_dest_bug->project_id ), $f_dest_bug_id ) ) {
 		\Flickerbox\Error::parameters( $f_dest_bug_id );
 		trigger_error( ERROR_RELATIONSHIP_ACCESS_LEVEL_TO_DEST_BUG_TOO_LOW, ERROR );
 	}
 
-	$t_bug = bug_get( $f_src_bug_id, true );
+	$t_bug = \Flickerbox\Bug::get( $f_src_bug_id, true );
 	if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
 		# in case the current project is not the same project of the bug we are viewing...
 		# ... override the current project. This to avoid problems with categories and handlers lists etc.
@@ -115,14 +111,14 @@ foreach( $f_dest_bug_id_array as $f_dest_bug_id ) {
 	}
 
 	# update bug last updated for both bugs
-	bug_update_date( $f_src_bug_id );
-	bug_update_date( $f_dest_bug_id );
+	\Flickerbox\Bug::update_date( $f_src_bug_id );
+	\Flickerbox\Bug::update_date( $f_dest_bug_id );
 
 	# send email notification to the users addressed by both the bugs
-	email_relationship_added( $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
-	email_relationship_added( $f_dest_bug_id, $f_src_bug_id, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ) );
+	\Flickerbox\Email::relationship_added( $f_src_bug_id, $f_dest_bug_id, $f_rel_type );
+	\Flickerbox\Email::relationship_added( $f_dest_bug_id, $f_src_bug_id, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ) );
 }
 
 \Flickerbox\Form::security_purge( 'bug_relationship_add' );
 
-print_header_redirect_view( $f_src_bug_id );
+\Flickerbox\Print_Util::header_redirect_view( $f_src_bug_id );

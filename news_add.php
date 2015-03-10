@@ -36,14 +36,12 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
 
 \Flickerbox\Form::security_validate( 'news_add' );
 
-\Flickerbox\Access::ensure_project_level( config_get( 'manage_news_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ) );
 
 $f_view_state	= \Flickerbox\GPC::get_int( 'view_state' );
 $f_headline		= \Flickerbox\GPC::get_string( 'headline' );
@@ -60,6 +58,6 @@ $t_news_row = \Flickerbox\News::get_row( $t_news_id );
 
 \Flickerbox\HTML::operation_successful( 'news_menu_page.php' );
 
-print_news_entry_from_row( $t_news_row );
+\Flickerbox\Print_Util::news_entry_from_row( $t_news_row );
 
 \Flickerbox\HTML::page_bottom();

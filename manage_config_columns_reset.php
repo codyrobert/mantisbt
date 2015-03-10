@@ -31,17 +31,15 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_config_columns_reset' );
 
 $t_user_id = \Flickerbox\Auth::get_current_user_id();
 
-config_delete_for_user( 'view_issues_page_columns', $t_user_id );
-config_delete_for_user( 'print_issues_page_columns', $t_user_id );
-config_delete_for_user( 'csv_columns', $t_user_id );
-config_delete_for_user( 'excel_columns', $t_user_id );
+\Flickerbox\Config::delete_for_user( 'view_issues_page_columns', $t_user_id );
+\Flickerbox\Config::delete_for_user( 'print_issues_page_columns', $t_user_id );
+\Flickerbox\Config::delete_for_user( 'csv_columns', $t_user_id );
+\Flickerbox\Config::delete_for_user( 'excel_columns', $t_user_id );
 
 \Flickerbox\Form::security_purge( 'manage_config_columns_reset' );
 

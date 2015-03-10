@@ -15,7 +15,7 @@
 # along with MantisBT.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Test cases for MantisEnum Class
+ * Test cases for \Flickerbox\MantisEnum Class
  *
  * @package    Tests
  * @subpackage UnitTests
@@ -31,7 +31,7 @@ require_once dirname( dirname( __FILE__ ) ) . '/TestConfig.php';
 require_once 'MantisEnum.class.php';
 
 /**
- * Test cases for MantisEnum class.
+ * Test cases for \Flickerbox\MantisEnum class.
  * @package    Tests
  * @subpackage Enum
  */
@@ -51,15 +51,15 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testGetLabel() {
-		$this->assertEquals( 'viewer', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, 10 ) );
-		$this->assertEquals( 'reporter', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, 25 ) );
-		$this->assertEquals( 'updater', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, 40 ) );
-		$this->assertEquals( 'developer', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, 55 ) );
-		$this->assertEquals( 'manager', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, 70 ) );
-		$this->assertEquals( 'administrator', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, 90 ) );
-		$this->assertEquals( '@100@', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, 100 ) );
-		$this->assertEquals( '@-1@', \MantisEnum::getLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, -1 ) );
-		$this->assertEquals( '@10@', \MantisEnum::getLabel( MantisEnumTest::EMPTY_ENUM, 10 ) );
+		$this->assertEquals( 'viewer', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 10 ) );
+		$this->assertEquals( 'reporter', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 25 ) );
+		$this->assertEquals( 'updater', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 40 ) );
+		$this->assertEquals( 'developer', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 55 ) );
+		$this->assertEquals( 'manager', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 70 ) );
+		$this->assertEquals( 'administrator', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 90 ) );
+		$this->assertEquals( '@100@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 100 ) );
+		$this->assertEquals( '@-1@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, -1 ) );
+		$this->assertEquals( '@10@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::EMPTY_ENUM, 10 ) );
 	}
 
 	/**
@@ -68,19 +68,19 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 */
 	public function testGetLocalizedLabel() {
 		# Test existing case
-		$this->assertEquals( 'viewer_x', \MantisEnum::getLocalizedLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 10 ) );
+		$this->assertEquals( 'viewer_x', \Flickerbox\MantisEnum::getLocalizedLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, \Flickerbox\MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 10 ) );
 
 		# Test unknown case
-		$this->assertEquals( '@5@', \MantisEnum::getLocalizedLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 5 ) );
+		$this->assertEquals( '@5@', \Flickerbox\MantisEnum::getLocalizedLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, \Flickerbox\MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 5 ) );
 
 		# Test the case where the value is in the localized enumeration but not the standard one.
 		# In this case it should be treated as unknown.
-		$this->assertEquals( '@95@', \MantisEnum::getLocalizedLabel( MantisEnumTest::ACCESS_LEVELS_ENUM, MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 95 ) );
+		$this->assertEquals( '@95@', \Flickerbox\MantisEnum::getLocalizedLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, \Flickerbox\MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 95 ) );
 
 		# Test the case where the value is in the standard enumeration but not in the localized one.
 		# In this case we should fall back to the standard enumeration (as we do with language strings)
 		# as the value is a known good value - just that it has not yet been localized.
-		$this->assertEquals( 'missing', \MantisEnum::getLocalizedLabel( MantisEnumTest::ACCESS_LEVELS_ENUM_EXTRA, MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 100 ) );
+		$this->assertEquals( 'missing', \Flickerbox\MantisEnum::getLocalizedLabel( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM_EXTRA, \Flickerbox\MantisEnumTest::ACCESS_LEVELS_LOCALIZED_ENUM, 100 ) );
 
 	}
 
@@ -89,8 +89,8 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testGetValues() {
-		$this->assertEquals( array( 10, 25, 40, 55, 70,90 ), \MantisEnum::getValues( MantisEnumTest::ACCESS_LEVELS_ENUM, 10 ) );
-		$this->assertEquals( array(), \MantisEnum::getValues( MantisEnumTest::EMPTY_ENUM, 10 ) );
+		$this->assertEquals( array( 10, 25, 40, 55, 70,90 ), \Flickerbox\MantisEnum::getValues( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 10 ) );
+		$this->assertEquals( array(), \Flickerbox\MantisEnum::getValues( \Flickerbox\MantisEnumTest::EMPTY_ENUM, 10 ) );
 	}
 
 	/**
@@ -98,11 +98,11 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testGetAssocArrayIndexedByValues() {
-		$this->assertEquals( array(), \MantisEnum::getAssocArrayIndexedByValues( MantisEnumTest::EMPTY_ENUM ) );
-		$this->assertEquals( array( 10 => 'viewer' ), \MantisEnum::getAssocArrayIndexedByValues( MantisEnumTest::SINGLE_VALUE_ENUM ) );
-		$this->assertEquals( array( 10 => 'viewer1' ), \MantisEnum::getAssocArrayIndexedByValues( MantisEnumTest::DUPLICATE_VALUES_ENUM ) );
-		$this->assertEquals( array( 10 => 'viewer', 20 => 'viewer' ), \MantisEnum::getAssocArrayIndexedByValues( MantisEnumTest::DUPLICATE_LABELS_ENUM ) );
-		$this->assertEquals( array( 10 => 'first label', 20 => 'second label' ), \MantisEnum::getAssocArrayIndexedByValues( MantisEnumTest::NAME_WITH_SPACES_ENUM ) );
+		$this->assertEquals( array(), \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\MantisEnumTest::EMPTY_ENUM ) );
+		$this->assertEquals( array( 10 => 'viewer' ), \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\MantisEnumTest::SINGLE_VALUE_ENUM ) );
+		$this->assertEquals( array( 10 => 'viewer1' ), \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\MantisEnumTest::DUPLICATE_VALUES_ENUM ) );
+		$this->assertEquals( array( 10 => 'viewer', 20 => 'viewer' ), \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\MantisEnumTest::DUPLICATE_LABELS_ENUM ) );
+		$this->assertEquals( array( 10 => 'first label', 20 => 'second label' ), \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\MantisEnumTest::NAME_WITH_SPACES_ENUM ) );
 	}
 
 	/**
@@ -110,11 +110,11 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testGetAssocArrayIndexedByLabels() {
-		$this->assertEquals( array(), \MantisEnum::getAssocArrayIndexedByLabels( MantisEnumTest::EMPTY_ENUM ) );
-		$this->assertEquals( array( 'viewer' => 10 ), \MantisEnum::getAssocArrayIndexedByLabels( MantisEnumTest::SINGLE_VALUE_ENUM ) );
-		$this->assertEquals( array( 'viewer1' => 10 ), \MantisEnum::getAssocArrayIndexedByLabels( MantisEnumTest::DUPLICATE_VALUES_ENUM ) );
-		$this->assertEquals( array( 'viewer' => 10, 'viewer' => 20 ), \MantisEnum::getAssocArrayIndexedByLabels( MantisEnumTest::DUPLICATE_LABELS_ENUM ) );
-		$this->assertEquals( array( 'first label' => 10, 'second label' => 20 ), \MantisEnum::getAssocArrayIndexedByLabels( MantisEnumTest::NAME_WITH_SPACES_ENUM ) );
+		$this->assertEquals( array(), \Flickerbox\MantisEnum::getAssocArrayIndexedByLabels( \Flickerbox\MantisEnumTest::EMPTY_ENUM ) );
+		$this->assertEquals( array( 'viewer' => 10 ), \Flickerbox\MantisEnum::getAssocArrayIndexedByLabels( \Flickerbox\MantisEnumTest::SINGLE_VALUE_ENUM ) );
+		$this->assertEquals( array( 'viewer1' => 10 ), \Flickerbox\MantisEnum::getAssocArrayIndexedByLabels( \Flickerbox\MantisEnumTest::DUPLICATE_VALUES_ENUM ) );
+		$this->assertEquals( array( 'viewer' => 10, 'viewer' => 20 ), \Flickerbox\MantisEnum::getAssocArrayIndexedByLabels( \Flickerbox\MantisEnumTest::DUPLICATE_LABELS_ENUM ) );
+		$this->assertEquals( array( 'first label' => 10, 'second label' => 20 ), \Flickerbox\MantisEnum::getAssocArrayIndexedByLabels( \Flickerbox\MantisEnumTest::NAME_WITH_SPACES_ENUM ) );
 	}
 
 	/**
@@ -122,14 +122,14 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testGetValue() {
-		$this->assertEquals( false, \MantisEnum::getValue( MantisEnumTest::EMPTY_ENUM, 'viewer' ) );
-		$this->assertEquals( 10, \MantisEnum::getValue( MantisEnumTest::SINGLE_VALUE_ENUM, 'viewer' ) );
-		$this->assertEquals( 10, \MantisEnum::getValue( MantisEnumTest::DUPLICATE_VALUES_ENUM, 'viewer1' ) );
-		$this->assertEquals( 20, \MantisEnum::getValue( MantisEnumTest::NAME_WITH_SPACES_ENUM, 'second label' ) );
+		$this->assertEquals( false, \Flickerbox\MantisEnum::getValue( \Flickerbox\MantisEnumTest::EMPTY_ENUM, 'viewer' ) );
+		$this->assertEquals( 10, \Flickerbox\MantisEnum::getValue( \Flickerbox\MantisEnumTest::SINGLE_VALUE_ENUM, 'viewer' ) );
+		$this->assertEquals( 10, \Flickerbox\MantisEnum::getValue( \Flickerbox\MantisEnumTest::DUPLICATE_VALUES_ENUM, 'viewer1' ) );
+		$this->assertEquals( 20, \Flickerbox\MantisEnum::getValue( \Flickerbox\MantisEnumTest::NAME_WITH_SPACES_ENUM, 'second label' ) );
 
 		# This is not inconsistent with duplicate values behaviour, however, it is considered correct
 		# since it simplifies the code and it is not a real scenario.
-		$this->assertEquals( 20, \MantisEnum::getValue( MantisEnumTest::DUPLICATE_LABELS_ENUM, 'viewer' ) );
+		$this->assertEquals( 20, \Flickerbox\MantisEnum::getValue( \Flickerbox\MantisEnumTest::DUPLICATE_LABELS_ENUM, 'viewer' ) );
 	}
 
 	/**
@@ -137,9 +137,9 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testHasValue() {
-		$this->assertEquals( true, \MantisEnum::hasValue( MantisEnumTest::ACCESS_LEVELS_ENUM, 10 ) );
-		$this->assertEquals( false, \MantisEnum::hasValue( MantisEnumTest::ACCESS_LEVELS_ENUM, 5 ) );
-		$this->assertEquals( false, \MantisEnum::hasValue( MantisEnumTest::EMPTY_ENUM, 10 ) );
+		$this->assertEquals( true, \Flickerbox\MantisEnum::hasValue( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 10 ) );
+		$this->assertEquals( false, \Flickerbox\MantisEnum::hasValue( \Flickerbox\MantisEnumTest::ACCESS_LEVELS_ENUM, 5 ) );
+		$this->assertEquals( false, \Flickerbox\MantisEnum::hasValue( \Flickerbox\MantisEnumTest::EMPTY_ENUM, 10 ) );
 	}
 
 	/**
@@ -147,8 +147,8 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testDuplicateValuesEnum() {
-		$this->assertEquals( 'viewer1', \MantisEnum::getLabel( MantisEnumTest::DUPLICATE_VALUES_ENUM, 10 ) );
-		$this->assertEquals( '@100@', \MantisEnum::getLabel( MantisEnumTest::DUPLICATE_VALUES_ENUM, 100 ) );
+		$this->assertEquals( 'viewer1', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::DUPLICATE_VALUES_ENUM, 10 ) );
+		$this->assertEquals( '@100@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::DUPLICATE_VALUES_ENUM, 100 ) );
 	}
 
 	/**
@@ -156,9 +156,9 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testDuplicateLabelsValuesEnum() {
-		$this->assertEquals( 'viewer', \MantisEnum::getLabel( MantisEnumTest::DUPLICATE_LABELS_ENUM, 10 ) );
-		$this->assertEquals( 'viewer', \MantisEnum::getLabel( MantisEnumTest::DUPLICATE_LABELS_ENUM, 20 ) );
-		$this->assertEquals( '@100@', \MantisEnum::getLabel( MantisEnumTest::DUPLICATE_LABELS_ENUM, 100 ) );
+		$this->assertEquals( 'viewer', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::DUPLICATE_LABELS_ENUM, 10 ) );
+		$this->assertEquals( 'viewer', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::DUPLICATE_LABELS_ENUM, 20 ) );
+		$this->assertEquals( '@100@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::DUPLICATE_LABELS_ENUM, 100 ) );
 	}
 
 	/**
@@ -166,8 +166,8 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testSingleValueEnum() {
-		$this->assertEquals( 'viewer', \MantisEnum::getLabel( MantisEnumTest::SINGLE_VALUE_ENUM, 10 ) );
-		$this->assertEquals( '@100@', \MantisEnum::getLabel( MantisEnumTest::SINGLE_VALUE_ENUM, 100 ) );
+		$this->assertEquals( 'viewer', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::SINGLE_VALUE_ENUM, 10 ) );
+		$this->assertEquals( '@100@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::SINGLE_VALUE_ENUM, 100 ) );
 	}
 
 	/**
@@ -175,9 +175,9 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testNameWithSpacesEnum() {
-		$this->assertEquals( 'first label', \MantisEnum::getLabel( MantisEnumTest::NAME_WITH_SPACES_ENUM, 10 ) );
-		$this->assertEquals( 'second label', \MantisEnum::getLabel( MantisEnumTest::NAME_WITH_SPACES_ENUM, 20 ) );
-		$this->assertEquals( '@100@', \MantisEnum::getLabel( MantisEnumTest::NAME_WITH_SPACES_ENUM, 100 ) );
+		$this->assertEquals( 'first label', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::NAME_WITH_SPACES_ENUM, 10 ) );
+		$this->assertEquals( 'second label', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::NAME_WITH_SPACES_ENUM, 20 ) );
+		$this->assertEquals( '@100@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::NAME_WITH_SPACES_ENUM, 100 ) );
 	}
 
 	/**
@@ -185,8 +185,8 @@ class MantisEnumTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testNonTrimmedEnum() {
-		$this->assertEquals( 'viewer', \MantisEnum::getLabel( MantisEnumTest::NON_TRIMMED_ENUM, 10 ) );
-		$this->assertEquals( 'reporter', \MantisEnum::getLabel( MantisEnumTest::NON_TRIMMED_ENUM, 20 ) );
-		$this->assertEquals( '@100@', \MantisEnum::getLabel( MantisEnumTest::NON_TRIMMED_ENUM, 100 ) );
+		$this->assertEquals( 'viewer', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::NON_TRIMMED_ENUM, 10 ) );
+		$this->assertEquals( 'reporter', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::NON_TRIMMED_ENUM, 20 ) );
+		$this->assertEquals( '@100@', \Flickerbox\MantisEnum::getLabel( \Flickerbox\MantisEnumTest::NON_TRIMMED_ENUM, 100 ) );
 	}
 }

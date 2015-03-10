@@ -33,9 +33,7 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
 require_api( 'custom_field_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_custom_field_proj_add' );
 
@@ -45,7 +43,7 @@ $f_field_id = \Flickerbox\GPC::get_int( 'field_id' );
 $f_project_id = \Flickerbox\GPC::get_int_array( 'project_id', array() );
 $f_sequence	= \Flickerbox\GPC::get_int( 'sequence' );
 
-$t_manage_project_threshold = config_get( 'manage_project_threshold' );
+$t_manage_project_threshold = \Flickerbox\Config::mantis_get( 'manage_project_threshold' );
 
 foreach ( $f_project_id as $t_proj_id ) {
 	if( \Flickerbox\Access::has_project_level( $t_manage_project_threshold, $t_proj_id ) ) {
@@ -59,4 +57,4 @@ foreach ( $f_project_id as $t_proj_id ) {
 
 \Flickerbox\Form::security_purge( 'manage_custom_field_proj_add' );
 
-print_header_redirect( 'manage_custom_field_edit_page.php?field_id=' . $f_field_id );
+\Flickerbox\Print_Util::header_redirect( 'manage_custom_field_edit_page.php?field_id=' . $f_field_id );

@@ -28,9 +28,7 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 auth_logout();
 
-print_header_redirect( config_get( 'logout_redirect_page' ), true, false );
+\Flickerbox\Print_Util::header_redirect( \Flickerbox\Config::mantis_get( 'logout_redirect_page' ), true, false );

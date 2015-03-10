@@ -4,8 +4,110 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "57622f0b151c53b43befcd1c4fb17738",
+    "hash": "cab5c10b1ce1494ea83eb0e722cfb607",
     "packages": [
+        {
+            "name": "altorouter/altorouter",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dannyvankooten/AltoRouter.git",
+                "reference": "f0e9c913a66332c9a9fe6cc3293bff4b0208ed6b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dannyvankooten/AltoRouter/zipball/f0e9c913a66332c9a9fe6cc3293bff4b0208ed6b",
+                "reference": "f0e9c913a66332c9a9fe6cc3293bff4b0208ed6b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "phpunit/phpunit": "4.5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "AltoRouter.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Danny van Kooten",
+                    "email": "dannyvankooten@gmail.com",
+                    "homepage": "http://dannyvankooten.com/"
+                },
+                {
+                    "name": "Koen Punt",
+                    "homepage": "https://github.com/koenpunt"
+                },
+                {
+                    "name": "niahoo",
+                    "homepage": "https://github.com/niahoo"
+                }
+            ],
+            "description": "A lightning fast router for PHP",
+            "homepage": "https://github.com/dannyvankooten/AltoRouter",
+            "keywords": [
+                "lightweight",
+                "router",
+                "routing"
+            ],
+            "time": "2015-03-02 15:51:27"
+        },
+        {
+            "name": "codyrobert/redbean-single-file",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/codyrobert/redbean-single-file.git",
+                "reference": "cfecaece99911f98c3aa22c092ef0e5d185085e6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/codyrobert/redbean-single-file/zipball/cfecaece99911f98c3aa22c092ef0e5d185085e6",
+                "reference": "cfecaece99911f98c3aa22c092ef0e5d185085e6",
+                "shasum": ""
+            },
+            "require": {
+                "php": "5.*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "rb.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gabor de Mooij",
+                    "email": "gabordemooij@gmail.com",
+                    "homepage": "http://www.redbeanphp.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "RedBeanPHP is an easy-to-use, on-the-fly ORM for PHP. Patched for 5.3.3.",
+            "homepage": "https://github.com/codyrobert/redbean-single-file",
+            "keywords": [
+                "CUBRID",
+                "InnoDB",
+                "mariadb",
+                "mysql",
+                "postgresql",
+                "sqlite3"
+            ],
+            "time": "2015-01-20 18:57:56"
+        },
         {
             "name": "google/apiclient",
             "version": "1.0.6-beta",
@@ -154,6 +256,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "altorouter/altorouter": 20,
+        "codyrobert/redbean-single-file": 20,
         "google/apiclient": 10
     },
     "prefer-stable": false,

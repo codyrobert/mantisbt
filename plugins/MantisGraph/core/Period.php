@@ -274,23 +274,23 @@ class Period {
 	 */
 	function period_selector( $p_control_name ) {
 		$t_periods = array(
-			0 => plugin_langget( 'period_none' ),
-			7 => plugin_langget( 'period_this_week' ),
-			8 => plugin_langget( 'period_last_week' ),
-			9 => plugin_langget( 'period_two_weeks' ),
-			1 => plugin_langget( 'period_this_month' ),
-			2 => plugin_langget( 'period_last_month' ),
-			3 => plugin_langget( 'period_this_quarter' ),
-			4 => plugin_langget( 'period_last_quarter' ),
-			5 => plugin_langget( 'period_year_to_date' ),
-			6 => plugin_langget( 'period_last_year' ),
-			10 => plugin_langget( 'period_select' ),
+			0 => \Flickerbox\Plugin::langget( 'period_none' ),
+			7 => \Flickerbox\Plugin::langget( 'period_this_week' ),
+			8 => \Flickerbox\Plugin::langget( 'period_last_week' ),
+			9 => \Flickerbox\Plugin::langget( 'period_two_weeks' ),
+			1 => \Flickerbox\Plugin::langget( 'period_this_month' ),
+			2 => \Flickerbox\Plugin::langget( 'period_last_month' ),
+			3 => \Flickerbox\Plugin::langget( 'period_this_quarter' ),
+			4 => \Flickerbox\Plugin::langget( 'period_last_quarter' ),
+			5 => \Flickerbox\Plugin::langget( 'period_year_to_date' ),
+			6 => \Flickerbox\Plugin::langget( 'period_last_year' ),
+			10 => \Flickerbox\Plugin::langget( 'period_select' ),
 		);
 		$t_default = \Flickerbox\GPC::get_int( $p_control_name, 0 );
 		$t_formatted_start = $this->get_start_formatted();
 		$t_formatted_end = $this->get_end_formatted();
 		$t_ret = '<div id="period_menu">';
-		$t_ret .= get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
+		$t_ret .= \Flickerbox\Print_Util::get_dropdown( $t_periods, $p_control_name, $t_default, false, false );
 		$t_ret .= "</div>\n";
 		$t_ret .= "<div id=\"dates\">\n";
 		$t_ret .= '<label for="start_date">' . \Flickerbox\Lang::get( 'from_date' ) . '</label><input type="text" id="start_date" name="start_date" size="20" value="' . $t_formatted_start . '" class="datetime" disabled="disabled" />' . "<br />\n";

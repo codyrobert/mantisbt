@@ -38,9 +38,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'columns_api.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Form::security_validate( 'manage_config_columns_set' );
 
@@ -69,9 +66,9 @@ if( $f_project_id == ALL_PROJECTS ) {
 	}
 } else {
 	if( $t_account_page ) {
-		\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold' ), $f_project_id );
+		\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ), $f_project_id );
 	} else {
-		\Flickerbox\Access::ensure_project_level( config_get( 'manage_project_threshold' ), $f_project_id );
+		\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 	}
 }
 
@@ -83,31 +80,31 @@ if( $t_account_page ) {
 	$t_user_id = NO_USER;
 }
 
-$t_all_columns = columns_get_all();
+$t_all_columns = \Flickerbox\Columns::get_all();
 
-$t_view_issues_columns = columns_string_to_array( $f_view_issues_columns );
-columns_ensure_valid( 'view_issues', $t_view_issues_columns, $t_all_columns );
+$t_view_issues_columns = \Flickerbox\Columns::string_to_array( $f_view_issues_columns );
+\Flickerbox\Columns::ensure_valid( 'view_issues', $t_view_issues_columns, $t_all_columns );
 
-$t_print_issues_columns = columns_string_to_array( $f_print_issues_columns );
-columns_ensure_valid( 'print_issues', $t_print_issues_columns, $t_all_columns );
+$t_print_issues_columns = \Flickerbox\Columns::string_to_array( $f_print_issues_columns );
+\Flickerbox\Columns::ensure_valid( 'print_issues', $t_print_issues_columns, $t_all_columns );
 
-$t_csv_columns = columns_string_to_array( $f_csv_columns );
-columns_ensure_valid( 'csv', $t_csv_columns, $t_all_columns );
+$t_csv_columns = \Flickerbox\Columns::string_to_array( $f_csv_columns );
+\Flickerbox\Columns::ensure_valid( 'csv', $t_csv_columns, $t_all_columns );
 
-$t_excel_columns = columns_string_to_array( $f_excel_columns );
-columns_ensure_valid( 'excel', $t_excel_columns, $t_all_columns );
+$t_excel_columns = \Flickerbox\Columns::string_to_array( $f_excel_columns );
+\Flickerbox\Columns::ensure_valid( 'excel', $t_excel_columns, $t_all_columns );
 
-if( json_encode( config_get( 'view_issues_page_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_view_issues_columns ) ) {
-	config_set( 'view_issues_page_columns', $t_view_issues_columns, $t_user_id, $t_project_id );
+if( json_encode( \Flickerbox\Config::mantis_get( 'view_issues_page_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_view_issues_columns ) ) {
+	\Flickerbox\Config::set( 'view_issues_page_columns', $t_view_issues_columns, $t_user_id, $t_project_id );
 }
-if( json_encode( config_get( 'print_issues_page_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_print_issues_columns ) ) {
-	config_set( 'print_issues_page_columns', $t_print_issues_columns, $t_user_id, $t_project_id );
+if( json_encode( \Flickerbox\Config::mantis_get( 'print_issues_page_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_print_issues_columns ) ) {
+	\Flickerbox\Config::set( 'print_issues_page_columns', $t_print_issues_columns, $t_user_id, $t_project_id );
 }
-if( json_encode( config_get( 'csv_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_csv_columns ) ) {
-	config_set( 'csv_columns', $t_csv_columns, $t_user_id, $t_project_id );
+if( json_encode( \Flickerbox\Config::mantis_get( 'csv_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_csv_columns ) ) {
+	\Flickerbox\Config::set( 'csv_columns', $t_csv_columns, $t_user_id, $t_project_id );
 }
-if( json_encode( config_get( 'excel_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_excel_columns ) ) {
-	config_set( 'excel_columns', $t_excel_columns, $t_user_id, $t_project_id );
+if( json_encode( \Flickerbox\Config::mantis_get( 'excel_columns', '', $t_user_id, $t_project_id ) ) !== json_encode( $t_excel_columns ) ) {
+	\Flickerbox\Config::set( 'excel_columns', $t_excel_columns, $t_user_id, $t_project_id );
 }
 
 \Flickerbox\Form::security_purge( 'manage_config_columns_set' );

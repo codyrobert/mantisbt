@@ -39,9 +39,6 @@ if( !defined( 'BILLING_INC_ALLOW' ) ) {
 	return;
 }
 
-require_api( 'bugnote_api.php' );
-require_api( 'config_api.php' );
-require_api( 'database_api.php' );
 
 ?>
 <a id="bugnotestats"></a><br />
@@ -78,7 +75,7 @@ $f_bugnote_cost = floatval( \Flickerbox\GPC::get_string( 'bugnote_cost', '' ) );
 
 $f_project_id = \Flickerbox\Helper::get_current_project();
 
-if( ON == config_get( 'time_tracking_with_billing' ) ) {
+if( ON == \Flickerbox\Config::mantis_get( 'time_tracking_with_billing' ) ) {
 	$t_cost_col = true;
 } else {
 	$t_cost_col = false;
@@ -142,10 +139,10 @@ if( ON == config_get( 'time_tracking_with_billing' ) ) {
 		# Retrieve time tracking information
 		$t_from = $t_bugnote_stats_from_y . '-' . $t_bugnote_stats_from_m . '-' . $t_bugnote_stats_from_d;
 		$t_to = $t_bugnote_stats_to_y . '-' . $t_bugnote_stats_to_m . '-' . $t_bugnote_stats_to_d;
-		$t_bugnote_stats = bugnote_stats_get_project_array( $f_project_id, $t_from, $t_to, $f_bugnote_cost );
+		$t_bugnote_stats = \Flickerbox\Bug\Note::stats_get_project_array( $f_project_id, $t_from, $t_to, $f_bugnote_cost );
 
 		# Sort the array by bug_id, user/real name
-		if( ON == config_get( 'show_realname' ) ) {
+		if( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) ) {
 			$t_name_field = 'realname';
 		} else {
 			$t_name_field = 'username';
@@ -194,7 +191,7 @@ if( ON == config_get( 'time_tracking_with_billing' ) ) {
 			$t_sum_in_minutes += $t_item['sum_time_tracking'];
 			$t_user_summary[$t_item[$t_name_field]] += $t_item['sum_time_tracking'];
 
-			$t_item['sum_time_tracking'] = db_minutes_to_hhmm( $t_item['sum_time_tracking'] );
+			$t_item['sum_time_tracking'] = \Flickerbox\Database::minutes_to_hhmm( $t_item['sum_time_tracking'] );
 			if( $t_item['bug_id'] != $t_prev_id ) {
 				$t_link = sprintf( \Flickerbox\Lang::get( 'label' ), \Flickerbox\String::get_bug_view_link( $t_item['bug_id'] ) ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::display( $t_item['summary'] );
 				echo '<tr class="row-category-history"><td colspan="4">' . $t_link . '</td></tr>';
@@ -222,7 +219,7 @@ if( ON == config_get( 'time_tracking_with_billing' ) ) {
 			<?php echo \Flickerbox\Lang::get( 'total_time' ); ?>
 		</td>
 		<td class="small-caption bold">
-			<?php echo db_minutes_to_hhmm( $t_sum_in_minutes ); ?>
+			<?php echo \Flickerbox\Database::minutes_to_hhmm( $t_sum_in_minutes ); ?>
 		</td>
 <?php	if( $t_cost_col ) { ?>
 		<td class="small-caption bold right">
@@ -258,7 +255,7 @@ if( ON == config_get( 'time_tracking_with_billing' ) ) {
 			<?php echo $t_username; ?>
 		</td>
 		<td class="small-caption">
-			<?php echo db_minutes_to_hhmm( $t_total_time ); ?>
+			<?php echo \Flickerbox\Database::minutes_to_hhmm( $t_total_time ); ?>
 		</td>
 <?php		if( $t_cost_col ) { ?>
 		<td class="small-caption right">
@@ -272,7 +269,7 @@ if( ON == config_get( 'time_tracking_with_billing' ) ) {
 			<?php echo \Flickerbox\Lang::get( 'total_time' ); ?>
 		</td>
 		<td class="small-caption bold">
-			<?php echo db_minutes_to_hhmm( $t_sum_in_minutes ); ?>
+			<?php echo \Flickerbox\Database::minutes_to_hhmm( $t_sum_in_minutes ); ?>
 		</td>
 <?php	if( $t_cost_col ) { ?>
 		<td class="small-caption bold right">

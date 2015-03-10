@@ -35,12 +35,10 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\News::ensure_enabled();
 
-\Flickerbox\Access::ensure_project_level( config_get( 'view_bug_threshold' ) );
+\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ) );
 
 \Flickerbox\HTML::page_top();
 ?>
@@ -56,12 +54,12 @@ if( $t_count > 0 ) { ?>
 	# Loop through results
 	for( $i=0; $i < $t_count; $i++ ) {
 		extract( $t_rows[$i], EXTR_PREFIX_ALL, 'v' );
-		if( VS_PRIVATE == $v_view_state && !\Flickerbox\Access::has_project_level( config_get( 'private_news_threshold' ), $v_project_id ) ) {
+		if( VS_PRIVATE == $v_view_state && !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'private_news_threshold' ), $v_project_id ) ) {
 			continue;
 		}
 
 		$v_headline 	= \Flickerbox\String::display( $v_headline );
-		$v_date_posted 	= date( config_get( 'complete_date_format' ), $v_date_posted ); ?>
+		$v_date_posted 	= date( \Flickerbox\Config::mantis_get( 'complete_date_format' ), $v_date_posted ); ?>
 		<li>
 			<span class="news-date-posted"><?php echo $v_date_posted; ?></span>
 			<span class="news-headline"><a href="news_view_page.php?news_id=<?php echo $v_id; ?>"><?php echo $v_headline; ?></a></span>

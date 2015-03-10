@@ -25,12 +25,12 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-\Flickerbox\Access::ensure_global_level( config_get_global( 'admin_site_threshold' ) );
+\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
 
 # Page header, menu
 \Flickerbox\HTML::page_top( 'MantisBT Administration - Moving Attachments' );
 echo '<div align="center"><p>';
-print_bracket_link( \Flickerbox\Helper::mantis_url( 'admin/system_utils.php' ), 'Back to System Utilities' );
+\Flickerbox\Print_Util::bracket_link( \Flickerbox\Helper::mantis_url( 'admin/system_utils.php' ), 'Back to System Utilities' );
 echo '</p></div>';
 
 
@@ -63,10 +63,10 @@ function get_attachment_stats( $p_file_type, $p_in_db ) {
 				ORDER BY p.name";
 			break;
 	}
-	$t_result = db_query( $t_query );
+	$t_result = \Flickerbox\Database::query( $t_query );
 	$t_stats = array();
 
-	while( $t_row = db_fetch_array( $t_result ) ) {
+	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
 		$t_project_id = (int) $t_row['id'];
 		$t_stats[$t_project_id] = $t_row['stats'];
 	}
@@ -130,7 +130,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 			$t_disk_count = $t_disk_stats[$t_id];
 		}
 
-		$t_upload_method = config_get( 'file_upload_method', null, ALL_USERS, $t_id );
+		$t_upload_method = \Flickerbox\Config::mantis_get( 'file_upload_method', null, ALL_USERS, $t_id );
 		if( $t_upload_method == DISK ) {
 			$t_method = 'Disk';
 		} else {
@@ -140,7 +140,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 
 		$t_file_path = $t_project['file_path'];
 		if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
-			$t_file_path = config_get( 'absolute_path_default_upload_folder' );
+			$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
 		}
 
 		echo '<tr>';

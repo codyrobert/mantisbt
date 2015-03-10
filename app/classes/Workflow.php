@@ -29,7 +29,6 @@ namespace Flickerbox;
  * @uses config_api.php
  */
 
-require_api( 'config_api.php' );
 
 
 class Workflow
@@ -47,7 +46,7 @@ class Workflow
 			return false;
 		}
 	
-		$t_project_workflow = \Flickerbox\Workflow::parse( config_get( 'status_enum_workflow' ) );
+		$t_project_workflow = \Flickerbox\Workflow::parse( \Flickerbox\Config::mantis_get( 'status_enum_workflow' ) );
 	
 		return isset( $t_project_workflow['exit'][$p_from_status_id][$p_to_status_id] );
 	}
@@ -58,7 +57,7 @@ class Workflow
 	 * @return array The parsed workflow graph.
 	 */
 	static function parse( array $p_enum_workflow ) {
-		$t_status_arr = \MantisEnum::getAssocArrayIndexedByValues( config_get( 'status_enum_string' ) );
+		$t_status_arr = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
 		if( count( $p_enum_workflow ) == 0 ) {
 			# workflow is not set, default it to all transitions
 			foreach ( $t_status_arr as $t_status => $t_label ) {
@@ -76,8 +75,8 @@ class Workflow
 		$t_exit = array();
 	
 		# prepopulate new bug state (bugs go from nothing to here)
-		$t_submit_status_array = config_get( 'bug_submit_status' );
-		$t_new_label = \MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), config_get( 'bug_submit_status' ) );
+		$t_submit_status_array = \Flickerbox\Config::mantis_get( 'bug_submit_status' );
+		$t_new_label = \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), \Flickerbox\Config::mantis_get( 'bug_submit_status' ) );
 		if( is_array( $t_submit_status_array ) ) {
 			# @@@ (thraxisp) this is not implemented in bug_api.php
 			foreach ( $t_submit_status_array as $t_access => $t_status ) {
@@ -94,7 +93,7 @@ class Workflow
 		$t_default = array();
 		foreach ( $t_status_arr as $t_status => $t_status_label ) {
 			if( isset( $p_enum_workflow[$t_status] ) ) {
-				$t_next_arr = \MantisEnum::getAssocArrayIndexedByValues( $p_enum_workflow[$t_status] );
+				$t_next_arr = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( $p_enum_workflow[$t_status] );
 				foreach ( $t_next_arr as $t_next => $t_next_label ) {
 					if( !isset( $t_default[$t_status] ) ) {
 						$t_default[$t_status] = $t_next;

@@ -34,16 +34,14 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\HTML::require_css( 'login.css' );
 
 \Flickerbox\HTML::require_js( 'login.js' );
 
 # Check for invalid access to signup page
-if( OFF == config_get_global( 'allow_signup' ) || LDAP == config_get_global( 'login_method' ) ) {
-	print_header_redirect( 'login_page.php' );
+if( OFF == \Flickerbox\Config::get_global( 'allow_signup' ) || LDAP == \Flickerbox\Config::get_global( 'login_method' ) ) {
+	\Flickerbox\Print_Util::header_redirect( 'login_page.php' );
 }
 
 # signup page shouldn't be indexed by search engines
@@ -65,10 +63,10 @@ $t_public_key = \Flickerbox\Crypto::generate_uri_safe_nonce( 64 );
 				<li><a href="login_page.php"><?php echo \Flickerbox\Lang::get( 'login_link' ); ?></a></li>
 <?php
 			# lost password feature disabled or reset password via email disabled
-			if( ( LDAP != config_get_global( 'login_method' ) ) &&
-				( ON == config_get( 'lost_password_feature' ) ) &&
-				( ON == config_get( 'send_reset_password' ) ) &&
-				( ON == config_get( 'enable_email_notification' ) ) ) {
+			if( ( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
+				( ON == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ) &&
+				( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) &&
+				( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
 ?>
 				<li><a href="lost_pwd_page.php"><?php echo \Flickerbox\Lang::get( 'lost_password_link' ); ?></a></li>
 <?php
@@ -84,14 +82,14 @@ $t_public_key = \Flickerbox\Crypto::generate_uri_safe_nonce( 64 );
 
 			<div class="field-container">
 				<label for="email-field"><span><?php echo \Flickerbox\Lang::get( 'email_label' ) ?></span></label>
-				<span class="input"><?php print_email_input( 'email', '' ) ?></span>
+				<span class="input"><?php \Flickerbox\Print_Util::email_input( 'email', '' ) ?></span>
 				<span class="label-style"></span>
 			</div>
 
 <?php
 			$t_allow_passwd_change = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
 			# captcha image requires GD library and related option to ON
-			if( ON == config_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 && $t_allow_passwd_change ) {
+			if( ON == \Flickerbox\Config::mantis_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 && $t_allow_passwd_change ) {
 				$t_securimage_path = 'library/securimage';
 				$t_securimage_show = $t_securimage_path . '/securimage_show.php';
 				$t_securimage_play = $t_securimage_path . '/securimage_play.swf?'
@@ -109,7 +107,7 @@ $t_public_key = \Flickerbox\Crypto::generate_uri_safe_nonce( 64 );
 					echo \Flickerbox\Lang::get( 'signup_captcha_request_label' );
 				?></span></label>
 				<span id="captcha-input" class="input">
-					<?php print_captcha_input( 'captcha' ); ?>
+					<?php \Flickerbox\Print_Util::captcha_input( 'captcha' ); ?>
 
 					<span id="captcha-image" class="captcha-image" style="padding-right:3px;">
 						<img src="<?php echo $t_securimage_show; ?>" alt="visual captcha" />

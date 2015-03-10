@@ -17,6 +17,6 @@ if( PHP_CGI == \Flickerbox\PHP::mode() ) {
 $g_cookie_secure_flag_enabled = \Flickerbox\HTTP::is_protocol_https();
 
 
-if( file_exists( config_get_global( 'config_path' ) . 'custom_relationships_inc.php' ) ) {
-	include_once( config_get_global( 'config_path' ) . 'custom_relationships_inc.php' );
+if( file_exists( \Flickerbox\Config::get_global( 'config_path' ) . 'custom_relationships_inc.php' ) ) {
+	include_once( \Flickerbox\Config::get_global( 'config_path' ) . 'custom_relationships_inc.php' );
 }

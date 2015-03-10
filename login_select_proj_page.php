@@ -34,7 +34,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'print_api.php' );
 
 \Flickerbox\Auth::ensure_user_authenticated();
 
@@ -45,7 +44,7 @@ if( count( \Flickerbox\Current_User::get_accessible_projects() ) == 1 ) {
 	$t_project_id = (int)$t_project_ids[0];
 	if( count( \Flickerbox\Current_User::get_accessible_subprojects( $t_project_id ) ) == 0 ) {
 		$t_ref_urlencoded = \Flickerbox\String::url( $f_ref );
-		print_header_redirect( 'set_project.php?project_id=' . $t_project_id . '&ref=' . $t_ref_urlencoded, true );
+		\Flickerbox\Print_Util::header_redirect( 'set_project.php?project_id=' . $t_project_id . '&ref=' . $t_ref_urlencoded, true );
 		# print_header_redirect terminates script execution
 	}
 }
@@ -64,7 +63,7 @@ if( count( \Flickerbox\Current_User::get_accessible_projects() ) == 1 ) {
 				<label for="select-project-id"><span><?php echo \Flickerbox\Lang::get( 'select_project_button' ) ?></span></label>
 				<span class="select">
 					<select id="select-project-id" name="project_id">
-						<?php print_project_option_list( ALL_PROJECTS, false, null, true, true ) ?>
+						<?php \Flickerbox\Print_Util::project_option_list( ALL_PROJECTS, false, null, true, true ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

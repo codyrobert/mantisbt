@@ -52,9 +52,6 @@
  */
 
 require_once( 'core.php' );
-require_api( 'config_api.php' );
-require_api( 'print_api.php' );
-require_api( 'user_api.php' );
 
 \Flickerbox\Form::security_validate( 'account_delete' );
 
@@ -64,15 +61,15 @@ require_api( 'user_api.php' );
 
 # Only allow users to delete their own accounts if allow_account_delete = ON or
 # the user has permission to manage user accounts.
-if( OFF == config_get( 'allow_account_delete' ) &&
-	 !\Flickerbox\Access::has_global_level( config_get( 'manage_user_threshold' ) ) ) {
-	print_header_redirect( 'account_page.php' );
+if( OFF == \Flickerbox\Config::mantis_get( 'allow_account_delete' ) &&
+	 !\Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) ) {
+	\Flickerbox\Print_Util::header_redirect( 'account_page.php' );
 }
 
 # check that we are not deleting the last administrator account
-$t_admin_threshold = config_get_global( 'admin_site_threshold' );
+$t_admin_threshold = \Flickerbox\Config::get_global( 'admin_site_threshold' );
 if( \Flickerbox\Current_User::is_administrator() &&
-	 user_count_level( $t_admin_threshold ) <= 1 ) {
+	 \Flickerbox\User::count_level( $t_admin_threshold ) <= 1 ) {
 	trigger_error( ERROR_USER_CHANGE_LAST_ADMIN, ERROR );
 }
 
@@ -85,7 +82,7 @@ $t_user_id = \Flickerbox\Auth::get_current_user_id();
 
 auth_logout();
 
-user_delete( $t_user_id );
+\Flickerbox\User::delete( $t_user_id );
 
 \Flickerbox\HTML::page_top1();
 \Flickerbox\HTML::page_top2a();
@@ -96,7 +93,7 @@ user_delete( $t_user_id );
 <div>
 <?php
 echo \Flickerbox\Lang::get( 'account_removed_msg' ) . '<br />';
-print_bracket_link( config_get( 'logout_redirect_page' ), \Flickerbox\Lang::get( 'proceed' ) );
+\Flickerbox\Print_Util::bracket_link( \Flickerbox\Config::mantis_get( 'logout_redirect_page' ), \Flickerbox\Lang::get( 'proceed' ) );
 ?>
 </div>
 
