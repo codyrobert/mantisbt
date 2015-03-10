@@ -36,36 +36,36 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
-\Flickerbox\Compress::enable();
+\Core\Auth::ensure_user_authenticated();
+\Core\Compress::enable();
 
-$f_query_id = \Flickerbox\GPC::get_int( 'source_query_id' );
+$f_query_id = \Core\GPC::get_int( 'source_query_id' );
 $t_redirect_url = 'query_view_page.php';
 $t_delete_url = 'query_delete.php';
 
-if( !\Flickerbox\Filter::db_can_delete_filter( $f_query_id ) ) {
-	\Flickerbox\Print_Util::header_redirect( $t_redirect_url );
+if( !\Core\Filter::db_can_delete_filter( $f_query_id ) ) {
+	\Core\Print_Util::header_redirect( $t_redirect_url );
 }
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 ?>
 <br />
 <div class="center">
-<strong><?php print \Flickerbox\String::display( \Flickerbox\Filter::db_get_name( $f_query_id ) ); ?></strong>
-<?php echo \Flickerbox\Lang::get( 'query_delete_msg' ); ?>
+<strong><?php print \Core\String::display( \Core\Filter::db_get_name( $f_query_id ) ); ?></strong>
+<?php echo \Core\Lang::get( 'query_delete_msg' ); ?>
 
 <form method="post" action="<?php print $t_delete_url; ?>">
-<?php echo \Flickerbox\Form::security_field( 'query_delete' ) ?>
+<?php echo \Core\Form::security_field( 'query_delete' ) ?>
 <br /><br />
 <input type="hidden" name="source_query_id" value="<?php print $f_query_id; ?>"/>
-<input type="submit" class="button" value="<?php print \Flickerbox\Lang::get( 'delete_query' ); ?>"/>
+<input type="submit" class="button" value="<?php print \Core\Lang::get( 'delete_query' ); ?>"/>
 </form>
 
 <form method="post" action="<?php print $t_redirect_url; ?>">
 <?php # CSRF protection not required here - form does not result in modifications ?>
-<input type="submit" class="button" value="<?php print \Flickerbox\Lang::get( 'go_back' ); ?>"/>
+<input type="submit" class="button" value="<?php print \Core\Lang::get( 'go_back' ); ?>"/>
 </form>
 
 <?php
 print '</div>';
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

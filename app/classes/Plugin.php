@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -79,7 +79,7 @@ class Plugin
 	 * @return array List of plugins (basename => priority)
 	 */
 	static function get_force_installed() {
-		$t_forced_plugins = \Flickerbox\Config::get_global( 'plugins_force_installed' );
+		$t_forced_plugins = \Core\Config::get_global( 'plugins_force_installed' );
 	
 		# MantisCore pseudo-plugin is force-installed by definition, with priority 3
 		$t_forced_plugins['MantisCore'] = 3;
@@ -97,13 +97,13 @@ class Plugin
 		global $g_plugin_cache;
 	
 		if( is_null( $p_basename ) ) {
-			$t_current = \Flickerbox\Plugin::get_current();
+			$t_current = \Core\Plugin::get_current();
 		} else {
 			$t_current = $p_basename;
 		}
 	
-		if( !\Flickerbox\Plugin::is_registered( $t_current ) ) {
-			\Flickerbox\Error::parameters( $t_current );
+		if( !\Core\Plugin::is_registered( $t_current ) ) {
+			\Core\Error::parameters( $t_current );
 			trigger_error( ERROR_PLUGIN_NOT_REGISTERED, ERROR );
 		}
 	
@@ -119,14 +119,14 @@ class Plugin
 	 */
 	static function page( $p_page, $p_redirect = false, $p_base_name = null ) {
 		if( is_null( $p_base_name ) ) {
-			$t_current = \Flickerbox\Plugin::get_current();
+			$t_current = \Core\Plugin::get_current();
 		} else {
 			$t_current = $p_base_name;
 		}
 		if( $p_redirect ) {
 			return 'plugin.php?page=' . $t_current . '/' . $p_page;
 		} else {
-			return \Flickerbox\Helper::mantis_url( 'plugin.php?page=' . $t_current . '/' . $p_page );
+			return \Core\Helper::mantis_url( 'plugin.php?page=' . $t_current . '/' . $p_page );
 		}
 	}
 	
@@ -137,7 +137,7 @@ class Plugin
 	 * @return mixed File path or false if FNF
 	 */
 	static function file_path( $p_filename, $p_base_name ) {
-		$t_file_path = \Flickerbox\Config::mantis_get( 'plugin_path' );
+		$t_file_path = \Core\Config::mantis_get( 'plugin_path' );
 		$t_file_path .= $p_base_name . DIRECTORY_SEPARATOR;
 		$t_file_path .= 'files' . DIRECTORY_SEPARATOR . $p_filename;
 	
@@ -153,14 +153,14 @@ class Plugin
 	 */
 	static function plugin_file( $p_file, $p_redirect = false, $p_base_name = null ) {
 		if( is_null( $p_base_name ) ) {
-			$t_current = \Flickerbox\Plugin::get_current();
+			$t_current = \Core\Plugin::get_current();
 		} else {
 			$t_current = $p_base_name;
 		}
 		if( $p_redirect ) {
 			return 'plugin_file.php?file=' . $t_current . '/' . $p_file;
 		} else {
-			return \Flickerbox\Helper::mantis_url( 'plugin_file.php?file=' . $t_current . '/' . $p_file );
+			return \Core\Helper::mantis_url( 'plugin_file.php?file=' . $t_current . '/' . $p_file );
 		}
 	}
 	
@@ -174,19 +174,19 @@ class Plugin
 		global $g_plugin_mime_types;
 	
 		if( is_null( $p_basename ) ) {
-			$t_current = \Flickerbox\Plugin::get_current();
+			$t_current = \Core\Plugin::get_current();
 		} else {
 			$t_current = $p_basename;
 		}
 	
-		$t_file_path = \Flickerbox\Plugin::file_path( $p_filename, $t_current );
+		$t_file_path = \Core\Plugin::file_path( $p_filename, $t_current );
 		if( false === $t_file_path ) {
-			\Flickerbox\Error::parameters( $t_current, $p_filename );
+			\Core\Error::parameters( $t_current, $p_filename );
 			trigger_error( ERROR_PLUGIN_FILE_NOT_FOUND, ERROR );
 		}
 	
 		$t_content_type = '';
-		$t_finfo = \Flickerbox\Utility::finfo_get_if_available();
+		$t_finfo = \Core\Utility::finfo_get_if_available();
 	
 		if( $t_finfo ) {
 			$t_file_info_type = $t_finfo->file( $t_file_path );
@@ -220,18 +220,18 @@ class Plugin
 	 */
 	static function table( $p_name, $p_basename = null ) {
 		if( is_null( $p_basename ) ) {
-			$t_current = \Flickerbox\Plugin::get_current();
+			$t_current = \Core\Plugin::get_current();
 		} else {
 			$t_current = $p_basename;
 		}
 	
 		# Determine plugin table prefix including trailing '_'
-		$t_prefix = trim( \Flickerbox\Config::get_global( 'db_table_plugin_prefix' ) );
+		$t_prefix = trim( \Core\Config::get_global( 'db_table_plugin_prefix' ) );
 		if( !empty( $t_prefix ) && '_' != substr( $t_prefix, -1 ) ) {
 			$t_prefix .= '_';
 		}
 	
-		return \Flickerbox\Database::get_table( $t_prefix . $t_current . '_' . $p_name );
+		return \Core\Database::get_table( $t_prefix . $t_current . '_' . $p_name );
 	}
 	
 	/**
@@ -244,13 +244,13 @@ class Plugin
 	 * @return string
 	 */
 	static function config_get( $p_option, $p_default = null, $p_global = false, $p_user = null, $p_project = null ) {
-		$t_basename = \Flickerbox\Plugin::get_current();
+		$t_basename = \Core\Plugin::get_current();
 		$t_full_option = 'plugin_' . $t_basename . '_' . $p_option;
 	
 		if( $p_global ) {
-			return \Flickerbox\Config::get_global( $t_full_option, $p_default );
+			return \Core\Config::get_global( $t_full_option, $p_default );
 		} else {
-			return \Flickerbox\Config::mantis_get( $t_full_option, $p_default, $p_user, $p_project );
+			return \Core\Config::mantis_get( $t_full_option, $p_default, $p_user, $p_project );
 		}
 	}
 	
@@ -265,13 +265,13 @@ class Plugin
 	 */
 	static function config_set( $p_option, $p_value, $p_user = NO_USER, $p_project = ALL_PROJECTS, $p_access = DEFAULT_ACCESS_LEVEL ) {
 		if( $p_access == DEFAULT_ACCESS_LEVEL ) {
-			$p_access = \Flickerbox\Config::get_global( 'admin_site_threshold' );
+			$p_access = \Core\Config::get_global( 'admin_site_threshold' );
 		}
 	
-		$t_basename = \Flickerbox\Plugin::get_current();
+		$t_basename = \Core\Plugin::get_current();
 		$t_full_option = 'plugin_' . $t_basename . '_' . $p_option;
 	
-		\Flickerbox\Config::set( $t_full_option, $p_value, $p_user, $p_project, $p_access );
+		\Core\Config::mantis_set( $t_full_option, $p_value, $p_user, $p_project, $p_access );
 	}
 	
 	/**
@@ -282,10 +282,10 @@ class Plugin
 	 * @return void
 	 */
 	static function config_delete( $p_option, $p_user = ALL_USERS, $p_project = ALL_PROJECTS ) {
-		$t_basename = \Flickerbox\Plugin::get_current();
+		$t_basename = \Core\Plugin::get_current();
 		$t_full_option = 'plugin_' . $t_basename . '_' . $p_option;
 	
-		\Flickerbox\Config::delete( $t_full_option, $p_user, $p_project );
+		\Core\Config::delete( $t_full_option, $p_user, $p_project );
 	}
 	
 	/**
@@ -298,13 +298,13 @@ class Plugin
 			return;
 		}
 	
-		$t_basename = \Flickerbox\Plugin::get_current();
+		$t_basename = \Core\Plugin::get_current();
 		$t_option_base = 'plugin_' . $t_basename . '_';
 	
 		foreach( $p_options as $t_option => $t_value ) {
 			$t_full_option = $t_option_base . $t_option;
 	
-			\Flickerbox\Config::set_global( $t_full_option, $t_value, false );
+			\Core\Config::set_global( $t_full_option, $t_value, false );
 		}
 	}
 	
@@ -317,15 +317,15 @@ class Plugin
 	 */
 	static function langget( $p_name, $p_basename = null ) {
 		if( !is_null( $p_basename ) ) {
-			\Flickerbox\Plugin::push_current( $p_basename );
+			\Core\Plugin::push_current( $p_basename );
 		}
 	
-		$t_basename = \Flickerbox\Plugin::get_current();
+		$t_basename = \Core\Plugin::get_current();
 		$t_name = 'plugin_' . $t_basename . '_' . $p_name;
-		$t_string = \Flickerbox\Lang::get( $t_name );
+		$t_string = \Core\Lang::get( $t_name );
 	
 		if( !is_null( $p_basename ) ) {
-			\Flickerbox\Plugin::pop_current();
+			\Core\Plugin::pop_current();
 		}
 		return $t_string;
 	}
@@ -342,14 +342,14 @@ class Plugin
 	 */
 	static function history_log( $p_bug_id, $p_field_name, $p_old_value, $p_new_value = '', $p_user_id = null, $p_basename = null ) {
 		if( is_null( $p_basename ) ) {
-			$t_basename = \Flickerbox\Plugin::get_current();
+			$t_basename = \Core\Plugin::get_current();
 		} else {
 			$t_basename = $p_basename;
 		}
 	
 		$t_field_name = $t_basename . '_' . $p_field_name;
 	
-		\Flickerbox\History::log_event_direct( $p_bug_id, $t_field_name, $p_old_value, $p_new_value, $p_user_id, PLUGIN_HISTORY );
+		\Core\History::log_event_direct( $p_bug_id, $t_field_name, $p_old_value, $p_new_value, $p_user_id, PLUGIN_HISTORY );
 	}
 	
 	/**
@@ -361,7 +361,7 @@ class Plugin
 	 */
 	static function error( $p_error_name, $p_error_type = ERROR, $p_basename = null ) {
 		if( is_null( $p_basename ) ) {
-			$t_basename = \Flickerbox\Plugin::get_current();
+			$t_basename = \Core\Plugin::get_current();
 		} else {
 			$t_basename = $p_basename;
 		}
@@ -378,8 +378,8 @@ class Plugin
 	 * @return void
 	 */
 	static function event_hook( $p_name, $p_callback ) {
-		$t_basename = \Flickerbox\Plugin::get_current();
-		\Flickerbox\Event::hook( $p_name, $p_callback, $t_basename );
+		$t_basename = \Core\Plugin::get_current();
+		\Core\Event::hook( $p_name, $p_callback, $t_basename );
 	}
 	
 	/**
@@ -392,16 +392,16 @@ class Plugin
 			return;
 		}
 	
-		$t_basename = \Flickerbox\Plugin::get_current();
+		$t_basename = \Core\Plugin::get_current();
 	
 		foreach( $p_hooks as $t_event => $t_callbacks ) {
 			if( !is_array( $t_callbacks ) ) {
-				\Flickerbox\Event::hook( $t_event, $t_callbacks, $t_basename );
+				\Core\Event::hook( $t_event, $t_callbacks, $t_basename );
 				continue;
 			}
 	
 			foreach( $t_callbacks as $t_callback ) {
-				\Flickerbox\Event::hook( $t_event, $t_callback, $t_basename );
+				\Core\Event::hook( $t_event, $t_callback, $t_basename );
 			}
 		}
 	}
@@ -413,12 +413,12 @@ class Plugin
 	 * @return mixed
 	 */
 	static function child( $p_child ) {
-		$t_base_name = \Flickerbox\Plugin::get_current();
+		$t_base_name = \Core\Plugin::get_current();
 	
-		$t_plugin = \Flickerbox\Plugin::register( $t_base_name, false, $p_child );
+		$t_plugin = \Core\Plugin::register( $t_base_name, false, $p_child );
 	
 		if( !is_null( $t_plugin ) ) {
-			\Flickerbox\Plugin::init( $p_child );
+			\Core\Plugin::init( $p_child );
 		}
 	
 		return $t_plugin;
@@ -581,7 +581,7 @@ class Plugin
 				}
 			}
 	
-			$t_version_installed = \Flickerbox\Plugin::version_array( $g_plugin_cache[$p_base_name]->version );
+			$t_version_installed = \Core\Plugin::version_array( $g_plugin_cache[$p_base_name]->version );
 	
 			foreach( $t_required_array as $t_required ) {
 				$t_required = trim( $t_required );
@@ -600,9 +600,9 @@ class Plugin
 					}
 				}
 	
-				$t_version_required = \Flickerbox\Plugin::version_array( $t_required );
+				$t_version_required = \Core\Plugin::version_array( $t_required );
 	
-				$t_check = \Flickerbox\Plugin::version_check( $t_version_installed, $t_version_required, $t_maximum );
+				$t_check = \Core\Plugin::version_check( $t_version_installed, $t_version_required, $t_maximum );
 	
 				if( $t_check < 1 ) {
 					return $t_check;
@@ -643,87 +643,87 @@ class Plugin
 	 * @return boolean True if plugin is installed
 	 */
 	static function is_installed( $p_basename ) {
-		foreach( \Flickerbox\Plugin::get_force_installed() as $t_basename => $t_priority ) {
+		foreach( \Core\Plugin::get_force_installed() as $t_basename => $t_priority ) {
 			if( $t_basename == $p_basename ) {
 				return true;
 			}
 		}
 	
-		$t_query = 'SELECT COUNT(*) FROM {plugin} WHERE basename=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_basename ) );
-		return( 0 < \Flickerbox\Database::result( $t_result ) );
+		$t_query = 'SELECT COUNT(*) FROM {plugin} WHERE basename=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_basename ) );
+		return( 0 < \Core\Database::result( $t_result ) );
 	}
 	
 	/**
 	 * Install a plugin to the database.
-	 * @param \Flickerbox\MantisPlugin $p_plugin Plugin basename.
+	 * @param \Core\MantisPlugin $p_plugin Plugin basename.
 	 * @return null
 	 */
-	static function install( \Flickerbox\MantisPlugin $p_plugin ) {
-		\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'manage_plugin_threshold' ) );
+	static function install( \Core\MantisPlugin $p_plugin ) {
+		\Core\Access::ensure_global_level( \Core\Config::get_global( 'manage_plugin_threshold' ) );
 	
-		if( \Flickerbox\Plugin::is_installed( $p_plugin->basename ) ) {
-			\Flickerbox\Error::parameters( $p_plugin->basename );
+		if( \Core\Plugin::is_installed( $p_plugin->basename ) ) {
+			\Core\Error::parameters( $p_plugin->basename );
 			trigger_error( ERROR_PLUGIN_ALREADY_INSTALLED, WARNING );
 			return null;
 		}
 	
-		\Flickerbox\Plugin::push_current( $p_plugin->basename );
+		\Core\Plugin::push_current( $p_plugin->basename );
 	
 		if( !$p_plugin->install() ) {
-			\Flickerbox\Plugin::pop_current();
+			\Core\Plugin::pop_current();
 			return null;
 		}
 	
 		$t_query = 'INSERT INTO {plugin} ( basename, enabled )
-					VALUES ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-		\Flickerbox\Database::query( $t_query, array( $p_plugin->basename, true ) );
+					VALUES ( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+		\Core\Database::query( $t_query, array( $p_plugin->basename, true ) );
 	
-		if( false === ( \Flickerbox\Plugin::config_get( 'schema', false ) ) ) {
-			\Flickerbox\Plugin::config_set( 'schema', -1 );
+		if( false === ( \Core\Plugin::config_get( 'schema', false ) ) ) {
+			\Core\Plugin::config_set( 'schema', -1 );
 		}
 	
-		\Flickerbox\Plugin::upgrade( $p_plugin );
+		\Core\Plugin::upgrade( $p_plugin );
 	
-		\Flickerbox\Plugin::pop_current();
+		\Core\Plugin::pop_current();
 	}
 	
 	/**
 	 * Determine if an installed plugin needs to upgrade its schema.
-	 * @param \Flickerbox\MantisPlugin $p_plugin Plugin basename.
+	 * @param \Core\MantisPlugin $p_plugin Plugin basename.
 	 * @return boolean True if plugin needs schema upgrades.
 	 */
-	static function needs_upgrade( \Flickerbox\MantisPlugin $p_plugin ) {
-		\Flickerbox\Plugin::push_current( $p_plugin->name );
+	static function needs_upgrade( \Core\MantisPlugin $p_plugin ) {
+		\Core\Plugin::push_current( $p_plugin->name );
 		$t_plugin_schema = $p_plugin->schema();
-		\Flickerbox\Plugin::pop_current( $p_plugin->name );
+		\Core\Plugin::pop_current( $p_plugin->name );
 		if( is_null( $t_plugin_schema ) ) {
 			return false;
 		}
 	
 		$t_config_option = 'plugin_' . $p_plugin->basename . '_schema';
-		$t_plugin_schema_version = \Flickerbox\Config::mantis_get( $t_config_option, -1, ALL_USERS, ALL_PROJECTS );
+		$t_plugin_schema_version = \Core\Config::mantis_get( $t_config_option, -1, ALL_USERS, ALL_PROJECTS );
 	
 		return( $t_plugin_schema_version < count( $t_plugin_schema ) - 1 );
 	}
 	
 	/**
 	 * Upgrade an installed plugin's schema.
-	 * @param \Flickerbox\MantisPlugin $p_plugin Plugin basename.
+	 * @param \Core\MantisPlugin $p_plugin Plugin basename.
 	 * @return boolean|null True if upgrade completed, null if problem
 	 */
-	static function upgrade( \Flickerbox\MantisPlugin $p_plugin ) {
-		\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'manage_plugin_threshold' ) );
+	static function upgrade( \Core\MantisPlugin $p_plugin ) {
+		\Core\Access::ensure_global_level( \Core\Config::get_global( 'manage_plugin_threshold' ) );
 	
-		if( !\Flickerbox\Plugin::is_installed( $p_plugin->basename ) ) {
+		if( !\Core\Plugin::is_installed( $p_plugin->basename ) ) {
 			return null;
 		}
 	
 		require_api( 'install_helper_functions_api.php' );
 	
-		\Flickerbox\Plugin::push_current( $p_plugin->basename );
+		\Core\Plugin::push_current( $p_plugin->basename );
 	
-		$t_schema_version = (int)\Flickerbox\Plugin::config_get( 'schema', -1 );
+		$t_schema_version = (int)\Core\Plugin::config_get( 'schema', -1 );
 		$t_schema = $p_plugin->schema();
 	
 		global $g_db;
@@ -732,7 +732,7 @@ class Plugin
 		$i = $t_schema_version + 1;
 		while( $i < count( $t_schema ) ) {
 			if( !$p_plugin->upgrade( $i ) ) {
-				\Flickerbox\Plugin::pop_current();
+				\Core\Plugin::pop_current();
 				return false;
 			}
 	
@@ -763,9 +763,9 @@ class Plugin
 			}
 	
 			if( 2 == $t_status ) {
-				\Flickerbox\Plugin::config_set( 'schema', $i );
+				\Core\Plugin::config_set( 'schema', $i );
 			} else {
-				\Flickerbox\Error::parameters( $i );
+				\Core\Error::parameters( $i );
 				trigger_error( ERROR_PLUGIN_UPGRADE_FAILED, ERROR );
 				return null;
 			}
@@ -773,31 +773,31 @@ class Plugin
 			$i++;
 		}
 	
-		\Flickerbox\Plugin::pop_current();
+		\Core\Plugin::pop_current();
 	
 		return true;
 	}
 	
 	/**
 	 * Uninstall a plugin from the database.
-	 * @param \Flickerbox\MantisPlugin $p_plugin Plugin basename.
+	 * @param \Core\MantisPlugin $p_plugin Plugin basename.
 	 * @return void
 	 */
-	static function uninstall( \Flickerbox\MantisPlugin $p_plugin ) {
-		\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'manage_plugin_threshold' ) );
+	static function uninstall( \Core\MantisPlugin $p_plugin ) {
+		\Core\Access::ensure_global_level( \Core\Config::get_global( 'manage_plugin_threshold' ) );
 	
-		if( !\Flickerbox\Plugin::is_installed( $p_plugin->basename ) || \Flickerbox\Plugin::is_protected( $p_plugin->basename ) ) {
+		if( !\Core\Plugin::is_installed( $p_plugin->basename ) || \Core\Plugin::is_protected( $p_plugin->basename ) ) {
 			return;
 		}
 	
-		$t_query = 'DELETE FROM {plugin} WHERE basename=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_plugin->basename ) );
+		$t_query = 'DELETE FROM {plugin} WHERE basename=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_plugin->basename ) );
 	
-		\Flickerbox\Plugin::push_current( $p_plugin->basename );
+		\Core\Plugin::push_current( $p_plugin->basename );
 	
 		$p_plugin->uninstall();
 	
-		\Flickerbox\Plugin::pop_current();
+		\Core\Plugin::pop_current();
 	}
 	
 	/**
@@ -805,9 +805,9 @@ class Plugin
 	 * @return array Plugin basename/info key/value pairs.
 	 */
 	static function find_all() {
-		$t_plugin_path = \Flickerbox\Config::get_global( 'plugin_path' );
+		$t_plugin_path = \Core\Config::get_global( 'plugin_path' );
 		$t_plugins = array(
-			'MantisCore' => new \Flickerbox\MantisCorePlugin( 'MantisCore' ),
+			'MantisCore' => new \Core\MantisCorePlugin( 'MantisCore' ),
 		);
 	
 		if( $t_dir = opendir( $t_plugin_path ) ) {
@@ -816,7 +816,7 @@ class Plugin
 					continue;
 				}
 				if( is_dir( $t_plugin_path . $t_file ) ) {
-					$t_plugin = \Flickerbox\Plugin::register( $t_file, true );
+					$t_plugin = \Core\Plugin::register( $t_file, true );
 	
 					if( !is_null( $t_plugin ) ) {
 						$t_plugins[$t_file] = $t_plugin;
@@ -835,7 +835,7 @@ class Plugin
 	 * @return boolean
 	 */
 	static function include_plugin( $p_basename, $p_child = null ) {
-		$t_path = \Flickerbox\Config::get_global( 'plugin_path' ) . $p_basename . DIRECTORY_SEPARATOR;
+		$t_path = \Core\Config::get_global( 'plugin_path' ) . $p_basename . DIRECTORY_SEPARATOR;
 	
 		if( is_null( $p_child ) ) {
 			$t_plugin_file = $t_path . $p_basename . '.php';
@@ -859,12 +859,12 @@ class Plugin
 	 */
 	static function require_api( $p_file, $p_basename = null ) {
 		if( is_null( $p_basename ) ) {
-			$t_current = \Flickerbox\Plugin::get_current();
+			$t_current = \Core\Plugin::get_current();
 		} else {
 			$t_current = $p_basename;
 		}
 	
-		$t_path = \Flickerbox\Config::get_global( 'plugin_path' ) . $t_current . '/';
+		$t_path = \Core\Config::get_global( 'plugin_path' ) . $t_current . '/';
 	
 		require_once( $t_path . $p_file );
 	}
@@ -901,18 +901,18 @@ class Plugin
 	
 			# Include the plugin script if the class is not already declared.
 			if( !class_exists( $t_classname ) ) {
-				if( !\Flickerbox\Plugin::include_plugin( $p_basename, $p_child ) ) {
+				if( !\Core\Plugin::include_plugin( $p_basename, $p_child ) ) {
 					return null;
 				}
 			}
 	
 			# Make sure the class exists and that it's of the right type.
-			if( class_exists( $t_classname ) && is_subclass_of( $t_classname, '\\Flickerbox\\MantisPlugin' ) ) {
-				\Flickerbox\Plugin::push_current( is_null( $p_child ) ? $p_basename : $p_child );
+			if( class_exists( $t_classname ) && is_subclass_of( $t_classname, '\\Core\\MantisPlugin' ) ) {
+				\Core\Plugin::push_current( is_null( $p_child ) ? $p_basename : $p_child );
 	
 				$t_plugin = new $t_classname( is_null( $p_child ) ? $p_basename : $p_child );
 	
-				\Flickerbox\Plugin::pop_current();
+				\Core\Plugin::pop_current();
 	
 				# Final check on the class
 				if( is_null( $t_plugin->name ) || is_null( $t_plugin->version ) ) {
@@ -939,20 +939,20 @@ class Plugin
 		global $g_plugin_cache_priority, $g_plugin_cache_protected;
 	
 		# register plugins specified in the site configuration
-		foreach( \Flickerbox\Plugin::get_force_installed() as $t_basename => $t_priority ) {
-			\Flickerbox\Plugin::register( $t_basename );
+		foreach( \Core\Plugin::get_force_installed() as $t_basename => $t_priority ) {
+			\Core\Plugin::register( $t_basename );
 			$g_plugin_cache_priority[$t_basename] = $t_priority;
 			$g_plugin_cache_protected[$t_basename] = true;
 		}
 	
 		# register plugins installed via the interface/database
-		$t_query = 'SELECT basename, priority, protected FROM {plugin} WHERE enabled=' . \Flickerbox\Database::param() . ' ORDER BY priority DESC';
-		$t_result = \Flickerbox\Database::query( $t_query, array( true ) );
+		$t_query = 'SELECT basename, priority, protected FROM {plugin} WHERE enabled=' . \Core\Database::param() . ' ORDER BY priority DESC';
+		$t_result = \Core\Database::query( $t_query, array( true ) );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_basename = $t_row['basename'];
-			if( !\Flickerbox\Plugin::is_registered( $t_basename ) ) {
-				\Flickerbox\Plugin::register( $t_basename );
+			if( !\Core\Plugin::is_registered( $t_basename ) ) {
+				\Core\Plugin::register( $t_basename );
 				$g_plugin_cache_priority[$t_basename] = (int)$t_row['priority'];
 				$g_plugin_cache_protected[$t_basename] = (bool)$t_row['protected'];
 			}
@@ -965,7 +965,7 @@ class Plugin
 	 * @return void
 	 */
 	static function init_installed() {
-		if( OFF == \Flickerbox\Config::get_global( 'plugins_enabled' ) || !\Flickerbox\Database::table_exists( \Flickerbox\Database::get_table( 'plugin' ) ) ) {
+		if( OFF == \Core\Config::get_global( 'plugins_enabled' ) || !\Core\Database::table_exists( \Core\Database::get_table( 'plugin' ) ) ) {
 			return;
 		}
 	
@@ -976,7 +976,7 @@ class Plugin
 		$g_plugin_cache_priority = array();
 		$g_plugin_cache_protected = array();
 	
-		\Flickerbox\Plugin::register_installed();
+		\Core\Plugin::register_installed();
 	
 		$t_plugins = array_keys( $g_plugin_cache );
 	
@@ -985,7 +985,7 @@ class Plugin
 			$t_plugins_retry = array();
 	
 			foreach( $t_plugins as $t_basename ) {
-				if( \Flickerbox\Plugin::init( $t_basename ) ) {
+				if( \Core\Plugin::init( $t_basename ) ) {
 					$t_continue = true;
 	
 				} else {
@@ -997,7 +997,7 @@ class Plugin
 			$t_plugins = $t_plugins_retry;
 		} while( $t_continue );
 	
-		\Flickerbox\Event::signal( 'EVENT_PLUGIN_INIT' );
+		\Core\Event::signal( 'EVENT_PLUGIN_INIT' );
 	}
 	
 	/**
@@ -1016,7 +1016,7 @@ class Plugin
 			# does not meet the version requirement, or is not yet initialized.
 			if( is_array( $t_plugin->requires ) ) {
 				foreach( $t_plugin->requires as $t_required => $t_version ) {
-					if( \Flickerbox\Plugin::dependency( $t_required, $t_version, true ) !== 1 ) {
+					if( \Core\Plugin::dependency( $t_required, $t_version, true ) !== 1 ) {
 						return false;
 					}
 				}
@@ -1033,15 +1033,15 @@ class Plugin
 			}
 	
 			# if plugin schema needs an upgrade, do not initialize
-			if( \Flickerbox\Plugin::needs_upgrade( $t_plugin ) ) {
+			if( \Core\Plugin::needs_upgrade( $t_plugin ) ) {
 				return false;
 			}
 	
-			\Flickerbox\Plugin::push_current( $p_basename );
+			\Core\Plugin::push_current( $p_basename );
 	
 			# load plugin error strings
 			global $g_lang_strings;
-			$t_lang = \Flickerbox\Lang::get_current();
+			$t_lang = \Core\Lang::get_current();
 			$t_plugin_errors = $t_plugin->errors();
 	
 			foreach( $t_plugin_errors as $t_error_name => $t_error_string ) {
@@ -1053,7 +1053,7 @@ class Plugin
 			$t_plugin->__init();
 			$g_plugin_cache_init[$p_basename] = true;
 	
-			\Flickerbox\Plugin::pop_current();
+			\Core\Plugin::pop_current();
 	
 			return true;
 		} else {

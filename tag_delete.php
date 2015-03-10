@@ -34,17 +34,17 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'tag_delete' );
+\Core\Form::security_validate( 'tag_delete' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) );
 
-$f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
-$t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
+$f_tag_id = \Core\GPC::get_int( 'tag_id' );
+$t_tag_row = \Core\Tag::get( $f_tag_id );
 
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'tag_delete_message' ), \Flickerbox\Lang::get( 'tag_delete_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'tag_delete_message' ), \Core\Lang::get( 'tag_delete_button' ) );
 
-\Flickerbox\Tag::delete( $f_tag_id );
+\Core\Tag::delete( $f_tag_id );
 
-\Flickerbox\Form::security_purge( 'tag_delete' );
+\Core\Form::security_purge( 'tag_delete' );
 
-\Flickerbox\Print_Util::successful_redirect( 'manage_tags_page.php' );
+\Core\Print_Util::successful_redirect( 'manage_tags_page.php' );

@@ -31,4 +31,4 @@ require_once( 'core.php' );
 
 auth_logout();
 
-\Flickerbox\Print_Util::header_redirect( \Flickerbox\Config::mantis_get( 'logout_redirect_page' ), true, false );
+\Core\Print_Util::header_redirect( \Core\Config::mantis_get( 'logout_redirect_page' ), true, false );

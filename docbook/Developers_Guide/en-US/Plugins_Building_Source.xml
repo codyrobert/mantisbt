@@ -106,28 +106,28 @@ $s_plugin_Example_reset = "Reset Value";
 		<programlisting><filename>Example/pages/config_page.php</filename>
 &lt;?php
 
-\Flickerbox\HTML::page_top( \Flickerbox\Plugin::langget( 'configuration' ) );
-$t_foo_or_bar = \Flickerbox\Plugin::config_get( 'foo_or_bar' );
+\Core\HTML::page_top( \Core\Plugin::langget( 'configuration' ) );
+$t_foo_or_bar = \Core\Plugin::config_get( 'foo_or_bar' );
 
 ?&gt;
 
 &lt;br/&gt;
 
-&lt;form action="&lt;?php echo \Flickerbox\Plugin::page( 'config_update' ) ?&gt;" method="post"&gt;
-&lt;?php echo \Flickerbox\Form::security_field( 'plugin_Example_config_update' ) ?&gt;
+&lt;form action="&lt;?php echo \Core\Plugin::page( 'config_update' ) ?&gt;" method="post"&gt;
+&lt;?php echo \Core\Form::security_field( 'plugin_Example_config_update' ) ?&gt;
 &lt;table class="width60"&gt;
 
 &lt;tr&gt;
-    &lt;td class="form-title" rowspan="2"&gt;&lt;?php echo \Flickerbox\Plugin::langget( 'configuration' ) ?&gt;&lt;/td&gt;
+    &lt;td class="form-title" rowspan="2"&gt;&lt;?php echo \Core\Plugin::langget( 'configuration' ) ?&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr &lt;?php echo helper_alternate_class() ?&gt;&gt;
-    &lt;td class="category"&gt;&lt;php echo \Flickerbox\Plugin::langget( 'foo_or_bar' ) ?&gt;&lt;/td&gt;
-    &lt;td&gt;&lt;input name="foo_or_bar" value="&lt;?php echo \Flickerbox\String::attribute( $t_foo_or_bar ) ?&gt;"/&gt;&lt;/td&gt;
+    &lt;td class="category"&gt;&lt;php echo \Core\Plugin::langget( 'foo_or_bar' ) ?&gt;&lt;/td&gt;
+    &lt;td&gt;&lt;input name="foo_or_bar" value="&lt;?php echo \Core\String::attribute( $t_foo_or_bar ) ?&gt;"/&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
 &lt;tr &lt;?php echo helper_alternate_class() ?&gt;&gt;
-    &lt;td class="category"&gt;&lt;php echo \Flickerbox\Plugin::langget( 'reset' ) ?&gt;&lt;/td&gt;
+    &lt;td class="category"&gt;&lt;php echo \Core\Plugin::langget( 'reset' ) ?&gt;&lt;/td&gt;
     &lt;td&gt;&lt;input type="checkbox" name="reset"/&gt;&lt;/td&gt;
 &lt;/tr&gt;
 
@@ -140,7 +140,7 @@ $t_foo_or_bar = \Flickerbox\Plugin::config_get( 'foo_or_bar' );
 
 &lt;?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();
 		</programlisting>
 	</section>
 
@@ -149,21 +149,21 @@ $t_foo_or_bar = \Flickerbox\Plugin::config_get( 'foo_or_bar' );
 
 		<programlisting><filename>Example/pages/config_update.php</filename>
 &lt;?php
-\Flickerbox\Form::security_validate( 'plugin_Example_config_update' );
+\Core\Form::security_validate( 'plugin_Example_config_update' );
 
-$f_foo_or_bar = \Flickerbox\GPC::get_string( 'foo_or_bar' );
-$f_reset = \Flickerbox\GPC::get_bool( 'reset', false );
+$f_foo_or_bar = \Core\GPC::get_string( 'foo_or_bar' );
+$f_reset = \Core\GPC::get_bool( 'reset', false );
 
 if( $f_reset ) {
-    \Flickerbox\Plugin::config_delete( 'foo_or_bar' );
+    \Core\Plugin::config_delete( 'foo_or_bar' );
 } else {
     if( $f_foo_or_bar == 'foo' || $f_foo_or_bar == 'bar' ) {
-        \Flickerbox\Plugin::config_set( 'foo_or_bar', $f_foo_or_bar );
+        \Core\Plugin::config_set( 'foo_or_bar', $f_foo_or_bar );
     }
 }
 
-\Flickerbox\Form::security_purge( 'plugin_Example_config_update' );
-\Flickerbox\Print_Util::successful_redirect( \Flickerbox\Plugin::page( 'foo', true ) );
+\Core\Form::security_purge( 'plugin_Example_config_update' );
+\Core\Print_Util::successful_redirect( \Core\Plugin::page( 'foo', true ) );
 		</programlisting>
 	</section>
 
@@ -172,14 +172,14 @@ if( $f_reset ) {
 
 		<programlisting><filename>Example/pages/foo.php</filename>
 &lt;?php
-echo '&lt;p&gt;Here is a link to &lt;a href="', \Flickerbox\Plugin::page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
-     '&lt;link rel="stylesheet" type="text/css" href="', \Flickerbox\Plugin::plugin_file( 'foo.css' ), '"/&gt;',
+echo '&lt;p&gt;Here is a link to &lt;a href="', \Core\Plugin::page( 'foo' ), '">page foo&lt;/a&gt;.&lt;/p&gt;';
+     '&lt;link rel="stylesheet" type="text/css" href="', \Core\Plugin::plugin_file( 'foo.css' ), '"/&gt;',
      '&lt;p class="foo"&gt;';
 
-\Flickerbox\Event::signal( 'EVENT_EXAMPLE_FOO' );
+\Core\Event::signal( 'EVENT_EXAMPLE_FOO' );
 
 $t_string = 'A sentence with the word "foo" in it.';
-$t_new_string = \Flickerbox\Event::signal( 'EVENT_EXAMPLE_BAR', array( $t_string ) );
+$t_new_string = \Core\Event::signal( 'EVENT_EXAMPLE_BAR', array( $t_string ) );
 
 echo $t_new_string, '&lt;/p&gt;';
 		</programlisting>

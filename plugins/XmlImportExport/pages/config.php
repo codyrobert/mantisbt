@@ -2,8 +2,8 @@
 # Copyright (c) 2014  MantisBT Team - mantisbt-dev@lists.sourceforge.net
 # Licensed under the MIT license
 
-\Flickerbox\Form::security_validate( 'plugin_XmlImportExport_config' );
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
+\Core\Form::security_validate( 'plugin_XmlImportExport_config' );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 /**
  * Sets plugin config option if value is different from current/default
@@ -12,18 +12,18 @@
  * @return void
  */
 function config_set_if_needed( $p_name, $p_value ) {
-	if ( $p_value != \Flickerbox\Plugin::config_get( $p_name ) ) {
-		\Flickerbox\Plugin::config_set( $p_name, $p_value );
+	if ( $p_value != \Core\Plugin::config_get( $p_name ) ) {
+		\Core\Plugin::config_set( $p_name, $p_value );
 	}
 }
 
-$t_redirect_url = \Flickerbox\Plugin::page( 'config_page', true );
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+$t_redirect_url = \Core\Plugin::page( 'config_page', true );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-config_set_if_needed( 'import_threshold' , \Flickerbox\GPC::get_int( 'import_threshold' ) );
-config_set_if_needed( 'export_threshold' , \Flickerbox\GPC::get_int( 'export_threshold' ) );
+config_set_if_needed( 'import_threshold' , \Core\GPC::get_int( 'import_threshold' ) );
+config_set_if_needed( 'export_threshold' , \Core\GPC::get_int( 'export_threshold' ) );
 
-\Flickerbox\Form::security_purge( 'plugin_XmlImportExport_config' );
+\Core\Form::security_purge( 'plugin_XmlImportExport_config' );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::page_bottom();

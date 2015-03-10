@@ -37,41 +37,41 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bug_monitor_delete' );
+\Core\Form::security_validate( 'bug_monitor_delete' );
 
-$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
-$f_user_id = \Flickerbox\GPC::get_int( 'user_id', NO_USER );
+$f_bug_id = \Core\GPC::get_int( 'bug_id' );
+$t_bug = \Core\Bug::get( $f_bug_id, true );
+$f_user_id = \Core\GPC::get_int( 'user_id', NO_USER );
 
-$t_logged_in_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_logged_in_user_id = \Core\Auth::get_current_user_id();
 
 if( $f_user_id === NO_USER ) {
 	$t_user_id = $t_logged_in_user_id;
 } else {
-	\Flickerbox\User::ensure_exists( $f_user_id );
+	\Core\User::ensure_exists( $f_user_id );
 	$t_user_id = $f_user_id;
 }
 
-if( \Flickerbox\User::is_anonymous( $t_user_id ) ) {
+if( \Core\User::is_anonymous( $t_user_id ) ) {
 	trigger_error( ERROR_PROTECTED_ACCOUNT, E_USER_ERROR );
 }
 
-\Flickerbox\Bug::ensure_exists( $f_bug_id );
+\Core\Bug::ensure_exists( $f_bug_id );
 
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
 if( $t_logged_in_user_id == $t_user_id ) {
-	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' ), $f_bug_id );
+	\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'monitor_bug_threshold' ), $f_bug_id );
 } else {
-	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
+	\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
 }
 
-\Flickerbox\Bug::unmonitor( $f_bug_id, $t_user_id );
+\Core\Bug::unmonitor( $f_bug_id, $t_user_id );
 
-\Flickerbox\Form::security_purge( 'bug_monitor_delete' );
+\Core\Form::security_purge( 'bug_monitor_delete' );
 
-\Flickerbox\Print_Util::successful_redirect_to_bug( $f_bug_id );
+\Core\Print_Util::successful_redirect_to_bug( $f_bug_id );

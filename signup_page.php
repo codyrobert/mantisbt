@@ -35,61 +35,61 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\HTML::require_css( 'login.css' );
+\Core\HTML::require_css( 'login.css' );
 
-\Flickerbox\HTML::require_js( 'login.js' );
+\Core\HTML::require_js( 'login.js' );
 
 # Check for invalid access to signup page
-if( OFF == \Flickerbox\Config::get_global( 'allow_signup' ) || LDAP == \Flickerbox\Config::get_global( 'login_method' ) ) {
-	\Flickerbox\Print_Util::header_redirect( 'login_page.php' );
+if( OFF == \Core\Config::get_global( 'allow_signup' ) || LDAP == \Core\Config::get_global( 'login_method' ) ) {
+	\Core\Print_Util::header_redirect( 'login_page.php' );
 }
 
 # signup page shouldn't be indexed by search engines
-\Flickerbox\HTML::robots_noindex();
+\Core\HTML::robots_noindex();
 
-\Flickerbox\HTML::page_top1();
-\Flickerbox\HTML::page_top2a();
+\Core\HTML::page_top1();
+\Core\HTML::page_top2a();
 
-$t_public_key = \Flickerbox\Crypto::generate_uri_safe_nonce( 64 );
+$t_public_key = \Core\Crypto::generate_uri_safe_nonce( 64 );
 ?>
 
 <div id="signup-div" class="form-container">
 	<form id="signup-form" method="post" action="signup.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'signup_title' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'signup' ); ?>
+			<legend><span><?php echo \Core\Lang::get( 'signup_title' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'signup' ); ?>
 
 			<ul id="login-links">
-				<li><a href="login_page.php"><?php echo \Flickerbox\Lang::get( 'login_link' ); ?></a></li>
+				<li><a href="login_page.php"><?php echo \Core\Lang::get( 'login_link' ); ?></a></li>
 <?php
 			# lost password feature disabled or reset password via email disabled
-			if( ( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
-				( ON == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ) &&
-				( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) &&
-				( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
+			if( ( LDAP != \Core\Config::get_global( 'login_method' ) ) &&
+				( ON == \Core\Config::mantis_get( 'lost_password_feature' ) ) &&
+				( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) &&
+				( ON == \Core\Config::mantis_get( 'enable_email_notification' ) ) ) {
 ?>
-				<li><a href="lost_pwd_page.php"><?php echo \Flickerbox\Lang::get( 'lost_password_link' ); ?></a></li>
+				<li><a href="lost_pwd_page.php"><?php echo \Core\Lang::get( 'lost_password_link' ); ?></a></li>
 <?php
 			}
 ?>
 			</ul>
 
 			<div class="field-container">
-				<label for="username"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></label>
+				<label for="username"><span><?php echo \Core\Lang::get( 'username' ) ?></span></label>
 				<span class="input"><input id="username" type="text" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" class="autofocus" /></span>
 				<span class="label-style"></span>
 			</div>
 
 			<div class="field-container">
-				<label for="email-field"><span><?php echo \Flickerbox\Lang::get( 'email_label' ) ?></span></label>
-				<span class="input"><?php \Flickerbox\Print_Util::email_input( 'email', '' ) ?></span>
+				<label for="email-field"><span><?php echo \Core\Lang::get( 'email_label' ) ?></span></label>
+				<span class="input"><?php \Core\Print_Util::email_input( 'email', '' ) ?></span>
 				<span class="label-style"></span>
 			</div>
 
 <?php
-			$t_allow_passwd_change = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
+			$t_allow_passwd_change = \Core\Helper::call_custom_function( 'auth_can_change_password', array() );
 			# captcha image requires GD library and related option to ON
-			if( ON == \Flickerbox\Config::mantis_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 && $t_allow_passwd_change ) {
+			if( ON == \Core\Config::mantis_get( 'signup_use_captcha' ) && \Core\Utility::get_gd_version() > 0 && $t_allow_passwd_change ) {
 				$t_securimage_path = 'library/securimage';
 				$t_securimage_show = $t_securimage_path . '/securimage_show.php';
 				$t_securimage_play = $t_securimage_path . '/securimage_play.swf?'
@@ -104,15 +104,15 @@ $t_public_key = \Flickerbox\Crypto::generate_uri_safe_nonce( 64 );
 ?>
 			<div class="field-container">
 				<label for="captcha-field"><span><?php
-					echo \Flickerbox\Lang::get( 'signup_captcha_request_label' );
+					echo \Core\Lang::get( 'signup_captcha_request_label' );
 				?></span></label>
 				<span id="captcha-input" class="input">
-					<?php \Flickerbox\Print_Util::captcha_input( 'captcha' ); ?>
+					<?php \Core\Print_Util::captcha_input( 'captcha' ); ?>
 
 					<span id="captcha-image" class="captcha-image" style="padding-right:3px;">
 						<img src="<?php echo $t_securimage_show; ?>" alt="visual captcha" />
 						<ul id="captcha-refresh"><li><a href="#"><?php
-							echo \Flickerbox\Lang::get( 'signup_captcha_refresh' );
+							echo \Core\Lang::get( 'signup_captcha_refresh' );
 						?></a></li></ul>
 					</span>
 
@@ -128,16 +128,16 @@ $t_public_key = \Flickerbox\Crypto::generate_uri_safe_nonce( 64 );
 			}
 			if( !$t_allow_passwd_change ) {
 				echo '<span id="no-password-msg">';
-				echo \Flickerbox\Lang::get( 'no_password_request' );
+				echo \Core\Lang::get( 'no_password_request' );
 				echo '</span>';
 			}
 ?>
 
-			<span id="signup-info"><?php echo \Flickerbox\Lang::get( 'signup_info' ); ?></span>
+			<span id="signup-info"><?php echo \Core\Lang::get( 'signup_info' ); ?></span>
 
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'signup_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'signup_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 
-<?php \Flickerbox\HTML::page_bottom1a( __FILE__ );
+<?php \Core\HTML::page_bottom1a( __FILE__ );

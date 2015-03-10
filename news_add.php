@@ -37,27 +37,27 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\News::ensure_enabled();
+\Core\News::ensure_enabled();
 
-\Flickerbox\Form::security_validate( 'news_add' );
+\Core\Form::security_validate( 'news_add' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_news_threshold' ) );
 
-$f_view_state	= \Flickerbox\GPC::get_int( 'view_state' );
-$f_headline		= \Flickerbox\GPC::get_string( 'headline' );
-$f_announcement	= \Flickerbox\GPC::get_bool( 'announcement' );
-$f_body			= \Flickerbox\GPC::get_string( 'body' );
+$f_view_state	= \Core\GPC::get_int( 'view_state' );
+$f_headline		= \Core\GPC::get_string( 'headline' );
+$f_announcement	= \Core\GPC::get_bool( 'announcement' );
+$f_body			= \Core\GPC::get_string( 'body' );
 
-$t_news_id = \Flickerbox\News::create( \Flickerbox\Helper::get_current_project(), auth_get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
+$t_news_id = \Core\News::create( \Core\Helper::get_current_project(), auth_get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
 
-\Flickerbox\Form::security_purge( 'news_add' );
+\Core\Form::security_purge( 'news_add' );
 
-$t_news_row = \Flickerbox\News::get_row( $t_news_id );
+$t_news_row = \Core\News::get_row( $t_news_id );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-\Flickerbox\HTML::operation_successful( 'news_menu_page.php' );
+\Core\HTML::operation_successful( 'news_menu_page.php' );
 
-\Flickerbox\Print_Util::news_entry_from_row( $t_news_row );
+\Core\Print_Util::news_entry_from_row( $t_news_row );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

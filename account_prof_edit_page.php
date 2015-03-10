@@ -39,30 +39,30 @@
 
 require_once( 'core.php' );
 
-if( !\Flickerbox\Config::mantis_get( 'enable_profiles' ) ) {
+if( !\Core\Config::mantis_get( 'enable_profiles' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
 }
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
-$f_profile_id	= \Flickerbox\GPC::get_int( 'profile_id' );
+$f_profile_id	= \Core\GPC::get_int( 'profile_id' );
 
-if( \Flickerbox\Profile::is_global( $f_profile_id ) ) {
-	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) );
+if( \Core\Profile::is_global( $f_profile_id ) ) {
+	\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_global_profile_threshold' ) );
 
-	$t_row = \Flickerbox\Profile::get_row( ALL_USERS, $f_profile_id );
+	$t_row = \Core\Profile::get_row( ALL_USERS, $f_profile_id );
 } else {
-	$t_row = \Flickerbox\Profile::get_row( auth_get_current_user_id(), $f_profile_id );
+	$t_row = \Core\Profile::get_row( auth_get_current_user_id(), $f_profile_id );
 }
 
 extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-if( \Flickerbox\Profile::is_global( $f_profile_id ) ) {
-	\Flickerbox\HTML::print_manage_menu();
+if( \Core\Profile::is_global( $f_profile_id ) ) {
+	\Core\HTML::print_manage_menu();
 }
 ?>
 
@@ -70,61 +70,61 @@ if( \Flickerbox\Profile::is_global( $f_profile_id ) ) {
 <br />
 <div>
 <form method="post" action="account_prof_update.php">
-<?php  echo \Flickerbox\Form::security_field( 'profile_update' )?>
+<?php  echo \Core\Form::security_field( 'profile_update' )?>
 <input type="hidden" name="action" value="update" />
 <table class="width75" cellspacing="1">
 <tr>
 	<td class="form-title">
 		<input type="hidden" name="profile_id" value="<?php echo $v_id ?>" />
-		<?php echo \Flickerbox\Lang::get( 'edit_profile_title' ) ?>
+		<?php echo \Core\Lang::get( 'edit_profile_title' ) ?>
 	</td>
 	<td class="right">
 		<?php
-			if( !\Flickerbox\Profile::is_global( $f_profile_id ) ) {
-				\Flickerbox\HTML::print_account_menu();
+			if( !\Core\Profile::is_global( $f_profile_id ) ) {
+				\Core\HTML::print_account_menu();
 			}
 		?>
 	</td>
 </tr>
 <tr class="row-1">
 	<th class="category" width="25%">
-		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'platform' ) ?>
+		<span class="required">*</span><?php echo \Core\Lang::get( 'platform' ) ?>
 	</th>
 	<td width="75%">
-		<input type="text" name="platform" size="32" maxlength="32" value="<?php echo \Flickerbox\String::attribute( $v_platform ) ?>" />
+		<input type="text" name="platform" size="32" maxlength="32" value="<?php echo \Core\String::attribute( $v_platform ) ?>" />
 	</td>
 </tr>
 <tr class="row-2">
 	<th class="category">
-		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'os' ) ?>
+		<span class="required">*</span><?php echo \Core\Lang::get( 'os' ) ?>
 	</th>
 	<td>
-		<input type="text" name="os" size="32" maxlength="32" value="<?php echo \Flickerbox\String::attribute( $v_os ) ?>" />
+		<input type="text" name="os" size="32" maxlength="32" value="<?php echo \Core\String::attribute( $v_os ) ?>" />
 	</td>
 </tr>
 <tr class="row-1">
 	<th class="category">
-		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'os_version' ) ?>
+		<span class="required">*</span><?php echo \Core\Lang::get( 'os_version' ) ?>
 	</th>
 	<td>
-		<input type="text" name="os_build" size="16" maxlength="16" value="<?php echo \Flickerbox\String::attribute( $v_os_build ) ?>" />
+		<input type="text" name="os_build" size="16" maxlength="16" value="<?php echo \Core\String::attribute( $v_os_build ) ?>" />
 	</td>
 </tr>
 <tr class="row-2">
 	<th class="category">
-		<?php echo \Flickerbox\Lang::get( 'additional_description' ) ?>
+		<?php echo \Core\Lang::get( 'additional_description' ) ?>
 	</th>
 	<td>
-		<textarea name="description" cols="60" rows="8"><?php echo \Flickerbox\String::textarea( $v_description ) ?></textarea>
+		<textarea name="description" cols="60" rows="8"><?php echo \Core\String::textarea( $v_description ) ?></textarea>
 	</td>
 </tr>
 <tr>
 	<td class="center" colspan="2">
-		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_profile_button' ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_profile_button' ) ?>" />
 	</td>
 </tr>
 </table>
 </form>
 </div>
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

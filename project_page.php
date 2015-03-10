@@ -38,53 +38,53 @@
 
 require_once( 'core.php' );
 
-$f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
+$f_project_id	= \Core\GPC::get_int( 'project_id' );
 
 $t_view_issues_url = 'set_project.php?project_id=' . $f_project_id . '&ref=view_all_bug_page.php';
 
 if( $f_project_id == ALL_PROJECTS ) {
-	\Flickerbox\Print_Util::header_redirect( $t_view_issues_url );
+	\Core\Print_Util::header_redirect( $t_view_issues_url );
 	exit;
 }
 
 # Override the current page to make sure we get the appropriate project-specific configuration
 $g_project_override = $f_project_id;
 
-\Flickerbox\HTML::page_top( \Flickerbox\Project::get_field( $f_project_id, 'name' ) );
+\Core\HTML::page_top( \Core\Project::get_field( $f_project_id, 'name' ) );
 
-\Flickerbox\Print_Util::recently_visited();
+\Core\Print_Util::recently_visited();
 
-echo '<h1>', \Flickerbox\String::display( \Flickerbox\Project::get_field( $f_project_id, 'name' ) ), '</h1>';
+echo '<h1>', \Core\String::display( \Core\Project::get_field( $f_project_id, 'name' ) ), '</h1>';
 
 echo '<p>';
 
 # View Issues
-\Flickerbox\Print_Util::bracket_link( $t_view_issues_url, \Flickerbox\Lang::get( 'view_bugs_link' ) );
+\Core\Print_Util::bracket_link( $t_view_issues_url, \Core\Lang::get( 'view_bugs_link' ) );
 
 # Changelog
-\Flickerbox\Print_Util::bracket_link( 'changelog_page.php?project_id=' . $f_project_id, \Flickerbox\Lang::get( 'changelog_link' ) );
+\Core\Print_Util::bracket_link( 'changelog_page.php?project_id=' . $f_project_id, \Core\Lang::get( 'changelog_link' ) );
 
 # Roadmap
-\Flickerbox\Print_Util::bracket_link( 'roadmap_page.php?project_id=' . $f_project_id, \Flickerbox\Lang::get( 'roadmap_link' ) );
+\Core\Print_Util::bracket_link( 'roadmap_page.php?project_id=' . $f_project_id, \Core\Lang::get( 'roadmap_link' ) );
 
 # Documentation
-if( \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) == ON ) {
-	\Flickerbox\Print_Util::bracket_link( 'proj_doc_page.php?project_id=' . $f_project_id, \Flickerbox\Lang::get( 'docs_link' ) );
+if( \Core\Config::mantis_get( 'enable_project_documentation' ) == ON ) {
+	\Core\Print_Util::bracket_link( 'proj_doc_page.php?project_id=' . $f_project_id, \Core\Lang::get( 'docs_link' ) );
 }
 
 # Wiki
-if( \Flickerbox\Config::mantis_get( 'wiki_enable' ) == ON ) {
-	\Flickerbox\Print_Util::bracket_link( 'wiki.php?type=project&id=' . $f_project_id, \Flickerbox\Lang::get( 'wiki' ) );
+if( \Core\Config::mantis_get( 'wiki_enable' ) == ON ) {
+	\Core\Print_Util::bracket_link( 'wiki.php?type=project&id=' . $f_project_id, \Core\Lang::get( 'wiki' ) );
 }
 
 # Summary Page for Project
-if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ), $f_project_id ) ) {
-	\Flickerbox\Print_Util::bracket_link( 'summary_page.php?project_id=' . $f_project_id, \Flickerbox\Lang::get( 'summary_link' ) );
+if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ), $f_project_id ) ) {
+	\Core\Print_Util::bracket_link( 'summary_page.php?project_id=' . $f_project_id, \Core\Lang::get( 'summary_link' ) );
 }
 
 # Manage Project Page
-if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id ) ) {
-	\Flickerbox\Print_Util::bracket_link( 'manage_proj_edit_page.php?project_id=' . $f_project_id, \Flickerbox\Lang::get( 'manage_link' ) );
+if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id ) ) {
+	\Core\Print_Util::bracket_link( 'manage_proj_edit_page.php?project_id=' . $f_project_id, \Core\Lang::get( 'manage_link' ) );
 }
 
 echo '</p>';
@@ -92,33 +92,33 @@ echo '</p>';
 # @todo Add status, view state, versions, sub-projects, parent projects, and news.
 # @todo Schema change: add home page, license,
 
-$t_description = \Flickerbox\Project::get_field( $f_project_id, 'description' );
+$t_description = \Core\Project::get_field( $f_project_id, 'description' );
 
-if( !\Flickerbox\Utility::is_blank( $t_description ) ) {
-	echo '<h2>', \Flickerbox\Lang::get( 'description' ), '</h2>';
-	echo '<p>', \Flickerbox\String::display( $t_description ), '</p>';
+if( !\Core\Utility::is_blank( $t_description ) ) {
+	echo '<h2>', \Core\Lang::get( 'description' ), '</h2>';
+	echo '<p>', \Core\String::display( $t_description ), '</p>';
 }
 
-$t_access_level_for_dev_team = \Flickerbox\Config::mantis_get( 'development_team_threshold' );
+$t_access_level_for_dev_team = \Core\Config::mantis_get( 'development_team_threshold' );
 
-$t_users = \Flickerbox\Project::get_all_user_rows( $f_project_id, $t_access_level_for_dev_team );
-$t_show_real_names = \Flickerbox\Config::mantis_get( 'show_realname' ) == ON;
+$t_users = \Core\Project::get_all_user_rows( $f_project_id, $t_access_level_for_dev_team );
+$t_show_real_names = \Core\Config::mantis_get( 'show_realname' ) == ON;
 
 if( count( $t_users ) > 0 ) {
-	echo '<h2>', \Flickerbox\Lang::get( 'development_team' ), '</h2>';
+	echo '<h2>', \Core\Lang::get( 'development_team' ), '</h2>';
 
 	# @todo sort users in DESC order by access level, then ASC by username/realname.
 	foreach ( $t_users as $t_user_data ) {
 		$t_user_id = $t_user_data['id'];
 
-		if( $t_show_real_names && !\Flickerbox\Utility::is_blank( $t_user_data['realname'] ) ) {
+		if( $t_show_real_names && !\Core\Utility::is_blank( $t_user_data['realname'] ) ) {
 			$t_user_name = $t_user_data['realname'];
 		} else {
 			$t_user_name = $t_user_data['username'];
 		}
 
-		echo $t_user_name, ' (', \Flickerbox\Helper::get_enum_element( 'access_levels', $t_user_data['access_level'] ), ')<br />';
+		echo $t_user_name, ' (', \Core\Helper::get_enum_element( 'access_levels', $t_user_data['access_level'] ), ')<br />';
 	}
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

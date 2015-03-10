@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -53,7 +53,7 @@ class Session
 	
 		switch( \utf8_strtolower( $g_session_handler ) ) {
 			case 'php':
-				$g_session = new \Flickerbox\MantisPHPSession( $p_session_id );
+				$g_session = new \Core\MantisPHPSession( $p_session_id );
 				break;
 			case 'memcached':
 				# Not yet implemented
@@ -62,8 +62,8 @@ class Session
 				break;
 		}
 	
-		if( ON == \Flickerbox\Config::get_global( 'session_validation' ) && \Flickerbox\Session::get( 'secure_session', false ) ) {
-			\Flickerbox\Session::validate( $g_session );
+		if( ON == \Core\Config::get_global( 'session_validation' ) && \Core\Session::get( 'secure_session', false ) ) {
+			\Core\Session::validate( $g_session );
 		}
 	}
 	
@@ -87,11 +87,11 @@ class Session
 		} else {
 			# Check a continued session request
 			if( $t_user_ip != $t_last_ip ) {
-				\Flickerbox\Session::clean();
+				\Core\Session::clean();
 	
 				trigger_error( ERROR_SESSION_NOT_VALID, WARNING );
 	
-				$t_url = \Flickerbox\Config::get_global( 'path' ) . \Flickerbox\Config::get_global( 'default_home_page' );
+				$t_url = \Core\Config::get_global( 'path' ) . \Core\Config::get_global( 'default_home_page' );
 				echo "\t<meta http-equiv=\"Refresh\" content=\"4;URL=" . $t_url . "\" />\n";
 	
 				die();

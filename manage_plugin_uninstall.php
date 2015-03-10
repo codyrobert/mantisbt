@@ -38,25 +38,25 @@ define( 'PLUGINS_DISABLED', true );
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_plugin_uninstall' );
+\Core\Form::security_validate( 'manage_plugin_uninstall' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 # register plugins and metadata without initializing
-\Flickerbox\Plugin::register_installed();
+\Core\Plugin::register_installed();
 
-$f_basename = \Flickerbox\GPC::get_string( 'name' );
-$t_plugin = \Flickerbox\Plugin::register( $f_basename, true );
+$f_basename = \Core\GPC::get_string( 'name' );
+$t_plugin = \Core\Plugin::register( $f_basename, true );
 
-\Flickerbox\Helper::ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'plugin_uninstall_message' ), \Flickerbox\String::display_line( $t_plugin->name ) ), \Flickerbox\Lang::get( 'plugin_uninstall' ) );
+\Core\Helper::ensure_confirmed( sprintf( \Core\Lang::get( 'plugin_uninstall_message' ), \Core\String::display_line( $t_plugin->name ) ), \Core\Lang::get( 'plugin_uninstall' ) );
 
 if( !is_null( $t_plugin ) ) {
-	\Flickerbox\Plugin::uninstall( $t_plugin );
+	\Core\Plugin::uninstall( $t_plugin );
 } else {
 	plugin_force_uninstall( $f_basename );
 }
 
-\Flickerbox\Form::security_purge( 'manage_plugin_uninstall' );
+\Core\Form::security_purge( 'manage_plugin_uninstall' );
 
-\Flickerbox\Print_Util::successful_redirect( 'manage_plugin_page.php' );
+\Core\Print_Util::successful_redirect( 'manage_plugin_page.php' );

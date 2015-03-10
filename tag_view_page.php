@@ -39,53 +39,53 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'tag_view_threshold' ) );
-\Flickerbox\Compress::enable();
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'tag_view_threshold' ) );
+\Core\Compress::enable();
 
-$f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
-$t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
+$f_tag_id = \Core\GPC::get_int( 'tag_id' );
+$t_tag_row = \Core\Tag::get( $f_tag_id );
 
-$t_name = \Flickerbox\String::display_line( $t_tag_row['name'] );
-$t_description = \Flickerbox\String::display( $t_tag_row['description'] );
-$t_can_edit = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) );
-$t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::get_field( $f_tag_id, 'user_id' )
-	&& \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_own_threshold' ) );
+$t_name = \Core\String::display_line( $t_tag_row['name'] );
+$t_description = \Core\String::display( $t_tag_row['description'] );
+$t_can_edit = \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) );
+$t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Core\Tag::get_field( $f_tag_id, 'user_id' )
+	&& \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_own_threshold' ) );
 
 
-\Flickerbox\HTML::page_top( sprintf( \Flickerbox\Lang::get( 'tag_details' ), $t_name ) ); ?>
+\Core\HTML::page_top( sprintf( \Core\Lang::get( 'tag_details' ), $t_name ) ); ?>
 
 <div id="tag-view-div" class="form-container">
-	<h2><?php echo sprintf( \Flickerbox\Lang::get( 'tag_details' ), $t_name ) ?></h2>
+	<h2><?php echo sprintf( \Core\Lang::get( 'tag_details' ), $t_name ) ?></h2>
 	<div class="section-link">
-		<?php \Flickerbox\Print_Util::bracket_link( 'search.php?tag_string='.urlencode( $t_tag_row['name'] ), sprintf( \Flickerbox\Lang::get( 'tag_filter_default' ), \Flickerbox\Tag::stats_attached( $f_tag_id ) ) ); ?>
+		<?php \Core\Print_Util::bracket_link( 'search.php?tag_string='.urlencode( $t_tag_row['name'] ), sprintf( \Core\Lang::get( 'tag_filter_default' ), \Core\Tag::stats_attached( $f_tag_id ) ) ); ?>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_id' ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_id' ) ?></span></span>
 		<span class="display-value"><span><?php echo $t_tag_row['id'] ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_name' ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_name' ) ?></span></span>
 		<span class="display-value"><span><?php echo $t_name ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_creator' ) ?></span></span>
-		<span class="display-value"><span><?php echo \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_tag_row['user_id'] ) ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_creator' ) ?></span></span>
+		<span class="display-value"><span><?php echo \Core\String::display_line( \Core\User::get_name( $t_tag_row['user_id'] ) ) ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_created' ) ?></span></span>
-		<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_created' ) ?></span></span>
+		<span class="display-value"><span><?php echo date( \Core\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_updated' ) ?></span></span>
-		<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_updated' ) ?></span></span>
+		<span class="display-value"><span><?php echo date( \Core\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_description' ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_description' ) ?></span></span>
 		<span class="display-value"><span><?php echo $t_description ?></span></span>
 		<span class="label-style"></span>
 	</div>
@@ -93,20 +93,20 @@ $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::
 <?php
 	# Related tags
 
-	$t_tags_related = \Flickerbox\Tag::stats_related( $f_tag_id );
+	$t_tags_related = \Core\Tag::stats_related( $f_tag_id );
 	if( count( $t_tags_related ) ) {
 ?>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_related' ); ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_related' ); ?></span></span>
 		<div class="display-value">
 			<table id="related-tags" class="tag-list">
 <?php
 		foreach( $t_tags_related as $t_tag ) {
-			$t_name = \Flickerbox\String::display_line( $t_tag['name'] );
-			$t_description = \Flickerbox\String::display_line( $t_tag['description'] );
+			$t_name = \Core\String::display_line( $t_tag['name'] );
+			$t_description = \Core\String::display_line( $t_tag['description'] );
 			$t_count = $t_tag['count'];
-			$t_link = \Flickerbox\String::html_specialchars( 'search.php?tag_string='.urlencode( '+' . $t_tag_row['name'] . \Flickerbox\Config::mantis_get( 'tag_separator' ) . '+' . $t_name ) );
-			$t_label = sprintf( \Flickerbox\Lang::get( 'tag_related_issues' ), $t_tag['count'] ); ?>
+			$t_link = \Core\String::html_specialchars( 'search.php?tag_string='.urlencode( '+' . $t_tag_row['name'] . \Core\Config::mantis_get( 'tag_separator' ) . '+' . $t_name ) );
+			$t_label = sprintf( \Core\Lang::get( 'tag_related_issues' ), $t_tag['count'] ); ?>
 			<tr>
 				<td><span class="tag-link"><a href="tag_view_page.php?tag_id=<?php echo $t_tag['id']; ?>" title="<?php echo $t_description; ?>"><?php echo $t_name; ?></a></span></td>
 				<td><span class="tag-filter"><a href="<?php echo $t_link; ?>"><?php echo $t_label; ?></a></span></td>
@@ -131,7 +131,7 @@ $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::
 			<fieldset>
 				<?php # CSRF protection not required here - form does not result in modifications ?>
 				<input type="hidden" name="tag_id" value="<?php echo $f_tag_id ?>" />
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'tag_update_button' ) ?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'tag_update_button' ) ?>" />
 			</fieldset>
 		</form><?php
 		}
@@ -139,9 +139,9 @@ $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::
 		if( $t_can_edit ) { ?>
 		<form action="tag_delete.php" method="post" class="action-button">
 			<fieldset>
-				<?php echo \Flickerbox\Form::security_field( 'tag_delete' ) ?>
+				<?php echo \Core\Form::security_field( 'tag_delete' ) ?>
 				<input type="hidden" name="tag_id" value="<?php echo $f_tag_id ?>" />
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'tag_delete_button' ) ?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'tag_delete_button' ) ?>" />
 			</fieldset>
 		</form><?php
 		} ?>
@@ -149,4 +149,4 @@ $t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Flickerbox\Tag::
 	} ?>
 </div><?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

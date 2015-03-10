@@ -21,15 +21,15 @@
 /**
  * Mantis Graph plugin
  */
-class MantisGraphPlugin extends \Flickerbox\MantisPlugin  {
+class MantisGraphPlugin extends \Core\MantisPlugin  {
 
 	/**
 	 * A method that populates the plugin information and minimum requirements.
 	 * @return void
 	 */
 	function register() {
-		$this->name = \Flickerbox\Lang::get( 'plugin_graph_title' );
-		$this->description = \Flickerbox\Lang::get( 'plugin_graph_description' );
+		$this->name = \Core\Lang::get( 'plugin_graph_title' );
+		$this->description = \Core\Lang::get( 'plugin_graph_description' );
 		$this->page = 'config';
 
 		$this->version = '1.3.0';
@@ -97,7 +97,7 @@ class MantisGraphPlugin extends \Flickerbox\MantisPlugin  {
 	 * @return array
 	 */
 	function summary_menu() {
-		return array( '<a href="' . \Flickerbox\Plugin::page( 'summary_jpgraph_page' ) . '">' . \Flickerbox\Plugin::langget( 'menu_advanced_summary' ) . '</a>', );
+		return array( '<a href="' . \Core\Plugin::page( 'summary_jpgraph_page' ) . '">' . \Core\Plugin::langget( 'menu_advanced_summary' ) . '</a>', );
 	}
 
 	/**
@@ -105,7 +105,7 @@ class MantisGraphPlugin extends \Flickerbox\MantisPlugin  {
 	 * @return array
 	 */
 	function graph_filter_menu() {
-		return array( '<a href="' . \Flickerbox\Plugin::page( 'bug_graph_page.php' ) . '">' . \Flickerbox\Plugin::langget( 'graph_bug_page_link' ) . '</a>', );
+		return array( '<a href="' . \Core\Plugin::page( 'bug_graph_page.php' ) . '">' . \Core\Plugin::langget( 'graph_bug_page_link' ) . '</a>', );
 	}
 
 	/**
@@ -113,13 +113,13 @@ class MantisGraphPlugin extends \Flickerbox\MantisPlugin  {
 	 * @return array
 	 */
 	function summary_submenu() {
-		$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
-		return array( '<a href="' . \Flickerbox\Helper::mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . \Flickerbox\Plugin::langget( 'synthesis_link' ) . '</a>',
-			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_status.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'status_link' ) . '</a>',
-			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_priority.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'priority_link' ) . '</a>',
-			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_severity.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'severity_link' ) . '</a>',
-			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_category.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'category_link' ) . '</a>',
-			'<a href="' . \Flickerbox\Plugin::page( 'summary_graph_imp_resolution.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Flickerbox\Plugin::langget( 'resolution_link' ) . '</a>',
+		$t_icon_path = \Core\Config::mantis_get( 'icon_path' );
+		return array( '<a href="' . \Core\Helper::mantis_url( 'summary_page.php' ) . '"><img src="' . $t_icon_path . 'synthese.gif" alt="" />' . \Core\Plugin::langget( 'synthesis_link' ) . '</a>',
+			'<a href="' . \Core\Plugin::page( 'summary_graph_imp_status.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Core\Plugin::langget( 'status_link' ) . '</a>',
+			'<a href="' . \Core\Plugin::page( 'summary_graph_imp_priority.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Core\Plugin::langget( 'priority_link' ) . '</a>',
+			'<a href="' . \Core\Plugin::page( 'summary_graph_imp_severity.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Core\Plugin::langget( 'severity_link' ) . '</a>',
+			'<a href="' . \Core\Plugin::page( 'summary_graph_imp_category.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Core\Plugin::langget( 'category_link' ) . '</a>',
+			'<a href="' . \Core\Plugin::page( 'summary_graph_imp_resolution.php' ) . '"><img src="' . $t_icon_path . 'synthgraph.gif" alt="" />' . \Core\Plugin::langget( 'resolution_link' ) . '</a>',
 		);
 	}
 }

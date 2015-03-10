@@ -37,39 +37,39 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_user_prune' );
+\Core\Form::security_validate( 'manage_user_prune' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
 
 # Delete the users who have never logged in and are older than 1 week
 $t_days_old = (int)7 * SECONDS_PER_DAY;
 
 $t_query = 'SELECT id, access_level FROM {user}
-		WHERE ( login_count = 0 ) AND ( date_created = last_visit ) AND ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '>', 'date_created', $t_days_old );
-$t_result = \Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now() ) );
+		WHERE ( login_count = 0 ) AND ( date_created = last_visit ) AND ' . \Core\Database::helper_compare_time( \Core\Database::param(), '>', 'date_created', $t_days_old );
+$t_result = \Core\Database::query( $t_query, array( \Core\Database::now() ) );
 
 if( !$t_result ) {
 	trigger_error( ERROR_GENERIC, ERROR );
 }
 
-$t_count = \Flickerbox\Database::num_rows( $t_result );
+$t_count = \Core\Database::num_rows( $t_result );
 
 if( $t_count > 0 ) {
-	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_account_pruning' ),
-							 \Flickerbox\Lang::get( 'prune_accounts_button' ) );
+	\Core\Helper::ensure_confirmed( \Core\Lang::get( 'confirm_account_pruning' ),
+							 \Core\Lang::get( 'prune_accounts_button' ) );
 }
 
 for( $i=0; $i < $t_count; $i++ ) {
-	$t_row = \Flickerbox\Database::fetch_array( $t_result );
+	$t_row = \Core\Database::fetch_array( $t_result );
 	# Don't prune accounts with a higher global access level than the current user
-	if( \Flickerbox\Access::has_global_level( $t_row['access_level'] ) ) {
-		\Flickerbox\User::delete( $t_row['id'] );
+	if( \Core\Access::has_global_level( $t_row['access_level'] ) ) {
+		\Core\User::delete( $t_row['id'] );
 	}
 }
 
-\Flickerbox\Form::security_purge( 'manage_user_prune' );
+\Core\Form::security_purge( 'manage_user_prune' );
 
-\Flickerbox\Print_Util::header_redirect( 'manage_user_page.php' );
+\Core\Print_Util::header_redirect( 'manage_user_page.php' );

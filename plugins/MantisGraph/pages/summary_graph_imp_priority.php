@@ -25,47 +25,47 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
+\Core\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-\Flickerbox\HTML::print_summary_menu( 'summary_page.php' );
+\Core\HTML::print_summary_menu( 'summary_page.php' );
 echo '<br />';
 
-\Flickerbox\HTML::print_summary_submenu();
-$t_width = \Flickerbox\Plugin::config_get( 'window_width' );
+\Core\HTML::print_summary_submenu();
+$t_width = \Core\Plugin::config_get( 'window_width' );
 $t_graph_width = (int)( ( $t_width - 50 ) * 0.6 );
 
 # gather the data for the graphs
-$t_metrics = enum_bug_group( \Flickerbox\Lang::get( 'priority_enum_string' ), 'priority' );
-$t_token = \Flickerbox\Token::set( TOKEN_GRAPH, json_encode( $t_metrics ) );
+$t_metrics = enum_bug_group( \Core\Lang::get( 'priority_enum_string' ), 'priority' );
+$t_token = \Core\Token::set( TOKEN_GRAPH, json_encode( $t_metrics ) );
 
 ?>
 <br />
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo \Flickerbox\Plugin::langget( 'graph_imp_priority_title' ) ?>
+		<?php echo \Core\Plugin::langget( 'graph_imp_priority_title' ) ?>
 	</td>
 </tr>
 <tr>
 	<td class="center">
-		<img src="<?php echo \Flickerbox\Plugin::page( 'summary_graph_bypriority.php' ) ?>&amp;width=<?php echo $t_graph_width?>" alt="" />
+		<img src="<?php echo \Core\Plugin::page( 'summary_graph_bypriority.php' ) ?>&amp;width=<?php echo $t_graph_width?>" alt="" />
 	</td>
 </tr>
 <tr>
 	<td class="center">
-		 <img src="<?php echo \Flickerbox\Plugin::page( 'summary_graph_bypriority_pct.php' ) ?>&amp;width=<?php echo $t_graph_width?>" alt="" />
+		 <img src="<?php echo \Core\Plugin::page( 'summary_graph_bypriority_pct.php' ) ?>&amp;width=<?php echo $t_graph_width?>" alt="" />
 	</td>
 </tr>
 <tr>
 	<td class="center">
-		<img src="<?php echo \Flickerbox\Plugin::page( 'summary_graph_bypriority_mix.php' ) ?>&amp;width=<?php echo $t_graph_width?>" alt="" />
+		<img src="<?php echo \Core\Plugin::page( 'summary_graph_bypriority_mix.php' ) ?>&amp;width=<?php echo $t_graph_width?>" alt="" />
 	</td>
 </tr>
 </table>
 
 <?php
-	\Flickerbox\HTML::page_bottom();
+	\Core\HTML::page_bottom();

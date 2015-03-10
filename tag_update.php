@@ -35,31 +35,31 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'tag_update' );
+\Core\Form::security_validate( 'tag_update' );
 
-\Flickerbox\Compress::enable();
+\Core\Compress::enable();
 
-$f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
-$t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
+$f_tag_id = \Core\GPC::get_int( 'tag_id' );
+$t_tag_row = \Core\Tag::get( $f_tag_id );
 
-if( !( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) )
+if( !( \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) )
 	|| ( auth_get_current_user_id() == $t_tag_row['user_id'] )
-		&& \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
-	\Flickerbox\Access::denied();
+		&& \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
+	\Core\Access::denied();
 }
 
-if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) ) ) {
-	$f_new_user_id = \Flickerbox\GPC::get_int( 'user_id', $t_tag_row['user_id'] );
+if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) ) ) {
+	$f_new_user_id = \Core\GPC::get_int( 'user_id', $t_tag_row['user_id'] );
 } else {
 	$f_new_user_id = $t_tag_row['user_id'];
 }
 
-$f_new_name = \Flickerbox\GPC::get_string( 'name', $t_tag_row['name'] );
-$f_new_description = \Flickerbox\GPC::get_string( 'description', $t_tag_row['description'] );
+$f_new_name = \Core\GPC::get_string( 'name', $t_tag_row['name'] );
+$f_new_description = \Core\GPC::get_string( 'description', $t_tag_row['description'] );
 
-\Flickerbox\Tag::update( $f_tag_id, $f_new_name, $f_new_user_id, $f_new_description );
+\Core\Tag::update( $f_tag_id, $f_new_name, $f_new_user_id, $f_new_description );
 
-\Flickerbox\Form::security_purge( 'tag_update' );
+\Core\Form::security_purge( 'tag_update' );
 
 $t_url = 'tag_view_page.php?tag_id='.$f_tag_id;
-\Flickerbox\Print_Util::successful_redirect( $t_url );
+\Core\Print_Util::successful_redirect( $t_url );

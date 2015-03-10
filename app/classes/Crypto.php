@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -46,7 +46,7 @@ class Crypto
 	 */
 	static function init() {
 		if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
-			if( strlen( \Flickerbox\Config::get_global( 'crypto_master_salt' ) ) < 16 ) {
+			if( strlen( \Core\Config::get_global( 'crypto_master_salt' ) ) < 16 ) {
 				trigger_error( ERROR_CRYPTO_MASTER_SALT_INVALID, ERROR );
 			}
 		}
@@ -82,7 +82,7 @@ class Crypto
 		# if the mcrypt extension is enabled on Linux, it takes random data from /dev/urandom
 		if( !isset( $t_random_string ) ) {
 			if( function_exists( 'mcrypt_create_iv' )
-				&& ( version_compare( PHP_VERSION, '5.3.7' ) >= 0 || !\Flickerbox\Utility::is_windows_server() )
+				&& ( version_compare( PHP_VERSION, '5.3.7' ) >= 0 || !\Core\Utility::is_windows_server() )
 			) {
 				$t_random_bytes = mcrypt_create_iv( $p_bytes, MCRYPT_DEV_URANDOM );
 				if( $t_random_bytes !== false && strlen( $t_random_bytes ) === $p_bytes ) {
@@ -96,7 +96,7 @@ class Crypto
 		# the needs of MantisBT, especially given the fact that we don't want this
 		# function to block while waiting for the system to generate more entropy.
 		if( !isset( $t_random_string ) ) {
-			if( !\Flickerbox\Utility::is_windows_server() ) {
+			if( !\Core\Utility::is_windows_server() ) {
 				$t_urandom_fp = @fopen( '/dev/urandom', 'rb' );
 				if( $t_urandom_fp !== false ) {
 					$t_random_bytes = @fread( $t_urandom_fp, $p_bytes );
@@ -123,7 +123,7 @@ class Crypto
 		# internal state of the PRNG, we salt the PRNG output with a known secret
 		# and hash it.
 		if( !isset( $t_random_string ) ) {
-			$t_secret_key = 'prng' . \Flickerbox\Config::get_global( 'crypto_master_salt' );
+			$t_secret_key = 'prng' . \Core\Config::get_global( 'crypto_master_salt' );
 			$t_random_bytes = '';
 			for( $i = 0; $i < $p_bytes; $i += 64 ) {
 				$t_random_segment = '';
@@ -155,7 +155,7 @@ class Crypto
 	 * @return string Raw binary string containing the requested number of bytes of random output
 	 */
 	static function generate_strong_random_string( $p_bytes ) {
-		$t_random_string = \Flickerbox\Crypto::generate_random_string( $p_bytes, true );
+		$t_random_string = \Core\Crypto::generate_random_string( $p_bytes, true );
 		if( $t_random_string === null ) {
 			trigger_error( ERROR_CRYPTO_CAN_NOT_GENERATE_STRONG_RANDOMNESS, ERROR );
 		}
@@ -170,7 +170,7 @@ class Crypto
 	 * output. Due to the reduced character set of base64 encoding, the actual
 	 * amount of entropy produced by this function for a given output string length
 	 * is 3/4 (0.75) that of raw unencoded output produced with the
-	 * \Flickerbox\Crypto::generate_strong_random_string( $p_bytes ) function.
+	 * \Core\Crypto::generate_strong_random_string( $p_bytes ) function.
 	 * @param integer $p_minimum_length Minimum number of characters required for the nonce.
 	 * @return string Nonce encoded according to the base64 with URI safe alphabet approach described in RFC4648
 	 */
@@ -178,13 +178,13 @@ class Crypto
 		$t_length_mod4 = $p_minimum_length % 4;
 		$t_adjusted_length = $p_minimum_length + 4 - ($t_length_mod4 ? $t_length_mod4 : 4);
 		$t_raw_bytes_required = ( $t_adjusted_length / 4 ) * 3;
-		if( !\Flickerbox\Utility::is_windows_server() ) {
-			$t_random_bytes = \Flickerbox\Crypto::generate_strong_random_string( $t_raw_bytes_required );
+		if( !\Core\Utility::is_windows_server() ) {
+			$t_random_bytes = \Core\Crypto::generate_strong_random_string( $t_raw_bytes_required );
 		} else {
 			# It's currently not possible to generate strong random numbers
 			# with PHP on Windows so we have to resort to using PHP's
 			# built-in insecure PRNG.
-			$t_random_bytes = \Flickerbox\Crypto::generate_random_string( $t_raw_bytes_required, false );
+			$t_random_bytes = \Core\Crypto::generate_random_string( $t_raw_bytes_required, false );
 		}
 		$t_base64_encoded = base64_encode( $t_random_bytes );
 		# Note: no need to translate trailing = padding characters because our

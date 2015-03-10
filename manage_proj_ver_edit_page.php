@@ -39,57 +39,57 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\HTML::require_js( 'jscalendar/calendar.js' );
-\Flickerbox\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
-\Flickerbox\HTML::require_js( 'jscalendar/calendar-setup.js' );
-\Flickerbox\HTML::require_css( 'calendar-blue.css' );
+\Core\HTML::require_js( 'jscalendar/calendar.js' );
+\Core\HTML::require_js( 'jscalendar/lang/calendar-en.js' );
+\Core\HTML::require_js( 'jscalendar/calendar-setup.js' );
+\Core\HTML::require_css( 'calendar-blue.css' );
 
 auth_reauthenticate();
 
-$f_version_id = \Flickerbox\GPC::get_int( 'version_id' );
+$f_version_id = \Core\GPC::get_int( 'version_id' );
 
-$t_version = \Flickerbox\Version::get( $f_version_id );
+$t_version = \Core\Version::get( $f_version_id );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_version->project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_version->project_id );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-\Flickerbox\HTML::print_manage_menu( 'manage_proj_ver_edit_page.php' ); ?>
+\Core\HTML::print_manage_menu( 'manage_proj_ver_edit_page.php' ); ?>
 
 <div id="manage-proj-version-update-div" class="form-container">
 	<form id="manage-proj-version-update-form" method="post" action="manage_proj_ver_update.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'edit_project_version_title' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_ver_update' ) ?>
-			<input type="hidden" name="version_id" value="<?php echo \Flickerbox\String::attribute( $t_version->id ) ?>" />
+			<legend><span><?php echo \Core\Lang::get( 'edit_project_version_title' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'manage_proj_ver_update' ) ?>
+			<input type="hidden" name="version_id" value="<?php echo \Core\String::attribute( $t_version->id ) ?>" />
 			<div class="field-container">
-				<label for="proj-version-new-version"><span><?php echo \Flickerbox\Lang::get( 'version' ) ?></span></label>
-				<span class="input"><input type="text" id="proj-version-new-version" name="new_version" size="32" maxlength="64" value="<?php echo \Flickerbox\String::attribute( $t_version->version ) ?>" /></span>
+				<label for="proj-version-new-version"><span><?php echo \Core\Lang::get( 'version' ) ?></span></label>
+				<span class="input"><input type="text" id="proj-version-new-version" name="new_version" size="32" maxlength="64" value="<?php echo \Core\String::attribute( $t_version->version ) ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="proj-version-date-order"><span><?php echo \Flickerbox\Lang::get( 'date_order' ) ?></span></label>
-				<span class="input"><input type="text" id="proj-version-date-order" name="date_order" class="datetime" size="32" value="<?php echo (\Flickerbox\Date::is_null( $t_version->date_order ) ? '' : \Flickerbox\String::attribute( date( \Flickerbox\Config::mantis_get( 'calendar_date_format' ), $t_version->date_order ) ) ) ?>" /></span>
+				<label for="proj-version-date-order"><span><?php echo \Core\Lang::get( 'date_order' ) ?></span></label>
+				<span class="input"><input type="text" id="proj-version-date-order" name="date_order" class="datetime" size="32" value="<?php echo (\Core\Date::is_null( $t_version->date_order ) ? '' : \Core\String::attribute( date( \Core\Config::mantis_get( 'calendar_date_format' ), $t_version->date_order ) ) ) ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="proj-version-description"><span><?php echo \Flickerbox\Lang::get( 'description' ) ?></span></label>
-				<span class="textarea"><textarea id="proj-version-description" name="description" cols="60" rows="5"><?php echo \Flickerbox\String::attribute( $t_version->description ) ?></textarea></span>
+				<label for="proj-version-description"><span><?php echo \Core\Lang::get( 'description' ) ?></span></label>
+				<span class="textarea"><textarea id="proj-version-description" name="description" cols="60" rows="5"><?php echo \Core\String::attribute( $t_version->description ) ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="proj-version-released"><span><?php echo \Flickerbox\Lang::get( 'released' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="proj-version-released" name="released" <?php \Flickerbox\Helper::check_checked( (boolean)$t_version->released, VERSION_RELEASED ); ?> /></span>
+				<label for="proj-version-released"><span><?php echo \Core\Lang::get( 'released' ) ?></span></label>
+				<span class="checkbox"><input type="checkbox" id="proj-version-released" name="released" <?php \Core\Helper::check_checked( (boolean)$t_version->released, VERSION_RELEASED ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="proj-version-obsolete"><span><?php echo \Flickerbox\Lang::get( 'obsolete' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="proj-version-obsolete" name="obsolete" <?php \Flickerbox\Helper::check_checked( (boolean)$t_version->obsolete, true ); ?> /></span>
+				<label for="proj-version-obsolete"><span><?php echo \Core\Lang::get( 'obsolete' ) ?></span></label>
+				<span class="checkbox"><input type="checkbox" id="proj-version-obsolete" name="obsolete" <?php \Core\Helper::check_checked( (boolean)$t_version->obsolete, true ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 
-			<?php \Flickerbox\Event::signal( 'EVENT_MANAGE_VERSION_UPDATE_FORM', array( $t_version->id ) ); ?>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_version_button' ) ?>" /></span>
+			<?php \Core\Event::signal( 'EVENT_MANAGE_VERSION_UPDATE_FORM', array( $t_version->id ) ); ?>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_version_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -97,12 +97,12 @@ $t_version = \Flickerbox\Version::get( $f_version_id );
 <div class="form-container">
 	<form method="post" action="manage_proj_ver_delete.php" class="action-button">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_ver_delete' ) ?>
-			<input type="hidden" name="version_id" value="<?php echo \Flickerbox\String::attribute( $t_version->id ) ?>" />
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'delete_version_button' ) ?>" />
+			<?php echo \Core\Form::security_field( 'manage_proj_ver_delete' ) ?>
+			<input type="hidden" name="version_id" value="<?php echo \Core\String::attribute( $t_version->id ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'delete_version_button' ) ?>" />
 		</fieldset>
 	</form>
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

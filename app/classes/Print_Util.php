@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -76,26 +76,26 @@ class Print_Util
 	 * @return boolean
 	 */
 	static function header_redirect( $p_url, $p_die = true, $p_sanitize = false, $p_absolute = false ) {
-		if( ON == \Flickerbox\Config::get_global( 'stop_on_errors' ) && \Flickerbox\Error::handled() ) {
+		if( ON == \Core\Config::get_global( 'stop_on_errors' ) && \Core\Error::handled() ) {
 			return false;
 		}
 	
 		# validate the url as part of this site before continuing
 		if( $p_absolute ) {
 			if( $p_sanitize ) {
-				$t_url = \Flickerbox\String::sanitize_url( $p_url );
+				$t_url = \Core\String::sanitize_url( $p_url );
 			} else {
 				$t_url = $p_url;
 			}
 		} else {
 			if( $p_sanitize ) {
-				$t_url = \Flickerbox\String::sanitize_url( $p_url, true );
+				$t_url = \Core\String::sanitize_url( $p_url, true );
 			} else {
-				$t_url = \Flickerbox\Config::mantis_get( 'path' ) . $p_url;
+				$t_url = \Core\Config::mantis_get( 'path' ) . $p_url;
 			}
 		}
 	
-		$t_url = \Flickerbox\String::prepare_header( $t_url );
+		$t_url = \Core\String::prepare_header( $t_url );
 	
 		# don't send more headers if they have already been sent
 		if( !headers_sent() ) {
@@ -122,20 +122,20 @@ class Print_Util
 	 * @return void
 	 */
 	static function header_redirect_view( $p_bug_id ) {
-		\Flickerbox\Print_Util::header_redirect( \Flickerbox\String::get_bug_view_url( $p_bug_id ) );
+		\Core\Print_Util::header_redirect( \Core\String::get_bug_view_url( $p_bug_id ) );
 	}
 	
 	/**
 	 * Get a view URL for the bug id based on the user's preference and
-	 * call \Flickerbox\Print_Util::successful_redirect() with that URL
+	 * call \Core\Print_Util::successful_redirect() with that URL
 	 *
 	 * @param integer $p_bug_id A bug identifier.
 	 * @return void
 	 */
 	static function successful_redirect_to_bug( $p_bug_id ) {
-		$t_url = \Flickerbox\String::get_bug_view_url( $p_bug_id, \Flickerbox\Auth::get_current_user_id() );
+		$t_url = \Core\String::get_bug_view_url( $p_bug_id, \Core\Auth::get_current_user_id() );
 	
-		\Flickerbox\Print_Util::successful_redirect( $t_url );
+		\Core\Print_Util::successful_redirect( $t_url );
 	}
 	
 	/**
@@ -146,15 +146,15 @@ class Print_Util
 	 * @return void
 	 */
 	static function successful_redirect( $p_redirect_to ) {
-		if( \Flickerbox\Helper::log_to_page() ) {
-			\Flickerbox\HTML::page_top( null, $p_redirect_to );
+		if( \Core\Helper::log_to_page() ) {
+			\Core\HTML::page_top( null, $p_redirect_to );
 			echo '<br /><div class="center">';
-			echo \Flickerbox\Lang::get( 'operation_successful' ) . '<br />';
-			\Flickerbox\Print_Util::bracket_link( $p_redirect_to, \Flickerbox\Lang::get( 'proceed' ) );
+			echo \Core\Lang::get( 'operation_successful' ) . '<br />';
+			\Core\Print_Util::bracket_link( $p_redirect_to, \Core\Lang::get( 'proceed' ) );
 			echo '</div>';
-			\Flickerbox\HTML::page_bottom();
+			\Core\HTML::page_bottom();
 		} else {
-			\Flickerbox\Print_Util::header_redirect( $p_redirect_to );
+			\Core\Print_Util::header_redirect( $p_redirect_to );
 		}
 	}
 	
@@ -166,16 +166,16 @@ class Print_Util
 	 * @return void
 	 */
 	static function avatar( $p_user_id, $p_size = 80 ) {
-		if( OFF === \Flickerbox\Config::mantis_get( 'show_avatar' ) ) {
+		if( OFF === \Core\Config::mantis_get( 'show_avatar' ) ) {
 			return;
 		}
 	
-		if( !\Flickerbox\User::exists( $p_user_id ) ) {
+		if( !\Core\User::exists( $p_user_id ) ) {
 			return;
 		}
 	
-		if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_avatar_threshold' ), null, $p_user_id ) ) {
-			$t_avatar = \Flickerbox\User::get_avatar( $p_user_id, $p_size );
+		if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'show_avatar_threshold' ), null, $p_user_id ) ) {
+			$t_avatar = \Core\User::get_avatar( $p_user_id, $p_size );
 			if( !empty( $t_avatar ) ) {
 				$t_avatar_url = htmlspecialchars( $t_avatar[0] );
 				$t_width = $t_avatar[1];
@@ -192,7 +192,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function user( $p_user_id ) {
-		echo \Flickerbox\Prepare::user_name( $p_user_id );
+		echo \Core\Prepare::user_name( $p_user_id );
 	}
 	
 	/**
@@ -207,10 +207,10 @@ class Print_Util
 			return;
 		}
 	
-		$t_username = \Flickerbox\User::get_name( $p_user_id );
-		if( \Flickerbox\User::exists( $p_user_id ) && \Flickerbox\User::get_field( $p_user_id, 'enabled' ) ) {
-			$t_email = \Flickerbox\User::get_email( $p_user_id );
-			\Flickerbox\Print_Util::email_link_with_subject( $t_email, $t_username, $p_bug_id );
+		$t_username = \Core\User::get_name( $p_user_id );
+		if( \Core\User::exists( $p_user_id ) && \Core\User::get_field( $p_user_id, 'enabled' ) ) {
+			$t_email = \Core\User::get_email( $p_user_id );
+			\Core\Print_Util::email_link_with_subject( $t_email, $t_username, $p_bug_id );
 		} else {
 			echo '<span class="user" style="text-decoration: line-through">';
 			echo $t_username;
@@ -226,7 +226,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function email_input( $p_field_name, $p_email ) {
-		echo '<input id="email-field" type="text" name="' . \Flickerbox\String::attribute( $p_field_name ) . '" size="32" maxlength="64" value="' . \Flickerbox\String::attribute( $p_email ) . '" />';
+		echo '<input id="email-field" type="text" name="' . \Core\String::attribute( $p_field_name ) . '" size="32" maxlength="64" value="' . \Core\String::attribute( $p_email ) . '" />';
 	}
 	
 	/**
@@ -248,19 +248,19 @@ class Print_Util
 	 * @return void
 	 */
 	static function user_option_list( $p_user_id, $p_project_id = null, $p_access = ANYBODY ) {
-		$t_current_user = \Flickerbox\Auth::get_current_user_id();
+		$t_current_user = \Core\Auth::get_current_user_id();
 	
 		if( null === $p_project_id ) {
-			$p_project_id = \Flickerbox\Helper::get_current_project();
+			$p_project_id = \Core\Helper::get_current_project();
 		}
 	
 		if( $p_project_id === ALL_PROJECTS ) {
-			$t_projects = \Flickerbox\User::get_accessible_projects( $t_current_user );
+			$t_projects = \Core\User::get_accessible_projects( $t_current_user );
 	
 			# Get list of users having access level for all accessible projects
 			$t_users = array();
 			foreach( $t_projects as $t_project_id ) {
-				$t_project_users_list = \Flickerbox\Project::get_all_user_rows( $t_project_id, $p_access );
+				$t_project_users_list = \Core\Project::get_all_user_rows( $t_project_id, $p_access );
 				# Do a 'smart' merge of the project's user list, into an
 				# associative array (to remove duplicates)
 				# Use a while loop for better performance
@@ -273,18 +273,18 @@ class Print_Util
 			}
 			unset( $t_projects );
 		} else {
-			$t_users = \Flickerbox\Project::get_all_user_rows( $p_project_id, $p_access );
+			$t_users = \Core\Project::get_all_user_rows( $p_project_id, $p_access );
 		}
 	
 		$t_display = array();
 		$t_sort = array();
-		$t_show_realname = ( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) );
-		$t_sort_by_last_name = ( ON == \Flickerbox\Config::mantis_get( 'sort_by_last_name' ) );
+		$t_show_realname = ( ON == \Core\Config::mantis_get( 'show_realname' ) );
+		$t_sort_by_last_name = ( ON == \Core\Config::mantis_get( 'sort_by_last_name' ) );
 		foreach( $t_users as $t_key => $t_user ) {
-			$t_user_name = \Flickerbox\String::attribute( $t_user['username'] );
+			$t_user_name = \Core\String::attribute( $t_user['username'] );
 			$t_sort_name = utf8_strtolower( $t_user_name );
 			if( $t_show_realname && ( $t_user['realname'] <> '' ) ) {
-				$t_user_name = \Flickerbox\String::attribute( $t_user['realname'] );
+				$t_user_name = \Core\String::attribute( $t_user['realname'] );
 				if( $t_sort_by_last_name ) {
 					$t_sort_name_bits = explode( ' ', utf8_strtolower( $t_user_name ), 2 );
 					$t_sort_name = ( isset( $t_sort_name_bits[1] ) ? $t_sort_name_bits[1] . ', ' : '' ) . $t_sort_name_bits[0];
@@ -301,7 +301,7 @@ class Print_Util
 		for( $i = 0;$i < $t_count;$i++ ) {
 			$t_row = $t_users[$i];
 			echo '<option value="' . $t_row['id'] . '" ';
-			\Flickerbox\Helper::check_selected( $p_user_id, (int)$t_row['id'] );
+			\Core\Helper::check_selected( $p_user_id, (int)$t_row['id'] );
 			echo '>' . $t_display[$i] . '</option>';
 		}
 	}
@@ -321,7 +321,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function reporter_option_list( $p_user_id, $p_project_id = null ) {
-		\Flickerbox\Print_Util::user_option_list( $p_user_id, $p_project_id, \Flickerbox\Config::mantis_get( 'report_bug_threshold' ) );
+		\Core\Print_Util::user_option_list( $p_user_id, $p_project_id, \Core\Config::mantis_get( 'report_bug_threshold' ) );
 	}
 	
 	/**
@@ -332,12 +332,12 @@ class Print_Util
 	 */
 	static function tag_attach_form( $p_bug_id, $p_string = '' ) {
 	?>
-		<small><?php echo sprintf( \Flickerbox\Lang::get( 'tag_separate_by' ), \Flickerbox\Config::mantis_get( 'tag_separator' ) )?></small>
+		<small><?php echo sprintf( \Core\Lang::get( 'tag_separate_by' ), \Core\Config::mantis_get( 'tag_separator' ) )?></small>
 		<form method="post" action="tag_attach.php">
-		<?php echo \Flickerbox\Form::security_field( 'tag_attach' )?>
+		<?php echo \Core\Form::security_field( 'tag_attach' )?>
 		<input type="hidden" name="bug_id" value="<?php echo $p_bug_id?>" />
-		<?php \Flickerbox\Print_Util::tag_input( $p_bug_id, $p_string ); ?>
-		<input type="submit" value="<?php echo \Flickerbox\Lang::get( 'tag_attach' )?>" class="button" />
+		<?php \Core\Print_Util::tag_input( $p_bug_id, $p_string ); ?>
+		<input type="submit" value="<?php echo \Core\Lang::get( 'tag_attach' )?>" class="button" />
 		</form>
 	<?php
 		return true;
@@ -351,10 +351,10 @@ class Print_Util
 	 */
 	static function tag_input( $p_bug_id = 0, $p_string = '' ) {
 	?>
-		<input type="hidden" id="tag_separator" value="<?php echo \Flickerbox\Config::mantis_get( 'tag_separator' )?>" />
-		<input type="text" name="tag_string" id="tag_string" size="40" value="<?php echo \Flickerbox\String::attribute( $p_string )?>" />
-		<select <?php echo \Flickerbox\Helper::get_tab_index()?> name="tag_select" id="tag_select">
-			<?php \Flickerbox\Print_Util::tag_option_list( $p_bug_id );?>
+		<input type="hidden" id="tag_separator" value="<?php echo \Core\Config::mantis_get( 'tag_separator' )?>" />
+		<input type="text" name="tag_string" id="tag_string" size="40" value="<?php echo \Core\String::attribute( $p_string )?>" />
+		<select <?php echo \Core\Helper::get_tab_index()?> name="tag_select" id="tag_select">
+			<?php \Core\Print_Util::tag_option_list( $p_bug_id );?>
 		</select>
 	<?php
 	}
@@ -366,15 +366,15 @@ class Print_Util
 	 * @return void
 	 */
 	static function tag_option_list( $p_bug_id = 0 ) {
-		$t_rows = \Flickerbox\Tag::get_candidates_for_bug( $p_bug_id );
+		$t_rows = \Core\Tag::get_candidates_for_bug( $p_bug_id );
 	
-		echo '<option value="0">', \Flickerbox\String::html_specialchars( \Flickerbox\Lang::get( 'tag_existing' ) ), '</option>';
+		echo '<option value="0">', \Core\String::html_specialchars( \Core\Lang::get( 'tag_existing' ) ), '</option>';
 		foreach ( $t_rows as $t_row ) {
 			$t_string = $t_row['name'];
 			if( !empty( $t_row['description'] ) ) {
 				$t_string .= ' - ' . utf8_substr( $t_row['description'], 0, 20 );
 			}
-			echo '<option value="', $t_row['id'], '" title="', \Flickerbox\String::attribute( $t_row['name'] ), '">', \Flickerbox\String::attribute( $t_string ), '</option>';
+			echo '<option value="', $t_row['id'], '" title="', \Core\String::attribute( $t_row['name'] ), '">', \Core\String::attribute( $t_string ), '</option>';
 		}
 	}
 	
@@ -383,21 +383,21 @@ class Print_Util
 	 * @return void
 	 */
 	static function news_item_option_list() {
-		$t_project_id = \Flickerbox\Helper::get_current_project();
+		$t_project_id = \Core\Helper::get_current_project();
 	
-		$t_global = \Flickerbox\Access::has_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
+		$t_global = \Core\Access::has_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
 		if( $t_global ) {
 			$t_query = 'SELECT id, headline, announcement, view_state FROM {news} ORDER BY date_posted DESC';
 		} else {
 			$t_query = 'SELECT id, headline, announcement, view_state FROM {news}
-					WHERE project_id=' . \Flickerbox\Database::param() . '
+					WHERE project_id=' . \Core\Database::param() . '
 					ORDER BY date_posted DESC';
 		}
 	
-		$t_result = \Flickerbox\Database::query( $t_query, ($t_global == true ? array() : array( $t_project_id ) ) );
+		$t_result = \Core\Database::query( $t_query, ($t_global == true ? array() : array( $t_project_id ) ) );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			$t_headline = \Flickerbox\String::display( $t_row['headline'] );
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
+			$t_headline = \Core\String::display( $t_row['headline'] );
 			$t_announcement = $t_row['announcement'];
 			$t_view_state = $t_row['view_state'];
 			$t_id = $t_row['id'];
@@ -406,11 +406,11 @@ class Print_Util
 			$t_note_string = '';
 	
 			if( 1 == $t_announcement ) {
-				array_push( $t_notes, \Flickerbox\Lang::get( 'announcement' ) );
+				array_push( $t_notes, \Core\Lang::get( 'announcement' ) );
 			}
 	
 			if( VS_PRIVATE == $t_view_state ) {
-				array_push( $t_notes, \Flickerbox\Lang::get( 'private' ) );
+				array_push( $t_notes, \Core\Lang::get( 'private' ) );
 			}
 	
 			if( count( $t_notes ) > 0 ) {
@@ -433,9 +433,9 @@ class Print_Util
 	 * @return void
 	 */
 	static function news_entry( $p_headline, $p_body, $p_poster_id, $p_view_state, $p_announcement, $p_date_posted ) {
-		$t_headline = \Flickerbox\String::display_links( $p_headline );
-		$t_body = \Flickerbox\String::display_links( $p_body );
-		$t_date_posted = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $p_date_posted );
+		$t_headline = \Core\String::display_links( $p_headline );
+		$t_body = \Core\String::display_links( $p_body );
+		$t_date_posted = date( \Core\Config::mantis_get( 'normal_date_format' ), $p_date_posted );
 	
 		if( VS_PRIVATE == $p_view_state ) {
 			$t_news_css = 'news-heading-private';
@@ -447,13 +447,13 @@ class Print_Util
 			<h3 class="<?php echo $t_news_css; ?>">
 				<span class="news-title"><?php echo $t_headline; ?></span>
 				<span class="news-date-posted"><?php echo $t_date_posted; ?></span>
-				<span class="news-author"><?php echo \Flickerbox\Prepare::user_name( $p_poster_id ); ?></span><?php
+				<span class="news-author"><?php echo \Core\Prepare::user_name( $p_poster_id ); ?></span><?php
 	
 				if( 1 == $p_announcement ) { ?>
-					<span class="news-announcement"><?php echo \Flickerbox\Lang::get( 'announcement' ); ?></span><?php
+					<span class="news-announcement"><?php echo \Core\Lang::get( 'announcement' ); ?></span><?php
 				}
 				if( VS_PRIVATE == $p_view_state ) { ?>
-					<span class="news-private"><?php echo \Flickerbox\Lang::get( 'private' ); ?></span><?php
+					<span class="news-private"><?php echo \Core\Lang::get( 'private' ); ?></span><?php
 				} ?>
 			</h3>
 			<p class="news-body"><?php echo $t_body; ?></p>
@@ -473,7 +473,7 @@ class Print_Util
 		$t_announcement = $p_news_row['announcement'];
 		$t_date_posted = $p_news_row['date_posted'];
 	
-		\Flickerbox\Print_Util::news_entry( $t_headline, $t_body, $t_poster_id, $t_view_state, $t_announcement, $t_date_posted );
+		\Core\Print_Util::news_entry( $t_headline, $t_body, $t_poster_id, $t_view_state, $t_announcement, $t_date_posted );
 	}
 	
 	/**
@@ -483,14 +483,14 @@ class Print_Util
 	 * @return void
 	 */
 	static function news_string_by_news_id( $p_news_id ) {
-		$t_row = \Flickerbox\News::get_row( $p_news_id );
+		$t_row = \Core\News::get_row( $p_news_id );
 	
 		# only show VS_PRIVATE posts to configured threshold and above
-		if( ( VS_PRIVATE == $t_row['view_state'] ) && !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'private_news_threshold' ) ) ) {
+		if( ( VS_PRIVATE == $t_row['view_state'] ) && !\Core\Access::has_project_level( \Core\Config::mantis_get( 'private_news_threshold' ) ) ) {
 			return;
 		}
 	
-		\Flickerbox\Print_Util::news_entry_from_row( $t_row );
+		\Core\Print_Util::news_entry_from_row( $t_row );
 	}
 	
 	/**
@@ -502,10 +502,10 @@ class Print_Util
 	 */
 	static function assign_to_option_list( $p_user_id = '', $p_project_id = null, $p_threshold = null ) {
 		if( null === $p_threshold ) {
-			$p_threshold = \Flickerbox\Config::mantis_get( 'handle_bug_threshold' );
+			$p_threshold = \Core\Config::mantis_get( 'handle_bug_threshold' );
 		}
 	
-		\Flickerbox\Print_Util::user_option_list( $p_user_id, $p_project_id, $p_threshold );
+		\Core\Print_Util::user_option_list( $p_user_id, $p_project_id, $p_threshold );
 	}
 	
 	/**
@@ -517,10 +517,10 @@ class Print_Util
 	 */
 	static function note_option_list( $p_user_id = '', $p_project_id = null, $p_threshold = null ) {
 		if( null === $p_threshold ) {
-			$p_threshold = \Flickerbox\Config::mantis_get( 'add_bugnote_threshold' );
+			$p_threshold = \Core\Config::mantis_get( 'add_bugnote_threshold' );
 		}
 	
-		\Flickerbox\Print_Util::user_option_list( $p_user_id, $p_project_id, $p_threshold );
+		\Core\Print_Util::user_option_list( $p_user_id, $p_project_id, $p_threshold );
 	}
 	
 	/**
@@ -534,30 +534,30 @@ class Print_Util
 	 * @return void
 	 */
 	static function project_option_list( $p_project_id = null, $p_include_all_projects = true, $p_filter_project_id = null, $p_trace = false, $p_can_report_only = false ) {
-		$t_user_id = \Flickerbox\Auth::get_current_user_id();
-		$t_project_ids = \Flickerbox\User::get_accessible_projects( $t_user_id );
+		$t_user_id = \Core\Auth::get_current_user_id();
+		$t_project_ids = \Core\User::get_accessible_projects( $t_user_id );
 		$t_can_report = true;
-		\Flickerbox\Project::cache_array_rows( $t_project_ids );
+		\Core\Project::cache_array_rows( $t_project_ids );
 	
 		if( $p_include_all_projects && $p_filter_project_id !== ALL_PROJECTS ) {
 			echo '<option value="' . ALL_PROJECTS . '"';
 			if( $p_project_id !== null ) {
-				\Flickerbox\Helper::check_selected( $p_project_id, ALL_PROJECTS, false );
+				\Core\Helper::check_selected( $p_project_id, ALL_PROJECTS, false );
 			}
-			echo '>' . \Flickerbox\Lang::get( 'all_projects' ) . '</option>' . "\n";
+			echo '>' . \Core\Lang::get( 'all_projects' ) . '</option>' . "\n";
 		}
 	
 		foreach( $t_project_ids as $t_id ) {
 			if( $p_can_report_only ) {
-				$t_report_bug_threshold = \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
-				$t_can_report = \Flickerbox\Access::has_project_level( $t_report_bug_threshold, $t_id, $t_user_id );
+				$t_report_bug_threshold = \Core\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
+				$t_can_report = \Core\Access::has_project_level( $t_report_bug_threshold, $t_id, $t_user_id );
 			}
 	
 			echo '<option value="' . $t_id . '"';
-			\Flickerbox\Helper::check_selected( $p_project_id, $t_id, false );
-			\Flickerbox\Helper::check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
-			echo '>' . \Flickerbox\String::attribute( \Flickerbox\Project::get_field( $t_id, 'name' ) ) . '</option>' . "\n";
-			\Flickerbox\Print_Util::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only );
+			\Core\Helper::check_selected( $p_project_id, $t_id, false );
+			\Core\Helper::check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
+			echo '>' . \Core\String::attribute( \Core\Project::get_field( $t_id, 'name' ) ) . '</option>' . "\n";
+			\Core\Print_Util::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only );
 		}
 	}
 	
@@ -573,14 +573,14 @@ class Print_Util
 	 */
 	static function subproject_option_list( $p_parent_id, $p_project_id = null, $p_filter_project_id = null, $p_trace = false, $p_can_report_only = false, array $p_parents = array() ) {
 		array_push( $p_parents, $p_parent_id );
-		$t_user_id = \Flickerbox\Auth::get_current_user_id();
-		$t_project_ids = \Flickerbox\User::get_accessible_subprojects( $t_user_id, $p_parent_id );
+		$t_user_id = \Core\Auth::get_current_user_id();
+		$t_project_ids = \Core\User::get_accessible_subprojects( $t_user_id, $p_parent_id );
 		$t_can_report = true;
 	
 		foreach( $t_project_ids as $t_id ) {
 			if( $p_can_report_only ) {
-				$t_report_bug_threshold = \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
-				$t_can_report = \Flickerbox\Access::has_project_level( $t_report_bug_threshold, $t_id, $t_user_id );
+				$t_report_bug_threshold = \Core\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
+				$t_can_report = \Core\Access::has_project_level( $t_report_bug_threshold, $t_id, $t_user_id );
 			}
 	
 			if( $p_trace ) {
@@ -590,14 +590,14 @@ class Print_Util
 			}
 	
 			echo '<option value="' . $t_full_id . '"';
-			\Flickerbox\Helper::check_selected( $p_project_id, $t_full_id, false );
-			\Flickerbox\Helper::check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
+			\Core\Helper::check_selected( $p_project_id, $t_full_id, false );
+			\Core\Helper::check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
 			echo '>'
 				. str_repeat( '&#160;', count( $p_parents ) )
 				. str_repeat( '&raquo;', count( $p_parents ) ) . ' '
-				. \Flickerbox\String::attribute( \Flickerbox\Project::get_field( $t_id, 'name' ) )
+				. \Core\String::attribute( \Core\Project::get_field( $t_id, 'name' ) )
 				. '</option>' . "\n";
-			\Flickerbox\Print_Util::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only, $p_parents );
+			\Core\Print_Util::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only, $p_parents );
 		}
 	}
 	
@@ -610,14 +610,14 @@ class Print_Util
 	 */
 	static function profile_option_list( $p_user_id, $p_select_id = 0, array $p_profiles = null ) {
 		if( 0 == $p_select_id ) {
-			$p_select_id = \Flickerbox\Profile::get_default( $p_user_id );
+			$p_select_id = \Core\Profile::get_default( $p_user_id );
 		}
 		if( $p_profiles != null ) {
 			$t_profiles = $p_profiles;
 		} else {
-			$t_profiles = \Flickerbox\Profile::get_all_for_user( $p_user_id );
+			$t_profiles = \Core\Profile::get_all_for_user( $p_user_id );
 		}
-		\Flickerbox\Print_Util::profile_option_list_from_profiles( $t_profiles, $p_select_id );
+		\Core\Print_Util::profile_option_list_from_profiles( $t_profiles, $p_select_id );
 	}
 	
 	/**
@@ -629,14 +629,14 @@ class Print_Util
 	 */
 	static function profile_option_list_for_project( $p_project_id, $p_select_id = 0, array $p_profiles = null ) {
 		if( 0 == $p_select_id ) {
-			$p_select_id = \Flickerbox\Profile::get_default( \Flickerbox\Auth::get_current_user_id() );
+			$p_select_id = \Core\Profile::get_default( \Core\Auth::get_current_user_id() );
 		}
 		if( $p_profiles != null ) {
 			$t_profiles = $p_profiles;
 		} else {
-			$t_profiles = \Flickerbox\Profile::get_all_for_project( $p_project_id );
+			$t_profiles = \Core\Profile::get_all_for_project( $p_project_id );
 		}
-		\Flickerbox\Print_Util::profile_option_list_from_profiles( $t_profiles, $p_select_id );
+		\Core\Print_Util::profile_option_list_from_profiles( $t_profiles, $p_select_id );
 	}
 	
 	/**
@@ -647,17 +647,17 @@ class Print_Util
 	 * @return void
 	 */
 	static function profile_option_list_from_profiles( array $p_profiles, $p_select_id ) {
-		echo '<option value="">' . \Flickerbox\Lang::get( 'select_option' ) . '</option>';
+		echo '<option value="">' . \Core\Lang::get( 'select_option' ) . '</option>';
 		foreach( $p_profiles as $t_profile ) {
 			extract( $t_profile, EXTR_PREFIX_ALL, 'v' );
 	
-			$t_platform = \Flickerbox\String::attribute( $t_profile['platform'] );
-			$t_os = \Flickerbox\String::attribute( $t_profile['os'] );
-			$t_os_build = \Flickerbox\String::attribute( $t_profile['os_build'] );
+			$t_platform = \Core\String::attribute( $t_profile['platform'] );
+			$t_os = \Core\String::attribute( $t_profile['os'] );
+			$t_os_build = \Core\String::attribute( $t_profile['os_build'] );
 	
 			echo '<option value="' . $t_profile['id'] . '"';
 			if( $p_select_id !== false ) {
-				\Flickerbox\Helper::check_selected( $p_select_id, (int)$t_profile['id'] );
+				\Core\Helper::check_selected( $p_select_id, (int)$t_profile['id'] );
 			}
 			echo '>' . $t_platform . ' ' . $t_os . ' ' . $t_os_build . '</option>';
 		}
@@ -674,27 +674,27 @@ class Print_Util
 	 */
 	static function category_option_list( $p_category_id = 0, $p_project_id = null ) {
 		if( null === $p_project_id ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = $p_project_id;
 		}
 	
-		$t_cat_arr = \Flickerbox\Category::get_all_rows( $t_project_id, null, true );
+		$t_cat_arr = \Core\Category::get_all_rows( $t_project_id, null, true );
 	
-		if( \Flickerbox\Config::mantis_get( 'allow_no_category' ) ) {
+		if( \Core\Config::mantis_get( 'allow_no_category' ) ) {
 			echo '<option value="0"';
-			\Flickerbox\Helper::check_selected( $p_category_id, 0 );
+			\Core\Helper::check_selected( $p_category_id, 0 );
 			echo '>';
-			echo \Flickerbox\Category::full_name( 0, false ), '</option>';
+			echo \Core\Category::full_name( 0, false ), '</option>';
 		} else {
 			if( 0 == $p_category_id ) {
 				if( count( $t_cat_arr ) == 1 ) {
 					$p_category_id = (int) $t_cat_arr[0]['id'];
 				} else {
 					echo '<option value="0"';
-					echo \Flickerbox\Helper::check_selected( $p_category_id, 0 );
+					echo \Core\Helper::check_selected( $p_category_id, 0 );
 					echo '>';
-					echo \Flickerbox\String::attribute( \Flickerbox\Lang::get( 'select_option' ) ) . '</option>';
+					echo \Core\String::attribute( \Core\Lang::get( 'select_option' ) ) . '</option>';
 				}
 			}
 		}
@@ -702,8 +702,8 @@ class Print_Util
 		foreach( $t_cat_arr as $t_category_row ) {
 			$t_category_id = (int)$t_category_row['id'];
 			echo '<option value="' . $t_category_id . '"';
-			\Flickerbox\Helper::check_selected( $p_category_id, $t_category_id );
-			echo '>' . \Flickerbox\String::attribute( \Flickerbox\Category::full_name( $t_category_id, $t_category_row['project_id'] != $t_project_id ) ) . '</option>';
+			\Core\Helper::check_selected( $p_category_id, $t_category_id );
+			echo '>' . \Core\String::attribute( \Core\Category::full_name( $t_category_id, $t_category_row['project_id'] != $t_project_id ) ) . '</option>';
 		}
 	}
 	
@@ -715,13 +715,13 @@ class Print_Util
 	 * @return void
 	 */
 	static function category_filter_option_list( $p_category_name = '', $p_project_id = null ) {
-		$t_cat_arr = \Flickerbox\Category::get_filter_list( $p_project_id );
+		$t_cat_arr = \Core\Category::get_filter_list( $p_project_id );
 	
 		natcasesort( $t_cat_arr );
 		foreach( $t_cat_arr as $t_cat ) {
-			$t_name = \Flickerbox\String::attribute( $t_cat );
+			$t_name = \Core\String::attribute( $t_cat );
 			echo '<option value="' . $t_name . '"';
-			\Flickerbox\Helper::check_selected( $p_category_name, $t_cat );
+			\Core\Helper::check_selected( $p_category_name, $t_cat );
 			echo '>' . $t_name . '</option>';
 		}
 	}
@@ -733,12 +733,12 @@ class Print_Util
 	 * @return void
 	 */
 	static function platform_option_list( $p_platform, $p_user_id = null ) {
-		$t_platforms_array = \Flickerbox\Profile::get_field_all_for_user( 'platform', $p_user_id );
+		$t_platforms_array = \Core\Profile::get_field_all_for_user( 'platform', $p_user_id );
 	
 		foreach( $t_platforms_array as $t_platform_unescaped ) {
-			$t_platform = \Flickerbox\String::attribute( $t_platform_unescaped );
+			$t_platform = \Core\String::attribute( $t_platform_unescaped );
 			echo '<option value="' . $t_platform . '"';
-			\Flickerbox\Helper::check_selected( $p_platform, $t_platform_unescaped );
+			\Core\Helper::check_selected( $p_platform, $t_platform_unescaped );
 			echo '>' . $t_platform . '</option>';
 		}
 	}
@@ -750,12 +750,12 @@ class Print_Util
 	 * @return void
 	 */
 	static function os_option_list( $p_os, $p_user_id = null ) {
-		$t_os_array = \Flickerbox\Profile::get_field_all_for_user( 'os', $p_user_id );
+		$t_os_array = \Core\Profile::get_field_all_for_user( 'os', $p_user_id );
 	
 		foreach( $t_os_array as $t_os_unescaped ) {
-			$t_os = \Flickerbox\String::attribute( $t_os_unescaped );
+			$t_os = \Core\String::attribute( $t_os_unescaped );
 			echo '<option value="' . $t_os . '"';
-			\Flickerbox\Helper::check_selected( $p_os, $t_os_unescaped );
+			\Core\Helper::check_selected( $p_os, $t_os_unescaped );
 			echo '>' . $t_os . '</option>';
 		}
 	}
@@ -767,12 +767,12 @@ class Print_Util
 	 * @return void
 	 */
 	static function os_build_option_list( $p_os_build, $p_user_id = null ) {
-		$t_os_build_array = \Flickerbox\Profile::get_field_all_for_user( 'os_build', $p_user_id );
+		$t_os_build_array = \Core\Profile::get_field_all_for_user( 'os_build', $p_user_id );
 	
 		foreach( $t_os_build_array as $t_os_build_unescaped ) {
-			$t_os_build = \Flickerbox\String::attribute( $t_os_build_unescaped );
+			$t_os_build = \Core\String::attribute( $t_os_build_unescaped );
 			echo '<option value="' . $t_os_build . '"';
-			\Flickerbox\Helper::check_selected( $p_os_build, $t_os_build_unescaped );
+			\Core\Helper::check_selected( $p_os_build, $t_os_build_unescaped );
 			echo '>' . $t_os_build . '</option>';
 		}
 	}
@@ -788,24 +788,24 @@ class Print_Util
 	 */
 	static function version_option_list( $p_version = '', $p_project_id = null, $p_released = null, $p_leading_blank = true, $p_with_subs = false ) {
 		if( null === $p_project_id ) {
-			$c_project_id = \Flickerbox\Helper::get_current_project();
+			$c_project_id = \Core\Helper::get_current_project();
 		} else {
 			$c_project_id = (int)$p_project_id;
 		}
 	
 		if( $p_with_subs ) {
-			$t_versions = \Flickerbox\Version::get_all_rows_with_subs( $c_project_id, $p_released, null );
+			$t_versions = \Core\Version::get_all_rows_with_subs( $c_project_id, $p_released, null );
 		} else {
-			$t_versions = \Flickerbox\Version::get_all_rows( $c_project_id, $p_released, null );
+			$t_versions = \Core\Version::get_all_rows( $c_project_id, $p_released, null );
 		}
 	
 		# Ensure the selected version (if specified) is included in the list
 		# Note: Filter API specifies selected versions as an array
 		if( !is_array( $p_version ) ) {
 			if( !empty( $p_version ) ) {
-				$t_version_id = \Flickerbox\Version::get_id( $p_version, $c_project_id );
+				$t_version_id = \Core\Version::get_id( $p_version, $c_project_id );
 				if( $t_version_id !== false ) {
-					$t_versions[] = \Flickerbox\Version::cache_row( $t_version_id );
+					$t_versions[] = \Core\Version::cache_row( $t_version_id );
 				}
 			}
 		}
@@ -815,9 +815,9 @@ class Print_Util
 		}
 	
 		$t_listed = array();
-		$t_max_length = \Flickerbox\Config::mantis_get( 'max_dropdown_length' );
-		$t_show_version_dates = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_version_dates_threshold' ) );
-		$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
+		$t_max_length = \Core\Config::mantis_get( 'max_dropdown_length' );
+		$t_show_version_dates = \Core\Access::has_project_level( \Core\Config::mantis_get( 'show_version_dates_threshold' ) );
+		$t_short_date_format = \Core\Config::mantis_get( 'short_date_format' );
 	
 		foreach( $t_versions as $t_version ) {
 			# If the current version is obsolete, and current version not equal to $p_version,
@@ -828,16 +828,16 @@ class Print_Util
 				}
 			}
 	
-			$t_version_version = \Flickerbox\String::attribute( $t_version['version'] );
+			$t_version_version = \Core\String::attribute( $t_version['version'] );
 	
 			if( !in_array( $t_version_version, $t_listed, true ) ) {
 				$t_listed[] = $t_version_version;
 				echo '<option value="' . $t_version_version . '"';
-				\Flickerbox\Helper::check_selected( $p_version, $t_version['version'] );
+				\Core\Helper::check_selected( $p_version, $t_version['version'] );
 	
-				$t_version_string = \Flickerbox\String::attribute( \Flickerbox\Prepare::version_string( $c_project_id, $t_version['id'] ) );
+				$t_version_string = \Core\String::attribute( \Core\Prepare::version_string( $c_project_id, $t_version['id'] ) );
 	
-				echo '>', \Flickerbox\String::shorten( $t_version_string, $t_max_length ), '</option>';
+				echo '>', \Core\String::shorten( $t_version_string, $t_max_length ), '</option>';
 			}
 		}
 	}
@@ -850,28 +850,28 @@ class Print_Util
 	static function build_option_list( $p_build = '' ) {
 		$t_overall_build_arr = array();
 	
-		$t_project_id = \Flickerbox\Helper::get_current_project();
+		$t_project_id = \Core\Helper::get_current_project();
 	
-		$t_project_where = \Flickerbox\Helper::project_specific_where( $t_project_id );
+		$t_project_where = \Core\Helper::project_specific_where( $t_project_id );
 	
 		# Get the "found in" build list
 		$t_query = 'SELECT DISTINCT build
 					FROM {bug}
 					WHERE ' . $t_project_where . '
 					ORDER BY build DESC';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_overall_build_arr[] = $t_row['build'];
 		}
 	
-		$t_max_length = \Flickerbox\Config::mantis_get( 'max_dropdown_length' );
+		$t_max_length = \Core\Config::mantis_get( 'max_dropdown_length' );
 	
 		foreach( $t_overall_build_arr as $t_build_unescaped ) {
-			$t_build = \Flickerbox\String::attribute( $t_build_unescaped );
+			$t_build = \Core\String::attribute( $t_build_unescaped );
 			echo '<option value="' . $t_build . '"';
-			\Flickerbox\Helper::check_selected( $p_build, $t_build_unescaped );
-			echo '>' . \Flickerbox\String::shorten( $t_build, $t_max_length ) . '</option>';
+			\Core\Helper::check_selected( $p_build, $t_build_unescaped );
+			echo '>' . \Core\String::shorten( $t_build, $t_max_length ) . '</option>';
 		}
 	}
 	
@@ -883,16 +883,16 @@ class Print_Util
 	 */
 	static function enum_string_option_list( $p_enum_name, $p_val = 0 ) {
 		$t_config_var_name = $p_enum_name . '_enum_string';
-		$t_config_var_value = \Flickerbox\Config::mantis_get( $t_config_var_name );
+		$t_config_var_value = \Core\Config::mantis_get( $t_config_var_name );
 	
-		$t_enum_values = \Flickerbox\MantisEnum::getValues( $t_config_var_value );
+		$t_enum_values = \Core\MantisEnum::getValues( $t_config_var_value );
 	
 		foreach ( $t_enum_values as $t_key ) {
-			$t_elem2 = \Flickerbox\Helper::get_enum_element( $p_enum_name, $t_key );
+			$t_elem2 = \Core\Helper::get_enum_element( $p_enum_name, $t_key );
 	
 			echo '<option value="' . $t_key . '"';
-			\Flickerbox\Helper::check_selected( (int)$p_val, $t_key );
-			echo '>' . \Flickerbox\String::html_specialchars( $t_elem2 ) . '</option>';
+			\Core\Helper::check_selected( (int)$p_val, $t_key );
+			echo '>' . \Core\String::html_specialchars( $t_elem2 ) . '</option>';
 		}
 	}
 	
@@ -907,16 +907,16 @@ class Print_Util
 	 * @return array
 	 */
 	static function get_status_option_list( $p_user_auth = 0, $p_current_value = 0, $p_show_current = true, $p_add_close = false, $p_project_id = ALL_PROJECTS ) {
-		$t_config_var_value = \Flickerbox\Config::mantis_get( 'status_enum_string', null, null, $p_project_id );
-		$t_enum_workflow = \Flickerbox\Config::mantis_get( 'status_enum_workflow', null, null, $p_project_id );
+		$t_config_var_value = \Core\Config::mantis_get( 'status_enum_string', null, null, $p_project_id );
+		$t_enum_workflow = \Core\Config::mantis_get( 'status_enum_workflow', null, null, $p_project_id );
 	
 		if( count( $t_enum_workflow ) < 1 ) {
 			# workflow not defined, use default enumeration
-			$t_enum_values = \Flickerbox\MantisEnum::getValues( $t_config_var_value );
+			$t_enum_values = \Core\MantisEnum::getValues( $t_config_var_value );
 		} else {
 			# workflow defined - find allowed states
 			if( isset( $t_enum_workflow[$p_current_value] ) ) {
-				$t_enum_values = \Flickerbox\MantisEnum::getValues( $t_enum_workflow[$p_current_value] );
+				$t_enum_values = \Core\MantisEnum::getValues( $t_enum_workflow[$p_current_value] );
 			} else {
 				# workflow was not set for this status, this shouldn't happen
 				# caller should be able to handle empty list
@@ -927,20 +927,20 @@ class Print_Util
 	
 		foreach ( $t_enum_values as $t_enum_value ) {
 			if( ( $p_show_current || $p_current_value != $t_enum_value )
-				&& \Flickerbox\Access::compare_level( $p_user_auth, \Flickerbox\Access::get_status_threshold( $t_enum_value, $p_project_id ) )
+				&& \Core\Access::compare_level( $p_user_auth, \Core\Access::get_status_threshold( $t_enum_value, $p_project_id ) )
 			) {
-				$t_enum_list[$t_enum_value] = \Flickerbox\Helper::get_enum_element( 'status', $t_enum_value );
+				$t_enum_list[$t_enum_value] = \Core\Helper::get_enum_element( 'status', $t_enum_value );
 			}
 		}
 	
 		if( $p_show_current ) {
-			$t_enum_list[$p_current_value] = \Flickerbox\Helper::get_enum_element( 'status', $p_current_value );
+			$t_enum_list[$p_current_value] = \Core\Helper::get_enum_element( 'status', $p_current_value );
 		}
 	
-		if( $p_add_close && \Flickerbox\Access::compare_level( $p_current_value, \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $p_project_id ) ) ) {
-			$t_closed = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold', null, null, $p_project_id );
+		if( $p_add_close && \Core\Access::compare_level( $p_current_value, \Core\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $p_project_id ) ) ) {
+			$t_closed = \Core\Config::mantis_get( 'bug_closed_status_threshold', null, null, $p_project_id );
 			if( $p_show_current || $p_current_value != $t_closed ) {
-				$t_enum_list[$t_closed] = \Flickerbox\Helper::get_enum_element( 'status', $t_closed );
+				$t_enum_list[$t_closed] = \Core\Helper::get_enum_element( 'status', $t_closed );
 			}
 		}
 	
@@ -956,25 +956,25 @@ class Print_Util
 	 * @return void
 	 */
 	static function status_option_list( $p_select_label, $p_current_value = 0, $p_allow_close = false, $p_project_id = ALL_PROJECTS ) {
-		$t_current_auth = \Flickerbox\Access::get_project_level( $p_project_id );
+		$t_current_auth = \Core\Access::get_project_level( $p_project_id );
 	
-		$t_enum_list = \Flickerbox\Print_Util::get_status_option_list( $t_current_auth, $p_current_value, true, $p_allow_close, $p_project_id );
+		$t_enum_list = \Core\Print_Util::get_status_option_list( $t_current_auth, $p_current_value, true, $p_allow_close, $p_project_id );
 	
 		if( count( $t_enum_list ) > 1 ) {
 			# resort the list into ascending order
 			ksort( $t_enum_list );
 			reset( $t_enum_list );
-			echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="' . $p_select_label . '" name="' . $p_select_label . '">';
+			echo '<select ' . \Core\Helper::get_tab_index() . ' id="' . $p_select_label . '" name="' . $p_select_label . '">';
 			foreach( $t_enum_list as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				\Flickerbox\Helper::check_selected( $t_key, $p_current_value );
-				echo '>' . \Flickerbox\String::html_specialchars( $t_val ) . '</option>';
+				\Core\Helper::check_selected( $t_key, $p_current_value );
+				echo '>' . \Core\String::html_specialchars( $t_val ) . '</option>';
 			}
 			echo '</select>';
 		} else if( count( $t_enum_list ) == 1 ) {
 			echo array_pop( $t_enum_list );
 		} else {
-			echo \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'status_enum_string' ), $p_current_value );
+			echo \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $p_current_value );
 		}
 	}
 	
@@ -985,7 +985,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function project_user_option_list( $p_project_id = null ) {
-		\Flickerbox\Print_Util::user_option_list( 0, $p_project_id );
+		\Core\Print_Util::user_option_list( 0, $p_project_id );
 	}
 	
 	/**
@@ -996,18 +996,18 @@ class Print_Util
 	 * @return void
 	 */
 	static function project_access_levels_option_list( $p_val, $p_project_id = null ) {
-		$t_current_user_access_level = \Flickerbox\Access::get_project_level( $p_project_id );
-		$t_access_levels_enum_string = \Flickerbox\Config::mantis_get( 'access_levels_enum_string' );
-		$t_enum_values = \Flickerbox\MantisEnum::getValues( $t_access_levels_enum_string );
+		$t_current_user_access_level = \Core\Access::get_project_level( $p_project_id );
+		$t_access_levels_enum_string = \Core\Config::mantis_get( 'access_levels_enum_string' );
+		$t_enum_values = \Core\MantisEnum::getValues( $t_access_levels_enum_string );
 		foreach ( $t_enum_values as $t_enum_value ) {
 			# a user must not be able to assign another user an access level that is higher than theirs.
 			if( $t_enum_value > $t_current_user_access_level ) {
 				continue;
 			}
-			$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $t_enum_value );
+			$t_access_level = \Core\Helper::get_enum_element( 'access_levels', $t_enum_value );
 			echo '<option value="' . $t_enum_value . '"';
-			\Flickerbox\Helper::check_selected( $p_val, $t_enum_value );
-			echo '>' . \Flickerbox\String::html_specialchars( $t_access_level ) . '</option>';
+			\Core\Helper::check_selected( $p_val, $t_enum_value );
+			echo '>' . \Core\String::html_specialchars( $t_access_level ) . '</option>';
 		}
 	}
 	
@@ -1017,12 +1017,12 @@ class Print_Util
 	 * @return void
 	 */
 	static function language_option_list( $p_language ) {
-		$t_arr = \Flickerbox\Config::mantis_get( 'language_choices_arr' );
+		$t_arr = \Core\Config::mantis_get( 'language_choices_arr' );
 		$t_enum_count = count( $t_arr );
 		for( $i = 0;$i < $t_enum_count;$i++ ) {
-			$t_language = \Flickerbox\String::attribute( $t_arr[$i] );
+			$t_language = \Core\String::attribute( $t_arr[$i] );
 			echo '<option value="' . $t_language . '"';
-			\Flickerbox\Helper::check_selected( $t_language, $p_language );
+			\Core\Helper::check_selected( $t_language, $p_language );
 			echo '>' . $t_language . '</option>';
 		}
 	}
@@ -1034,7 +1034,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function all_bug_action_option_list( array $p_project_ids = null ) {
-		$t_commands = \Flickerbox\Bug\Group::action_get_commands( $p_project_ids );
+		$t_commands = \Core\Bug\Group::action_get_commands( $p_project_ids );
 		while( list( $t_action_id, $t_action_label ) = each( $t_commands ) ) {
 			echo '<option value="' . $t_action_id . '">' . $t_action_label . '</option>';
 		}
@@ -1048,7 +1048,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function project_user_list_option_list( $p_project_id = null ) {
-		$t_users = \Flickerbox\User::get_unassigned_by_project_id( $p_project_id );
+		$t_users = \Core\User::get_unassigned_by_project_id( $p_project_id );
 		foreach( $t_users as $t_id=>$t_name ) {
 			echo '<option value="' . $t_id . '">' . $t_name . '</option>';
 		}
@@ -1063,14 +1063,14 @@ class Print_Util
 		$t_query = 'SELECT DISTINCT p.id, p.name
 					FROM {project} p
 					LEFT JOIN {project_user_list} u
-					ON p.id=u.project_id AND u.user_id=' . \Flickerbox\Database::param() . '
-					WHERE p.enabled = ' . \Flickerbox\Database::param() . ' AND
+					ON p.id=u.project_id AND u.user_id=' . \Core\Database::param() . '
+					WHERE p.enabled = ' . \Core\Database::param() . ' AND
 						u.user_id IS NULL
 					ORDER BY p.name';
-		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_user_id, true ) );
-		$t_category_count = \Flickerbox\Database::num_rows( $t_result );
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			$t_project_name = \Flickerbox\String::attribute( $t_row['name'] );
+		$t_result = \Core\Database::query( $t_query, array( (int)$p_user_id, true ) );
+		$t_category_count = \Core\Database::num_rows( $t_result );
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
+			$t_project_name = \Core\String::attribute( $t_row['name'] );
 			$t_user_id = $t_row['id'];
 			echo '<option value="' . $t_user_id . '">' . $t_project_name . '</option>';
 		}
@@ -1083,18 +1083,18 @@ class Print_Util
 	 * @return void
 	 */
 	static function project_user_list( $p_user_id, $p_include_remove_link = true ) {
-		$t_projects = \Flickerbox\User::get_assigned_projects( $p_user_id );
+		$t_projects = \Core\User::get_assigned_projects( $p_user_id );
 	
 		foreach( $t_projects as $t_project_id=>$t_project ) {
-			$t_project_name = \Flickerbox\String::attribute( $t_project['name'] );
+			$t_project_name = \Core\String::attribute( $t_project['name'] );
 			$t_view_state = $t_project['view_state'];
 			$t_access_level = $t_project['access_level'];
-			$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $t_access_level );
-			$t_view_state = \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_view_state );
+			$t_access_level = \Core\Helper::get_enum_element( 'access_levels', $t_access_level );
+			$t_view_state = \Core\Helper::get_enum_element( 'project_view_state', $t_view_state );
 	
 			echo $t_project_name . ' [' . $t_access_level . '] (' . $t_view_state . ')';
-			if( $p_include_remove_link && \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'project_user_threshold' ), $t_project_id ) ) {
-				\Flickerbox\HTML::button( 'manage_user_proj_delete.php', \Flickerbox\Lang::get( 'remove_link' ), array( 'project_id' => $t_project_id, 'user_id' => $p_user_id ) );
+			if( $p_include_remove_link && \Core\Access::has_project_level( \Core\Config::mantis_get( 'project_user_threshold' ), $t_project_id ) ) {
+				\Core\HTML::button( 'manage_user_proj_delete.php', \Core\Lang::get( 'remove_link' ), array( 'project_id' => $t_project_id, 'user_id' => $p_user_id ) );
 			}
 			echo '<br />';
 		}
@@ -1113,13 +1113,13 @@ class Print_Util
 		$c_field_id = (integer)$p_field_id;
 		$t_project_ids = custom_field_get_project_ids( $p_field_id );
 	
-		$t_security_token = \Flickerbox\Form::security_param( 'manage_proj_custom_field_remove' );
+		$t_security_token = \Core\Form::security_param( 'manage_proj_custom_field_remove' );
 	
 		foreach( $t_project_ids as $t_project_id ) {
-			$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
+			$t_project_name = \Core\Project::get_field( $t_project_id, 'name' );
 			$t_sequence = custom_field_get_sequence( $p_field_id, $t_project_id );
-			echo '<strong>', \Flickerbox\String::display_line( $t_project_name ), '</strong>: ';
-			\Flickerbox\Print_Util::bracket_link( 'manage_proj_custom_field_remove.php?field_id=' . $c_field_id . '&project_id=' . $t_project_id . '&return=custom_field' . $t_security_token, \Flickerbox\Lang::get( 'remove_link' ) );
+			echo '<strong>', \Core\String::display_line( $t_project_name ), '</strong>: ';
+			\Core\Print_Util::bracket_link( 'manage_proj_custom_field_remove.php?field_id=' . $c_field_id . '&project_id=' . $t_project_id . '&return=custom_field' . $t_security_token, \Core\Lang::get( 'remove_link' ) );
 			echo '<br />- ';
 	
 			$t_linked_field_ids = custom_field_get_linked_ids( $t_project_id );
@@ -1136,7 +1136,7 @@ class Print_Util
 					echo '<em>';
 				}
 	
-				echo \Flickerbox\String::display_line( custom_field_get_field( $t_current_field_id, 'name' ) );
+				echo \Core\String::display_line( custom_field_get_field( $t_current_field_id, 'name' ) );
 				echo ' (', custom_field_get_sequence( $t_current_field_id, $t_project_id ), ')';
 	
 				if( $t_current_field_id == $p_field_id ) {
@@ -1159,7 +1159,7 @@ class Print_Util
 		}
 	
 		for( $i = 5;$i >= 1;$i-- ) {
-			echo '<option value="', $i, '" ', \Flickerbox\Helper::check_selected( $p_priority, $i ), ' >', $i, '</option>';
+			echo '<option value="', $i, '" ', \Core\Helper::check_selected( $p_priority, $i ), ' >', $i, '</option>';
 		}
 	}
 	
@@ -1171,22 +1171,22 @@ class Print_Util
 	 * @return void
 	 */
 	static function bug_link( $p_bug_id, $p_detail_info = true ) {
-		echo \Flickerbox\String::get_bug_view_link( $p_bug_id, null, $p_detail_info );
+		echo \Core\String::get_bug_view_link( $p_bug_id, null, $p_detail_info );
 	}
 	
 	/**
 	 * formats the priority given the status
 	 * shows the priority in BOLD if the bug is NOT closed and is of significant priority
-	 * @param \Flickerbox\BugData $p_bug Bug Object.
+	 * @param \Core\BugData $p_bug Bug Object.
 	 * @return void
 	 */
-	static function formatted_priority_string( \Flickerbox\BugData $p_bug ) {
-		$t_pri_str = \Flickerbox\Helper::get_enum_element( 'priority', $p_bug->priority, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id );
-		$t_priority_threshold = \Flickerbox\Config::mantis_get( 'priority_significant_threshold' );
+	static function formatted_priority_string( \Core\BugData $p_bug ) {
+		$t_pri_str = \Core\Helper::get_enum_element( 'priority', $p_bug->priority, \Core\Auth::get_current_user_id(), $p_bug->project_id );
+		$t_priority_threshold = \Core\Config::mantis_get( 'priority_significant_threshold' );
 	
 		if( $t_priority_threshold >= 0 &&
 			$p_bug->priority >= $t_priority_threshold &&
-			$p_bug->status < \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' ) ) {
+			$p_bug->status < \Core\Config::mantis_get( 'bug_closed_status_threshold' ) ) {
 			echo '<span class="bold">' . $t_pri_str . '</span>';
 		} else {
 			echo $t_pri_str;
@@ -1196,16 +1196,16 @@ class Print_Util
 	/**
 	 * formats the severity given the status
 	 * shows the severity in BOLD if the bug is NOT closed and is of significant severity
-	 * @param \Flickerbox\BugData $p_bug Bug Object.
+	 * @param \Core\BugData $p_bug Bug Object.
 	 * @return void
 	 */
-	static function formatted_severity_string( \Flickerbox\BugData $p_bug ) {
-		$t_sev_str = \Flickerbox\Helper::get_enum_element( 'severity', $p_bug->severity, \Flickerbox\Auth::get_current_user_id(), $p_bug->project_id );
-		$t_severity_threshold = \Flickerbox\Config::mantis_get( 'severity_significant_threshold' );
+	static function formatted_severity_string( \Core\BugData $p_bug ) {
+		$t_sev_str = \Core\Helper::get_enum_element( 'severity', $p_bug->severity, \Core\Auth::get_current_user_id(), $p_bug->project_id );
+		$t_severity_threshold = \Core\Config::mantis_get( 'severity_significant_threshold' );
 	
 		if( $t_severity_threshold >= 0 &&
 			$p_bug->severity >= $t_severity_threshold &&
-			$p_bug->status < \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' ) ) {
+			$p_bug->status < \Core\Config::mantis_get( 'bug_closed_status_threshold' ) ) {
 			echo '<span class="bold">' . $t_sev_str . '</span>';
 		} else {
 			echo $t_sev_str;
@@ -1237,7 +1237,7 @@ class Print_Util
 			}
 	
 			$t_sort_field = rawurlencode( $p_sort_field );
-			\Flickerbox\Print_Util::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2&print=1', $p_string );
+			\Core\Print_Util::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2&print=1', $p_string );
 		} else if( $p_columns_target == COLUMNS_TARGET_VIEW_PAGE ) {
 			if( $p_sort_field == $p_sort ) {
 	
@@ -1252,7 +1252,7 @@ class Print_Util
 				$p_dir = 'ASC';
 			}
 			$t_sort_field = rawurlencode( $p_sort_field );
-			\Flickerbox\Print_Util::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2', $p_string );
+			\Core\Print_Util::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2', $p_string );
 		} else {
 			echo $p_string;
 		}
@@ -1284,7 +1284,7 @@ class Print_Util
 		}
 	
 		$t_field = rawurlencode( $p_field );
-		\Flickerbox\Print_Util::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir . '&save=1&hideinactive=' . $p_hide_inactive . '&showdisabled=' . $p_show_disabled . '&filter=' . $p_filter, $p_string );
+		\Core\Print_Util::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir . '&save=1&hideinactive=' . $p_hide_inactive . '&showdisabled=' . $p_show_disabled . '&filter=' . $p_filter, $p_string );
 	}
 	
 	/**
@@ -1310,7 +1310,7 @@ class Print_Util
 		}
 	
 		$t_field = rawurlencode( $p_field );
-		\Flickerbox\Print_Util::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir, $p_string );
+		\Core\Print_Util::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir, $p_string );
 	}
 	
 	/**
@@ -1318,7 +1318,7 @@ class Print_Util
 	 * If $p_security_token is OFF, the button's form will not contain a security
 	 * field; this is useful when form does not result in modifications (CSRF is not
 	 * needed). If otherwise specified (i.e. not null), the parameter must contain
-	 * a valid security token, previously generated by \Flickerbox\Form::security_token().
+	 * a valid security token, previously generated by \Core\Form::security_token().
 	 * Use this to avoid performance issues when loading pages having many calls to
 	 * this function, such as adm_config_report.php.
 	 * @param string $p_action_page    The action page.
@@ -1326,7 +1326,7 @@ class Print_Util
 	 * @param array  $p_args_to_post   Associative array of arguments to be posted, with
 	 *                                 arg name => value, defaults to null (no args).
 	 * @param mixed  $p_security_token Optional; null (default), OFF or security token string.
-	 * @see \Flickerbox\Form::security_token()
+	 * @see \Core\Form::security_token()
 	 * @return void
 	 */
 	static function button( $p_action_page, $p_label, array $p_args_to_post = null, $p_security_token = null ) {
@@ -1337,7 +1337,7 @@ class Print_Util
 		echo '<form method="post" action="', htmlspecialchars( $p_action_page ), '" class="action-button">';
 		echo '<fieldset>';
 		if( $p_security_token !== OFF ) {
-			echo \Flickerbox\Form::security_field( $t_form_name[0], $p_security_token );
+			echo \Core\Form::security_field( $t_form_name[0], $p_security_token );
 		}
 		echo '<input type="submit" class="button-small" value="', $p_label, '" />';
 	
@@ -1377,7 +1377,7 @@ class Print_Util
 			echo ' bracket-link-',$p_class; # prefix on a container allows styling of whole link, including brackets
 		}
 		echo '">[&#160;';
-		\Flickerbox\Print_Util::link( $p_link, $p_url_text, $p_new_window, $p_class );
+		\Core\Print_Util::link( $p_link, $p_url_text, $p_new_window, $p_class );
 		echo '&#160;]</span> ';
 	}
 	
@@ -1390,7 +1390,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function link( $p_link, $p_url_text, $p_new_window = false, $p_class = '' ) {
-		if( \Flickerbox\Utility::is_blank( $p_link ) ) {
+		if( \Core\Utility::is_blank( $p_link ) ) {
 			echo $p_url_text;
 		} else {
 			$t_link = htmlspecialchars( $p_link );
@@ -1416,16 +1416,16 @@ class Print_Util
 	 * @return void
 	 */
 	static function page_link( $p_page_url, $p_text = '', $p_page_no = 0, $p_page_cur = 0, $p_temp_filter_id = 0 ) {
-		if( \Flickerbox\Utility::is_blank( $p_text ) ) {
+		if( \Core\Utility::is_blank( $p_text ) ) {
 			$p_text = $p_page_no;
 		}
 	
 		if( ( 0 < $p_page_no ) && ( $p_page_no != $p_page_cur ) ) {
 			$t_delimiter = ( strpos( $p_page_url, '?' ) ? '&' : '?' );
 			if( $p_temp_filter_id !== 0 ) {
-				\Flickerbox\Print_Util::link( $p_page_url . $t_delimiter . 'filter=' . $p_temp_filter_id . '&page_number=' . $p_page_no, $p_text );
+				\Core\Print_Util::link( $p_page_url . $t_delimiter . 'filter=' . $p_temp_filter_id . '&page_number=' . $p_page_no, $p_text );
 			} else {
-				\Flickerbox\Print_Util::link( $p_page_url . $t_delimiter . 'page_number=' . $p_page_no, $p_text );
+				\Core\Print_Util::link( $p_page_url . $t_delimiter . 'page_number=' . $p_page_no, $p_text );
 			}
 		} else {
 			echo $p_text;
@@ -1452,19 +1452,19 @@ class Print_Util
 		}
 	
 		# Get localized strings
-		$t_first = \Flickerbox\Lang::get( 'first' );
-		$t_last = \Flickerbox\Lang::get( 'last' );
-		$t_prev = \Flickerbox\Lang::get( 'prev' );
-		$t_next = \Flickerbox\Lang::get( 'next' );
+		$t_first = \Core\Lang::get( 'first' );
+		$t_last = \Core\Lang::get( 'last' );
+		$t_prev = \Core\Lang::get( 'prev' );
+		$t_next = \Core\Lang::get( 'next' );
 	
 		$t_page_links = 10;
 	
 		print( '[ ' );
 	
 		# First and previous links
-		\Flickerbox\Print_Util::page_link( $p_page, $t_first, 1, $p_current, $p_temp_filter_id );
+		\Core\Print_Util::page_link( $p_page, $t_first, 1, $p_current, $p_temp_filter_id );
 		echo '&#160;';
-		\Flickerbox\Print_Util::page_link( $p_page, $t_prev, $p_current - 1, $p_current, $p_temp_filter_id );
+		\Core\Print_Util::page_link( $p_page, $t_prev, $p_current - 1, $p_current, $p_temp_filter_id );
 		echo '&#160;';
 	
 		# Page numbers ...
@@ -1501,12 +1501,12 @@ class Print_Util
 		# Next and Last links
 		echo '&#160;';
 		if( $p_current < $p_end ) {
-			\Flickerbox\Print_Util::page_link( $p_page, $t_next, $p_current + 1, $p_current, $p_temp_filter_id );
+			\Core\Print_Util::page_link( $p_page, $t_next, $p_current + 1, $p_current, $p_temp_filter_id );
 		} else {
-			\Flickerbox\Print_Util::page_link( $p_page, $t_next, null, null, $p_temp_filter_id );
+			\Core\Print_Util::page_link( $p_page, $t_next, null, null, $p_temp_filter_id );
 		}
 		echo '&#160;';
-		\Flickerbox\Print_Util::page_link( $p_page, $t_last, $p_end, $p_current, $p_temp_filter_id );
+		\Core\Print_Util::page_link( $p_page, $t_last, $p_end, $p_current, $p_temp_filter_id );
 	
 		print( ' ]' );
 	}
@@ -1519,7 +1519,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function email_link( $p_email, $p_text ) {
-		echo \Flickerbox\Print_Util::get_email_link( $p_email, $p_text );
+		echo \Core\Print_Util::get_email_link( $p_email, $p_text );
 	}
 	
 	/**
@@ -1530,7 +1530,7 @@ class Print_Util
 	 * @return string
 	 */
 	static function get_email_link( $p_email, $p_text ) {
-		return \Flickerbox\Prepare::email_link( $p_email, $p_text );
+		return \Core\Prepare::email_link( $p_email, $p_text );
 	}
 	
 	/**
@@ -1542,13 +1542,13 @@ class Print_Util
 	 * @return void
 	 */
 	static function email_link_with_subject( $p_email, $p_text, $p_bug_id ) {
-		$t_bug = \Flickerbox\Bug::get( $p_bug_id, true );
-		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold', null, null, $t_bug->project_id ), $t_bug->project_id ) ) {
+		$t_bug = \Core\Bug::get( $p_bug_id, true );
+		if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'show_user_email_threshold', null, null, $t_bug->project_id ), $t_bug->project_id ) ) {
 			echo $p_text;
 			return;
 		}
-		$t_subject = \Flickerbox\Email::build_subject( $p_bug_id );
-		echo \Flickerbox\Print_Util::get_email_link_with_subject( $p_email, $p_text, $t_subject );
+		$t_subject = \Core\Email::build_subject( $p_bug_id );
+		echo \Core\Print_Util::get_email_link_with_subject( $p_email, $p_text, $t_subject );
 	}
 	
 	/**
@@ -1561,14 +1561,14 @@ class Print_Util
 	 * @return string
 	 */
 	static function get_email_link_with_subject( $p_email, $p_text, $p_subject ) {
-		# If we apply \Flickerbox\String::url() to the whole mailto: link then the @
+		# If we apply \Core\String::url() to the whole mailto: link then the @
 		# gets turned into a %40 and you can't right click in browsers to
-		# do Copy Email Address.  If we don't apply \Flickerbox\String::url() to the
+		# do Copy Email Address.  If we don't apply \Core\String::url() to the
 		# subject text then an ampersand (for example) will truncate the text
-		$t_subject = \Flickerbox\String::url( $p_subject );
-		$t_email = \Flickerbox\String::url( $p_email );
-		$t_mailto = \Flickerbox\String::attribute( 'mailto:' . $t_email . '?subject=' . $t_subject );
-		$t_text = \Flickerbox\String::display( $p_text );
+		$t_subject = \Core\String::url( $p_subject );
+		$t_email = \Core\String::url( $p_email );
+		$t_mailto = \Core\String::attribute( 'mailto:' . $t_email . '?subject=' . $t_subject );
+		$t_text = \Core\String::display( $p_text );
 	
 		return '<a class="user" href="' . $t_mailto . '">' . $t_text . '</a>';
 	}
@@ -1585,7 +1585,7 @@ class Print_Util
 	 */
 	static function hidden_inputs( array $p_assoc_array ) {
 		foreach( $p_assoc_array as $t_key => $t_val ) {
-			\Flickerbox\Print_Util::hidden_input( $t_key, $t_val );
+			\Core\Print_Util::hidden_input( $t_key, $t_val );
 		}
 	}
 	
@@ -1600,17 +1600,17 @@ class Print_Util
 		if( is_array( $p_field_val ) ) {
 			foreach( $p_field_val as $t_key => $t_value ) {
 				if( is_array( $t_value ) ) {
-					$t_key = \Flickerbox\String::html_entities( $t_key );
+					$t_key = \Core\String::html_entities( $t_key );
 					$t_field_key = $p_field_key . '[' . $t_key . ']';
-					\Flickerbox\Print_Util::hidden_input( $t_field_key, $t_value );
+					\Core\Print_Util::hidden_input( $t_field_key, $t_value );
 				} else {
 					$t_field_key = $p_field_key . '[' . $t_key . ']';
-					\Flickerbox\Print_Util::hidden_input( $t_field_key, $t_value );
+					\Core\Print_Util::hidden_input( $t_field_key, $t_value );
 				}
 			}
 		} else {
-			$t_key = \Flickerbox\String::html_entities( $p_field_key );
-			$t_val = \Flickerbox\String::html_entities( $p_field_val );
+			$t_key = \Core\String::html_entities( $p_field_key );
+			$t_val = \Core\String::html_entities( $p_field_val );
 			echo '<input type="hidden" name="' . $t_key . '" value="' . $t_val . '" />' . "\n";
 		}
 	}
@@ -1621,7 +1621,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function documentation_link( $p_a_name = '' ) {
-		echo \Flickerbox\Lang::get( $p_a_name );
+		echo \Core\Lang::get( $p_a_name );
 		# @todo Disable documentation links for now.  May be re-enabled if linked to new manual.
 		# echo "<a href=\"doc/documentation.html#$p_a_name\" target=\"_info\">[?]</a>";
 	}
@@ -1631,11 +1631,11 @@ class Print_Util
 	 * @return void
 	 */
 	static function signup_link() {
-		if( ( ON == \Flickerbox\Config::get_global( 'allow_signup' ) ) &&
-			 ( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
-			 ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) )
+		if( ( ON == \Core\Config::get_global( 'allow_signup' ) ) &&
+			 ( LDAP != \Core\Config::get_global( 'login_method' ) ) &&
+			 ( ON == \Core\Config::mantis_get( 'enable_email_notification' ) )
 		   ) {
-			\Flickerbox\Print_Util::bracket_link( 'signup_page.php', \Flickerbox\Lang::get( 'signup_link' ) );
+			\Core\Print_Util::bracket_link( 'signup_page.php', \Core\Lang::get( 'signup_link' ) );
 		}
 	}
 	
@@ -1644,7 +1644,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function login_link() {
-		\Flickerbox\Print_Util::bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'login_title' ) );
+		\Core\Print_Util::bracket_link( 'login_page.php', \Core\Lang::get( 'login_title' ) );
 	}
 	
 	/**
@@ -1653,11 +1653,11 @@ class Print_Util
 	 */
 	static function lost_password_link() {
 		# lost password feature disabled or reset password via email disabled -> stop here!
-		if( ( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
-			 ( ON == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ) &&
-			 ( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) &&
-			 ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
-			\Flickerbox\Print_Util::bracket_link( 'lost_pwd_page.php', \Flickerbox\Lang::get( 'lost_password_link' ) );
+		if( ( LDAP != \Core\Config::get_global( 'login_method' ) ) &&
+			 ( ON == \Core\Config::mantis_get( 'lost_password_feature' ) ) &&
+			 ( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) &&
+			 ( ON == \Core\Config::mantis_get( 'enable_email_notification' ) ) ) {
+			\Core\Print_Util::bracket_link( 'lost_pwd_page.php', \Core\Lang::get( 'lost_password_link' ) );
 		}
 	}
 	
@@ -1668,8 +1668,8 @@ class Print_Util
 	 * @return void
 	 */
 	static function file_icon( $p_filename ) {
-		$t_icon = \Flickerbox\File::get_icon_url( $p_filename );
-		echo '<img src="' . \Flickerbox\String::attribute( $t_icon['url'] ) . '" alt="' . \Flickerbox\String::attribute( $t_icon['alt'] ) . ' file icon" width="16" height="16" />';
+		$t_icon = \Core\File::get_icon_url( $p_filename );
+		echo '<img src="' . \Core\String::attribute( $t_icon['url'] ) . '" alt="' . \Core\String::attribute( $t_icon['alt'] ) . ' file icon" width="16" height="16" />';
 	}
 	
 	/**
@@ -1680,7 +1680,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function rss( $p_feed_url, $p_title = '' ) {
-		$t_path = \Flickerbox\Config::mantis_get( 'path' );
+		$t_path = \Core\Config::mantis_get( 'path' );
 		echo '<a class="rss" rel="alternate" href="', htmlspecialchars( $p_feed_url ), '" title="', $p_title, '"><img src="', $t_path, '/images/', 'rss.png" width="16" height="16" alt="', $p_title, '" /></a>';
 	}
 	
@@ -1689,13 +1689,13 @@ class Print_Util
 	 * @return void
 	 */
 	static function recently_visited() {
-		$t_ids = \Flickerbox\Last_Visited::get_array();
+		$t_ids = \Core\Last_Visited::get_array();
 	
 		if( count( $t_ids ) == 0 ) {
 			return;
 		}
 	
-		echo '<div class="recently-visited">' . \Flickerbox\Lang::get( 'recently_visited' ) . ': ';
+		echo '<div class="recently-visited">' . \Core\Lang::get( 'recently_visited' ) . ': ';
 		$t_first = true;
 	
 		foreach( $t_ids as $t_id ) {
@@ -1705,7 +1705,7 @@ class Print_Util
 				$t_first = false;
 			}
 	
-			echo \Flickerbox\String::get_bug_view_link( $t_id );
+			echo \Core\String::get_bug_view_link( $t_id );
 		}
 		echo '</div>';
 	}
@@ -1754,11 +1754,11 @@ class Print_Util
 	 * @return void
 	 */
 	static function bug_attachments_list( $p_bug_id ) {
-		$t_attachments = \Flickerbox\File::get_visible_attachments( $p_bug_id );
+		$t_attachments = \Core\File::get_visible_attachments( $p_bug_id );
 		echo "\n<ul>";
 		foreach ( $t_attachments as $t_attachment ) {
 			echo "\n<li>";
-			\Flickerbox\Print_Util::bug_attachment( $t_attachment );
+			\Core\Print_Util::bug_attachment( $t_attachment );
 			echo "\n</li>";
 		}
 		echo "\n</ul>";
@@ -1768,7 +1768,7 @@ class Print_Util
 	 * Prints information about a single attachment including download link, file
 	 * size, upload timestamp and an expandable preview for text and image file
 	 * types.
-	 * @param array $p_attachment An attachment array from within the array returned by the \Flickerbox\File::get_visible_attachments() function.
+	 * @param array $p_attachment An attachment array from within the array returned by the \Core\File::get_visible_attachments() function.
 	 * @return void
 	 */
 	static function bug_attachment( array $p_attachment ) {
@@ -1777,67 +1777,67 @@ class Print_Util
 			$t_collapse_id = 'attachment_preview_' . $p_attachment['id'];
 			global $g_collapse_cache_token;
 			$g_collapse_cache_token[$t_collapse_id] = false;
-			\Flickerbox\Collapse::open( $t_collapse_id );
+			\Core\Collapse::open( $t_collapse_id );
 		}
-		\Flickerbox\Print_Util::bug_attachment_header( $p_attachment );
+		\Core\Print_Util::bug_attachment_header( $p_attachment );
 		if( $t_show_attachment_preview ) {
-			echo \Flickerbox\Lang::get( 'word_separator' );
-			\Flickerbox\Collapse::icon( $t_collapse_id );
+			echo \Core\Lang::get( 'word_separator' );
+			\Core\Collapse::icon( $t_collapse_id );
 			if( $p_attachment['type'] == 'text' ) {
-				\Flickerbox\Print_Util::bug_attachment_preview_text( $p_attachment );
+				\Core\Print_Util::bug_attachment_preview_text( $p_attachment );
 			} else if( $p_attachment['type'] === 'image' ) {
-				\Flickerbox\Print_Util::bug_attachment_preview_image( $p_attachment );
+				\Core\Print_Util::bug_attachment_preview_image( $p_attachment );
 			}
-			\Flickerbox\Collapse::closed( $t_collapse_id );
-			\Flickerbox\Print_Util::bug_attachment_header( $p_attachment );
-			echo \Flickerbox\Lang::get( 'word_separator' );
-			\Flickerbox\Collapse::icon( $t_collapse_id );
-			\Flickerbox\Collapse::end( $t_collapse_id );
+			\Core\Collapse::closed( $t_collapse_id );
+			\Core\Print_Util::bug_attachment_header( $p_attachment );
+			echo \Core\Lang::get( 'word_separator' );
+			\Core\Collapse::icon( $t_collapse_id );
+			\Core\Collapse::end( $t_collapse_id );
 		}
 	}
 	
 	/**
 	 * Prints a single textual line of information about an attachment including download link, file
 	 * size and upload timestamp.
-	 * @param array $p_attachment An attachment array from within the array returned by the \Flickerbox\File::get_visible_attachments() function.
+	 * @param array $p_attachment An attachment array from within the array returned by the \Core\File::get_visible_attachments() function.
 	 * @return void
 	 */
 	static function bug_attachment_header( array $p_attachment ) {
 		echo "\n";
 		if( $p_attachment['exists'] ) {
 			if( $p_attachment['can_download'] ) {
-				echo '<a href="' . \Flickerbox\String::attribute( $p_attachment['download_url'] ) . '">';
+				echo '<a href="' . \Core\String::attribute( $p_attachment['download_url'] ) . '">';
 			}
-			\Flickerbox\Print_Util::file_icon( $p_attachment['display_name'] );
+			\Core\Print_Util::file_icon( $p_attachment['display_name'] );
 			if( $p_attachment['can_download'] ) {
 				echo '</a>';
 			}
-			echo \Flickerbox\Lang::get( 'word_separator' );
+			echo \Core\Lang::get( 'word_separator' );
 			if( $p_attachment['can_download'] ) {
-				echo '<a href="' . \Flickerbox\String::attribute( $p_attachment['download_url'] ) . '">';
+				echo '<a href="' . \Core\String::attribute( $p_attachment['download_url'] ) . '">';
 			}
-			echo \Flickerbox\String::display_line( $p_attachment['display_name'] );
+			echo \Core\String::display_line( $p_attachment['display_name'] );
 			if( $p_attachment['can_download'] ) {
 				echo '</a>';
 			}
-			echo \Flickerbox\Lang::get( 'word_separator' ) . '(' . number_format( $p_attachment['size'] ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'bytes' ) . ')';
-			echo \Flickerbox\Lang::get( 'word_separator' ) . '<span class="italic">' . date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $p_attachment['date_added'] ) . '</span>';
-			\Flickerbox\Event::signal( 'EVENT_VIEW_BUG_ATTACHMENT', array( $p_attachment ) );
+			echo \Core\Lang::get( 'word_separator' ) . '(' . number_format( $p_attachment['size'] ) . \Core\Lang::get( 'word_separator' ) . \Core\Lang::get( 'bytes' ) . ')';
+			echo \Core\Lang::get( 'word_separator' ) . '<span class="italic">' . date( \Core\Config::mantis_get( 'normal_date_format' ), $p_attachment['date_added'] ) . '</span>';
+			\Core\Event::signal( 'EVENT_VIEW_BUG_ATTACHMENT', array( $p_attachment ) );
 		} else {
-			\Flickerbox\Print_Util::file_icon( $p_attachment['display_name'] );
-			echo \Flickerbox\Lang::get( 'word_separator' ) . '<span class="strike">' . \Flickerbox\String::display_line( $p_attachment['display_name'] ) . '</span>' . \Flickerbox\Lang::get( 'word_separator' ) . '(' . \Flickerbox\Lang::get( 'attachment_missing' ) . ')';
+			\Core\Print_Util::file_icon( $p_attachment['display_name'] );
+			echo \Core\Lang::get( 'word_separator' ) . '<span class="strike">' . \Core\String::display_line( $p_attachment['display_name'] ) . '</span>' . \Core\Lang::get( 'word_separator' ) . '(' . \Core\Lang::get( 'attachment_missing' ) . ')';
 		}
 	
 		if( $p_attachment['can_delete'] ) {
-			echo \Flickerbox\Lang::get( 'word_separator' ) . '[';
-			\Flickerbox\Print_Util::link( 'bug_file_delete.php?file_id=' . $p_attachment['id'] . \Flickerbox\Form::security_param( 'bug_file_delete' ), \Flickerbox\Lang::get( 'delete_link' ), false, 'small' );
+			echo \Core\Lang::get( 'word_separator' ) . '[';
+			\Core\Print_Util::link( 'bug_file_delete.php?file_id=' . $p_attachment['id'] . \Core\Form::security_param( 'bug_file_delete' ), \Core\Lang::get( 'delete_link' ), false, 'small' );
 			echo ']';
 		}
 	}
 	
 	/**
 	 * Prints the preview of a text file attachment.
-	 * @param array $p_attachment An attachment array from within the array returned by the \Flickerbox\File::get_visible_attachments() function.
+	 * @param array $p_attachment An attachment array from within the array returned by the \Core\File::get_visible_attachments() function.
 	 * @return void
 	 */
 	static function bug_attachment_preview_text( array $p_attachment ) {
@@ -1845,16 +1845,16 @@ class Print_Util
 			return;
 		}
 		echo "\n<pre class=\"bug-attachment-preview-text\">";
-		switch( \Flickerbox\Config::mantis_get( 'file_upload_method' ) ) {
+		switch( \Core\Config::mantis_get( 'file_upload_method' ) ) {
 			case DISK:
 				if( file_exists( $p_attachment['diskfile'] ) ) {
 					$t_content = file_get_contents( $p_attachment['diskfile'] );
 				}
 				break;
 			case DATABASE:
-				$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Flickerbox\Database::param();
-				$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_attachment['id'] ) );
-				$t_row = \Flickerbox\Database::fetch_array( $t_result );
+				$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Core\Database::param();
+				$t_result = \Core\Database::query( $t_query, array( (int)$p_attachment['id'] ) );
+				$t_row = \Core\Database::fetch_array( $t_result );
 				$t_content = $t_row['content'];
 				break;
 			default:
@@ -1866,27 +1866,27 @@ class Print_Util
 	
 	/**
 	 * Prints the preview of an image file attachment.
-	 * @param array $p_attachment An attachment array from within the array returned by the \Flickerbox\File::get_visible_attachments() function.
+	 * @param array $p_attachment An attachment array from within the array returned by the \Core\File::get_visible_attachments() function.
 	 * @return void
 	 */
 	static function bug_attachment_preview_image( array $p_attachment ) {
 		$t_preview_style = 'border: 0;';
-		$t_max_width = \Flickerbox\Config::mantis_get( 'preview_max_width' );
+		$t_max_width = \Core\Config::mantis_get( 'preview_max_width' );
 		if( $t_max_width > 0 ) {
 			$t_preview_style .= ' max-width:' . $t_max_width . 'px;';
 		}
 	
-		$t_max_height = \Flickerbox\Config::mantis_get( 'preview_max_height' );
+		$t_max_height = \Core\Config::mantis_get( 'preview_max_height' );
 		if( $t_max_height > 0 ) {
 			$t_preview_style .= ' max-height:' . $t_max_height . 'px;';
 		}
 	
-		$t_title = \Flickerbox\File::get_field( $p_attachment['id'], 'title' );
-		$t_image_url = $p_attachment['download_url'] . '&show_inline=1' . \Flickerbox\Form::security_param( 'file_show_inline' );
+		$t_title = \Core\File::get_field( $p_attachment['id'], 'title' );
+		$t_image_url = $p_attachment['download_url'] . '&show_inline=1' . \Core\Form::security_param( 'file_show_inline' );
 	
 		echo "\n<div class=\"bug-attachment-preview-image\">";
-		echo '<a href="' . \Flickerbox\String::attribute( $p_attachment['download_url'] ) . '">';
-		echo '<img src="' . \Flickerbox\String::attribute( $t_image_url ) . '" alt="' . \Flickerbox\String::attribute( $t_title ) . '" style="' . \Flickerbox\String::attribute( $t_preview_style ) . '" />';
+		echo '<a href="' . \Core\String::attribute( $p_attachment['download_url'] ) . '">';
+		echo '<img src="' . \Core\String::attribute( $t_image_url ) . '" alt="' . \Core\String::attribute( $t_title ) . '" style="' . \Core\String::attribute( $t_preview_style ) . '" />';
 		echo '</a></div>';
 	}
 	
@@ -1915,7 +1915,7 @@ class Print_Util
 			echo "\t" . '<optgroup label="' . $t_continent . '">' . "\n";
 			foreach ( $t_locations as $t_location ) {
 				echo "\t\t" . '<option value="' . $t_location[1] . '"';
-				\Flickerbox\Helper::check_selected( $p_timezone, $t_location[1] );
+				\Core\Helper::check_selected( $p_timezone, $t_location[1] );
 				echo '>' . $t_location[0] . '</option>' . "\n";
 			}
 			echo "\t" . '</optgroup>' . "\n";
@@ -1929,7 +1929,7 @@ class Print_Util
 	 * @return string
 	 */
 	static function get_filesize_info( $p_size, $p_unit ) {
-		return sprintf( \Flickerbox\Lang::get( 'file_size_info' ), number_format( $p_size ), $p_unit );
+		return sprintf( \Core\Lang::get( 'file_size_info' ), number_format( $p_size ), $p_unit );
 	}
 	
 	/**
@@ -1940,10 +1940,10 @@ class Print_Util
 	 * @return void
 	 */
 	static function max_filesize( $p_size, $p_divider = 1000, $p_unit = 'kb' ) {
-		echo '<span class="small" title="' . \Flickerbox\Print_Util::get_filesize_info( $p_size, \Flickerbox\Lang::get( 'bytes' ) ) . '">';
-		echo \Flickerbox\Lang::get( 'max_file_size_label' )
-			. \Flickerbox\Lang::get( 'word_separator' )
-			. \Flickerbox\Print_Util::get_filesize_info( $p_size / $p_divider, \Flickerbox\Lang::get( $p_unit ) );
+		echo '<span class="small" title="' . \Core\Print_Util::get_filesize_info( $p_size, \Core\Lang::get( 'bytes' ) ) . '">';
+		echo \Core\Lang::get( 'max_file_size_label' )
+			. \Core\Lang::get( 'word_separator' )
+			. \Core\Print_Util::get_filesize_info( $p_size / $p_divider, \Core\Lang::get( $p_unit ) );
 		echo '</span>';
 	}
 

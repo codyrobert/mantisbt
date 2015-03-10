@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 /**
  * Directed graph creation and manipulation.

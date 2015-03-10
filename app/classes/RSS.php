@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -50,16 +50,16 @@ class RSS
 	 */
 	static function calculate_key( $p_user_id = null ) {
 		if( $p_user_id === null ) {
-			$t_user_id = \Flickerbox\Auth::get_current_user_id();
+			$t_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$t_user_id = $p_user_id;
 		}
 	
-		$t_username = \Flickerbox\User::get_field( $t_user_id, 'username' );
-		$t_password = \Flickerbox\User::get_field( $t_user_id, 'password' );
-		$t_cookie = \Flickerbox\User::get_field( $t_user_id, 'cookie_string' );
+		$t_username = \Core\User::get_field( $t_user_id, 'username' );
+		$t_password = \Core\User::get_field( $t_user_id, 'password' );
+		$t_cookie = \Core\User::get_field( $t_user_id, 'cookie_string' );
 	
-		$t_key_raw = hash( 'whirlpool', 'rss_key' . \Flickerbox\Config::get_global( 'crypto_master_salt' ) . $t_username . $t_password . $t_cookie, true );
+		$t_key_raw = hash( 'whirlpool', 'rss_key' . \Core\Config::get_global( 'crypto_master_salt' ) . $t_username . $t_password . $t_cookie, true );
 		# Note: We truncate the last 8 bits from the hash output so that base64
 		# encoding can be performed without any trailing padding.
 		$t_key_base64_encoded = base64_encode( substr( $t_key_raw, 0, 63 ) );
@@ -80,13 +80,13 @@ class RSS
 			return false;
 		}
 	
-		$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
+		$t_user_id = \Core\User::get_id_by_name( $p_username );
 	
 		if( false === $t_user_id ) {
 			return false;
 		}
 	
-		$t_correct_key = \Flickerbox\RSS::calculate_key( $t_user_id );
+		$t_correct_key = \Core\RSS::calculate_key( $t_user_id );
 		if( $p_key != $t_correct_key ) {
 			return false;
 		}
@@ -108,33 +108,33 @@ class RSS
 	 */
 	static function get_issues_feed_url( $p_project_id = null, $p_username = null, $p_filter_id = null, $p_relative = true ) {
 		if( $p_username === null ) {
-			$t_username = \Flickerbox\Current_User::get_field( 'username' );
+			$t_username = \Core\Current_User::get_field( 'username' );
 		} else {
 			$t_username = $p_username;
 		}
 	
 		if( $p_project_id === null ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = (integer)$p_project_id;
 		}
 	
-		$t_user_id = \Flickerbox\User::get_id_by_name( $t_username );
+		$t_user_id = \Core\User::get_id_by_name( $t_username );
 	
 		if( $p_relative ) {
-			$t_url = \Flickerbox\Config::mantis_get( 'path' );
+			$t_url = \Core\Config::mantis_get( 'path' );
 		} else {
 			$t_url = '';
 		}
 	
-		if( \Flickerbox\User::is_anonymous( $t_user_id ) ) {
+		if( \Core\User::is_anonymous( $t_user_id ) ) {
 			$t_url .= 'issues_rss.php?';
 	
 			if( $t_project_id == ALL_PROJECTS ) {
 				$t_url .= 'project_id=' . $t_project_id;
 			}
 		} else {
-			$t_url .= 'issues_rss.php?username=' . $t_username . '&key=' . \Flickerbox\RSS::calculate_key( $t_user_id );
+			$t_url .= 'issues_rss.php?username=' . $t_username . '&key=' . \Core\RSS::calculate_key( $t_user_id );
 	
 			if( $t_project_id != ALL_PROJECTS ) {
 				$t_url .= '&project_id=' . $t_project_id;
@@ -157,13 +157,13 @@ class RSS
 	 */
 	static function get_news_feed_url( $p_project_id = null, $p_username = null, $p_relative = true ) {
 		if( $p_username === null ) {
-			$t_username = \Flickerbox\Current_User::get_field( 'username' );
+			$t_username = \Core\Current_User::get_field( 'username' );
 		} else {
 			$t_username = $p_username;
 		}
 	
 		if( $p_project_id === null ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = (integer)$p_project_id;
 		}
@@ -171,20 +171,20 @@ class RSS
 		if( $p_relative ) {
 			$t_rss_link = '';
 		} else {
-			$t_rss_link = \Flickerbox\Config::mantis_get( 'path' );
+			$t_rss_link = \Core\Config::mantis_get( 'path' );
 		}
 	
-		$t_user_id = \Flickerbox\User::get_id_by_name( $t_username );
+		$t_user_id = \Core\User::get_id_by_name( $t_username );
 	
 		# If we have a logged in user then they can be given a 'proper' feed, complete with auth string.
-		if( \Flickerbox\User::is_anonymous( $t_user_id ) ) {
+		if( \Core\User::is_anonymous( $t_user_id ) ) {
 			$t_rss_link .= 'news_rss.php';
 	
 			if( $t_project_id != ALL_PROJECTS ) {
 				$t_rss_link .= '?project_id=' . $t_project_id;
 			}
 		} else {
-			$t_rss_link .= 'news_rss.php?username=' . $t_username . '&key=' . \Flickerbox\RSS::calculate_key( $t_user_id );
+			$t_rss_link .= 'news_rss.php?username=' . $t_username . '&key=' . \Core\RSS::calculate_key( $t_user_id );
 	
 			if( $t_project_id != ALL_PROJECTS ) {
 				$t_rss_link .= '&project_id=' . $t_project_id;

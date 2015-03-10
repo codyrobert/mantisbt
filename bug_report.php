@@ -52,97 +52,97 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-\Flickerbox\Form::security_validate( 'bug_report' );
+\Core\Form::security_validate( 'bug_report' );
 
 $t_project_id = null;
 
-$f_master_bug_id = \Flickerbox\GPC::get_int( 'm_id', 0 );
+$f_master_bug_id = \Core\GPC::get_int( 'm_id', 0 );
 if( $f_master_bug_id > 0 ) {
-	\Flickerbox\Bug::ensure_exists( $f_master_bug_id );
-	if( \Flickerbox\Bug::is_readonly( $f_master_bug_id ) ) {
-		\Flickerbox\Error::parameters( $f_master_bug_id );
+	\Core\Bug::ensure_exists( $f_master_bug_id );
+	if( \Core\Bug::is_readonly( $f_master_bug_id ) ) {
+		\Core\Error::parameters( $f_master_bug_id );
 		trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 	}
-	$t_master_bug = \Flickerbox\Bug::get( $f_master_bug_id, true );
+	$t_master_bug = \Core\Bug::get( $f_master_bug_id, true );
 	$t_project_id = $t_master_bug->project_id;
 } else {
-	$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+	$f_project_id = \Core\GPC::get_int( 'project_id' );
 	$t_project_id = $f_project_id;
 }
-\Flickerbox\Project::ensure_exists( $t_project_id );
+\Core\Project::ensure_exists( $t_project_id );
 
-if( $t_project_id != \Flickerbox\Helper::get_current_project() ) {
+if( $t_project_id != \Core\Helper::get_current_project() ) {
 	$g_project_override = $t_project_id;
 }
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'report_bug_threshold' ) );
 
 if( isset( $_GET['posted'] ) && empty( $_FILE ) && empty( $_POST ) ) {
 	trigger_error( ERROR_FILE_TOO_BIG, ERROR );
 }
 
-$t_bug_data = new \Flickerbox\BugData;
+$t_bug_data = new \Core\BugData;
 $t_bug_data->project_id             = $t_project_id;
-$t_bug_data->reporter_id            = \Flickerbox\Auth::get_current_user_id();
-$t_bug_data->build                  = \Flickerbox\GPC::get_string( 'build', '' );
-$t_bug_data->platform               = \Flickerbox\GPC::get_string( 'platform', '' );
-$t_bug_data->os                     = \Flickerbox\GPC::get_string( 'os', '' );
-$t_bug_data->os_build               = \Flickerbox\GPC::get_string( 'os_build', '' );
-$t_bug_data->version                = \Flickerbox\GPC::get_string( 'product_version', '' );
-$t_bug_data->profile_id             = \Flickerbox\GPC::get_int( 'profile_id', 0 );
-$t_bug_data->handler_id             = \Flickerbox\GPC::get_int( 'handler_id', 0 );
-$t_bug_data->view_state             = \Flickerbox\GPC::get_int( 'view_state', \Flickerbox\Config::mantis_get( 'default_bug_view_status' ) );
-$t_bug_data->category_id            = \Flickerbox\GPC::get_int( 'category_id', 0 );
-$t_bug_data->reproducibility        = \Flickerbox\GPC::get_int( 'reproducibility', \Flickerbox\Config::mantis_get( 'default_bug_reproducibility' ) );
-$t_bug_data->severity               = \Flickerbox\GPC::get_int( 'severity', \Flickerbox\Config::mantis_get( 'default_bug_severity' ) );
-$t_bug_data->priority               = \Flickerbox\GPC::get_int( 'priority', \Flickerbox\Config::mantis_get( 'default_bug_priority' ) );
-$t_bug_data->projection             = \Flickerbox\GPC::get_int( 'projection', \Flickerbox\Config::mantis_get( 'default_bug_projection' ) );
-$t_bug_data->eta                    = \Flickerbox\GPC::get_int( 'eta', \Flickerbox\Config::mantis_get( 'default_bug_eta' ) );
-$t_bug_data->resolution             = \Flickerbox\GPC::get_string( 'resolution', \Flickerbox\Config::mantis_get( 'default_bug_resolution' ) );
-$t_bug_data->status                 = \Flickerbox\GPC::get_string( 'status', \Flickerbox\Config::mantis_get( 'bug_submit_status' ) );
-$t_bug_data->summary                = \Flickerbox\GPC::get_string( 'summary' );
-$t_bug_data->description            = \Flickerbox\GPC::get_string( 'description' );
-$t_bug_data->steps_to_reproduce     = \Flickerbox\GPC::get_string( 'steps_to_reproduce', \Flickerbox\Config::mantis_get( 'default_bug_steps_to_reproduce' ) );
-$t_bug_data->additional_information = \Flickerbox\GPC::get_string( 'additional_info', \Flickerbox\Config::mantis_get( 'default_bug_additional_info' ) );
-$t_bug_data->due_date               = \Flickerbox\GPC::get_string( 'due_date', '' );
-if( \Flickerbox\Utility::is_blank( $t_bug_data->due_date ) ) {
-	$t_bug_data->due_date = \Flickerbox\Date::get_null();
+$t_bug_data->reporter_id            = \Core\Auth::get_current_user_id();
+$t_bug_data->build                  = \Core\GPC::get_string( 'build', '' );
+$t_bug_data->platform               = \Core\GPC::get_string( 'platform', '' );
+$t_bug_data->os                     = \Core\GPC::get_string( 'os', '' );
+$t_bug_data->os_build               = \Core\GPC::get_string( 'os_build', '' );
+$t_bug_data->version                = \Core\GPC::get_string( 'product_version', '' );
+$t_bug_data->profile_id             = \Core\GPC::get_int( 'profile_id', 0 );
+$t_bug_data->handler_id             = \Core\GPC::get_int( 'handler_id', 0 );
+$t_bug_data->view_state             = \Core\GPC::get_int( 'view_state', \Core\Config::mantis_get( 'default_bug_view_status' ) );
+$t_bug_data->category_id            = \Core\GPC::get_int( 'category_id', 0 );
+$t_bug_data->reproducibility        = \Core\GPC::get_int( 'reproducibility', \Core\Config::mantis_get( 'default_bug_reproducibility' ) );
+$t_bug_data->severity               = \Core\GPC::get_int( 'severity', \Core\Config::mantis_get( 'default_bug_severity' ) );
+$t_bug_data->priority               = \Core\GPC::get_int( 'priority', \Core\Config::mantis_get( 'default_bug_priority' ) );
+$t_bug_data->projection             = \Core\GPC::get_int( 'projection', \Core\Config::mantis_get( 'default_bug_projection' ) );
+$t_bug_data->eta                    = \Core\GPC::get_int( 'eta', \Core\Config::mantis_get( 'default_bug_eta' ) );
+$t_bug_data->resolution             = \Core\GPC::get_string( 'resolution', \Core\Config::mantis_get( 'default_bug_resolution' ) );
+$t_bug_data->status                 = \Core\GPC::get_string( 'status', \Core\Config::mantis_get( 'bug_submit_status' ) );
+$t_bug_data->summary                = \Core\GPC::get_string( 'summary' );
+$t_bug_data->description            = \Core\GPC::get_string( 'description' );
+$t_bug_data->steps_to_reproduce     = \Core\GPC::get_string( 'steps_to_reproduce', \Core\Config::mantis_get( 'default_bug_steps_to_reproduce' ) );
+$t_bug_data->additional_information = \Core\GPC::get_string( 'additional_info', \Core\Config::mantis_get( 'default_bug_additional_info' ) );
+$t_bug_data->due_date               = \Core\GPC::get_string( 'due_date', '' );
+if( \Core\Utility::is_blank( $t_bug_data->due_date ) ) {
+	$t_bug_data->due_date = \Core\Date::get_null();
 }
 
-$f_rel_type                         = \Flickerbox\GPC::get_int( 'rel_type', BUG_REL_NONE );
+$f_rel_type                         = \Core\GPC::get_int( 'rel_type', BUG_REL_NONE );
 $f_files                            = gpc_get_file( 'ufile', null );
-$f_report_stay                      = \Flickerbox\GPC::get_bool( 'report_stay', false );
-$f_copy_notes_from_parent           = \Flickerbox\GPC::get_bool( 'copy_notes_from_parent', false );
-$f_copy_attachments_from_parent     = \Flickerbox\GPC::get_bool( 'copy_attachments_from_parent', false );
+$f_report_stay                      = \Core\GPC::get_bool( 'report_stay', false );
+$f_copy_notes_from_parent           = \Core\GPC::get_bool( 'copy_notes_from_parent', false );
+$f_copy_attachments_from_parent     = \Core\GPC::get_bool( 'copy_attachments_from_parent', false );
 
-if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'roadmap_update_threshold' ), $t_bug_data->project_id ) ) {
-	$t_bug_data->target_version = \Flickerbox\GPC::get_string( 'target_version', '' );
+if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'roadmap_update_threshold' ), $t_bug_data->project_id ) ) {
+	$t_bug_data->target_version = \Core\GPC::get_string( 'target_version', '' );
 }
 
 # Prevent unauthorized users setting handler when reporting issue
 if( $t_bug_data->handler_id > 0 ) {
-	\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'update_bug_assign_threshold' ) );
+	\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'update_bug_assign_threshold' ) );
 }
 
 # if a profile was selected then let's use that information
 if( 0 != $t_bug_data->profile_id ) {
-	if( \Flickerbox\Profile::is_global( $t_bug_data->profile_id ) ) {
-		$t_row = \Flickerbox\User::get_profile_row( ALL_USERS, $t_bug_data->profile_id );
+	if( \Core\Profile::is_global( $t_bug_data->profile_id ) ) {
+		$t_row = \Core\User::get_profile_row( ALL_USERS, $t_bug_data->profile_id );
 	} else {
-		$t_row = \Flickerbox\User::get_profile_row( $t_bug_data->reporter_id, $t_bug_data->profile_id );
+		$t_row = \Core\User::get_profile_row( $t_bug_data->reporter_id, $t_bug_data->profile_id );
 	}
 
-	if( \Flickerbox\Utility::is_blank( $t_bug_data->platform ) ) {
+	if( \Core\Utility::is_blank( $t_bug_data->platform ) ) {
 		$t_bug_data->platform = $t_row['platform'];
 	}
-	if( \Flickerbox\Utility::is_blank( $t_bug_data->os ) ) {
+	if( \Core\Utility::is_blank( $t_bug_data->os ) ) {
 		$t_bug_data->os = $t_row['os'];
 	}
-	if( \Flickerbox\Utility::is_blank( $t_bug_data->os_build ) ) {
+	if( \Core\Utility::is_blank( $t_bug_data->os_build ) ) {
 		$t_bug_data->os_build = $t_row['os_build'];
 	}
 }
-\Flickerbox\Helper::call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
+\Core\Helper::call_custom_function( 'issue_create_validate', array( $t_bug_data ) );
 
 # Validate the custom fields before adding the bug.
 $t_related_custom_field_ids = custom_field_get_linked_ids( $t_bug_data->project_id );
@@ -150,25 +150,25 @@ foreach( $t_related_custom_field_ids as $t_id ) {
 	$t_def = custom_field_get_definition( $t_id );
 
 	# Produce an error if the field is required but wasn't posted
-	if( !\Flickerbox\GPC::isset_custom_field( $t_id, $t_def['type'] )
+	if( !\Core\GPC::isset_custom_field( $t_id, $t_def['type'] )
 	   && $t_def['require_report']
 	) {
-		\Flickerbox\Error::parameters( \Flickerbox\Lang::get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
+		\Core\Error::parameters( \Core\Lang::get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 
-	if( !custom_field_validate( $t_id, \Flickerbox\GPC::get_custom_field( 'custom_field_' . $t_id, $t_def['type'], null ) ) ) {
-		\Flickerbox\Error::parameters( \Flickerbox\Lang::get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
+	if( !custom_field_validate( $t_id, \Core\GPC::get_custom_field( 'custom_field_' . $t_id, $t_def['type'], null ) ) ) {
+		\Core\Error::parameters( \Core\Lang::get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
 		trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 	}
 }
 
 # Allow plugins to pre-process bug data
-$t_bug_data = \Flickerbox\Event::signal( 'EVENT_REPORT_BUG_DATA', $t_bug_data );
+$t_bug_data = \Core\Event::signal( 'EVENT_REPORT_BUG_DATA', $t_bug_data );
 
 # Ensure that resolved bugs have a handler
-if( $t_bug_data->handler_id == NO_USER && $t_bug_data->status >= \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' ) ) {
-	$t_bug_data->handler_id = \Flickerbox\Auth::get_current_user_id();
+if( $t_bug_data->handler_id == NO_USER && $t_bug_data->status >= \Core\Config::mantis_get( 'bug_resolved_status_threshold' ) ) {
+	$t_bug_data->handler_id = \Core\Auth::get_current_user_id();
 }
 
 
@@ -176,14 +176,14 @@ if( $t_bug_data->handler_id == NO_USER && $t_bug_data->status >= \Flickerbox\Con
 $t_bug_id = $t_bug_data->create();
 
 # Mark the added issue as visited so that it appears on the last visited list.
-\Flickerbox\Last_Visited::issue( $t_bug_id );
+\Core\Last_Visited::issue( $t_bug_id );
 
 # Handle the file upload
 if( !is_null( $f_files ) ) {
-	$t_files = \Flickerbox\Helper::array_transpose( $f_files );
+	$t_files = \Core\Helper::array_transpose( $f_files );
 	foreach( $t_files as $t_file ) {
 		if( !empty( $t_file['name'] ) ) {
-			\Flickerbox\File::add( $t_bug_id, $t_file, 'bug' );
+			\Core\File::add( $t_bug_id, $t_file, 'bug' );
 		}
 	}
 }
@@ -196,8 +196,8 @@ foreach( $t_related_custom_field_ids as $t_id ) {
 	}
 
 	$t_def = custom_field_get_definition( $t_id );
-	if( !custom_field_set_value( $t_id, $t_bug_id, \Flickerbox\GPC::get_custom_field( 'custom_field_' . $t_id, $t_def['type'], $t_def['default_value'] ), false ) ) {
-		\Flickerbox\Error::parameters( \Flickerbox\Lang::get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
+	if( !custom_field_set_value( $t_id, $t_bug_id, \Core\GPC::get_custom_field( 'custom_field_' . $t_id, $t_def['type'], $t_def['default_value'] ), false ) ) {
+		\Core\Error::parameters( \Core\Lang::get_defaulted( custom_field_get_field( $t_id, 'name' ) ) );
 		trigger_error( ERROR_CUSTOM_FIELD_INVALID_VALUE, ERROR );
 	}
 }
@@ -206,36 +206,36 @@ if( $f_master_bug_id > 0 ) {
 	# it's a child generation... let's create the relationship and add some lines in the history
 
 	# update master bug last updated
-	\Flickerbox\Bug::update_date( $f_master_bug_id );
+	\Core\Bug::update_date( $f_master_bug_id );
 
 	# Add log line to record the cloning action
-	\Flickerbox\History::log_event_special( $t_bug_id, BUG_CREATED_FROM, '', $f_master_bug_id );
-	\Flickerbox\History::log_event_special( $f_master_bug_id, BUG_CLONED_TO, '', $t_bug_id );
+	\Core\History::log_event_special( $t_bug_id, BUG_CREATED_FROM, '', $f_master_bug_id );
+	\Core\History::log_event_special( $f_master_bug_id, BUG_CLONED_TO, '', $t_bug_id );
 
 	if( $f_rel_type > BUG_REL_ANY ) {
 		# Add the relationship
-		\Flickerbox\Relationship::add( $t_bug_id, $f_master_bug_id, $f_rel_type );
+		\Core\Relationship::add( $t_bug_id, $f_master_bug_id, $f_rel_type );
 
 		# Add log line to the history (both issues)
-		\Flickerbox\History::log_event_special( $f_master_bug_id, BUG_ADD_RELATIONSHIP, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ), $t_bug_id );
-		\Flickerbox\History::log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_master_bug_id );
+		\Core\History::log_event_special( $f_master_bug_id, BUG_ADD_RELATIONSHIP, \Core\Relationship::get_complementary_type( $f_rel_type ), $t_bug_id );
+		\Core\History::log_event_special( $t_bug_id, BUG_ADD_RELATIONSHIP, $f_rel_type, $f_master_bug_id );
 
 		# Send the email notification
-		\Flickerbox\Email::relationship_added( $f_master_bug_id, $t_bug_id, \Flickerbox\Relationship::get_complementary_type( $f_rel_type ) );
+		\Core\Email::relationship_added( $f_master_bug_id, $t_bug_id, \Core\Relationship::get_complementary_type( $f_rel_type ) );
 
 		# update relationship target bug last updated
-		\Flickerbox\Bug::update_date( $t_bug_id );
+		\Core\Bug::update_date( $t_bug_id );
 	}
 
 	# copy notes from parent
 	if( $f_copy_notes_from_parent ) {
 
-		$t_parent_bugnotes = \Flickerbox\Bug\Note::get_all_bugnotes( $f_master_bug_id );
+		$t_parent_bugnotes = \Core\Bug\Note::get_all_bugnotes( $f_master_bug_id );
 
 		foreach ( $t_parent_bugnotes as $t_parent_bugnote ) {
 			$t_private = $t_parent_bugnote->view_state == VS_PRIVATE;
 
-			\Flickerbox\Bug\Note::add(
+			\Core\Bug\Note::add(
 				$t_bug_id,
 				$t_parent_bugnote->note,
 				$t_parent_bugnote->time_tracking,
@@ -252,60 +252,60 @@ if( $f_master_bug_id > 0 ) {
 
 	# copy attachments from parent
 	if( $f_copy_attachments_from_parent ) {
-		\Flickerbox\File::copy_attachments( $f_master_bug_id, $t_bug_id );
+		\Core\File::copy_attachments( $f_master_bug_id, $t_bug_id );
 	}
 }
 
-\Flickerbox\Helper::call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
+\Core\Helper::call_custom_function( 'issue_create_notify', array( $t_bug_id ) );
 
 # Allow plugins to post-process bug data with the new bug ID
-\Flickerbox\Event::signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
+\Core\Event::signal( 'EVENT_REPORT_BUG', array( $t_bug_data, $t_bug_id ) );
 
-\Flickerbox\Email::generic( $t_bug_id, 'new', 'email_notification_title_for_action_bug_submitted' );
+\Core\Email::generic( $t_bug_id, 'new', 'email_notification_title_for_action_bug_submitted' );
 
 # log status and resolution changes if they differ from the default
-if( $t_bug_data->status != \Flickerbox\Config::mantis_get( 'bug_submit_status' ) ) {
-	\Flickerbox\History::log_event( $t_bug_id, 'status', \Flickerbox\Config::mantis_get( 'bug_submit_status' ) );
+if( $t_bug_data->status != \Core\Config::mantis_get( 'bug_submit_status' ) ) {
+	\Core\History::log_event( $t_bug_id, 'status', \Core\Config::mantis_get( 'bug_submit_status' ) );
 }
 
-if( $t_bug_data->resolution != \Flickerbox\Config::mantis_get( 'default_bug_resolution' ) ) {
-	\Flickerbox\History::log_event( $t_bug_id, 'resolution', \Flickerbox\Config::mantis_get( 'default_bug_resolution' ) );
+if( $t_bug_data->resolution != \Core\Config::mantis_get( 'default_bug_resolution' ) ) {
+	\Core\History::log_event( $t_bug_id, 'resolution', \Core\Config::mantis_get( 'default_bug_resolution' ) );
 }
 
-\Flickerbox\Form::security_purge( 'bug_report' );
+\Core\Form::security_purge( 'bug_report' );
 
-\Flickerbox\HTML::page_top1();
+\Core\HTML::page_top1();
 
 if( !$f_report_stay ) {
-	\Flickerbox\HTML::meta_redirect( 'view_all_bug_page.php' );
+	\Core\HTML::meta_redirect( 'view_all_bug_page.php' );
 }
 
-\Flickerbox\HTML::page_top2();
+\Core\HTML::page_top2();
 
 echo '<div class="success-msg">';
-echo \Flickerbox\Lang::get( 'operation_successful' ) . '<br />';
-\Flickerbox\Print_Util::bracket_link( \Flickerbox\String::get_bug_view_url( $t_bug_id ), sprintf( \Flickerbox\Lang::get( 'view_submitted_bug_link' ), $t_bug_id ) );
-\Flickerbox\Print_Util::bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'view_bugs_link' ) );
+echo \Core\Lang::get( 'operation_successful' ) . '<br />';
+\Core\Print_Util::bracket_link( \Core\String::get_bug_view_url( $t_bug_id ), sprintf( \Core\Lang::get( 'view_submitted_bug_link' ), $t_bug_id ) );
+\Core\Print_Util::bracket_link( 'view_all_bug_page.php', \Core\Lang::get( 'view_bugs_link' ) );
 
 if( $f_report_stay ) {
 ?>
 	<p>
-	<form method="post" action="<?php echo \Flickerbox\String::get_bug_report_url() ?>">
+	<form method="post" action="<?php echo \Core\String::get_bug_report_url() ?>">
 	<?php # CSRF protection not required here - form does not result in modifications ?>
-		<input type="hidden" name="category_id" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->category_id ) ?>" />
-		<input type="hidden" name="severity" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->severity ) ?>" />
-		<input type="hidden" name="reproducibility" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->reproducibility ) ?>" />
-		<input type="hidden" name="profile_id" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->profile_id ) ?>" />
-		<input type="hidden" name="platform" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->platform ) ?>" />
-		<input type="hidden" name="os" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->os ) ?>" />
-		<input type="hidden" name="os_build" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->os_build ) ?>" />
-		<input type="hidden" name="product_version" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->version ) ?>" />
-		<input type="hidden" name="target_version" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->target_version ) ?>" />
-		<input type="hidden" name="build" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->build ) ?>" />
+		<input type="hidden" name="category_id" value="<?php echo \Core\String::attribute( $t_bug_data->category_id ) ?>" />
+		<input type="hidden" name="severity" value="<?php echo \Core\String::attribute( $t_bug_data->severity ) ?>" />
+		<input type="hidden" name="reproducibility" value="<?php echo \Core\String::attribute( $t_bug_data->reproducibility ) ?>" />
+		<input type="hidden" name="profile_id" value="<?php echo \Core\String::attribute( $t_bug_data->profile_id ) ?>" />
+		<input type="hidden" name="platform" value="<?php echo \Core\String::attribute( $t_bug_data->platform ) ?>" />
+		<input type="hidden" name="os" value="<?php echo \Core\String::attribute( $t_bug_data->os ) ?>" />
+		<input type="hidden" name="os_build" value="<?php echo \Core\String::attribute( $t_bug_data->os_build ) ?>" />
+		<input type="hidden" name="product_version" value="<?php echo \Core\String::attribute( $t_bug_data->version ) ?>" />
+		<input type="hidden" name="target_version" value="<?php echo \Core\String::attribute( $t_bug_data->target_version ) ?>" />
+		<input type="hidden" name="build" value="<?php echo \Core\String::attribute( $t_bug_data->build ) ?>" />
 		<input type="hidden" name="report_stay" value="1" />
-		<input type="hidden" name="view_state" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->view_state ) ?>" />
-		<input type="hidden" name="due_date" value="<?php echo \Flickerbox\String::attribute( $t_bug_data->due_date ) ?>" />
-		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'report_more_bugs' ) ?>" />
+		<input type="hidden" name="view_state" value="<?php echo \Core\String::attribute( $t_bug_data->view_state ) ?>" />
+		<input type="hidden" name="due_date" value="<?php echo \Core\String::attribute( $t_bug_data->due_date ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'report_more_bugs' ) ?>" />
 	</form>
 	</p>
 <?php
@@ -314,4 +314,4 @@ if( $f_report_stay ) {
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

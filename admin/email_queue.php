@@ -26,22 +26,22 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-$f_to = \Flickerbox\GPC::get( 'send', null );
-$f_mail_test = \Flickerbox\GPC::get_bool( 'mail_test' );
+$f_to = \Core\GPC::get( 'send', null );
+$f_mail_test = \Core\GPC::get_bool( 'mail_test' );
 
 if( $f_to !== null ) {
 	echo '<div class="important-msg">';
 	if( $f_to == 'all' ) {
 		echo 'Sending emails...<br />';
-		\Flickerbox\Email::send_all();
+		\Core\Email::send_all();
 		echo 'Done';
 	} else if( $f_to == 'sendordelall' ) {
 		echo 'Sending or deleting emails...<br />';
-		\Flickerbox\Email::send_all( true );
+		\Core\Email::send_all( true );
 		echo 'Done';
 
 	} else {
@@ -50,7 +50,7 @@ if( $f_to !== null ) {
 		# check if email was found.  This can fail if another request picks up the email first and sends it.
 		echo 'Sending email...<br />';
 		if( $t_email_data !== false ) {
-			if( !\Flickerbox\Email::send( $t_email_data ) ) {
+			if( !\Core\Email::send( $t_email_data ) ) {
 				echo 'Email Not Sent - Deleting from queue<br />';
 				email_queue_delete( $t_email_data->email_id );
 			} else {
@@ -67,18 +67,18 @@ if( $f_mail_test ) {
 	echo '<div class="important-msg">';
 	echo '<strong>Testing Mail</strong> - ';
 
-	\Flickerbox\Lang::push( 'english' );
+	\Core\Lang::push( 'english' );
 
-	$t_email_data = new \Flickerbox\Email\Data;
-	$t_email_data->email = \Flickerbox\Config::get_global( 'webmaster_email' );
+	$t_email_data = new \Core\Email\Data;
+	$t_email_data->email = \Core\Config::get_global( 'webmaster_email' );
 	$t_email_data->subject = 'Testing PHP mail() function';
 	$t_email_data->body = 'Your PHP mail settings appear to be correctly set.';
-	$t_email_data->metadata['priority'] = \Flickerbox\Config::mantis_get( 'mail_priority' );
+	$t_email_data->metadata['priority'] = \Core\Config::mantis_get( 'mail_priority' );
 	$t_email_data->metadata['charset'] = 'utf-8';
-	$t_result = \Flickerbox\Email::send( $t_email_data );
+	$t_result = \Core\Email::send( $t_email_data );
 
 	if( !$t_result ) {
-		echo ' PROBLEMS SENDING MAIL TO: ' . \Flickerbox\Config::get_global( 'webmaster_email' ) . '. Please check your php/mail server settings.';
+		echo ' PROBLEMS SENDING MAIL TO: ' . \Core\Config::get_global( 'webmaster_email' ) . '. Please check your php/mail server settings.';
 	} else {
 		echo ' mail() send successful.';
 	}
@@ -93,9 +93,9 @@ if( count( $t_ids ) > 0 ) {
 	<table>
 		<thead>
 			<tr>
-				<th><?php echo \Flickerbox\Lang::get( 'id' ); ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'email' ); ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'timestamp' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'id' ); ?></th>
+				<th><?php echo \Core\Lang::get( 'email' ); ?></th>
+				<th><?php echo \Core\Lang::get( 'timestamp' ) ?></th>
 				<th>Send Or Delete</th>
 			</tr>
 		</thead>
@@ -107,8 +107,8 @@ if( count( $t_ids ) > 0 ) {
 			<tr>
 				<td><?php echo $t_row->email_id; ?></td>
 				<td><?php echo $t_row->email; ?></td>
-				<td><?php echo date( \Flickerbox\Config::mantis_get( 'complete_date_format' ), $t_row->submitted );?></td>
-				<td><?php \Flickerbox\HTML::button( 'email_queue.php', 'Send Or Delete', array( 'send' => $t_row->email_id ) ); ?></td>
+				<td><?php echo date( \Core\Config::mantis_get( 'complete_date_format' ), $t_row->submitted );?></td>
+				<td><?php \Core\HTML::button( 'email_queue.php', 'Send Or Delete', array( 'send' => $t_row->email_id ) ); ?></td>
 			</tr>
 <?php
 	}
@@ -118,8 +118,8 @@ if( count( $t_ids ) > 0 ) {
 </div>
 <div id="send-email-div" class="form-container">
 <?php
-	\Flickerbox\HTML::button( 'email_queue.php', 'Send All', array( 'send' => 'all') );
-	\Flickerbox\HTML::button( 'email_queue.php', 'Send Or Delete All', array( 'send' => 'sendordelall') );
+	\Core\HTML::button( 'email_queue.php', 'Send All', array( 'send' => 'all') );
+	\Core\HTML::button( 'email_queue.php', 'Send Or Delete All', array( 'send' => 'sendordelall') );
 } else {
 	echo '<div class="important-msg">';
 	echo 'Email Queue Empty';
@@ -144,7 +144,7 @@ if( count( $t_ids ) > 0 ) {
 			<a href="http://www.php.net/manual/en/ref.mail.php">PHP website</a> 
 			if you are using the mail() PHPMailer sending mode.</p>
 			<p>
-			Email Address: <?php echo \Flickerbox\Config::get_global( 'webmaster_email' );?>
+			Email Address: <?php echo \Core\Config::get_global( 'webmaster_email' );?>
 			</p>
 			<input type="submit" value="Send Mail" name="mail_test" />
 		</fieldset>
@@ -152,4 +152,4 @@ if( count( $t_ids ) > 0 ) {
 </div>
 <?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

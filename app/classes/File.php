@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -54,7 +54,7 @@ class File
 		# or a bug attachment filename (0000000-filename)
 		# for newer filenames, the filename in schema is correct.
 		# This is important to handle filenames with '-'s properly
-		$t_doc_match = '/^' . \Flickerbox\Config::mantis_get( 'document_files_prefix' ) . '-\d{7}-/';
+		$t_doc_match = '/^' . \Core\Config::mantis_get( 'document_files_prefix' ) . '-\d{7}-/';
 		$t_name = preg_split( $t_doc_match, $p_filename );
 		if( isset( $t_name[1] ) ) {
 			return $t_name[1];
@@ -92,10 +92,10 @@ class File
 		# Otherwise build the cache and return the attachment count
 		#   for the given bug (if any).
 		$t_query = 'SELECT bug_id, COUNT(bug_id) AS attachments FROM {bug_file} GROUP BY bug_id';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
 		$t_file_count = 0;
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$g_cache_file_count[$t_row['bug_id']] = $t_row['attachments'];
 			if( $p_bug_id == $t_row['bug_id'] ) {
 				$t_file_count = $t_row['attachments'];
@@ -117,7 +117,7 @@ class File
 	 * @return boolean
 	 */
 	static function bug_has_attachments( $p_bug_id ) {
-		if( \Flickerbox\File::bug_attachment_count( $p_bug_id ) > 0 ) {
+		if( \Core\File::bug_attachment_count( $p_bug_id ) > 0 ) {
 			return true;
 		} else {
 			return false;
@@ -131,9 +131,9 @@ class File
 	 * @return boolean
 	 */
 	static function can_view_bug_attachments( $p_bug_id, $p_uploader_user_id = null ) {
-		$t_uploaded_by_me = \Flickerbox\Auth::get_current_user_id() === $p_uploader_user_id;
-		$t_can_view = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_attachments_threshold' ), $p_bug_id );
-		$t_can_view = $t_can_view || ( $t_uploaded_by_me && \Flickerbox\Config::mantis_get( 'allow_view_own_attachments' ) );
+		$t_uploaded_by_me = \Core\Auth::get_current_user_id() === $p_uploader_user_id;
+		$t_can_view = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'view_attachments_threshold' ), $p_bug_id );
+		$t_can_view = $t_can_view || ( $t_uploaded_by_me && \Core\Config::mantis_get( 'allow_view_own_attachments' ) );
 		return $t_can_view;
 	}
 	
@@ -144,9 +144,9 @@ class File
 	 * @return boolean
 	 */
 	static function can_download_bug_attachments( $p_bug_id, $p_uploader_user_id = null ) {
-		$t_uploaded_by_me = \Flickerbox\Auth::get_current_user_id() === $p_uploader_user_id;
-		$t_can_download = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'download_attachments_threshold', null, null, \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' ) ), $p_bug_id );
-		$t_can_download = $t_can_download || ( $t_uploaded_by_me && \Flickerbox\Config::mantis_get( 'allow_download_own_attachments', null, null, \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' ) ) );
+		$t_uploaded_by_me = \Core\Auth::get_current_user_id() === $p_uploader_user_id;
+		$t_can_download = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'download_attachments_threshold', null, null, \Core\Bug::get_field( $p_bug_id, 'project_id' ) ), $p_bug_id );
+		$t_can_download = $t_can_download || ( $t_uploaded_by_me && \Core\Config::mantis_get( 'allow_download_own_attachments', null, null, \Core\Bug::get_field( $p_bug_id, 'project_id' ) ) );
 		return $t_can_download;
 	}
 	
@@ -157,12 +157,12 @@ class File
 	 * @return boolean
 	 */
 	static function can_delete_bug_attachments( $p_bug_id, $p_uploader_user_id = null ) {
-		if( \Flickerbox\Bug::is_readonly( $p_bug_id ) ) {
+		if( \Core\Bug::is_readonly( $p_bug_id ) ) {
 			return false;
 		}
-		$t_uploaded_by_me = \Flickerbox\Auth::get_current_user_id() === $p_uploader_user_id;
-		$t_can_delete = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'delete_attachments_threshold' ), $p_bug_id );
-		$t_can_delete = $t_can_delete || ( $t_uploaded_by_me && \Flickerbox\Config::mantis_get( 'allow_delete_own_attachments' ) );
+		$t_uploaded_by_me = \Core\Auth::get_current_user_id() === $p_uploader_user_id;
+		$t_can_delete = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'delete_attachments_threshold' ), $p_bug_id );
+		$t_can_delete = $t_can_delete || ( $t_uploaded_by_me && \Core\Config::mantis_get( 'allow_delete_own_attachments' ) );
 		return $t_can_delete;
 	}
 	
@@ -173,15 +173,15 @@ class File
 	 * @return array
 	 */
 	static function get_icon_url( $p_display_filename ) {
-		$t_file_type_icons = \Flickerbox\Config::mantis_get( 'file_type_icons' );
+		$t_file_type_icons = \Core\Config::mantis_get( 'file_type_icons' );
 	
 		$t_ext = utf8_strtolower( pathinfo( $p_display_filename, PATHINFO_EXTENSION ) );
-		if( \Flickerbox\Utility::is_blank( $t_ext ) || !isset( $t_file_type_icons[$t_ext] ) ) {
+		if( \Core\Utility::is_blank( $t_ext ) || !isset( $t_file_type_icons[$t_ext] ) ) {
 			$t_ext = '?';
 		}
 	
 		$t_name = $t_file_type_icons[$t_ext];
-		return array( 'url' => \Flickerbox\Config::mantis_get( 'icon_path' ) . 'fileicons/' . $t_name, 'alt' => $t_ext );
+		return array( 'url' => \Core\Config::mantis_get( 'icon_path' ) . 'fileicons/' . $t_name, 'alt' => $t_ext );
 	}
 	
 	/**
@@ -221,9 +221,9 @@ class File
 		$t_expected_file_path = '';
 	
 		if( $p_project_id != ALL_PROJECTS ) {
-			$t_path = \Flickerbox\Project::get_field( $p_project_id, 'file_path' );
-			if( !\Flickerbox\Utility::is_blank( $t_path ) ) {
-				$t_diskfile = \Flickerbox\File::path_combine( $t_path, $t_basename );
+			$t_path = \Core\Project::get_field( $p_project_id, 'file_path' );
+			if( !\Core\Utility::is_blank( $t_path ) ) {
+				$t_diskfile = \Core\File::path_combine( $t_path, $t_basename );
 	
 				if( file_exists( $t_diskfile ) ) {
 					return $t_diskfile;
@@ -234,16 +234,16 @@ class File
 			}
 		}
 	
-		$t_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
-		if( !\Flickerbox\Utility::is_blank( $t_path ) ) {
-			$t_diskfile = \Flickerbox\File::path_combine( $t_path, $t_basename );
+		$t_path = \Core\Config::mantis_get( 'absolute_path_default_upload_folder' );
+		if( !\Core\Utility::is_blank( $t_path ) ) {
+			$t_diskfile = \Core\File::path_combine( $t_path, $t_basename );
 	
 			if( file_exists( $t_diskfile ) ) {
 				return $t_diskfile;
 			}
 	
 			# if the expected path not set to project directory, then set it to default directory.
-			if( \Flickerbox\Utility::is_blank( $t_expected_file_path ) ) {
+			if( \Core\Utility::is_blank( $t_expected_file_path ) ) {
 				$t_expected_file_path = $t_diskfile;
 			}
 		}
@@ -251,7 +251,7 @@ class File
 		# if diskfile doesn't include a path, then use the expected filename.
 		if( ( strstr( $p_diskfile, DIRECTORY_SEPARATOR ) === false ||
 		       strstr( $p_diskfile, '\\' ) === false ) &&
-		     !\Flickerbox\Utility::is_blank( $t_expected_file_path ) ) {
+		     !\Core\Utility::is_blank( $t_expected_file_path ) ) {
 		    return $t_expected_file_path;
 		}
 	
@@ -278,7 +278,7 @@ class File
 	 * @return array
 	 */
 	static function get_visible_attachments( $p_bug_id ) {
-		$t_attachment_rows = \Flickerbox\Bug::get_attachments( $p_bug_id );
+		$t_attachment_rows = \Core\Bug::get_attachments( $p_bug_id );
 		$t_visible_attachments = array();
 	
 		$t_attachments_count = count( $t_attachment_rows );
@@ -288,32 +288,32 @@ class File
 	
 		$t_attachments = array();
 	
-		$t_preview_text_ext = \Flickerbox\Config::mantis_get( 'preview_text_extensions' );
-		$t_preview_image_ext = \Flickerbox\Config::mantis_get( 'preview_image_extensions' );
+		$t_preview_text_ext = \Core\Config::mantis_get( 'preview_text_extensions' );
+		$t_preview_image_ext = \Core\Config::mantis_get( 'preview_image_extensions' );
 	
 		$t_image_previewed = false;
 		for( $i = 0;$i < $t_attachments_count;$i++ ) {
 			$t_row = $t_attachment_rows[$i];
 	
-			if( !\Flickerbox\File::can_view_bug_attachments( $p_bug_id, (int)$t_row['user_id'] ) ) {
+			if( !\Core\File::can_view_bug_attachments( $p_bug_id, (int)$t_row['user_id'] ) ) {
 				continue;
 			}
 	
 			$t_id = $t_row['id'];
 			$t_filename = $t_row['filename'];
 			$t_filesize = $t_row['filesize'];
-			$t_diskfile = \Flickerbox\File::normalize_attachment_path( $t_row['diskfile'], \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' ) );
+			$t_diskfile = \Core\File::normalize_attachment_path( $t_row['diskfile'], \Core\Bug::get_field( $p_bug_id, 'project_id' ) );
 			$t_date_added = $t_row['date_added'];
 	
 			$t_attachment = array();
 			$t_attachment['id'] = $t_id;
-			$t_attachment['display_name'] = \Flickerbox\File::get_display_name( $t_filename );
+			$t_attachment['display_name'] = \Core\File::get_display_name( $t_filename );
 			$t_attachment['size'] = $t_filesize;
 			$t_attachment['date_added'] = $t_date_added;
 			$t_attachment['diskfile'] = $t_diskfile;
 	
-			$t_attachment['can_download'] = \Flickerbox\File::can_download_bug_attachments( $p_bug_id, (int)$t_row['user_id'] );
-			$t_attachment['can_delete'] = \Flickerbox\File::can_delete_bug_attachments( $p_bug_id, (int)$t_row['user_id'] );
+			$t_attachment['can_download'] = \Core\File::can_download_bug_attachments( $p_bug_id, (int)$t_row['user_id'] );
+			$t_attachment['can_delete'] = \Core\File::can_delete_bug_attachments( $p_bug_id, (int)$t_row['user_id'] );
 	
 			if( $t_attachment['can_download'] ) {
 				$t_attachment['download_url'] = 'file_download.php?file_id=' . $t_id . '&type=bug';
@@ -323,8 +323,8 @@ class File
 				$t_image_previewed = false;
 			}
 	
-			$t_attachment['exists'] = \Flickerbox\Config::mantis_get( 'file_upload_method' ) != DISK || file_exists( $t_diskfile );
-			$t_attachment['icon'] = \Flickerbox\File::get_icon_url( $t_attachment['display_name'] );
+			$t_attachment['exists'] = \Core\Config::mantis_get( 'file_upload_method' ) != DISK || file_exists( $t_diskfile );
+			$t_attachment['icon'] = \Core\File::get_icon_url( $t_attachment['display_name'] );
 	
 			$t_attachment['preview'] = false;
 			$t_attachment['type'] = '';
@@ -332,7 +332,7 @@ class File
 			$t_ext = strtolower( pathinfo( $t_attachment['display_name'], PATHINFO_EXTENSION ) );
 			$t_attachment['alt'] = $t_ext;
 	
-			if( $t_attachment['exists'] && $t_attachment['can_download'] && $t_filesize != 0 && $t_filesize <= \Flickerbox\Config::mantis_get( 'preview_attachments_inline_max_size' ) ) {
+			if( $t_attachment['exists'] && $t_attachment['can_download'] && $t_filesize != 0 && $t_filesize <= \Core\Config::mantis_get( 'preview_attachments_inline_max_size' ) ) {
 				if( in_array( $t_ext, $t_preview_text_ext, true ) ) {
 					$t_attachment['preview'] = true;
 					$t_attachment['type'] = 'text';
@@ -354,31 +354,31 @@ class File
 	 * @return boolean
 	 */
 	static function delete_attachments( $p_bug_id ) {
-		$t_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
+		$t_method = \Core\Config::mantis_get( 'file_upload_method' );
 	
 		# Delete files from disk
-		$t_query = 'SELECT diskfile, filename FROM {bug_file} WHERE bug_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
+		$t_query = 'SELECT diskfile, filename FROM {bug_file} WHERE bug_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_bug_id ) );
 	
-		$t_file_count = \Flickerbox\Database::num_rows( $t_result );
+		$t_file_count = \Core\Database::num_rows( $t_result );
 		if( 0 == $t_file_count ) {
 			return true;
 		}
 	
 		if( DISK == $t_method ) {
 			for( $i = 0; $i < $t_file_count; $i++ ) {
-				$t_row = \Flickerbox\Database::fetch_array( $t_result );
+				$t_row = \Core\Database::fetch_array( $t_result );
 	
-				$t_local_diskfile = \Flickerbox\File::normalize_attachment_path( $t_row['diskfile'], \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' ) );
-				\Flickerbox\File::delete_local( $t_local_diskfile );
+				$t_local_diskfile = \Core\File::normalize_attachment_path( $t_row['diskfile'], \Core\Bug::get_field( $p_bug_id, 'project_id' ) );
+				\Core\File::delete_local( $t_local_diskfile );
 			}
 		}
 	
 		# Delete the corresponding db records
-		$t_query = 'DELETE FROM {bug_file} WHERE bug_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
+		$t_query = 'DELETE FROM {bug_file} WHERE bug_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_bug_id ) );
 	
-		# \Flickerbox\Database::query() errors on failure so:
+		# \Core\Database::query() errors on failure so:
 		return true;
 	}
 	
@@ -388,27 +388,27 @@ class File
 	 * @return void
 	 */
 	static function delete_project_files( $p_project_id ) {
-		$t_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
+		$t_method = \Core\Config::mantis_get( 'file_upload_method' );
 	
 		# Delete the file physically (if stored via DISK)
 		if( DISK == $t_method ) {
 			# Delete files from disk
-			$t_query = 'SELECT diskfile, filename FROM {project_file} WHERE project_id=' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
+			$t_query = 'SELECT diskfile, filename FROM {project_file} WHERE project_id=' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( (int)$p_project_id ) );
 	
-			$t_file_count = \Flickerbox\Database::num_rows( $t_result );
+			$t_file_count = \Core\Database::num_rows( $t_result );
 	
 			for( $i = 0;$i < $t_file_count;$i++ ) {
-				$t_row = \Flickerbox\Database::fetch_array( $t_result );
+				$t_row = \Core\Database::fetch_array( $t_result );
 	
-				$t_local_diskfile = \Flickerbox\File::normalize_attachment_path( $t_row['diskfile'], $p_project_id );
-				\Flickerbox\File::delete_local( $t_local_diskfile );
+				$t_local_diskfile = \Core\File::normalize_attachment_path( $t_row['diskfile'], $p_project_id );
+				\Core\File::delete_local( $t_local_diskfile );
 			}
 		}
 	
 		# Delete the corresponding database records
-		$t_query = 'DELETE FROM {project_file} WHERE project_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
+		$t_query = 'DELETE FROM {project_file} WHERE project_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_project_id ) );
 	}
 	
 	/**
@@ -431,15 +431,15 @@ class File
 	 * @return string
 	 */
 	static function get_field( $p_file_id, $p_field_name, $p_table = 'bug' ) {
-		$t_bug_file_table = \Flickerbox\Database::get_table( $p_table . '_file' );
-		if( !\Flickerbox\Database::field_exists( $p_field_name, $t_bug_file_table ) ) {
+		$t_bug_file_table = \Core\Database::get_table( $p_table . '_file' );
+		if( !\Core\Database::field_exists( $p_field_name, $t_bug_file_table ) ) {
 			trigger_error( ERROR_DB_FIELD_NOT_FOUND, ERROR );
 		}
 	
-		$t_query = 'SELECT ' . $p_field_name . ' FROM ' . $t_bug_file_table . ' WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_file_id ), 1 );
+		$t_query = 'SELECT ' . $p_field_name . ' FROM ' . $t_bug_file_table . ' WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( (int)$p_file_id ), 1 );
 	
-		return \Flickerbox\Database::result( $t_result );
+		return \Core\Database::result( $t_result );
 	}
 	
 	/**
@@ -449,34 +449,34 @@ class File
 	 * @return boolean
 	 */
 	static function delete( $p_file_id, $p_table = 'bug' ) {
-		$t_upload_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
+		$t_upload_method = \Core\Config::mantis_get( 'file_upload_method' );
 	
 		$c_file_id = (int)$p_file_id;
-		$t_filename = \Flickerbox\File::get_field( $p_file_id, 'filename', $p_table );
-		$t_diskfile = \Flickerbox\File::get_field( $p_file_id, 'diskfile', $p_table );
+		$t_filename = \Core\File::get_field( $p_file_id, 'filename', $p_table );
+		$t_diskfile = \Core\File::get_field( $p_file_id, 'diskfile', $p_table );
 	
 		if( $p_table == 'bug' ) {
-			$t_bug_id = \Flickerbox\File::get_field( $p_file_id, 'bug_id', $p_table );
-			$t_project_id = \Flickerbox\Bug::get_field( $t_bug_id, 'project_id' );
+			$t_bug_id = \Core\File::get_field( $p_file_id, 'bug_id', $p_table );
+			$t_project_id = \Core\Bug::get_field( $t_bug_id, 'project_id' );
 		} else {
-			$t_project_id = \Flickerbox\File::get_field( $p_file_id, 'project_id', $p_table );
+			$t_project_id = \Core\File::get_field( $p_file_id, 'project_id', $p_table );
 		}
 	
 		if( DISK == $t_upload_method ) {
-			$t_local_disk_file = \Flickerbox\File::normalize_attachment_path( $t_diskfile, $t_project_id );
+			$t_local_disk_file = \Core\File::normalize_attachment_path( $t_diskfile, $t_project_id );
 			if( file_exists( $t_local_disk_file ) ) {
-				\Flickerbox\File::delete_local( $t_local_disk_file );
+				\Core\File::delete_local( $t_local_disk_file );
 			}
 		}
 	
 		if( 'bug' == $p_table ) {
 			# log file deletion
-			\Flickerbox\History::log_event_special( $t_bug_id, FILE_DELETED, \Flickerbox\File::get_display_name( $t_filename ) );
+			\Core\History::log_event_special( $t_bug_id, FILE_DELETED, \Core\File::get_display_name( $t_filename ) );
 		}
 	
-		$t_file_table = \Flickerbox\Database::get_table( $p_table . '_file' );
-		$t_query = 'DELETE FROM ' . $t_file_table . ' WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_file_id ) );
+		$t_file_table = \Core\Database::get_table( $p_table . '_file' );
+		$t_query = 'DELETE FROM ' . $t_file_table . ' WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_file_id ) );
 		return true;
 	}
 	
@@ -486,14 +486,14 @@ class File
 	 * @return boolean
 	 */
 	static function type_check( $p_file_name ) {
-		$t_allowed_files = \Flickerbox\Config::mantis_get( 'allowed_files' );
-		$t_disallowed_files = \Flickerbox\Config::mantis_get( 'disallowed_files' );
+		$t_allowed_files = \Core\Config::mantis_get( 'allowed_files' );
+		$t_disallowed_files = \Core\Config::mantis_get( 'disallowed_files' );
 	
 		# grab extension
 		$t_extension = pathinfo( $p_file_name, PATHINFO_EXTENSION );
 	
 		# check against disallowed files
-		if( !\Flickerbox\Utility::is_blank( $t_disallowed_files ) ) {
+		if( !\Core\Utility::is_blank( $t_disallowed_files ) ) {
 			$t_disallowed_arr = explode( ',', $t_disallowed_files );
 			foreach( $t_disallowed_arr as $t_val ) {
 				if( 0 == strcasecmp( $t_val, $t_extension ) ) {
@@ -503,7 +503,7 @@ class File
 		}
 	
 		# if the allowed list is note populated then the file must be allowed
-		if( \Flickerbox\Utility::is_blank( $t_allowed_files ) ) {
+		if( \Core\Utility::is_blank( $t_allowed_files ) ) {
 			return true;
 		}
 	
@@ -535,8 +535,8 @@ class File
 	 */
 	static function generate_unique_name( $p_filepath ) {
 		do {
-			$t_string = md5( \Flickerbox\Crypto::generate_random_string( 32, false ) );
-		} while( !disk\Flickerbox\File::is_name_unique( $t_string, $p_filepath ) );
+			$t_string = md5( \Core\Crypto::generate_random_string( 32, false ) );
+		} while( !disk\Core\File::is_name_unique( $t_string, $p_filepath ) );
 	
 		return $t_string;
 	}
@@ -560,9 +560,9 @@ class File
 				UNION
 				SELECT diskfile FROM {project_file}
 				) f
-			WHERE diskfile=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_name ) );
-		$t_count = \Flickerbox\Database::result( $t_result );
+			WHERE diskfile=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_name ) );
+		$t_count = \Core\Database::result( $t_result );
 	
 		return ( $t_count == 0 ) && !file_exists( $c_name );
 	}
@@ -576,17 +576,17 @@ class File
 	 * @return boolean true if unique
 	 */
 	static function is_name_unique( $p_name, $p_bug_id, $p_table = 'bug' ) {
-		$t_file_table = \Flickerbox\Database::get_table( "${p_table}_file" );
+		$t_file_table = \Core\Database::get_table( "${p_table}_file" );
 	
-		$t_query = 'SELECT COUNT(*) FROM ' . $t_file_table . ' WHERE filename=' . \Flickerbox\Database::param();
+		$t_query = 'SELECT COUNT(*) FROM ' . $t_file_table . ' WHERE filename=' . \Core\Database::param();
 		$t_param = array( $p_name );
 		if( $p_table == 'bug' ) {
-			$t_query .= ' AND bug_id=' . \Flickerbox\Database::param();
+			$t_query .= ' AND bug_id=' . \Core\Database::param();
 			$t_param[] = $p_bug_id;
 		}
 	
-		$t_result = \Flickerbox\Database::query( $t_query, $t_param );
-		$t_count = \Flickerbox\Database::result( $t_result );
+		$t_result = \Core\Database::query( $t_query, $t_param );
+		$t_count = \Core\Database::result( $t_result );
 	
 		return ( $t_count == 0 );
 	}
@@ -605,15 +605,15 @@ class File
 	 * @return void
 	 */
 	static function add( $p_bug_id, array $p_file, $p_table = 'bug', $p_title = '', $p_desc = '', $p_user_id = null, $p_date_added = 0, $p_skip_bug_update = false ) {
-		\Flickerbox\File::ensure_uploaded( $p_file );
+		\Core\File::ensure_uploaded( $p_file );
 		$t_file_name = $p_file['name'];
 		$t_tmp_file = $p_file['tmp_name'];
 	
-		if( !\Flickerbox\File::type_check( $t_file_name ) ) {
+		if( !\Core\File::type_check( $t_file_name ) ) {
 			trigger_error( ERROR_FILE_NOT_ALLOWED, ERROR );
 		}
 	
-		if( !\Flickerbox\File::is_name_unique( $t_file_name, $p_bug_id ) ) {
+		if( !\Core\File::is_name_unique( $t_file_name, $p_bug_id ) ) {
 			trigger_error( ERROR_FILE_DUPLICATE, ERROR );
 		}
 	
@@ -621,44 +621,44 @@ class File
 		if( 0 == $t_file_size ) {
 			trigger_error( ERROR_FILE_NO_UPLOAD_FAILURE, ERROR );
 		}
-		$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
+		$t_max_file_size = (int)min( \Core\Utility::ini_get_number( 'upload_max_filesize' ), \Core\Utility::ini_get_number( 'post_max_size' ), \Core\Config::mantis_get( 'max_file_size' ) );
 		if( $t_file_size > $t_max_file_size ) {
 			trigger_error( ERROR_FILE_TOO_BIG, ERROR );
 		}
 	
 		if( 'bug' == $p_table ) {
-			$t_project_id = \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' );
+			$t_project_id = \Core\Bug::get_field( $p_bug_id, 'project_id' );
 			$t_id = (int)$p_bug_id;
-			$t_bug_id = \Flickerbox\Bug::format_id( $p_bug_id );
+			$t_bug_id = \Core\Bug::format_id( $p_bug_id );
 		} else {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 			$t_id = $t_project_id;
 			$t_bug_id = 0;
 		}
 	
 		if( $p_user_id === null ) {
-			$p_user_id = \Flickerbox\Auth::get_current_user_id();
+			$p_user_id = \Core\Auth::get_current_user_id();
 		}
 	
 		if( $p_date_added <= 0 ) {
-			$p_date_added = \Flickerbox\Database::now();
+			$p_date_added = \Core\Database::now();
 		}
 	
 		if( $t_project_id == ALL_PROJECTS ) {
-			$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
+			$t_file_path = \Core\Config::mantis_get( 'absolute_path_default_upload_folder' );
 		} else {
-			$t_file_path = \Flickerbox\Project::get_field( $t_project_id, 'file_path' );
-			if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
-				$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
+			$t_file_path = \Core\Project::get_field( $t_project_id, 'file_path' );
+			if( \Core\Utility::is_blank( $t_file_path ) ) {
+				$t_file_path = \Core\Config::mantis_get( 'absolute_path_default_upload_folder' );
 			}
 		}
 	
-		$t_unique_name = \Flickerbox\File::generate_unique_name( $t_file_path );
-		$t_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
+		$t_unique_name = \Core\File::generate_unique_name( $t_file_path );
+		$t_method = \Core\Config::mantis_get( 'file_upload_method' );
 	
 		switch( $t_method ) {
 			case DISK:
-				\Flickerbox\File::ensure_valid_upload_path( $t_file_path );
+				\Core\File::ensure_valid_upload_path( $t_file_path );
 	
 				$t_disk_file_name = $t_file_path . $t_unique_name;
 				if( !file_exists( $t_disk_file_name ) ) {
@@ -666,7 +666,7 @@ class File
 						trigger_error( ERROR_FILE_MOVE_FAILED, ERROR );
 					}
 	
-					chmod( $t_disk_file_name, \Flickerbox\Config::mantis_get( 'attachments_file_permissions' ) );
+					chmod( $t_disk_file_name, \Core\Config::mantis_get( 'attachments_file_permissions' ) );
 	
 					$c_content = '';
 				} else {
@@ -674,40 +674,40 @@ class File
 				}
 				break;
 			case DATABASE:
-				$c_content = \Flickerbox\Database::prepare_binary_string( fread( fopen( $t_tmp_file, 'rb' ), $t_file_size ) );
+				$c_content = \Core\Database::prepare_binary_string( fread( fopen( $t_tmp_file, 'rb' ), $t_file_size ) );
 				$t_file_path = '';
 				break;
 			default:
 				trigger_error( ERROR_GENERIC, ERROR );
 		}
 	
-		$t_file_table = \Flickerbox\Database::get_table( $p_table . '_file' );
+		$t_file_table = \Core\Database::get_table( $p_table . '_file' );
 		$t_id_col = $p_table . '_id';
 	
 		$t_query = 'INSERT INTO ' . $t_file_table . ' ( ' . $t_id_col . ', title, description, diskfile, filename, folder,
 			filesize, file_type, date_added, user_id )
 		VALUES
-			( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() .
-			  ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-		\Flickerbox\Database::query( $t_query, array( $t_id, $p_title, $p_desc, $t_unique_name, $t_file_name, $t_file_path,
+			( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() .
+			  ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+		\Core\Database::query( $t_query, array( $t_id, $p_title, $p_desc, $t_unique_name, $t_file_name, $t_file_path,
 										 $t_file_size, $p_file['type'], $p_date_added, (int)$p_user_id ) );
-		$t_attachment_id = \Flickerbox\Database::insert_id( $t_file_table );
+		$t_attachment_id = \Core\Database::insert_id( $t_file_table );
 	
-		if( \Flickerbox\Database::is_oracle() ) {
-			\Flickerbox\Database::update_blob( $t_file_table, 'content', $c_content, 'diskfile=\'$t_unique_name\'' );
+		if( \Core\Database::is_oracle() ) {
+			\Core\Database::update_blob( $t_file_table, 'content', $c_content, 'diskfile=\'$t_unique_name\'' );
 		} else {
-			$t_query = 'UPDATE ' . $t_file_table . ' SET content=' . \Flickerbox\Database::param() . ' WHERE id = ' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_query, array( $c_content, $t_attachment_id ) );
+			$t_query = 'UPDATE ' . $t_file_table . ' SET content=' . \Core\Database::param() . ' WHERE id = ' . \Core\Database::param();
+			\Core\Database::query( $t_query, array( $c_content, $t_attachment_id ) );
 		}
 	
 		if( 'bug' == $p_table ) {
 			# update the last_updated date
 			if( !$p_skip_bug_update ) {
-				\Flickerbox\Bug::update_date( $p_bug_id );
+				\Core\Bug::update_date( $p_bug_id );
 			}
 	
 			# log file added to bug history
-			\Flickerbox\History::log_event_special( $p_bug_id, FILE_ADDED, $t_file_name );
+			\Core\History::log_event_special( $p_bug_id, FILE_ADDED, $t_file_name );
 		}
 	}
 	
@@ -716,7 +716,7 @@ class File
 	 * @return boolean
 	 */
 	static function is_uploading_enabled() {
-		if( \Flickerbox\Utility::ini_get_bool( 'file_uploads' ) && ( ON == \Flickerbox\Config::mantis_get( 'allow_file_upload' ) ) ) {
+		if( \Core\Utility::ini_get_bool( 'file_uploads' ) && ( ON == \Core\Config::mantis_get( 'allow_file_upload' ) ) ) {
 			return true;
 		} else {
 			return false;
@@ -733,12 +733,12 @@ class File
 	 */
 	static function allow_project_upload( $p_project_id = null, $p_user_id = null ) {
 		if( null === $p_project_id ) {
-			$p_project_id = \Flickerbox\Helper::get_current_project();
+			$p_project_id = \Core\Helper::get_current_project();
 		}
 		if( null === $p_user_id ) {
-			$p_user_id = \Flickerbox\Auth::get_current_user_id();
+			$p_user_id = \Core\Auth::get_current_user_id();
 		}
-		return( \Flickerbox\File::is_uploading_enabled() && ( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $p_project_id, $p_user_id ) ) );
+		return( \Core\File::is_uploading_enabled() && ( \Core\Access::has_project_level( \Core\Config::mantis_get( 'upload_project_file_threshold' ), $p_project_id, $p_user_id ) ) );
 	}
 	
 	/**
@@ -754,34 +754,34 @@ class File
 	 */
 	static function allow_bug_upload( $p_bug_id = null, $p_user_id = null ) {
 		if( null === $p_user_id ) {
-			$p_user_id = \Flickerbox\Auth::get_current_user_id();
+			$p_user_id = \Core\Auth::get_current_user_id();
 		}
 	
 		# If uploads are disbled just return false
-		if( !\Flickerbox\File::is_uploading_enabled() ) {
+		if( !\Core\File::is_uploading_enabled() ) {
 			return false;
 		}
 	
 		if( null === $p_bug_id ) {
 			# new bug
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 	
 			# the user must be the reporter if they're reporting a new bug
 			$t_reporter = true;
 		} else {
 			# existing bug
-			$t_project_id = \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' );
+			$t_project_id = \Core\Bug::get_field( $p_bug_id, 'project_id' );
 	
 			# check if the user is the reporter of the bug
-			$t_reporter = \Flickerbox\Bug::is_user_reporter( $p_bug_id, $p_user_id );
+			$t_reporter = \Core\Bug::is_user_reporter( $p_bug_id, $p_user_id );
 		}
 	
-		if( $t_reporter && ( ON == \Flickerbox\Config::mantis_get( 'allow_reporter_upload' ) ) ) {
+		if( $t_reporter && ( ON == \Core\Config::mantis_get( 'allow_reporter_upload' ) ) ) {
 			return true;
 		}
 	
 		# Check the access level against the config setting
-		return \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'upload_bug_file_threshold' ), $t_project_id, $p_user_id );
+		return \Core\Access::has_project_level( \Core\Config::mantis_get( 'upload_bug_file_threshold' ), $t_project_id, $p_user_id );
 	}
 	
 	/**
@@ -838,19 +838,19 @@ class File
 		$t_query = '';
 		switch( $p_type ) {
 			case 'bug':
-				$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Flickerbox\Database::param();
+				$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Core\Database::param();
 				break;
 			case 'doc':
-				$t_query = 'SELECT * FROM {project_file} WHERE id=' . \Flickerbox\Database::param();
+				$t_query = 'SELECT * FROM {project_file} WHERE id=' . \Core\Database::param();
 				break;
 			default:
 				return false;
 		}
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_file_id ) );
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_result = \Core\Database::query( $t_query, array( $p_file_id ) );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( $p_type == 'bug' ) {
-			$t_project_id = \Flickerbox\Bug::get_field( $t_row['bug_id'], 'project_id' );
+			$t_project_id = \Core\Bug::get_field( $t_row['bug_id'], 'project_id' );
 		} else {
 			$t_project_id = $t_row['bug_id'];
 		}
@@ -858,9 +858,9 @@ class File
 		# If finfo is available (always true for PHP >= 5.3.0) we can use it to determine the MIME type of files
 		$t_finfo_available = false;
 		if( class_exists( 'finfo' ) ) {
-			$t_info_file = \Flickerbox\Config::mantis_get( 'fileinfo_magic_db_file' );
+			$t_info_file = \Core\Config::mantis_get( 'fileinfo_magic_db_file' );
 	
-			if( \Flickerbox\Utility::is_blank( $t_info_file ) ) {
+			if( \Core\Utility::is_blank( $t_info_file ) ) {
 				$t_finfo = new finfo( FILEINFO_MIME );
 			} else {
 				$t_finfo = new finfo( FILEINFO_MIME, $t_info_file );
@@ -873,9 +873,9 @@ class File
 	
 		$t_content_type = $t_row['file_type'];
 	
-		switch( \Flickerbox\Config::mantis_get( 'file_upload_method' ) ) {
+		switch( \Core\Config::mantis_get( 'file_upload_method' ) ) {
 			case DISK:
-				$t_local_disk_file = \Flickerbox\File::normalize_attachment_path( $t_row['diskfile'], $t_project_id );
+				$t_local_disk_file = \Core\File::normalize_attachment_path( $t_row['diskfile'], $t_project_id );
 	
 				if( file_exists( $t_local_disk_file ) ) {
 					if( $t_finfo_available ) {
@@ -914,30 +914,30 @@ class File
 	 * @todo: this function can't cope with source or target storing attachments in DB
 	 */
 	static function move_bug_attachments( $p_bug_id, $p_project_id_to ) {
-		$t_project_id_from = \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' );
+		$t_project_id_from = \Core\Bug::get_field( $p_bug_id, 'project_id' );
 		if( $t_project_id_from == $p_project_id_to ) {
 			return;
 		}
 	
-		$t_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
+		$t_method = \Core\Config::mantis_get( 'file_upload_method' );
 		if( $t_method != DISK ) {
 			return;
 		}
 	
-		if( !\Flickerbox\File::bug_has_attachments( $p_bug_id ) ) {
+		if( !\Core\File::bug_has_attachments( $p_bug_id ) ) {
 			return;
 		}
 	
-		$t_path_from = \Flickerbox\Project::get_field( $t_project_id_from, 'file_path' );
-		if( \Flickerbox\Utility::is_blank( $t_path_from ) ) {
-			$t_path_from = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder', null, null, $t_project_id_from );
+		$t_path_from = \Core\Project::get_field( $t_project_id_from, 'file_path' );
+		if( \Core\Utility::is_blank( $t_path_from ) ) {
+			$t_path_from = \Core\Config::mantis_get( 'absolute_path_default_upload_folder', null, null, $t_project_id_from );
 		}
-		\Flickerbox\File::ensure_valid_upload_path( $t_path_from );
-		$t_path_to = \Flickerbox\Project::get_field( $p_project_id_to, 'file_path' );
-		if( \Flickerbox\Utility::is_blank( $t_path_to ) ) {
-			$t_path_to = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder', null, null, $p_project_id_to );
+		\Core\File::ensure_valid_upload_path( $t_path_from );
+		$t_path_to = \Core\Project::get_field( $p_project_id_to, 'file_path' );
+		if( \Core\Utility::is_blank( $t_path_to ) ) {
+			$t_path_to = \Core\Config::mantis_get( 'absolute_path_default_upload_folder', null, null, $p_project_id_to );
 		}
-		\Flickerbox\File::ensure_valid_upload_path( $t_path_to );
+		\Core\File::ensure_valid_upload_path( $t_path_to );
 		if( $t_path_from == $t_path_to ) {
 			return;
 		}
@@ -945,18 +945,18 @@ class File
 		# Initialize the update query to update a single row
 		$c_bug_id = (int)$p_bug_id;
 		$t_query_disk_attachment_update = 'UPDATE {bug_file}
-		                                 SET folder=' . \Flickerbox\Database::param() . '
-		                                 WHERE bug_id=' . \Flickerbox\Database::param() . '
-		                                 AND id =' . \Flickerbox\Database::param();
+		                                 SET folder=' . \Core\Database::param() . '
+		                                 WHERE bug_id=' . \Core\Database::param() . '
+		                                 AND id =' . \Core\Database::param();
 	
-		$t_attachment_rows = \Flickerbox\Bug::get_attachments( $p_bug_id );
+		$t_attachment_rows = \Core\Bug::get_attachments( $p_bug_id );
 		$t_attachments_count = count( $t_attachment_rows );
 		for( $i = 0; $i < $t_attachments_count; $i++ ) {
 			$t_row = $t_attachment_rows[$i];
 			$t_basename = basename( $t_row['diskfile'] );
 	
-			$t_disk_file_name_from = \Flickerbox\File::path_combine( $t_path_from, $t_basename );
-			$t_disk_file_name_to = \Flickerbox\File::path_combine( $t_path_to, $t_basename );
+			$t_disk_file_name_from = \Core\File::path_combine( $t_path_from, $t_basename );
+			$t_disk_file_name_to = \Core\File::path_combine( $t_path_to, $t_basename );
 	
 			if( !file_exists( $t_disk_file_name_to ) ) {
 				chmod( $t_disk_file_name_from, 0775 );
@@ -964,10 +964,10 @@ class File
 					if( !copy( $t_disk_file_name_from, $t_disk_file_name_to ) ) {
 						trigger_error( ERROR_FILE_MOVE_FAILED, ERROR );
 					}
-					\Flickerbox\File::delete_local( $t_disk_file_name_from );
+					\Core\File::delete_local( $t_disk_file_name_from );
 				}
-				chmod( $t_disk_file_name_to, \Flickerbox\Config::mantis_get( 'attachments_file_permissions' ) );
-				\Flickerbox\Database::query( $t_query_disk_attachment_update, array( \Flickerbox\Database::prepare_string( $t_path_to ), $c_bug_id, (int)$t_row['id'] ) );
+				chmod( $t_disk_file_name_to, \Core\Config::mantis_get( 'attachments_file_permissions' ) );
+				\Core\Database::query( $t_query_disk_attachment_update, array( \Core\Database::prepare_string( $t_path_to ), $c_bug_id, (int)$t_row['id'] ) );
 			} else {
 				trigger_error( ERROR_FILE_DUPLICATE, ERROR );
 			}
@@ -985,48 +985,48 @@ class File
 	 * @return void
 	 */
 	static function copy_attachments( $p_source_bug_id, $p_dest_bug_id ) {
-		$t_query = 'SELECT * FROM {bug_file} WHERE bug_id = ' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_source_bug_id ) );
-		$t_count = \Flickerbox\Database::num_rows( $t_result );
+		$t_query = 'SELECT * FROM {bug_file} WHERE bug_id = ' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_source_bug_id ) );
+		$t_count = \Core\Database::num_rows( $t_result );
 	
-		$t_project_id = \Flickerbox\Bug::get_field( $p_source_bug_id, 'project_id' );
+		$t_project_id = \Core\Bug::get_field( $p_source_bug_id, 'project_id' );
 	
 		for( $i = 0;$i < $t_count;$i++ ) {
-			$t_bug_file = \Flickerbox\Database::fetch_array( $t_result );
+			$t_bug_file = \Core\Database::fetch_array( $t_result );
 	
 			# prepare the new diskfile name and then copy the file
 			$t_source_file = $t_bug_file['folder'] . $t_bug_file['diskfile'];
-			if( ( \Flickerbox\Config::mantis_get( 'file_upload_method' ) == DISK ) ) {
-				$t_source_file = \Flickerbox\File::normalize_attachment_path( $t_source_file, $t_project_id );
+			if( ( \Core\Config::mantis_get( 'file_upload_method' ) == DISK ) ) {
+				$t_source_file = \Core\File::normalize_attachment_path( $t_source_file, $t_project_id );
 				$t_file_path = dirname( $t_source_file ) . DIRECTORY_SEPARATOR;
 			} else {
 				$t_file_path = $t_bug_file['folder'];
 			}
-			$t_new_diskfile_name = \Flickerbox\File::generate_unique_name( $t_file_path );
+			$t_new_diskfile_name = \Core\File::generate_unique_name( $t_file_path );
 			$t_new_diskfile_location = $t_file_path . $t_new_diskfile_name;
-			$t_new_file_name = \Flickerbox\File::get_display_name( $t_bug_file['filename'] );
-			if( ( \Flickerbox\Config::mantis_get( 'file_upload_method' ) == DISK ) ) {
+			$t_new_file_name = \Core\File::get_display_name( $t_bug_file['filename'] );
+			if( ( \Core\Config::mantis_get( 'file_upload_method' ) == DISK ) ) {
 				# Skip copy operation if file does not exist (i.e. target bug will have missing attachment)
 				# @todo maybe we should trigger an error instead in this case ?
 				if( file_exists( $t_source_file ) ) {
 					copy( $t_source_file, $t_new_diskfile_location );
-					chmod( $t_new_diskfile_location, \Flickerbox\Config::mantis_get( 'attachments_file_permissions' ) );
+					chmod( $t_new_diskfile_location, \Core\Config::mantis_get( 'attachments_file_permissions' ) );
 				}
 			}
 	
 			$t_query = 'INSERT INTO {bug_file} 
 								( bug_id, title, description, diskfile, filename, folder, filesize, file_type, date_added, content )
-								VALUES ( ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ',
-										 ' . \Flickerbox\Database::param() . ');';
-			\Flickerbox\Database::query( $t_query, array( $p_dest_bug_id, $t_bug_file['title'], $t_bug_file['description'], $t_new_diskfile_name, $t_new_file_name, $t_file_path, $t_bug_file['filesize'], $t_bug_file['file_type'], $t_bug_file['date_added'], $t_bug_file['content'] ) );
+								VALUES ( ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ',
+										 ' . \Core\Database::param() . ');';
+			\Core\Database::query( $t_query, array( $p_dest_bug_id, $t_bug_file['title'], $t_bug_file['description'], $t_new_diskfile_name, $t_new_file_name, $t_file_path, $t_bug_file['filesize'], $t_bug_file['file_type'], $t_bug_file['date_added'], $t_bug_file['content'] ) );
 		}
 	}
 	

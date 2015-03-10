@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox\Relationship;
+namespace Core\Relationship;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -66,8 +66,8 @@ class Graph
 	 * @param integer $p_bug_id ID of the bug to pretty format.
 	 * @return string Pretty formatted bug ID
 	 */
-	static function \Flickerbox\Bug::format_id( $p_bug_id ) {
-		$t_pretty_bug_id = \Flickerbox\Bug::format_id( $p_bug_id );
+	static function \Core\Bug::format_id( $p_bug_id ) {
+		$t_pretty_bug_id = \Core\Bug::format_id( $p_bug_id );
 		if( !preg_match( '/^(([a-zA-z_][0-9a-zA-Z_]*)|(\d+))$/', $t_pretty_bug_id ) ) {
 			$t_pretty_bug_id = $p_bug_id;
 		}
@@ -89,7 +89,7 @@ class Graph
 		$v_queue = array();
 	
 		# Now we visit all related issues.
-		$t_max_depth = \Flickerbox\Config::mantis_get( 'relationship_graph_max_depth' );
+		$t_max_depth = \Core\Config::mantis_get( 'relationship_graph_max_depth' );
 	
 		# Put the first element into queue.
 		array_push( $v_queue, array( 0, $p_bug_id ) );
@@ -102,19 +102,19 @@ class Graph
 				continue;
 			}
 	
-			if( !\Flickerbox\Bug::exists( $t_id ) ) {
+			if( !\Core\Bug::exists( $t_id ) ) {
 				continue;
 			}
 	
-			$t_bug = \Flickerbox\Bug::get( $t_id, false );
+			$t_bug = \Core\Bug::get( $t_id, false );
 	
-			if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $t_id ) ) {
+			if( !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $t_id ) ) {
 				continue;
 			}
 	
 			$v_bug_list[$t_id] = $t_bug;
 	
-			$t_relationships = \Flickerbox\Relationship::get_all_src( $t_id );
+			$t_relationships = \Core\Relationship::get_all_src( $t_id );
 			foreach( $t_relationships as $t_relationship ) {
 				$t_dst = $t_relationship->dest_bug_id;
 				if( BUG_DEPENDANT == $t_relationship->type ) {
@@ -130,7 +130,7 @@ class Graph
 				}
 			}
 	
-			$t_relationships = \Flickerbox\Relationship::get_all_dest( $t_id );
+			$t_relationships = \Core\Relationship::get_all_dest( $t_id );
 			foreach( $t_relationships as $t_relationship ) {
 				$t_dst = $t_relationship->src_bug_id;
 				if( BUG_DEPENDANT == $t_relationship->type ) {
@@ -150,12 +150,12 @@ class Graph
 		# We have already collected all the information we need to generate
 		# the graph. Now it is the matter to create a Digraph object and
 		# store the information there, along with graph formatting attributes.
-		$t_id_string = \Flickerbox\Relationship\Graph::\Flickerbox\Bug::format_id( $p_bug_id );
-		$t_graph_fontname = \Flickerbox\Config::mantis_get( 'relationship_graph_fontname' );
-		$t_graph_fontsize = \Flickerbox\Config::mantis_get( 'relationship_graph_fontsize' );
-		$t_graph_fontpath = \Flickerbox\Utility::get_font_path();
-		$t_view_on_click = \Flickerbox\Config::mantis_get( 'relationship_graph_view_on_click' );
-		$t_neato_tool = \Flickerbox\Config::mantis_get( 'neato_tool' );
+		$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $p_bug_id );
+		$t_graph_fontname = \Core\Config::mantis_get( 'relationship_graph_fontname' );
+		$t_graph_fontsize = \Core\Config::mantis_get( 'relationship_graph_fontsize' );
+		$t_graph_fontpath = \Core\Utility::get_font_path();
+		$t_view_on_click = \Core\Config::mantis_get( 'relationship_graph_view_on_click' );
+		$t_neato_tool = \Core\Config::mantis_get( 'neato_tool' );
 	
 		$t_graph_attributes = array();
 	
@@ -163,7 +163,7 @@ class Graph
 			$t_graph_attributes['fontpath'] = $t_graph_fontpath;
 		}
 	
-		$t_graph = new \Flickerbox\Graph( $t_id_string, $t_graph_attributes, $t_neato_tool );
+		$t_graph = new \Core\Graph( $t_id_string, $t_graph_attributes, $t_neato_tool );
 	
 		$t_graph->set_default_node_attr( array (
 				'fontname'	=> $t_graph_fontname,
@@ -183,15 +183,15 @@ class Graph
 		# Add all issue nodes and edges to the graph.
 		ksort( $v_bug_list );
 		foreach( $v_bug_list as $t_id => $t_bug ) {
-			$t_id_string = \Flickerbox\Relationship\Graph::\Flickerbox\Bug::format_id( $t_id );
+			$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $t_id );
 	
 			if( $t_view_on_click ) {
-				$t_url = \Flickerbox\String::get_bug_view_url( $t_id );
+				$t_url = \Core\String::get_bug_view_url( $t_id );
 			} else {
 				$t_url = 'bug_relationship_graph.php?bug_id=' . $t_id . '&graph=relation';
 			}
 	
-			\Flickerbox\Relationship\Graph::add_bug_to_graph( $t_graph, $t_id_string, $t_bug, $t_url, $t_id == $p_bug_id );
+			\Core\Relationship\Graph::add_bug_to_graph( $t_graph, $t_id_string, $t_bug, $t_url, $t_id == $p_bug_id );
 	
 			# Now add all relationship edges to the graph.
 			if( isset( $v_rel_list[$t_id] ) ) {
@@ -207,7 +207,7 @@ class Graph
 						continue;
 					}
 	
-					$t_related_id = \Flickerbox\Relationship\Graph::\Flickerbox\Bug::format_id( $t_dst );
+					$t_related_id = \Core\Relationship\Graph::\Core\Bug::format_id( $t_dst );
 	
 					global $g_relationships;
 					if( isset( $g_relationships[$t_relation] ) && isset( $g_relationships[$t_relation]['#edge_style'] ) ) {
@@ -243,7 +243,7 @@ class Graph
 		# so, if these issues happen to be visited also, relationship links
 		# will be preserved.
 		# The first issue in the list is the one we are parting from.
-		$p_bug = \Flickerbox\Bug::get( $p_bug_id, true );
+		$p_bug = \Core\Bug::get( $p_bug_id, true );
 	
 		$v_bug_list[$p_bug_id] = $p_bug;
 		$v_bug_list[$p_bug_id]->is_descendant = true;
@@ -251,35 +251,35 @@ class Graph
 		$v_bug_list[$p_bug_id]->children = array();
 	
 		# Now we visit all ascendants of the root issue.
-		$t_relationships = \Flickerbox\Relationship::get_all_dest( $p_bug_id );
+		$t_relationships = \Core\Relationship::get_all_dest( $p_bug_id );
 		foreach( $t_relationships as $t_relationship ) {
 			if( $t_relationship->type != BUG_DEPENDANT ) {
 				continue;
 			}
 	
 			$v_bug_list[$p_bug_id]->parents[] = $t_relationship->src_bug_id;
-			\Flickerbox\Relationship\Graph::add_parent( $v_bug_list, $t_relationship->src_bug_id );
+			\Core\Relationship\Graph::add_parent( $v_bug_list, $t_relationship->src_bug_id );
 		}
 	
-		$t_relationships = \Flickerbox\Relationship::get_all_src( $p_bug_id );
+		$t_relationships = \Core\Relationship::get_all_src( $p_bug_id );
 		foreach( $t_relationships as $t_relationship ) {
 			if( $t_relationship->type != BUG_DEPENDANT ) {
 				continue;
 			}
 	
 			$v_bug_list[$p_bug_id]->children[] = $t_relationship->dest_bug_id;
-			\Flickerbox\Relationship\Graph::add_child( $v_bug_list, $t_relationship->dest_bug_id );
+			\Core\Relationship\Graph::add_child( $v_bug_list, $t_relationship->dest_bug_id );
 		}
 	
 		# We have already collected all the information we need to generate
 		# the graph. Now it is the matter to create a Digraph object and
 		# store the information there, along with graph formatting attributes.
-		$t_id_string = \Flickerbox\Relationship\Graph::\Flickerbox\Bug::format_id( $p_bug_id );
-		$t_graph_fontname = \Flickerbox\Config::mantis_get( 'relationship_graph_fontname' );
-		$t_graph_fontsize = \Flickerbox\Config::mantis_get( 'relationship_graph_fontsize' );
-		$t_graph_fontpath = \Flickerbox\Utility::get_font_path();
-		$t_view_on_click = \Flickerbox\Config::mantis_get( 'relationship_graph_view_on_click' );
-		$t_dot_tool = \Flickerbox\Config::mantis_get( 'dot_tool' );
+		$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $p_bug_id );
+		$t_graph_fontname = \Core\Config::mantis_get( 'relationship_graph_fontname' );
+		$t_graph_fontsize = \Core\Config::mantis_get( 'relationship_graph_fontsize' );
+		$t_graph_fontpath = \Core\Utility::get_font_path();
+		$t_view_on_click = \Core\Config::mantis_get( 'relationship_graph_view_on_click' );
+		$t_dot_tool = \Core\Config::mantis_get( 'dot_tool' );
 	
 		$t_graph_attributes = array();
 	
@@ -294,7 +294,7 @@ class Graph
 			$t_graph_orientation = 'vertical';
 		}
 	
-		$t_graph = new \Flickerbox\Digraph( $t_id_string, $t_graph_attributes, $t_dot_tool );
+		$t_graph = new \Core\Digraph( $t_id_string, $t_graph_attributes, $t_dot_tool );
 	
 		$t_graph->set_default_node_attr( array (
 				'fontname'	=> $t_graph_fontname,
@@ -313,15 +313,15 @@ class Graph
 	
 		# Add all issue nodes and edges to the graph.
 		foreach( $v_bug_list as $t_related_bug_id => $t_related_bug ) {
-			$t_id_string = \Flickerbox\Relationship\Graph::\Flickerbox\Bug::format_id( $t_related_bug_id );
+			$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $t_related_bug_id );
 	
 			if( $t_view_on_click ) {
-				$t_url = \Flickerbox\String::get_bug_view_url( $t_related_bug_id );
+				$t_url = \Core\String::get_bug_view_url( $t_related_bug_id );
 			} else {
 				$t_url = 'bug_relationship_graph.php?bug_id=' . $t_related_bug_id . '&graph=dependency&orientation=' . $t_graph_orientation;
 			}
 	
-			\Flickerbox\Relationship\Graph::add_bug_to_graph( $t_graph, $t_id_string, $t_related_bug, $t_url, $t_related_bug_id == $p_bug_id );
+			\Core\Relationship\Graph::add_bug_to_graph( $t_graph, $t_id_string, $t_related_bug, $t_url, $t_related_bug_id == $p_bug_id );
 	
 			# Now add all relationship edges to the graph.
 			foreach( $v_bug_list[$t_related_bug_id]->parents as $t_parent_id ) {
@@ -331,7 +331,7 @@ class Graph
 					continue;
 				}
 	
-				$t_parent_node = \Flickerbox\Relationship\Graph::\Flickerbox\Bug::format_id( $t_parent_id );
+				$t_parent_node = \Core\Relationship\Graph::\Core\Bug::format_id( $t_parent_id );
 				$t_graph->add_edge( $t_parent_node, $t_id_string );
 			}
 		}
@@ -353,13 +353,13 @@ class Graph
 	
 		# Check if the issue really exists and we have access to it. If not,
 		# it is like it didn't exist.
-		if( !\Flickerbox\Bug::exists( $p_bug_id ) ) {
+		if( !\Core\Bug::exists( $p_bug_id ) ) {
 			return false;
 		}
 	
-		$t_bug = \Flickerbox\Bug::get( $p_bug_id, false );
+		$t_bug = \Core\Bug::get( $p_bug_id, false );
 	
-		if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
+		if( !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
 			return false;
 		}
 	
@@ -371,20 +371,20 @@ class Graph
 	
 		# Add all parent issues to the list of parents and visit them
 		# recursively.
-		$t_relationships = \Flickerbox\Relationship::get_all_dest( $p_bug_id );
+		$t_relationships = \Core\Relationship::get_all_dest( $p_bug_id );
 		foreach( $t_relationships as $t_relationship ) {
 			if( $t_relationship->type != BUG_DEPENDANT ) {
 				continue;
 			}
 	
 			$p_bug_list[$p_bug_id]->parents[] = $t_relationship->src_bug_id;
-			\Flickerbox\Relationship\Graph::add_parent( $p_bug_list, $t_relationship->src_bug_id );
+			\Core\Relationship\Graph::add_parent( $p_bug_list, $t_relationship->src_bug_id );
 		}
 	
 		# Add all child issues to the list of children. Do not visit them
 		# since this will add too much data that is unrelated to the original
 		# issue, and has a potential to generate really huge graphs.
-		$t_relationships = \Flickerbox\Relationship::get_all_src( $p_bug_id );
+		$t_relationships = \Core\Relationship::get_all_src( $p_bug_id );
 		foreach( $t_relationships as $t_relationship ) {
 			if( $t_relationship->type != BUG_DEPENDANT ) {
 				continue;
@@ -419,20 +419,20 @@ class Graph
 				$p_bug_list[$p_bug_id]->is_descendant = true;
 	
 				foreach( $p_bug_list[$p_bug_id]->children as $t_child ) {
-					\Flickerbox\Relationship\Graph::add_child( $p_bug_id, $t_child );
+					\Core\Relationship\Graph::add_child( $p_bug_id, $t_child );
 				}
 			}
 		} else {
 			# The issue is not in the list, proceed as usual.
 			# Check if the issue really exists and we have access to it.
 			# If not, it is like it didn't exist.
-			if( !\Flickerbox\Bug::exists( $p_bug_id ) ) {
+			if( !\Core\Bug::exists( $p_bug_id ) ) {
 				return false;
 			}
 	
-			$t_bug = \Flickerbox\Bug::get( $p_bug_id, false );
+			$t_bug = \Core\Bug::get( $p_bug_id, false );
 	
-			if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
+			if( !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $p_bug_id ) ) {
 				return false;
 			}
 	
@@ -445,7 +445,7 @@ class Graph
 			# Add all parent issues to the list of parents. Do not visit them
 			# for the same reason we didn't visit the children of all
 			# ancestors.
-			$t_relationships = \Flickerbox\Relationship::get_all_dest( $p_bug_id );
+			$t_relationships = \Core\Relationship::get_all_dest( $p_bug_id );
 			foreach( $t_relationships as $t_relationship ) {
 				if( $t_relationship->type != BUG_DEPENDANT ) {
 					continue;
@@ -456,14 +456,14 @@ class Graph
 	
 			# Add all child issues to the list of children and visit them
 			# recursively.
-			$t_relationships = \Flickerbox\Relationship::get_all_src( $p_bug_id );
+			$t_relationships = \Core\Relationship::get_all_src( $p_bug_id );
 			foreach( $t_relationships as $t_relationship ) {
 				if( $t_relationship->type != BUG_DEPENDANT ) {
 					continue;
 				}
 	
 				$p_bug_list[$p_bug_id]->children[] = $t_relationship->dest_bug_id;
-				\Flickerbox\Relationship\Graph::add_child( $p_bug_list, $t_relationship->dest_bug_id );
+				\Core\Relationship\Graph::add_child( $p_bug_list, $t_relationship->dest_bug_id );
 			}
 		}
 	
@@ -498,12 +498,12 @@ class Graph
 	 * @todo duplicate or not - bug / bugid?
 	 * @param Graph   &$p_graph    Graph object.
 	 * @param integer $p_bug_id    A bug identifier.
-	 * @param \Flickerbox\BugData $p_bug       A \Flickerbox\BugData object.
+	 * @param \Core\BugData $p_bug       A \Core\BugData object.
 	 * @param string  $p_url       URL.
 	 * @param boolean $p_highlight Highlight.
 	 * @return void
 	 */
-	static function add_bug_to_graph( Graph &$p_graph, $p_bug_id, \Flickerbox\BugData $p_bug, $p_url = null, $p_highlight = false ) {
+	static function add_bug_to_graph( Graph &$p_graph, $p_bug_id, \Core\BugData $p_bug, $p_url = null, $p_highlight = false ) {
 		$t_node_attributes = array();
 		$t_node_attributes['label'] = $p_bug_id;
 	
@@ -515,14 +515,14 @@ class Graph
 			$t_node_attributes['style'] = 'filled';
 		}
 	
-		$t_node_attributes['fillcolor'] = \Flickerbox\Helper::get_status_color( $p_bug->status );
+		$t_node_attributes['fillcolor'] = \Core\Helper::get_status_color( $p_bug->status );
 	
 		if( null !== $p_url ) {
 			$t_node_attributes['URL'] = $p_url;
 		}
 	
-		$t_summary = \Flickerbox\String::display_line_links( $p_bug->summary );
-		$t_status = \Flickerbox\Helper::get_enum_element( 'status', $p_bug->status );
+		$t_summary = \Core\String::display_line_links( $p_bug->summary );
+		$t_status = \Core\Helper::get_enum_element( 'status', $p_bug->status );
 		$t_node_attributes['tooltip'] = '[' . $t_status . '] ' . $t_summary;
 	
 		$p_graph->add_node( $p_bug_id, $t_node_attributes );

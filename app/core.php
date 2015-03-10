@@ -85,7 +85,7 @@ require_lib( 'utf8/str_pad.php' );
 # Include PHP compatibility file
 
 # Enforce our minimum PHP requirements
-if( !\Flickerbox\PHP::version_at_least( PHP_MIN_VERSION ) ) {
+if( !\Core\PHP::version_at_least( PHP_MIN_VERSION ) ) {
 	@ob_end_clean();
 	echo '<strong>FATAL ERROR: Your version of PHP is too old. MantisBT requires PHP version ' . PHP_MIN_VERSION . ' or newer</strong><br />Your version of PHP is version ' . phpversion();
 	die();
@@ -101,7 +101,7 @@ if( ( $t_output = ob_get_contents() ) != '' ) {
 unset( $t_output );
 
 # Start HTML compression handler (if enabled)
-\Flickerbox\Compress::start_handler();
+\Core\Compress::start_handler();
 
 # If no configuration file exists, redirect the user to the admin page so
 # they can complete installation and configuration of MantisBT
@@ -122,26 +122,26 @@ if( false === $t_config_inc_found ) {
 }
 
 # Initialise cryptographic keys
-\Flickerbox\Crypto::init();
+\Core\Crypto::init();
 
 # Connect to the database
 
 if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
 	if( OFF == $g_use_persistent_connections ) {
-		\Flickerbox\Database::connect( \Flickerbox\Config::get_global( 'dsn', false ), $g_hostname, $g_db_username, $g_db_password, $g_database_name, \Flickerbox\Config::get_global( 'db_schema' ) );
+		\Core\Database::connect( \Core\Config::get_global( 'dsn', false ), $g_hostname, $g_db_username, $g_db_password, $g_database_name, \Core\Config::get_global( 'db_schema' ) );
 	} else {
-		\Flickerbox\Database::connect( \Flickerbox\Config::get_global( 'dsn', false ), $g_hostname, $g_db_username, $g_db_password, $g_database_name, \Flickerbox\Config::get_global( 'db_schema' ), true );
+		\Core\Database::connect( \Core\Config::get_global( 'dsn', false ), $g_hostname, $g_db_username, $g_db_password, $g_database_name, \Core\Config::get_global( 'db_schema' ), true );
 	}
 }
 
 # Initialise plugins
 if( !defined( 'PLUGINS_DISABLED' ) && !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
-		\Flickerbox\Plugin::init_installed();
+		\Core\Plugin::init_installed();
 }
 
 # Initialise Wiki integration
-if( \Flickerbox\Config::get_global( 'wiki_enable' ) == ON ) {
-		\Flickerbox\Wiki::init();
+if( \Core\Config::get_global( 'wiki_enable' ) == ON ) {
+		\Core\Wiki::init();
 }
 
 if( !isset( $g_login_anonymous ) ) {
@@ -154,13 +154,13 @@ if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
 	# To reduce overhead, we assume that the timezone configuration is valid,
 	# i.e. it exists in timezone_identifiers_list(). If not, a PHP NOTICE will
 	# be raised. Use admin checks to validate configuration.
-	@date_default_timezone_set( \Flickerbox\Config::get_global( 'default_timezone' ) );
+	@date_default_timezone_set( \Core\Config::get_global( 'default_timezone' ) );
 	$t_tz = @date_default_timezone_get();
-	\Flickerbox\Config::set_global( 'default_timezone', $t_tz, true );
+	\Core\Config::set_global( 'default_timezone', $t_tz, true );
 
-	if( \Flickerbox\Auth::is_user_authenticated() ) {
+	if( \Core\Auth::is_user_authenticated() ) {
 		# Determine the current timezone according to user's preferences
-				$t_tz = \Flickerbox\User\Pref::get_pref( \Flickerbox\Auth::get_current_user_id(), 'timezone' );
+				$t_tz = \Core\User\Pref::get_pref( \Core\Auth::get_current_user_id(), 'timezone' );
 		@date_default_timezone_set( $t_tz );
 	}
 	unset( $t_tz );
@@ -168,7 +168,7 @@ if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
 
 # Cache current user's collapse API data
 if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
-		\Flickerbox\Collapse::cache_token();
+		\Core\Collapse::cache_token();
 }
 
 # Load custom functions
@@ -179,14 +179,14 @@ if( file_exists( $g_config_path . 'custom_functions_inc.php' ) ) {
 }
 
 # Set HTTP response headers
-\Flickerbox\HTTP::all_headers();
+\Core\HTTP::all_headers();
 
 # Push default language to speed calls to lang_get
 if( !defined( 'LANG_LOAD_DISABLED' ) ) {
-	\Flickerbox\Lang::push( \Flickerbox\Lang::get_default() );
+	\Core\Lang::push( \Core\Lang::get_default() );
 }
 
 # Signal plugins that the core system is loaded
 if( !defined( 'PLUGINS_DISABLED' ) && !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
-		\Flickerbox\Event::signal( 'EVENT_CORE_READY' );
+		\Core\Event::signal( 'EVENT_CORE_READY' );
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -71,7 +71,7 @@ class Bug
 			return $g_cache_bug[(int)$p_bug_database_result['id']];
 		}
 	
-		return \Flickerbox\Bug::add_to_cache( $p_bug_database_result, $p_stats );
+		return \Core\Bug::add_to_cache( $p_bug_database_result, $p_stats );
 	}
 	
 	/**
@@ -91,23 +91,23 @@ class Bug
 	
 		$c_bug_id = (int)$p_bug_id;
 	
-		$t_query = 'SELECT * FROM {bug} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_bug_id ) );
+		$t_query = 'SELECT * FROM {bug} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_bug_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			$g_cache_bug[$c_bug_id] = false;
 	
 			if( $p_trigger_errors ) {
-				\Flickerbox\Error::parameters( $p_bug_id );
+				\Core\Error::parameters( $p_bug_id );
 				trigger_error( ERROR_BUG_NOT_FOUND, ERROR );
 			} else {
 				return false;
 			}
 		}
 	
-		return \Flickerbox\Bug::add_to_cache( $t_row );
+		return \Core\Bug::add_to_cache( $t_row );
 	}
 	
 	/**
@@ -132,10 +132,10 @@ class Bug
 		}
 	
 		$t_query = 'SELECT * FROM {bug} WHERE id IN (' . implode( ',', $c_bug_id_array ) . ')';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			\Flickerbox\Bug::add_to_cache( $t_row );
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
+			\Core\Bug::add_to_cache( $t_row );
 		}
 		return;
 	}
@@ -195,16 +195,16 @@ class Bug
 		}
 	
 		$t_query = 'SELECT bt.* FROM {bug_text} bt, {bug} b
-					  WHERE b.id=' . \Flickerbox\Database::param() . ' AND b.bug_text_id = bt.id';
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_bug_id ) );
+					  WHERE b.id=' . \Core\Database::param() . ' AND b.bug_text_id = bt.id';
+		$t_result = \Core\Database::query( $t_query, array( $c_bug_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			$g_cache_bug_text[$c_bug_id] = false;
 	
 			if( $p_trigger_errors ) {
-				\Flickerbox\Error::parameters( $p_bug_id );
+				\Core\Error::parameters( $p_bug_id );
 				trigger_error( ERROR_BUG_NOT_FOUND, ERROR );
 			} else {
 				return false;
@@ -241,7 +241,7 @@ class Bug
 	 * @access public
 	 */
 	static function exists( $p_bug_id ) {
-		if( false == \Flickerbox\Bug::cache_row( $p_bug_id, false ) ) {
+		if( false == \Core\Bug::cache_row( $p_bug_id, false ) ) {
 			return false;
 		} else {
 			return true;
@@ -255,8 +255,8 @@ class Bug
 	 * @access public
 	 */
 	static function ensure_exists( $p_bug_id ) {
-		if( !\Flickerbox\Bug::exists( $p_bug_id ) ) {
-			\Flickerbox\Error::parameters( $p_bug_id );
+		if( !\Core\Bug::exists( $p_bug_id ) ) {
+			\Core\Error::parameters( $p_bug_id );
 			trigger_error( ERROR_BUG_NOT_FOUND, ERROR );
 		}
 	}
@@ -269,7 +269,7 @@ class Bug
 	 * @access public
 	 */
 	static function is_user_reporter( $p_bug_id, $p_user_id ) {
-		if( \Flickerbox\Bug::get_field( $p_bug_id, 'reporter_id' ) == $p_user_id ) {
+		if( \Core\Bug::get_field( $p_bug_id, 'reporter_id' ) == $p_user_id ) {
 			return true;
 		} else {
 			return false;
@@ -284,7 +284,7 @@ class Bug
 	 * @access public
 	 */
 	static function is_user_handler( $p_bug_id, $p_user_id ) {
-		if( \Flickerbox\Bug::get_field( $p_bug_id, 'handler_id' ) == $p_user_id ) {
+		if( \Core\Bug::get_field( $p_bug_id, 'handler_id' ) == $p_user_id ) {
 			return true;
 		} else {
 			return false;
@@ -302,12 +302,12 @@ class Bug
 	 * @uses config_api.php
 	 */
 	static function is_readonly( $p_bug_id ) {
-		$t_status = \Flickerbox\Bug::get_field( $p_bug_id, 'status' );
-		if( $t_status < \Flickerbox\Config::mantis_get( 'bug_readonly_status_threshold' ) ) {
+		$t_status = \Core\Bug::get_field( $p_bug_id, 'status' );
+		if( $t_status < \Core\Config::mantis_get( 'bug_readonly_status_threshold' ) ) {
 			return false;
 		}
 	
-		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_readonly_bug_threshold' ), $p_bug_id ) ) {
+		if( \Core\Access::has_bug_level( \Core\Config::mantis_get( 'update_readonly_bug_threshold' ), $p_bug_id ) ) {
 			return false;
 		}
 	
@@ -322,8 +322,8 @@ class Bug
 	 * @uses config_api.php
 	 */
 	static function is_resolved( $p_bug_id ) {
-		$t_bug = \Flickerbox\Bug::get( $p_bug_id );
-		return( $t_bug->status >= \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $t_bug->project_id ) );
+		$t_bug = \Core\Bug::get( $p_bug_id );
+		return( $t_bug->status >= \Core\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $t_bug->project_id ) );
 	}
 	
 	/**
@@ -334,8 +334,8 @@ class Bug
 	 * @uses config_api.php
 	 */
 	static function is_closed( $p_bug_id ) {
-		$t_bug = \Flickerbox\Bug::get( $p_bug_id );
-		return( $t_bug->status >= \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold', null, null, $t_bug->project_id ) );
+		$t_bug = \Core\Bug::get( $p_bug_id );
+		return( $t_bug->status >= \Core\Config::mantis_get( 'bug_closed_status_threshold', null, null, $t_bug->project_id ) );
 	}
 	
 	/**
@@ -346,11 +346,11 @@ class Bug
 	 * @uses database_api.php
 	 */
 	static function is_overdue( $p_bug_id ) {
-		$t_due_date = \Flickerbox\Bug::get_field( $p_bug_id, 'due_date' );
-		if( !\Flickerbox\Date::is_null( $t_due_date ) ) {
-			$t_now = \Flickerbox\Database::now();
+		$t_due_date = \Core\Bug::get_field( $p_bug_id, 'due_date' );
+		if( !\Core\Date::is_null( $t_due_date ) ) {
+			$t_now = \Core\Database::now();
 			if( $t_now > $t_due_date ) {
-				if( !\Flickerbox\Bug::is_resolved( $p_bug_id ) ) {
+				if( !\Core\Bug::is_resolved( $p_bug_id ) ) {
 					return true;
 				}
 			}
@@ -368,7 +368,7 @@ class Bug
 	 * @uses utility_api.php
 	 */
 	static function check_workflow( $p_bug_status, $p_wanted_status ) {
-		$t_status_enum_workflow = \Flickerbox\Config::mantis_get( 'status_enum_workflow' );
+		$t_status_enum_workflow = \Core\Config::mantis_get( 'status_enum_workflow' );
 	
 		if( count( $t_status_enum_workflow ) < 1 ) {
 			# workflow not defined, use default enum
@@ -388,7 +388,7 @@ class Bug
 		# workflow defined - find allowed states
 		$t_allowed_states = $t_status_enum_workflow[$p_bug_status];
 	
-		return \Flickerbox\MantisEnum::hasValue( $t_allowed_states, $p_wanted_status );
+		return \Core\MantisEnum::hasValue( $t_allowed_states, $p_wanted_status );
 	}
 	
 	/**
@@ -411,124 +411,124 @@ class Bug
 		$t_bug_id = (int)$p_bug_id;
 		$t_target_project_id = (int)$p_target_project_id;
 	
-		$t_bug_data = \Flickerbox\Bug::get( $t_bug_id, true );
+		$t_bug_data = \Core\Bug::get( $t_bug_id, true );
 	
 		# retrieve the project id associated with the bug
-		if( ( $p_target_project_id == null ) || \Flickerbox\Utility::is_blank( $p_target_project_id ) ) {
+		if( ( $p_target_project_id == null ) || \Core\Utility::is_blank( $p_target_project_id ) ) {
 			$t_target_project_id = $t_bug_data->project_id;
 		}
 	
 		$t_bug_data->project_id = $t_target_project_id;
-		$t_bug_data->reporter_id = \Flickerbox\Auth::get_current_user_id();
-		$t_bug_data->date_submitted = \Flickerbox\Database::now();
-		$t_bug_data->last_updated = \Flickerbox\Database::now();
+		$t_bug_data->reporter_id = \Core\Auth::get_current_user_id();
+		$t_bug_data->date_submitted = \Core\Database::now();
+		$t_bug_data->last_updated = \Core\Database::now();
 	
 		$t_new_bug_id = $t_bug_data->create();
 	
 		# MASC ATTENTION: IF THE SOURCE BUG HAS TO HANDLER THE bug_create FUNCTION CAN TRY TO AUTO-ASSIGN THE BUG
 		# WE FORCE HERE TO DUPLICATE THE SAME HANDLER OF THE SOURCE BUG
 		# @todo VB: Shouldn't we check if the handler in the source project is also a handler in the destination project?
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'handler_id', $t_bug_data->handler_id );
+		\Core\Bug::set_field( $t_new_bug_id, 'handler_id', $t_bug_data->handler_id );
 	
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'duplicate_id', $t_bug_data->duplicate_id );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'status', $t_bug_data->status );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'resolution', $t_bug_data->resolution );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'projection', $t_bug_data->projection );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'eta', $t_bug_data->eta );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'fixed_in_version', $t_bug_data->fixed_in_version );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'target_version', $t_bug_data->target_version );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'sponsorship_total', 0 );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'sticky', 0 );
-		\Flickerbox\Bug::set_field( $t_new_bug_id, 'due_date', $t_bug_data->due_date );
+		\Core\Bug::set_field( $t_new_bug_id, 'duplicate_id', $t_bug_data->duplicate_id );
+		\Core\Bug::set_field( $t_new_bug_id, 'status', $t_bug_data->status );
+		\Core\Bug::set_field( $t_new_bug_id, 'resolution', $t_bug_data->resolution );
+		\Core\Bug::set_field( $t_new_bug_id, 'projection', $t_bug_data->projection );
+		\Core\Bug::set_field( $t_new_bug_id, 'eta', $t_bug_data->eta );
+		\Core\Bug::set_field( $t_new_bug_id, 'fixed_in_version', $t_bug_data->fixed_in_version );
+		\Core\Bug::set_field( $t_new_bug_id, 'target_version', $t_bug_data->target_version );
+		\Core\Bug::set_field( $t_new_bug_id, 'sponsorship_total', 0 );
+		\Core\Bug::set_field( $t_new_bug_id, 'sticky', 0 );
+		\Core\Bug::set_field( $t_new_bug_id, 'due_date', $t_bug_data->due_date );
 	
 		# COPY CUSTOM FIELDS
 		if( $p_copy_custom_fields ) {
-			$t_query = 'SELECT field_id, bug_id, value FROM {custom_field_string} WHERE bug_id=' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $t_bug_id ) );
+			$t_query = 'SELECT field_id, bug_id, value FROM {custom_field_string} WHERE bug_id=' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $t_bug_id ) );
 	
-			while( $t_bug_custom = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			while( $t_bug_custom = \Core\Database::fetch_array( $t_result ) ) {
 				$c_field_id = (int)$t_bug_custom['field_id'];
 				$c_new_bug_id = (int)$t_new_bug_id;
 				$c_value = $t_bug_custom['value'];
 	
 				$t_query = 'INSERT INTO {custom_field_string}
 							   ( field_id, bug_id, value )
-							   VALUES (' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ')';
-				\Flickerbox\Database::query( $t_query, array( $c_field_id, $c_new_bug_id, $c_value ) );
+							   VALUES (' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ')';
+				\Core\Database::query( $t_query, array( $c_field_id, $c_new_bug_id, $c_value ) );
 			}
 		}
 	
 		# Copy Relationships
 		if( $p_copy_relationships ) {
-			\Flickerbox\Relationship::copy_all( $t_bug_id, $t_new_bug_id );
+			\Core\Relationship::copy_all( $t_bug_id, $t_new_bug_id );
 		}
 	
 		# Copy bugnotes
 		if( $p_copy_bugnotes ) {
-			$t_query = 'SELECT * FROM {bugnote} WHERE bug_id=' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $t_bug_id ) );
+			$t_query = 'SELECT * FROM {bugnote} WHERE bug_id=' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $t_bug_id ) );
 	
-			while( $t_bug_note = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			while( $t_bug_note = \Core\Database::fetch_array( $t_result ) ) {
 				$t_bugnote_text_id = $t_bug_note['bugnote_text_id'];
 	
-				$t_query2 = 'SELECT * FROM {bugnote_text} WHERE id=' . \Flickerbox\Database::param();
-				$t_result2 = \Flickerbox\Database::query( $t_query2, array( $t_bugnote_text_id ) );
+				$t_query2 = 'SELECT * FROM {bugnote_text} WHERE id=' . \Core\Database::param();
+				$t_result2 = \Core\Database::query( $t_query2, array( $t_bugnote_text_id ) );
 	
 				$t_bugnote_text_insert_id = -1;
-				if( $t_bugnote_text = \Flickerbox\Database::fetch_array( $t_result2 ) ) {
+				if( $t_bugnote_text = \Core\Database::fetch_array( $t_result2 ) ) {
 					$t_query2 = 'INSERT INTO {bugnote_text}
 								   ( note )
-								   VALUES ( ' . \Flickerbox\Database::param() . ' )';
-					\Flickerbox\Database::query( $t_query2, array( $t_bugnote_text['note'] ) );
-					$t_bugnote_text_insert_id = \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'bugnote_text' ) );
+								   VALUES ( ' . \Core\Database::param() . ' )';
+					\Core\Database::query( $t_query2, array( $t_bugnote_text['note'] ) );
+					$t_bugnote_text_insert_id = \Core\Database::insert_id( \Core\Database::get_table( 'bugnote_text' ) );
 				}
 	
 				$t_query2 = 'INSERT INTO {bugnote}
 							   ( bug_id, reporter_id, bugnote_text_id, view_state, date_submitted, last_modified )
-							   VALUES ( ' . \Flickerbox\Database::param() . ',
-							   			' . \Flickerbox\Database::param() . ',
-							   			' . \Flickerbox\Database::param() . ',
-							   			' . \Flickerbox\Database::param() . ',
-							   			' . \Flickerbox\Database::param() . ',
-							   			' . \Flickerbox\Database::param() . ')';
-				\Flickerbox\Database::query( $t_query2, array( $t_new_bug_id, $t_bug_note['reporter_id'], $t_bugnote_text_insert_id, $t_bug_note['view_state'], $t_bug_note['date_submitted'], $t_bug_note['last_modified'] ) );
+							   VALUES ( ' . \Core\Database::param() . ',
+							   			' . \Core\Database::param() . ',
+							   			' . \Core\Database::param() . ',
+							   			' . \Core\Database::param() . ',
+							   			' . \Core\Database::param() . ',
+							   			' . \Core\Database::param() . ')';
+				\Core\Database::query( $t_query2, array( $t_new_bug_id, $t_bug_note['reporter_id'], $t_bugnote_text_insert_id, $t_bug_note['view_state'], $t_bug_note['date_submitted'], $t_bug_note['last_modified'] ) );
 			}
 		}
 	
 		# Copy attachments
 		if( $p_copy_attachments ) {
-		    \Flickerbox\File::copy_attachments( $t_bug_id, $t_new_bug_id );
+		    \Core\File::copy_attachments( $t_bug_id, $t_new_bug_id );
 		}
 	
 		# Copy users monitoring bug
 		if( $p_copy_monitoring_users ) {
-			\Flickerbox\Bug::monitor_copy( $t_bug_id, $t_new_bug_id );
+			\Core\Bug::monitor_copy( $t_bug_id, $t_new_bug_id );
 		}
 	
 		# COPY HISTORY
-		\Flickerbox\History::delete( $t_new_bug_id );	# should history only be deleted inside the if statement below?
+		\Core\History::delete( $t_new_bug_id );	# should history only be deleted inside the if statement below?
 		if( $p_copy_history ) {
 			# @todo problem with this code: the generated history trail is incorrect because the note IDs are those of the original bug, not the copied ones
 			# @todo actually, does it even make sense to copy the history ?
-			$t_query = 'SELECT * FROM {bug_history} WHERE bug_id = ' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $t_bug_id ) );
+			$t_query = 'SELECT * FROM {bug_history} WHERE bug_id = ' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $t_bug_id ) );
 	
-			while( $t_bug_history = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			while( $t_bug_history = \Core\Database::fetch_array( $t_result ) ) {
 				$t_query = 'INSERT INTO {bug_history}
 							  ( user_id, bug_id, date_modified, field_name, old_value, new_value, type )
-							  VALUES ( ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',
-							  		   ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',
-							  		   ' . \Flickerbox\Database::param() . ' );';
-				\Flickerbox\Database::query( $t_query, array( $t_bug_history['user_id'], $t_new_bug_id, $t_bug_history['date_modified'], $t_bug_history['field_name'], $t_bug_history['old_value'], $t_bug_history['new_value'], $t_bug_history['type'] ) );
+							  VALUES ( ' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',
+							  		   ' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',
+							  		   ' . \Core\Database::param() . ' );';
+				\Core\Database::query( $t_query, array( $t_bug_history['user_id'], $t_new_bug_id, $t_bug_history['date_modified'], $t_bug_history['field_name'], $t_bug_history['old_value'], $t_bug_history['new_value'], $t_bug_history['type'] ) );
 			}
 		} else {
 			# Create a "New Issue" history entry
-			\Flickerbox\History::log_event_special( $t_new_bug_id, NEW_BUG );
+			\Core\History::log_event_special( $t_new_bug_id, NEW_BUG );
 		}
 	
 		# Create history entries to reflect the copy operation
-		\Flickerbox\History::log_event_special( $t_new_bug_id, BUG_CREATED_FROM, '', $t_bug_id );
-		\Flickerbox\History::log_event_special( $t_bug_id, BUG_CLONED_TO, '', $t_new_bug_id );
+		\Core\History::log_event_special( $t_new_bug_id, BUG_CREATED_FROM, '', $t_bug_id );
+		\Core\History::log_event_special( $t_bug_id, BUG_CLONED_TO, '', $t_new_bug_id );
 	
 		return $t_new_bug_id;
 	}
@@ -544,35 +544,35 @@ class Bug
 	 */
 	static function move( $p_bug_id, $p_target_project_id ) {
 		# Attempt to move disk based attachments to new project file directory.
-		\Flickerbox\File::move_bug_attachments( $p_bug_id, $p_target_project_id );
+		\Core\File::move_bug_attachments( $p_bug_id, $p_target_project_id );
 	
 		# Move the issue to the new project.
-		\Flickerbox\Bug::set_field( $p_bug_id, 'project_id', $p_target_project_id );
+		\Core\Bug::set_field( $p_bug_id, 'project_id', $p_target_project_id );
 	
 		# Update the category if needed
-		$t_category_id = \Flickerbox\Bug::get_field( $p_bug_id, 'category_id' );
+		$t_category_id = \Core\Bug::get_field( $p_bug_id, 'category_id' );
 	
 		# Bug has no category
 		if( $t_category_id == 0 ) {
 			# Category is required in target project, set it to default
-			if( ON != \Flickerbox\Config::mantis_get( 'allow_no_category', null, null, $p_target_project_id ) ) {
-				\Flickerbox\Bug::set_field( $p_bug_id, 'category_id', \Flickerbox\Config::mantis_get( 'default_category_for_moves', null, null, $p_target_project_id ) );
+			if( ON != \Core\Config::mantis_get( 'allow_no_category', null, null, $p_target_project_id ) ) {
+				\Core\Bug::set_field( $p_bug_id, 'category_id', \Core\Config::mantis_get( 'default_category_for_moves', null, null, $p_target_project_id ) );
 			}
 		} else {
 			# Check if the category is global, and if not attempt mapping it to the new project
-			$t_category_project_id = \Flickerbox\Category::get_field( $t_category_id, 'project_id' );
+			$t_category_project_id = \Core\Category::get_field( $t_category_id, 'project_id' );
 	
 			if( $t_category_project_id != ALL_PROJECTS
-			  && !in_array( $t_category_project_id, \Flickerbox\Project\Hierarchy::inheritance( $p_target_project_id ) )
+			  && !in_array( $t_category_project_id, \Core\Project\Hierarchy::inheritance( $p_target_project_id ) )
 			) {
 				# Map by name
-				$t_category_name = \Flickerbox\Category::get_field( $t_category_id, 'name' );
-				$t_target_project_category_id = \Flickerbox\Category::get_id_by_name( $t_category_name, $p_target_project_id, false );
+				$t_category_name = \Core\Category::get_field( $t_category_id, 'name' );
+				$t_target_project_category_id = \Core\Category::get_id_by_name( $t_category_name, $p_target_project_id, false );
 				if( $t_target_project_category_id === false ) {
 					# Use target project's default category for moves, since there is no match by name.
-					$t_target_project_category_id = \Flickerbox\Config::mantis_get( 'default_category_for_moves', null, null, $p_target_project_id );
+					$t_target_project_category_id = \Core\Config::mantis_get( 'default_category_for_moves', null, null, $p_target_project_id );
 				}
-				\Flickerbox\Bug::set_field( $p_bug_id, 'category_id', $t_target_project_category_id );
+				\Core\Bug::set_field( $p_bug_id, 'category_id', $t_target_project_category_id );
 			}
 		}
 	}
@@ -588,59 +588,59 @@ class Bug
 		$c_bug_id = (int)$p_bug_id;
 	
 		# call pre-deletion custom function
-		\Flickerbox\Helper::call_custom_function( 'issue_delete_validate', array( $p_bug_id ) );
+		\Core\Helper::call_custom_function( 'issue_delete_validate', array( $p_bug_id ) );
 	
 		# log deletion of bug
-		\Flickerbox\History::log_event_special( $p_bug_id, BUG_DELETED, \Flickerbox\Bug::format_id( $p_bug_id ) );
+		\Core\History::log_event_special( $p_bug_id, BUG_DELETED, \Core\Bug::format_id( $p_bug_id ) );
 	
-		\Flickerbox\Email::generic( $p_bug_id, 'deleted', 'email_notification_title_for_action_bug_deleted' );
+		\Core\Email::generic( $p_bug_id, 'deleted', 'email_notification_title_for_action_bug_deleted' );
 	
 		# call post-deletion custom function.  We call this here to allow the custom function to access the details of the bug before
 		# they are deleted from the database given it's id.  The other option would be to move this to the end of the function and
 		# provide it with bug data rather than an id, but this will break backward compatibility.
-		\Flickerbox\Helper::call_custom_function( 'issue_delete_notify', array( $p_bug_id ) );
+		\Core\Helper::call_custom_function( 'issue_delete_notify', array( $p_bug_id ) );
 	
 		# Unmonitor bug for all users
-		\Flickerbox\Bug::unmonitor( $p_bug_id, null );
+		\Core\Bug::unmonitor( $p_bug_id, null );
 	
 		# Delete custom fields
 		custom_field_delete_all_values( $p_bug_id );
 	
 		# Delete bugnotes
-		\Flickerbox\Bug\Note::delete_all( $p_bug_id );
+		\Core\Bug\Note::delete_all( $p_bug_id );
 	
 		# Delete all sponsorships
-		\Flickerbox\Sponsorship::delete_all( $p_bug_id );
+		\Core\Sponsorship::delete_all( $p_bug_id );
 	
 		# MASC RELATIONSHIP
 		# we delete relationships even if the feature is currently off.
-		\Flickerbox\Relationship::delete_all( $p_bug_id );
+		\Core\Relationship::delete_all( $p_bug_id );
 	
 		# MASC RELATIONSHIP
 		# Delete files
-		\Flickerbox\File::delete_attachments( $p_bug_id );
+		\Core\File::delete_attachments( $p_bug_id );
 	
 		# Detach tags
-		\Flickerbox\Tag::bug_detach_all( $p_bug_id, false );
+		\Core\Tag::bug_detach_all( $p_bug_id, false );
 	
 		# Delete the bug history
-		\Flickerbox\History::delete( $p_bug_id );
+		\Core\History::delete( $p_bug_id );
 	
 		# Delete bug info revisions
-		\Flickerbox\Bug\Revision::delete( $p_bug_id );
+		\Core\Bug\Revision::delete( $p_bug_id );
 	
 		# Delete the bugnote text
-		$t_bug_text_id = \Flickerbox\Bug::get_field( $p_bug_id, 'bug_text_id' );
+		$t_bug_text_id = \Core\Bug::get_field( $p_bug_id, 'bug_text_id' );
 	
-		$t_query = 'DELETE FROM {bug_text} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $t_bug_text_id ) );
+		$t_query = 'DELETE FROM {bug_text} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $t_bug_text_id ) );
 	
 		# Delete the bug entry
-		$t_query = 'DELETE FROM {bug} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_bug_id ) );
+		$t_query = 'DELETE FROM {bug} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_bug_id ) );
 	
-		\Flickerbox\Bug::clear_cache( $p_bug_id );
-		\Flickerbox\Bug::text_clear_cache( $p_bug_id );
+		\Core\Bug::clear_cache( $p_bug_id );
+		\Core\Bug::text_clear_cache( $p_bug_id );
 	}
 	
 	/**
@@ -653,15 +653,15 @@ class Bug
 	static function delete_all( $p_project_id ) {
 		$c_project_id = (int)$p_project_id;
 	
-		$t_query = 'SELECT id FROM {bug} WHERE project_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_project_id ) );
+		$t_query = 'SELECT id FROM {bug} WHERE project_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_project_id ) );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			\Flickerbox\Bug::delete( $t_row['id'] );
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
+			\Core\Bug::delete( $t_row['id'] );
 		}
 	
-		# @todo should we check the return value of each \Flickerbox\Bug::delete() and
-		#  return false if any of them return false? Presumable \Flickerbox\Bug::delete()
+		# @todo should we check the return value of each \Core\Bug::delete() and
+		#  return false if any of them return false? Presumable \Core\Bug::delete()
 		#  will eventually trigger an error on failure so it won't matter...
 	}
 	
@@ -676,8 +676,8 @@ class Bug
 	 * @access public
 	 */
 	static function get_extended_row( $p_bug_id ) {
-		$t_base = \Flickerbox\Bug::cache_row( $p_bug_id );
-		$t_text = \Flickerbox\Bug::text_cache_row( $p_bug_id );
+		$t_base = \Core\Bug::cache_row( $p_bug_id );
+		$t_text = \Core\Bug::text_cache_row( $p_bug_id );
 	
 		# merge $t_text first so that the 'id' key has the bug id not the bug text id
 		return array_merge( $t_text, $t_base );
@@ -690,7 +690,7 @@ class Bug
 	 * @access public
 	 */
 	static function get_row( $p_bug_id ) {
-		return \Flickerbox\Bug::cache_row( $p_bug_id );
+		return \Core\Bug::cache_row( $p_bug_id );
 	}
 	
 	/**
@@ -702,12 +702,12 @@ class Bug
 	 */
 	static function get( $p_bug_id, $p_get_extended = false ) {
 		if( $p_get_extended ) {
-			$t_row = \Flickerbox\Bug::get_extended_row( $p_bug_id );
+			$t_row = \Core\Bug::get_extended_row( $p_bug_id );
 		} else {
-			$t_row = \Flickerbox\Bug::get_row( $p_bug_id );
+			$t_row = \Core\Bug::get_row( $p_bug_id );
 		}
 	
-		$t_bug_data = new \Flickerbox\BugData;
+		$t_bug_data = new \Core\BugData;
 		$t_bug_data->loadrow( $t_row );
 		return $t_bug_data;
 	}
@@ -718,7 +718,7 @@ class Bug
 	 * @return BugData
 	 */
 	static function row_to_object( array $p_row ) {
-		$t_bug_data = new \Flickerbox\BugData;
+		$t_bug_data = new \Core\BugData;
 		$t_bug_data->loadrow( $p_row );
 		return $t_bug_data;
 	}
@@ -732,12 +732,12 @@ class Bug
 	 * @access public
 	 */
 	static function get_field( $p_bug_id, $p_field_name ) {
-		$t_row = \Flickerbox\Bug::get_row( $p_bug_id );
+		$t_row = \Core\Bug::get_row( $p_bug_id );
 	
 		if( isset( $t_row[$p_field_name] ) ) {
 			return $t_row[$p_field_name];
 		} else {
-			\Flickerbox\Error::parameters( $p_field_name );
+			\Core\Error::parameters( $p_field_name );
 			trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 			return '';
 		}
@@ -752,12 +752,12 @@ class Bug
 	 * @access public
 	 */
 	static function get_text_field( $p_bug_id, $p_field_name ) {
-		$t_row = \Flickerbox\Bug::text_cache_row( $p_bug_id );
+		$t_row = \Core\Bug::text_cache_row( $p_bug_id );
 	
 		if( isset( $t_row[$p_field_name] ) ) {
 			return $t_row[$p_field_name];
 		} else {
-			\Flickerbox\Error::parameters( $p_field_name );
+			\Core\Error::parameters( $p_field_name );
 			trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 			return '';
 		}
@@ -773,7 +773,7 @@ class Bug
 	 * @uses helper_api.php
 	 */
 	static function format_summary( $p_bug_id, $p_context ) {
-		return \Flickerbox\Helper::call_custom_function( 'format_issue_summary', array( $p_bug_id, $p_context ) );
+		return \Core\Helper::call_custom_function( 'format_issue_summary', array( $p_bug_id, $p_context ) );
 	}
 	
 	/**
@@ -787,9 +787,9 @@ class Bug
 	static function get_newest_bugnote_timestamp( $p_bug_id ) {
 		$c_bug_id = (int)$p_bug_id;
 	
-		$t_query = 'SELECT last_modified FROM {bugnote} WHERE bug_id=' . \Flickerbox\Database::param() . ' ORDER BY last_modified DESC';
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_bug_id ), 1 );
-		$t_row = \Flickerbox\Database::result( $t_result );
+		$t_query = 'SELECT last_modified FROM {bugnote} WHERE bug_id=' . \Core\Database::param() . ' ORDER BY last_modified DESC';
+		$t_result = \Core\Database::query( $t_query, array( $c_bug_id ), 1 );
+		$t_row = \Core\Database::result( $t_result );
 	
 		if( false === $t_row ) {
 			return false;
@@ -816,11 +816,11 @@ class Bug
 		}
 	
 		# @todo - optimise - max(), count()
-		$t_query = 'SELECT last_modified FROM {bugnote} WHERE bug_id=' . \Flickerbox\Database::param() . ' ORDER BY last_modified ASC';
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_bug_id ) );
+		$t_query = 'SELECT last_modified FROM {bugnote} WHERE bug_id=' . \Core\Database::param() . ' ORDER BY last_modified ASC';
+		$t_result = \Core\Database::query( $t_query, array( $c_bug_id ) );
 	
 		$t_bugnote_count = 0;
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_bugnote_count++;
 		}
 	
@@ -847,13 +847,13 @@ class Bug
 	static function get_attachments( $p_bug_id ) {
 		$t_query = 'SELECT id, title, diskfile, filename, filesize, file_type, date_added, user_id
 			                FROM {bug_file}
-			                WHERE bug_id=' . \Flickerbox\Database::param() . '
+			                WHERE bug_id=' . \Core\Database::param() . '
 			                ORDER BY date_added';
-		$t_db_result = \Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
+		$t_db_result = \Core\Database::query( $t_query, array( $p_bug_id ) );
 	
 		$t_result = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_db_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_db_result ) ) {
 			$t_result[] = $t_row;
 		}
 	
@@ -926,7 +926,7 @@ class Bug
 				break;
 		}
 	
-		$t_current_value = \Flickerbox\Bug::get_field( $p_bug_id, $p_field_name );
+		$t_current_value = \Core\Bug::get_field( $p_bug_id, $p_field_name );
 	
 		# return if status is already set
 		if( $c_value == $t_current_value ) {
@@ -934,12 +934,12 @@ class Bug
 		}
 	
 		# Update fields
-		$t_query = 'UPDATE {bug} SET ' . $p_field_name . '=' . \Flickerbox\Database::param() . ' WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_value, $c_bug_id ) );
+		$t_query = 'UPDATE {bug} SET ' . $p_field_name . '=' . \Core\Database::param() . ' WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_value, $c_bug_id ) );
 	
 		# updated the last_updated date
 		if( $p_field_name != 'last_updated' ) {
-			\Flickerbox\Bug::update_date( $p_bug_id );
+			\Core\Bug::update_date( $p_bug_id );
 		}
 	
 		# log changes except for duplicate_id which is obsolete and should be removed in
@@ -949,14 +949,14 @@ class Bug
 				break;
 	
 			case 'category_id':
-				\Flickerbox\History::log_event_direct( $p_bug_id, 'category', \Flickerbox\Category::full_name( $t_current_value, false ), \Flickerbox\Category::full_name( $c_value, false ) );
+				\Core\History::log_event_direct( $p_bug_id, 'category', \Core\Category::full_name( $t_current_value, false ), \Core\Category::full_name( $c_value, false ) );
 				break;
 	
 			default:
-				\Flickerbox\History::log_event_direct( $p_bug_id, $p_field_name, $t_current_value, $c_value );
+				\Core\History::log_event_direct( $p_bug_id, $p_field_name, $t_current_value, $c_value );
 		}
 	
-		\Flickerbox\Bug::clear_cache( $p_bug_id );
+		\Core\Bug::clear_cache( $p_bug_id );
 	
 		return true;
 	}
@@ -972,16 +972,16 @@ class Bug
 	 * @uses database_api.php
 	 */
 	static function assign( $p_bug_id, $p_user_id, $p_bugnote_text = '', $p_bugnote_private = false ) {
-		if( ( $p_user_id != NO_USER ) && !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ), $p_bug_id, $p_user_id ) ) {
+		if( ( $p_user_id != NO_USER ) && !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'handle_bug_threshold' ), $p_bug_id, $p_user_id ) ) {
 			trigger_error( ERROR_USER_DOES_NOT_HAVE_REQ_ACCESS );
 		}
 	
 		# extract current information into history variables
-		$h_status = \Flickerbox\Bug::get_field( $p_bug_id, 'status' );
-		$h_handler_id = \Flickerbox\Bug::get_field( $p_bug_id, 'handler_id' );
+		$h_status = \Core\Bug::get_field( $p_bug_id, 'status' );
+		$h_handler_id = \Core\Bug::get_field( $p_bug_id, 'handler_id' );
 	
-		if( ( ON == \Flickerbox\Config::mantis_get( 'auto_set_status_to_assigned' ) ) && ( NO_USER != $p_user_id ) ) {
-			$t_ass_val = \Flickerbox\Config::mantis_get( 'bug_assigned_status' );
+		if( ( ON == \Core\Config::mantis_get( 'auto_set_status_to_assigned' ) ) && ( NO_USER != $p_user_id ) ) {
+			$t_ass_val = \Core\Config::mantis_get( 'bug_assigned_status' );
 		} else {
 			$t_ass_val = $h_status;
 		}
@@ -990,24 +990,24 @@ class Bug
 	
 			# get user id
 			$t_query = 'UPDATE {bug}
-						  SET handler_id=' . \Flickerbox\Database::param() . ', status=' . \Flickerbox\Database::param() . '
-						  WHERE id=' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_query, array( $p_user_id, $t_ass_val, $p_bug_id ) );
+						  SET handler_id=' . \Core\Database::param() . ', status=' . \Core\Database::param() . '
+						  WHERE id=' . \Core\Database::param();
+			\Core\Database::query( $t_query, array( $p_user_id, $t_ass_val, $p_bug_id ) );
 	
 			# log changes
-			\Flickerbox\History::log_event_direct( $p_bug_id, 'status', $h_status, $t_ass_val );
-			\Flickerbox\History::log_event_direct( $p_bug_id, 'handler_id', $h_handler_id, $p_user_id );
+			\Core\History::log_event_direct( $p_bug_id, 'status', $h_status, $t_ass_val );
+			\Core\History::log_event_direct( $p_bug_id, 'handler_id', $h_handler_id, $p_user_id );
 	
 			# Add bugnote if supplied ignore false return
-			\Flickerbox\Bug\Note::add( $p_bug_id, $p_bugnote_text, 0, $p_bugnote_private, 0, '', null, false );
+			\Core\Bug\Note::add( $p_bug_id, $p_bugnote_text, 0, $p_bugnote_private, 0, '', null, false );
 	
 			# updated the last_updated date
-			\Flickerbox\Bug::update_date( $p_bug_id );
+			\Core\Bug::update_date( $p_bug_id );
 	
-			\Flickerbox\Bug::clear_cache( $p_bug_id );
+			\Core\Bug::clear_cache( $p_bug_id );
 	
 			# send assigned to email
-			\Flickerbox\Email::generic( $p_bug_id, 'owner', 'email_notification_title_for_action_bug_assigned' );
+			\Core\Email::generic( $p_bug_id, 'owner', 'email_notification_title_for_action_bug_assigned' );
 		}
 	
 		return true;
@@ -1028,12 +1028,12 @@ class Bug
 		# Add bugnote if supplied ignore a false return
 		# Moved bugnote_add before bug_set_field calls in case time_tracking_no_note is off.
 		# Error condition stopped execution but status had already been changed
-		\Flickerbox\Bug\Note::add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', null, false );
+		\Core\Bug\Note::add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', null, false );
 	
-		\Flickerbox\Bug::set_field( $p_bug_id, 'status', \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' ) );
+		\Core\Bug::set_field( $p_bug_id, 'status', \Core\Config::mantis_get( 'bug_closed_status_threshold' ) );
 	
-		\Flickerbox\Email::generic( $p_bug_id, 'closed', 'The following issue has been CLOSED' );
-		\Flickerbox\Email::relationship_child_closed( $p_bug_id );
+		\Core\Email::generic( $p_bug_id, 'closed', 'The following issue has been CLOSED' );
+		\Core\Email::relationship_child_closed( $p_bug_id );
 	
 		return true;
 	}
@@ -1058,9 +1058,9 @@ class Bug
 		# Add bugnote if supplied
 		# Moved bugnote_add before bug_set_field calls in case time_tracking_no_note is off.
 		# Error condition stopped execution but status had already been changed
-		\Flickerbox\Bug\Note::add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', null, false );
+		\Core\Bug\Note::add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', null, false );
 	
-		$t_duplicate = !\Flickerbox\Utility::is_blank( $p_duplicate_id ) && ( $p_duplicate_id != 0 );
+		$t_duplicate = !\Core\Utility::is_blank( $p_duplicate_id ) && ( $p_duplicate_id != 0 );
 		if( $t_duplicate ) {
 			if( $p_bug_id == $p_duplicate_id ) {
 				trigger_error( ERROR_BUG_DUPLICATE_SELF, ERROR );
@@ -1069,57 +1069,57 @@ class Bug
 			}
 	
 			# the related bug exists...
-			\Flickerbox\Bug::ensure_exists( $p_duplicate_id );
+			\Core\Bug::ensure_exists( $p_duplicate_id );
 	
 			# check if there is other relationship between the bugs...
-			$t_id_relationship = \Flickerbox\Relationship::same_type_exists( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
+			$t_id_relationship = \Core\Relationship::same_type_exists( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
 	
 			 if( $t_id_relationship > 0 ) {
 				# Update the relationship
-				\Flickerbox\Relationship::update( $t_id_relationship, $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
+				\Core\Relationship::update( $t_id_relationship, $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
 	
 				# Add log line to the history (both bugs)
-				\Flickerbox\History::log_event_special( $p_bug_id, BUG_REPLACE_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
-				\Flickerbox\History::log_event_special( $p_duplicate_id, BUG_REPLACE_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
+				\Core\History::log_event_special( $p_bug_id, BUG_REPLACE_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
+				\Core\History::log_event_special( $p_duplicate_id, BUG_REPLACE_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
 			} else if( $t_id_relationship != -1 ) {
 				# Add the new relationship
-				\Flickerbox\Relationship::add( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
+				\Core\Relationship::add( $p_bug_id, $p_duplicate_id, BUG_DUPLICATE );
 	
 				# Add log line to the history (both bugs)
-				\Flickerbox\History::log_event_special( $p_bug_id, BUG_ADD_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
-				\Flickerbox\History::log_event_special( $p_duplicate_id, BUG_ADD_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
+				\Core\History::log_event_special( $p_bug_id, BUG_ADD_RELATIONSHIP, BUG_DUPLICATE, $p_duplicate_id );
+				\Core\History::log_event_special( $p_duplicate_id, BUG_ADD_RELATIONSHIP, BUG_HAS_DUPLICATE, $p_bug_id );
 			} # else relationship is -1 - same type exists, do nothing
 	
 			# Copy list of users monitoring the duplicate bug to the original bug
-			$t_old_reporter_id = \Flickerbox\Bug::get_field( $p_bug_id, 'reporter_id' );
-			$t_old_handler_id = \Flickerbox\Bug::get_field( $p_bug_id, 'handler_id' );
-			if( \Flickerbox\User::exists( $t_old_reporter_id ) ) {
-				\Flickerbox\Bug::monitor( $p_duplicate_id, $t_old_reporter_id );
+			$t_old_reporter_id = \Core\Bug::get_field( $p_bug_id, 'reporter_id' );
+			$t_old_handler_id = \Core\Bug::get_field( $p_bug_id, 'handler_id' );
+			if( \Core\User::exists( $t_old_reporter_id ) ) {
+				\Core\Bug::monitor( $p_duplicate_id, $t_old_reporter_id );
 			}
-			if( \Flickerbox\User::exists( $t_old_handler_id ) ) {
-				\Flickerbox\Bug::monitor( $p_duplicate_id, $t_old_handler_id );
+			if( \Core\User::exists( $t_old_handler_id ) ) {
+				\Core\Bug::monitor( $p_duplicate_id, $t_old_handler_id );
 			}
-			\Flickerbox\Bug::monitor_copy( $p_bug_id, $p_duplicate_id );
+			\Core\Bug::monitor_copy( $p_bug_id, $p_duplicate_id );
 	
-			\Flickerbox\Bug::set_field( $p_bug_id, 'duplicate_id', (int)$p_duplicate_id );
+			\Core\Bug::set_field( $p_bug_id, 'duplicate_id', (int)$p_duplicate_id );
 		}
 	
-		\Flickerbox\Bug::set_field( $p_bug_id, 'status', \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' ) );
-		\Flickerbox\Bug::set_field( $p_bug_id, 'fixed_in_version', $p_fixed_in_version );
-		\Flickerbox\Bug::set_field( $p_bug_id, 'resolution', $c_resolution );
+		\Core\Bug::set_field( $p_bug_id, 'status', \Core\Config::mantis_get( 'bug_resolved_status_threshold' ) );
+		\Core\Bug::set_field( $p_bug_id, 'fixed_in_version', $p_fixed_in_version );
+		\Core\Bug::set_field( $p_bug_id, 'resolution', $c_resolution );
 	
 		# only set handler if specified explicitly or if bug was not assigned to a handler
 		if( null == $p_handler_id ) {
-			if( \Flickerbox\Bug::get_field( $p_bug_id, 'handler_id' ) == 0 ) {
-				$p_handler_id = \Flickerbox\Auth::get_current_user_id();
-				\Flickerbox\Bug::set_field( $p_bug_id, 'handler_id', $p_handler_id );
+			if( \Core\Bug::get_field( $p_bug_id, 'handler_id' ) == 0 ) {
+				$p_handler_id = \Core\Auth::get_current_user_id();
+				\Core\Bug::set_field( $p_bug_id, 'handler_id', $p_handler_id );
 			}
 		} else {
-			\Flickerbox\Bug::set_field( $p_bug_id, 'handler_id', $p_handler_id );
+			\Core\Bug::set_field( $p_bug_id, 'handler_id', $p_handler_id );
 		}
 	
-		\Flickerbox\Email::generic( $p_bug_id, 'resolved', 'The following issue has been RESOLVED.' );
-		\Flickerbox\Email::relationship_child_resolved( $p_bug_id );
+		\Core\Email::generic( $p_bug_id, 'resolved', 'The following issue has been RESOLVED.' );
+		\Core\Email::relationship_child_resolved( $p_bug_id );
 	
 		return true;
 	}
@@ -1143,12 +1143,12 @@ class Bug
 		# Add bugnote if supplied
 		# Moved bugnote_add before bug_set_field calls in case time_tracking_no_note is off.
 		# Error condition stopped execution but status had already been changed
-		\Flickerbox\Bug\Note::add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', null, false );
+		\Core\Bug\Note::add( $p_bug_id, $p_bugnote_text, $p_time_tracking, $p_bugnote_private, 0, '', null, false );
 	
-		\Flickerbox\Bug::set_field( $p_bug_id, 'status', \Flickerbox\Config::mantis_get( 'bug_reopen_status' ) );
-		\Flickerbox\Bug::set_field( $p_bug_id, 'resolution', \Flickerbox\Config::mantis_get( 'bug_reopen_resolution' ) );
+		\Core\Bug::set_field( $p_bug_id, 'status', \Core\Config::mantis_get( 'bug_reopen_status' ) );
+		\Core\Bug::set_field( $p_bug_id, 'resolution', \Core\Config::mantis_get( 'bug_reopen_resolution' ) );
 	
-		\Flickerbox\Email::generic( $p_bug_id, 'reopened', 'email_notification_title_for_action_bug_reopened' );
+		\Core\Email::generic( $p_bug_id, 'reopened', 'email_notification_title_for_action_bug_reopened' );
 	
 		return true;
 	}
@@ -1161,10 +1161,10 @@ class Bug
 	 * @uses database_api.php
 	 */
 	static function update_date( $p_bug_id ) {
-		$t_query = 'UPDATE {bug} SET last_updated=' . \Flickerbox\Database::param() . ' WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now(), $p_bug_id ) );
+		$t_query = 'UPDATE {bug} SET last_updated=' . \Core\Database::param() . ' WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( \Core\Database::now(), $p_bug_id ) );
 	
-		\Flickerbox\Bug::clear_cache( $p_bug_id );
+		\Core\Bug::clear_cache( $p_bug_id );
 	
 		return true;
 	}
@@ -1184,26 +1184,26 @@ class Bug
 		$c_user_id = (int)$p_user_id;
 	
 		# Make sure we aren't already monitoring this bug
-		if( \Flickerbox\User::is_monitoring_bug( $c_user_id, $c_bug_id ) ) {
+		if( \Core\User::is_monitoring_bug( $c_user_id, $c_bug_id ) ) {
 			return true;
 		}
 	
 		# Don't let the anonymous user monitor bugs
-		if( \Flickerbox\User::is_anonymous( $c_user_id ) ) {
+		if( \Core\User::is_anonymous( $c_user_id ) ) {
 			return false;
 		}
 	
 		# Insert monitoring record
-		$t_query = 'INSERT INTO {bug_monitor} ( user_id, bug_id ) VALUES (' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
-		\Flickerbox\Database::query( $t_query, array( $c_user_id, $c_bug_id ) );
+		$t_query = 'INSERT INTO {bug_monitor} ( user_id, bug_id ) VALUES (' . \Core\Database::param() . ',' . \Core\Database::param() . ')';
+		\Core\Database::query( $t_query, array( $c_user_id, $c_bug_id ) );
 	
 		# log new monitoring action
-		\Flickerbox\History::log_event_special( $c_bug_id, BUG_MONITOR, $c_user_id );
+		\Core\History::log_event_special( $c_bug_id, BUG_MONITOR, $c_user_id );
 	
 		# updated the last_updated date
-		\Flickerbox\Bug::update_date( $p_bug_id );
+		\Core\Bug::update_date( $p_bug_id );
 	
-		\Flickerbox\Email::monitor_added( $p_bug_id, $p_user_id );
+		\Core\Email::monitor_added( $p_bug_id, $p_user_id );
 	
 		return true;
 	}
@@ -1215,23 +1215,23 @@ class Bug
 	 * @return array
 	 */
 	static function get_monitors( $p_bug_id ) {
-		if( ! \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'show_monitor_list_threshold' ), $p_bug_id ) ) {
+		if( ! \Core\Access::has_bug_level( \Core\Config::mantis_get( 'show_monitor_list_threshold' ), $p_bug_id ) ) {
 			return array();
 		}
 	
 		# get the bugnote data
 		$t_query = 'SELECT user_id, enabled
 				FROM {bug_monitor} m, {user} u
-				WHERE m.bug_id=' . \Flickerbox\Database::param() . ' AND m.user_id = u.id
+				WHERE m.bug_id=' . \Core\Database::param() . ' AND m.user_id = u.id
 				ORDER BY u.realname, u.username';
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
+		$t_result = \Core\Database::query( $t_query, array( $p_bug_id ) );
 	
 		$t_users = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_users[] = $t_row['user_id'];
 		}
 	
-		\Flickerbox\User::cache_array_rows( $t_users );
+		\Core\User::cache_array_rows( $t_users );
 	
 		return $t_users;
 	}
@@ -1250,16 +1250,16 @@ class Bug
 		$c_source_bug_id = (int)$p_source_bug_id;
 		$c_dest_bug_id = (int)$p_dest_bug_id;
 	
-		$t_query = 'SELECT user_id FROM {bug_monitor} WHERE bug_id = ' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_source_bug_id ) );
+		$t_query = 'SELECT user_id FROM {bug_monitor} WHERE bug_id = ' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_source_bug_id ) );
 	
-		while( $t_bug_monitor = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			if( \Flickerbox\User::exists( $t_bug_monitor['user_id'] ) &&
-				!\Flickerbox\User::is_monitoring_bug( $t_bug_monitor['user_id'], $c_dest_bug_id ) ) {
+		while( $t_bug_monitor = \Core\Database::fetch_array( $t_result ) ) {
+			if( \Core\User::exists( $t_bug_monitor['user_id'] ) &&
+				!\Core\User::is_monitoring_bug( $t_bug_monitor['user_id'], $c_dest_bug_id ) ) {
 				$t_query = 'INSERT INTO {bug_monitor} ( user_id, bug_id )
-					VALUES ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-				\Flickerbox\Database::query( $t_query, array( $t_bug_monitor['user_id'], $c_dest_bug_id ) );
-				\Flickerbox\History::log_event_special( $c_dest_bug_id, BUG_MONITOR, $t_bug_monitor['user_id'] );
+					VALUES ( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+				\Core\Database::query( $t_query, array( $t_bug_monitor['user_id'], $c_dest_bug_id ) );
+				\Core\History::log_event_special( $c_dest_bug_id, BUG_MONITOR, $t_bug_monitor['user_id'] );
 			}
 		}
 	}
@@ -1276,21 +1276,21 @@ class Bug
 	 */
 	static function unmonitor( $p_bug_id, $p_user_id ) {
 		# Delete monitoring record
-		$t_query = 'DELETE FROM {bug_monitor} WHERE bug_id = ' . \Flickerbox\Database::param();
+		$t_query = 'DELETE FROM {bug_monitor} WHERE bug_id = ' . \Core\Database::param();
 		$t_db_query_params[] = $p_bug_id;
 	
 		if( $p_user_id !== null ) {
-			$t_query .= ' AND user_id = ' . \Flickerbox\Database::param();
+			$t_query .= ' AND user_id = ' . \Core\Database::param();
 			$t_db_query_params[] = $p_user_id;
 		}
 	
-		\Flickerbox\Database::query( $t_query, $t_db_query_params );
+		\Core\Database::query( $t_query, $t_db_query_params );
 	
 		# log new un-monitor action
-		\Flickerbox\History::log_event_special( $p_bug_id, BUG_UNMONITOR, (int)$p_user_id );
+		\Core\History::log_event_special( $p_bug_id, BUG_UNMONITOR, (int)$p_user_id );
 	
 		# updated the last_updated date
-		\Flickerbox\Bug::update_date( $p_bug_id );
+		\Core\Bug::update_date( $p_bug_id );
 	
 		return true;
 	}
@@ -1303,10 +1303,10 @@ class Bug
 	 * @uses config_api.php
 	 */
 	static function format_id( $p_bug_id ) {
-		$t_padding = \Flickerbox\Config::mantis_get( 'display_bug_padding' );
+		$t_padding = \Core\Config::mantis_get( 'display_bug_padding' );
 		$t_string = sprintf( '%0' . (int)$t_padding . 'd', $p_bug_id );
 	
-		return \Flickerbox\Event::signal( 'EVENT_DISPLAY_BUG_ID', $t_string, array( $p_bug_id ) );
+		return \Core\Event::signal( 'EVENT_DISPLAY_BUG_ID', $t_string, array( $p_bug_id ) );
 	}
 
 

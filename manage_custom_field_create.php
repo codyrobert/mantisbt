@@ -38,25 +38,25 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-\Flickerbox\Form::security_validate( 'manage_custom_field_create' );
+\Core\Form::security_validate( 'manage_custom_field_create' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 
-$f_name	= \Flickerbox\GPC::get_string( 'name' );
+$f_name	= \Core\GPC::get_string( 'name' );
 
 $t_field_id = custom_field_create( $f_name );
 
-if( ON == \Flickerbox\Config::mantis_get( 'custom_field_edit_after_create' ) ) {
+if( ON == \Core\Config::mantis_get( 'custom_field_edit_after_create' ) ) {
 	$t_redirect_url = 'manage_custom_field_edit_page.php?field_id=' . $t_field_id;
 } else {
 	$t_redirect_url = 'manage_custom_field_page.php';
 }
 
-\Flickerbox\Form::security_purge( 'manage_custom_field_create' );
+\Core\Form::security_purge( 'manage_custom_field_create' );
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

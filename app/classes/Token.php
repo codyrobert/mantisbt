@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -45,10 +45,10 @@ class Token
 	 * @return boolean True if token exists
 	 */
 	static function exists( $p_token_id ) {
-		$t_query = 'SELECT id FROM {tokens} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_token_id ), 1 );
+		$t_query = 'SELECT id FROM {tokens} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_token_id ), 1 );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( $t_row ) {
 			return true;
 		}
@@ -61,7 +61,7 @@ class Token
 	 * @return boolean True if token exists
 	 */
 	static function ensure_exists( $p_token_id ) {
-		if( !\Flickerbox\Token::exists( $p_token_id ) ) {
+		if( !\Core\Token::exists( $p_token_id ) ) {
 			trigger_error( ERROR_TOKEN_NOT_FOUND, ERROR );
 		}
 	
@@ -75,15 +75,15 @@ class Token
 	 * @return array Token row
 	 */
 	static function get( $p_type, $p_user_id = null ) {
-		\Flickerbox\Token::purge_expired_once();
+		\Core\Token::purge_expired_once();
 	
 		$c_type = (int)$p_type;
-		$c_user_id = (int)( $p_user_id == null ? \Flickerbox\Auth::get_current_user_id() : $p_user_id );
+		$c_user_id = (int)( $p_user_id == null ? \Core\Auth::get_current_user_id() : $p_user_id );
 	
-		$t_query = 'SELECT * FROM {tokens} WHERE type=' . \Flickerbox\Database::param() . ' AND owner=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_type, $c_user_id ) );
+		$t_query = 'SELECT * FROM {tokens} WHERE type=' . \Core\Database::param() . ' AND owner=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_type, $c_user_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( $t_row ) {
 			return $t_row;
 		}
@@ -98,7 +98,7 @@ class Token
 	 * @return array Token row
 	 */
 	static function get_value( $p_type, $p_user_id = null ) {
-		$t_token = \Flickerbox\Token::get( $p_type, $p_user_id );
+		$t_token = \Core\Token::get( $p_type, $p_user_id );
 	
 		if( null !== $t_token ) {
 			return $t_token['value'];
@@ -116,12 +116,12 @@ class Token
 	 * @return int Token ID
 	 */
 	static function set( $p_type, $p_value, $p_expiry = TOKEN_EXPIRY, $p_user_id = null ) {
-		$t_token = \Flickerbox\Token::get( $p_type, $p_user_id );
+		$t_token = \Core\Token::get( $p_type, $p_user_id );
 		if( $t_token === null ) {
-			return \Flickerbox\Token::create( $p_type, $p_value, $p_expiry, $p_user_id );
+			return \Core\Token::create( $p_type, $p_value, $p_expiry, $p_user_id );
 		}
 	
-		\Flickerbox\Token::update( $t_token['id'], $p_value, $p_expiry );
+		\Core\Token::update( $t_token['id'], $p_value, $p_expiry );
 		return $t_token['id'];
 	}
 	
@@ -132,11 +132,11 @@ class Token
 	 * @return void
 	 */
 	static function touch( $p_token_id, $p_expiry = TOKEN_EXPIRY ) {
-		\Flickerbox\Token::ensure_exists( $p_token_id );
+		\Core\Token::ensure_exists( $p_token_id );
 	
 		$c_token_expiry = time() + $p_expiry;
-		$t_query = 'UPDATE {tokens} SET expiry=' . \Flickerbox\Database::param() . ' WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_token_expiry, $p_token_id ) );
+		$t_query = 'UPDATE {tokens} SET expiry=' . \Core\Database::param() . ' WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_token_expiry, $p_token_id ) );
 	}
 	
 	/**
@@ -147,13 +147,13 @@ class Token
 	 */
 	static function delete( $p_type, $p_user_id = null ) {
 		if( $p_user_id == null ) {
-			$c_user_id = \Flickerbox\Auth::get_current_user_id();
+			$c_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$c_user_id = (int)$p_user_id;
 		}
 	
-		$t_query = 'DELETE FROM {tokens} WHERE type=' . \Flickerbox\Database::param() . ' AND owner=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_type, $c_user_id ) );
+		$t_query = 'DELETE FROM {tokens} WHERE type=' . \Core\Database::param() . ' AND owner=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_type, $c_user_id ) );
 	}
 	
 	/**
@@ -163,13 +163,13 @@ class Token
 	 */
 	static function delete_by_owner( $p_user_id = null ) {
 		if( $p_user_id == null ) {
-			$c_user_id = \Flickerbox\Auth::get_current_user_id();
+			$c_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$c_user_id = (int)$p_user_id;
 		}
 	
-		$t_query = 'DELETE FROM {tokens} WHERE owner=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_user_id ) );
+		$t_query = 'DELETE FROM {tokens} WHERE owner=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_user_id ) );
 	}
 	
 	/**
@@ -182,20 +182,20 @@ class Token
 	 */
 	static function create( $p_type, $p_value, $p_expiry = TOKEN_EXPIRY, $p_user_id = null ) {
 		if( $p_user_id == null ) {
-			$c_user_id = \Flickerbox\Auth::get_current_user_id();
+			$c_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$c_user_id = (int)$p_user_id;
 		}
 	
 		$c_type = (int)$p_type;
-		$c_timestamp = \Flickerbox\Database::now();
+		$c_timestamp = \Core\Database::now();
 		$c_expiry = time() + $p_expiry;
 	
 		$t_query = 'INSERT INTO {tokens}
 						( type, value, timestamp, expiry, owner )
-						VALUES ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-		\Flickerbox\Database::query( $t_query, array( $c_type, (string)$p_value, $c_timestamp, $c_expiry, $c_user_id ) );
-		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'tokens' ) );
+						VALUES ( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+		\Core\Database::query( $t_query, array( $c_type, (string)$p_value, $c_timestamp, $c_expiry, $c_user_id ) );
+		return \Core\Database::insert_id( \Core\Database::get_table( 'tokens' ) );
 	}
 	
 	/**
@@ -206,14 +206,14 @@ class Token
 	 * @return boolean always true.
 	 */
 	static function update( $p_token_id, $p_value, $p_expiry = TOKEN_EXPIRY ) {
-		\Flickerbox\Token::ensure_exists( $p_token_id );
+		\Core\Token::ensure_exists( $p_token_id );
 		$c_token_id = (int)$p_token_id;
 		$c_expiry = time() + $p_expiry;
 	
 		$t_query = 'UPDATE {tokens}
-						SET value=' . \Flickerbox\Database::param() . ', expiry=' . \Flickerbox\Database::param() . '
-						WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (string)$p_value, $c_expiry, $c_token_id ) );
+						SET value=' . \Core\Database::param() . ', expiry=' . \Core\Database::param() . '
+						WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (string)$p_value, $c_expiry, $c_token_id ) );
 	
 		return true;
 	}
@@ -224,8 +224,8 @@ class Token
 	 * @return boolean always true.
 	 */
 	static function delete_by_type( $p_token_type ) {
-		$t_query = 'DELETE FROM {tokens} WHERE type=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_token_type ) );
+		$t_query = 'DELETE FROM {tokens} WHERE type=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_token_type ) );
 	
 		return true;
 	}
@@ -238,12 +238,12 @@ class Token
 	static function purge_expired( $p_token_type = null ) {
 		global $g_tokens_purged;
 	
-		$t_query = 'DELETE FROM {tokens} WHERE ' . \Flickerbox\Database::param() . ' > expiry';
+		$t_query = 'DELETE FROM {tokens} WHERE ' . \Core\Database::param() . ' > expiry';
 		if( !is_null( $p_token_type ) ) {
-			$t_query .= ' AND type=' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now(), (int)$p_token_type ) );
+			$t_query .= ' AND type=' . \Core\Database::param();
+			\Core\Database::query( $t_query, array( \Core\Database::now(), (int)$p_token_type ) );
 		} else {
-			\Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now() ) );
+			\Core\Database::query( $t_query, array( \Core\Database::now() ) );
 		}
 	
 		$g_tokens_purged = true;
@@ -258,7 +258,7 @@ class Token
 	static function purge_expired_once() {
 		global $g_tokens_purged;
 		if( !$g_tokens_purged ) {
-			\Flickerbox\Token::purge_expired();
+			\Core\Token::purge_expired();
 		}
 	}
 

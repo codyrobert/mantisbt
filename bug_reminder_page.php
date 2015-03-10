@@ -38,61 +38,61 @@
 
 require_once( 'core.php' );
 
-$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
+$f_bug_id = \Core\GPC::get_int( 'bug_id' );
 
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+$t_bug = \Core\Bug::get( $f_bug_id, true );
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
-if( \Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
-	\Flickerbox\Error::parameters( $f_bug_id );
+if( \Core\Bug::is_readonly( $f_bug_id ) ) {
+	\Core\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'bug_reminder_threshold' ), $f_bug_id );
+\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'bug_reminder_threshold' ), $f_bug_id );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
+\Core\HTML::page_top( \Core\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 ?>
 
 <?php # Send reminder Form BEGIN ?>
 <br />
 <form method="post" action="bug_reminder.php">
-<?php echo \Flickerbox\Form::security_field( 'bug_reminder' ) ?>
+<?php echo \Core\Form::security_field( 'bug_reminder' ) ?>
 <input type="hidden" name="bug_id" value="<?php echo $f_bug_id ?>" />
 <div class="width75 form-container">
 <table cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
-		<?php echo \Flickerbox\Lang::get( 'bug_reminder' ) ?>
+		<?php echo \Core\Lang::get( 'bug_reminder' ) ?>
 	</td>
 </tr>
 <tr>
 	<th class="category">
-		<?php echo \Flickerbox\Lang::get( 'to' ) ?>
+		<?php echo \Core\Lang::get( 'to' ) ?>
 	</th>
 	<td>
 		<select name="to[]" multiple="multiple" size="12" class="width20">
 			<?php
-			$t_project_id = \Flickerbox\Bug::get_field( $f_bug_id, 'project_id' );
-			$t_access_level = \Flickerbox\Config::mantis_get( 'reminder_receive_threshold' );
+			$t_project_id = \Core\Bug::get_field( $f_bug_id, 'project_id' );
+			$t_access_level = \Core\Config::mantis_get( 'reminder_receive_threshold' );
 			if( $t_bug->view_state === VS_PRIVATE ) {
-				$t_private_bug_threshold = \Flickerbox\Config::mantis_get( 'private_bug_threshold' );
+				$t_private_bug_threshold = \Core\Config::mantis_get( 'private_bug_threshold' );
 				if( $t_private_bug_threshold > $t_access_level ) {
 					$t_access_level = $t_private_bug_threshold;
 				}
 			}
 			$t_selected_user_id = 0;
-			\Flickerbox\Print_Util::user_option_list( $t_selected_user_id, $t_project_id, $t_access_level );
+			\Core\Print_Util::user_option_list( $t_selected_user_id, $t_project_id, $t_access_level );
 			?>
 		</select>
 	</td>
 </tr>
 <tr>
 	<th class="category">
-		<?php echo \Flickerbox\Lang::get( 'reminder' ) ?>
+		<?php echo \Core\Lang::get( 'reminder' ) ?>
 	</th>
 	<td>
 		<textarea name="body" cols="85" rows="10" class="width100"></textarea>
@@ -100,7 +100,7 @@ if( \Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
 </tr>
 </table>
 <div class="center">
-	<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'bug_send_button' ) ?>" />
+	<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'bug_send_button' ) ?>" />
 </div>
 </div>
 </form>
@@ -109,12 +109,12 @@ if( \Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
 <tr>
 	<td>
 		<?php
-			echo \Flickerbox\Lang::get( 'reminder_explain' ) . ' ';
-			if( ON == \Flickerbox\Config::mantis_get( 'reminder_recipients_monitor_bug' ) ) {
-				echo \Flickerbox\Lang::get( 'reminder_monitor' ) . ' ';
+			echo \Core\Lang::get( 'reminder_explain' ) . ' ';
+			if( ON == \Core\Config::mantis_get( 'reminder_recipients_monitor_bug' ) ) {
+				echo \Core\Lang::get( 'reminder_monitor' ) . ' ';
 			}
-			if( ON == \Flickerbox\Config::mantis_get( 'store_reminders' ) ) {
-				echo \Flickerbox\Lang::get( 'reminder_store' );
+			if( ON == \Core\Config::mantis_get( 'store_reminders' ) ) {
+				echo \Core\Lang::get( 'reminder_store' );
 			}
 		?>
 	</td>

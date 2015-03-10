@@ -66,13 +66,13 @@ function mc_project_attachment_add( $p_username, $p_password, $p_project_id, $p_
 	}
 
 	# Check if project documentation feature is enabled.
-	if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
+	if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
-	if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $p_project_id, $t_user_id ) ) {
+	if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'upload_project_file_threshold' ), $p_project_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
-	if( \Flickerbox\Utility::is_blank( $p_title ) ) {
+	if( \Core\Utility::is_blank( $p_title ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Title must not be empty.' );
 	}
 	return mci_file_add( $p_project_id, $p_name, $p_content, $p_file_type, 'project', $p_title, $p_description, $t_user_id );
@@ -91,9 +91,9 @@ function mc_project_attachment_delete( $p_username, $p_password, $p_project_atta
 	if( $t_user_id === false ) {
 		return mci_soap_fault_login_failed();
 	}
-	$t_project_id = \Flickerbox\File::get_field( $p_project_attachment_id, 'project_id', 'project' );
-	if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id, $t_user_id ) ) {
+	$t_project_id = \Core\File::get_field( $p_project_attachment_id, 'project_id', 'project' );
+	if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id, $t_user_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
-	return \Flickerbox\File::delete( $p_project_attachment_id, 'project' );
+	return \Core\File::delete( $p_project_attachment_id, 'project' );
 }

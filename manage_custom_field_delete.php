@@ -39,32 +39,32 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-\Flickerbox\Form::security_validate( 'manage_custom_field_delete' );
+\Core\Form::security_validate( 'manage_custom_field_delete' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 
-$f_field_id	= \Flickerbox\GPC::get_int( 'field_id' );
-$f_return = strip_tags( \Flickerbox\GPC::get_string( 'return', 'manage_custom_field_page.php' ) );
+$f_field_id	= \Core\GPC::get_int( 'field_id' );
+$f_return = strip_tags( \Core\GPC::get_string( 'return', 'manage_custom_field_page.php' ) );
 
 $t_definition = custom_field_get_definition( $f_field_id );
 
 if( 0 < count( custom_field_get_project_ids( $f_field_id ) ) ) {
-	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_used_custom_field_deletion' ) .
-		'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
-		\Flickerbox\Lang::get( 'field_delete_button' ) );
+	\Core\Helper::ensure_confirmed( \Core\Lang::get( 'confirm_used_custom_field_deletion' ) .
+		'<br/>' . \Core\Lang::get( 'custom_field_label' ) . \Core\Lang::get( 'word_separator' ) . \Core\String::attribute( $t_definition['name'] ),
+		\Core\Lang::get( 'field_delete_button' ) );
 } else {
-	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_deletion' ) .
-		'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
-		\Flickerbox\Lang::get( 'field_delete_button' ) );
+	\Core\Helper::ensure_confirmed( \Core\Lang::get( 'confirm_custom_field_deletion' ) .
+		'<br/>' . \Core\Lang::get( 'custom_field_label' ) . \Core\Lang::get( 'word_separator' ) . \Core\String::attribute( $t_definition['name'] ),
+		\Core\Lang::get( 'field_delete_button' ) );
 }
 
 custom_field_destroy( $f_field_id );
 
-\Flickerbox\Form::security_purge( 'manage_custom_field_delete' );
+\Core\Form::security_purge( 'manage_custom_field_delete' );
 
-\Flickerbox\HTML::page_top( null, $f_return );
+\Core\HTML::page_top( null, $f_return );
 
-\Flickerbox\HTML::operation_successful( $f_return );
+\Core\HTML::operation_successful( $f_return );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

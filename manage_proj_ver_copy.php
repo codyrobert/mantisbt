@@ -37,20 +37,20 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_ver_copy' );
+\Core\Form::security_validate( 'manage_proj_ver_copy' );
 
 auth_reauthenticate();
 
-$f_project_id		= \Flickerbox\GPC::get_int( 'project_id' );
-$f_other_project_id	= \Flickerbox\GPC::get_int( 'other_project_id' );
-$f_copy_from		= \Flickerbox\GPC::get_bool( 'copy_from' );
-$f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
+$f_project_id		= \Core\GPC::get_int( 'project_id' );
+$f_other_project_id	= \Core\GPC::get_int( 'other_project_id' );
+$f_copy_from		= \Core\GPC::get_bool( 'copy_from' );
+$f_copy_to			= \Core\GPC::get_bool( 'copy_to' );
 
-\Flickerbox\Project::ensure_exists( $f_project_id );
-\Flickerbox\Project::ensure_exists( $f_other_project_id );
+\Core\Project::ensure_exists( $f_project_id );
+\Core\Project::ensure_exists( $f_other_project_id );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_other_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_other_project_id );
 
 if( $f_copy_from ) {
 	$t_src_project_id = $f_other_project_id;
@@ -62,14 +62,14 @@ if( $f_copy_from ) {
 	trigger_error( ERROR_VERSION_NO_ACTION, ERROR );
 }
 
-$t_rows = \Flickerbox\Version::get_all_rows( $t_src_project_id );
+$t_rows = \Core\Version::get_all_rows( $t_src_project_id );
 
 foreach ( $t_rows as $t_row ) {
-	if( \Flickerbox\Version::is_unique( $t_row['version'], $t_dst_project_id ) ) {
-		$t_version_id = \Flickerbox\Version::add( $t_dst_project_id, $t_row['version'], $t_row['released'], $t_row['description'], $t_row['date_order'] );
+	if( \Core\Version::is_unique( $t_row['version'], $t_dst_project_id ) ) {
+		$t_version_id = \Core\Version::add( $t_dst_project_id, $t_row['version'], $t_row['released'], $t_row['description'], $t_row['date_order'] );
 	}
 }
 
-\Flickerbox\Form::security_purge( 'manage_proj_ver_copy' );
+\Core\Form::security_purge( 'manage_proj_ver_copy' );
 
-\Flickerbox\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );
+\Core\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

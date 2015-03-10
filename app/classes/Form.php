@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -45,7 +45,7 @@ class Form
 	/**
 	 * Helper function to generate a form action value when forms are designed
 	 * to be submitted to the same url that's is currently being used, such as
-	 * \Flickerbox\Helper::ensure_confirmed() or auth_reauthenticate().
+	 * \Core\Helper::ensure_confirmed() or auth_reauthenticate().
 	 * @return string Form action value
 	 */
 	static function action_self() {
@@ -61,11 +61,11 @@ class Form
 	 * @return string Security token string
 	 */
 	static function security_token( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
 			return '';
 		}
 	
-		$t_tokens = \Flickerbox\Session::get( 'form_security_tokens', array() );
+		$t_tokens = \Core\Session::get( 'form_security_tokens', array() );
 	
 		# Create a new array for the form name if necessary
 		if( !isset( $t_tokens[$p_form_name] ) || !is_array( $t_tokens[$p_form_name] ) ) {
@@ -76,7 +76,7 @@ class Form
 		# With a base64 output encoded nonce length of 32 characters, we are
 		# generating a 192bit nonce.
 		$t_date = date( 'Ymd' );
-		$t_string = $t_date . \Flickerbox\Crypto::generate_uri_safe_nonce( 32 );
+		$t_string = $t_date . \Core\Crypto::generate_uri_safe_nonce( 32 );
 	
 		# Add the token to the user's session
 		if( !isset( $t_tokens[$p_form_name][$t_date] ) ) {
@@ -84,7 +84,7 @@ class Form
 		}
 	
 		$t_tokens[$p_form_name][$t_date][$t_string] = true;
-		\Flickerbox\Session::set( 'form_security_tokens', $t_tokens );
+		\Core\Session::set( 'form_security_tokens', $t_tokens );
 	
 		# The token string
 		return $t_string;
@@ -97,12 +97,12 @@ class Form
 	 * @return string Hidden form element to output
 	 */
 	static function security_field( $p_form_name, $p_security_token = null ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
 			return '';
 		}
 	
 		if( is_null( $p_security_token ) ) {
-			$p_security_token = \Flickerbox\Form::security_token( $p_form_name );
+			$p_security_token = \Core\Form::security_token( $p_form_name );
 		}
 	
 		# Create the form element HTML string for the security token
@@ -122,11 +122,11 @@ class Form
 	 * @return string Hidden form element to output
 	 */
 	static function security_param( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
 			return '';
 		}
 	
-		$t_string = \Flickerbox\Form::security_token( $p_form_name );
+		$t_string = \Core\Form::security_token( $p_form_name );
 	
 		# Create the GET parameter to be used in a URL for a secure link
 		$t_form_token = $p_form_name . '_token';
@@ -144,11 +144,11 @@ class Form
 	 * @return boolean Form is valid
 	 */
 	static function security_validate( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
 			return true;
 		}
 	
-		$t_tokens = \Flickerbox\Session::get( 'form_security_tokens', array() );
+		$t_tokens = \Core\Session::get( 'form_security_tokens', array() );
 	
 		# Short-circuit if we don't have any tokens for the given form name
 		if( !isset( $t_tokens[$p_form_name] ) || !is_array( $t_tokens[$p_form_name] ) || count( $t_tokens[$p_form_name] ) < 1 ) {
@@ -159,7 +159,7 @@ class Form
 	
 		# Get the form input
 		$t_form_token = $p_form_name . '_token';
-		$t_input = \Flickerbox\GPC::get_string( $t_form_token, '' );
+		$t_input = \Core\GPC::get_string( $t_form_token, '' );
 	
 		# No form input
 		if( '' == $t_input ) {
@@ -187,11 +187,11 @@ class Form
 	 * @return void
 	 */
 	static function security_purge( $p_form_name ) {
-		if( PHP_CLI == \Flickerbox\PHP::mode() || OFF == \Flickerbox\Config::get_global( 'form_security_validation' ) ) {
+		if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
 			return;
 		}
 	
-		$t_tokens = \Flickerbox\Session::get( 'form_security_tokens', array() );
+		$t_tokens = \Core\Session::get( 'form_security_tokens', array() );
 	
 		# Short-circuit if we don't have any tokens for the given form name
 		if( !isset( $t_tokens[$p_form_name] ) || !is_array( $t_tokens[$p_form_name] ) || count( $t_tokens[$p_form_name] ) < 1 ) {
@@ -200,7 +200,7 @@ class Form
 	
 		# Get the form input
 		$t_form_token = $p_form_name . '_token';
-		$t_input = \Flickerbox\GPC::get_string( $t_form_token, '' );
+		$t_input = \Core\GPC::get_string( $t_form_token, '' );
 	
 		# Get the date claimed by the token
 		$t_date = utf8_substr( $t_input, 0, 8 );
@@ -219,7 +219,7 @@ class Form
 			}
 		}
 	
-		\Flickerbox\Session::set( 'form_security_tokens', $t_tokens );
+		\Core\Session::set( 'form_security_tokens', $t_tokens );
 	
 		return;
 	}

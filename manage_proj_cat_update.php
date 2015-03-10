@@ -38,33 +38,33 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_cat_update' );
+\Core\Form::security_validate( 'manage_proj_cat_update' );
 
 auth_reauthenticate();
 
-$f_category_id		= \Flickerbox\GPC::get_int( 'category_id' );
-$f_project_id		= \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
-$f_name				= trim( \Flickerbox\GPC::get_string( 'name' ) );
-$f_assigned_to		= \Flickerbox\GPC::get_int( 'assigned_to', 0 );
+$f_category_id		= \Core\GPC::get_int( 'category_id' );
+$f_project_id		= \Core\GPC::get_int( 'project_id', ALL_PROJECTS );
+$f_name				= trim( \Core\GPC::get_string( 'name' ) );
+$f_assigned_to		= \Core\GPC::get_int( 'assigned_to', 0 );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
-if( \Flickerbox\Utility::is_blank( $f_name ) ) {
+if( \Core\Utility::is_blank( $f_name ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
-$t_row = \Flickerbox\Category::get_row( $f_category_id );
+$t_row = \Core\Category::get_row( $f_category_id );
 $t_old_name = $t_row['name'];
 $t_project_id = $t_row['project_id'];
 
 # check for duplicate
 if( utf8_strtolower( $f_name ) != utf8_strtolower( $t_old_name ) ) {
-	\Flickerbox\Category::ensure_unique( $t_project_id, $f_name );
+	\Core\Category::ensure_unique( $t_project_id, $f_name );
 }
 
-\Flickerbox\Category::update( $f_category_id, $f_name, $f_assigned_to );
+\Core\Category::update( $f_category_id, $f_name, $f_assigned_to );
 
-\Flickerbox\Form::security_purge( 'manage_proj_cat_update' );
+\Core\Form::security_purge( 'manage_proj_cat_update' );
 
 if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_page.php';
@@ -72,8 +72,8 @@ if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 }
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

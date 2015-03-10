@@ -37,35 +37,35 @@ if( !defined( 'BUG_FILE_UPLOAD_INC_ALLOW' ) ) {
 
 
 # check if we can allow the upload... bail out if we can't
-if( !\Flickerbox\File::allow_bug_upload( $f_bug_id ) ) {
+if( !\Core\File::allow_bug_upload( $f_bug_id ) ) {
 	return false;
 }
 
-$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
+$t_max_file_size = (int)min( \Core\Utility::ini_get_number( 'upload_max_filesize' ), \Core\Utility::ini_get_number( 'post_max_size' ), \Core\Config::mantis_get( 'max_file_size' ) );
 ?>
 <br />
 
 <?php
-	\Flickerbox\Collapse::open( 'upload_form' );
-	$t_file_upload_max_num = max( 1, \Flickerbox\Config::mantis_get( 'file_upload_max_num' ) );
+	\Core\Collapse::open( 'upload_form' );
+	$t_file_upload_max_num = max( 1, \Core\Config::mantis_get( 'file_upload_max_num' ) );
 ?>
 <form method="post" enctype="multipart/form-data" action="bug_file_add(.php">
-<?php echo \Flickerbox\Form::security_field( 'bug_file_add(' ) ?>
+<?php echo \Core\Form::security_field( 'bug_file_add(' ) ?>
 
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
 <?php
-		\Flickerbox\Collapse::icon( 'upload_form' );
-		echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'upload_file' : 'upload_files' );
+		\Core\Collapse::icon( 'upload_form' );
+		echo \Core\Lang::get( $t_file_upload_max_num == 1 ? 'upload_file' : 'upload_files' );
 ?>
 	</td>
 </tr>
 <tr class="row-1">
 	<td class="category" width="15%">
-		<?php echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'select_file' : 'select_files' ) ?>
+		<?php echo \Core\Lang::get( $t_file_upload_max_num == 1 ? 'select_file' : 'select_files' ) ?>
 		<br />
-		<?php echo \Flickerbox\Print_Util::max_filesize( $t_max_file_size ); ?>
+		<?php echo \Core\Print_Util::max_filesize( $t_max_file_size ); ?>
 	</td>
 	<td width="85%">
 		<input type="hidden" name="bug_id" value="<?php echo $f_bug_id ?>" />
@@ -82,24 +82,24 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 	}
 ?>
 		<input type="submit" class="button"
-			value="<?php echo \Flickerbox\Lang::get( $t_file_upload_max_num == 1 ? 'upload_file_button' : 'upload_files_button' ) ?>"
+			value="<?php echo \Core\Lang::get( $t_file_upload_max_num == 1 ? 'upload_file_button' : 'upload_files_button' ) ?>"
 		/>
 	</td>
 </tr>
 </table>
 </form>
 <?php
-\Flickerbox\Collapse::closed( 'upload_form' );
+\Core\Collapse::closed( 'upload_form' );
 ?>
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
 		<?php
-			\Flickerbox\Collapse::icon( 'upload_form' );
-			echo \Flickerbox\Lang::get( 'upload_file' ) ?>
+			\Core\Collapse::icon( 'upload_form' );
+			echo \Core\Lang::get( 'upload_file' ) ?>
 	</td>
 </tr>
 </table>
 
 <?php
-\Flickerbox\Collapse::end( 'upload_form' );
+\Core\Collapse::end( 'upload_form' );

@@ -36,23 +36,23 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_subproj_delete' );
+\Core\Form::security_validate( 'manage_proj_subproj_delete' );
 
 auth_reauthenticate();
 
-$f_project_id    = \Flickerbox\GPC::get_int( 'project_id' );
-$f_subproject_id = \Flickerbox\GPC::get_int( 'subproject_id' );
+$f_project_id    = \Core\GPC::get_int( 'project_id' );
+$f_subproject_id = \Core\GPC::get_int( 'subproject_id' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
-\Flickerbox\Project\Hierarchy::remove( $f_subproject_id, $f_project_id );
+\Core\Project\Hierarchy::remove( $f_subproject_id, $f_project_id );
 
-\Flickerbox\Form::security_purge( 'manage_proj_subproj_delete' );
+\Core\Form::security_purge( 'manage_proj_subproj_delete' );
 
 $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

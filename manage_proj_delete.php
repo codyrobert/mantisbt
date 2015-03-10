@@ -37,28 +37,28 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_delete' );
+\Core\Form::security_validate( 'manage_proj_delete' );
 
 auth_reauthenticate();
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+$f_project_id = \Core\GPC::get_int( 'project_id' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'delete_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'delete_project_threshold' ), $f_project_id );
 
-$t_project_name = \Flickerbox\Project::get_name( $f_project_id );
+$t_project_name = \Core\Project::get_name( $f_project_id );
 
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'project_delete_msg' ) .
-		'<br/>' . \Flickerbox\Lang::get( 'project_name_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_project_name,
-		\Flickerbox\Lang::get( 'project_delete_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'project_delete_msg' ) .
+		'<br/>' . \Core\Lang::get( 'project_name_label' ) . \Core\Lang::get( 'word_separator' ) . $t_project_name,
+		\Core\Lang::get( 'project_delete_button' ) );
 
-\Flickerbox\Project::delete( $f_project_id );
+\Core\Project::delete( $f_project_id );
 
-\Flickerbox\Form::security_purge( 'manage_proj_delete' );
+\Core\Form::security_purge( 'manage_proj_delete' );
 
 # Don't leave the current project set to a deleted project -
 #  set it to All Projects
-if( \Flickerbox\Helper::get_current_project() == $f_project_id ) {
-	\Flickerbox\Helper::set_current_project( ALL_PROJECTS );
+if( \Core\Helper::get_current_project() == $f_project_id ) {
+	\Core\Helper::set_current_project( ALL_PROJECTS );
 }
 
-\Flickerbox\Print_Util::header_redirect( 'manage_proj_page.php' );
+\Core\Print_Util::header_redirect( 'manage_proj_page.php' );

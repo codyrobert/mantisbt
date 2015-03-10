@@ -35,7 +35,7 @@ require_once( 'check_api.php' );
 
 check_print_section_header_row( 'Internationalization' );
 
-$t_config_default_timezone = \Flickerbox\Config::get_global( 'default_timezone' );
+$t_config_default_timezone = \Core\Config::get_global( 'default_timezone' );
 if( $t_config_default_timezone ) {
 	check_print_test_row(
 		'Default timezone has been specified in config_inc.php (default_timezone option)',

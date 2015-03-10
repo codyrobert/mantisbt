@@ -39,91 +39,91 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'proj_doc_update' );
+\Core\Form::security_validate( 'proj_doc_update' );
 
 # Check if project documentation feature is enabled.
-if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ||
-	!\Flickerbox\File::is_uploading_enabled() ||
-	!\Flickerbox\File::allow_project_upload() ) {
-	\Flickerbox\Access::denied();
+if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ||
+	!\Core\File::is_uploading_enabled() ||
+	!\Core\File::allow_project_upload() ) {
+	\Core\Access::denied();
 }
 
-$f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
-$f_title = \Flickerbox\GPC::get_string( 'title' );
-$f_description	= \Flickerbox\GPC::get_string( 'description' );
+$f_file_id = \Core\GPC::get_int( 'file_id' );
+$f_title = \Core\GPC::get_string( 'title' );
+$f_description	= \Core\GPC::get_string( 'description' );
 $f_file = gpc_get_file( 'file' );
 
-$t_project_id = \Flickerbox\File::get_field( $f_file_id, 'project_id', 'project' );
+$t_project_id = \Core\File::get_field( $f_file_id, 'project_id', 'project' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id );
 
-if( \Flickerbox\Utility::is_blank( $f_title ) ) {
-	\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'title' ) );
+if( \Core\Utility::is_blank( $f_title ) ) {
+	\Core\Error::parameters( \Core\Lang::get( 'title' ) );
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
 # @todo (thraxisp) this code should probably be integrated into file_api to share methods used to store files
 
 if( isset( $f_file['tmp_name'] ) && is_uploaded_file( $f_file['tmp_name'] ) ) {
-	\Flickerbox\File::ensure_uploaded( $f_file );
+	\Core\File::ensure_uploaded( $f_file );
 
-	$t_project_id = \Flickerbox\Helper::get_current_project();
+	$t_project_id = \Core\Helper::get_current_project();
 
 	# grab the original file path and name
-	$t_disk_file_name = \Flickerbox\File::get_field( $f_file_id, 'diskfile', 'project' );
+	$t_disk_file_name = \Core\File::get_field( $f_file_id, 'diskfile', 'project' );
 	$t_file_path = dirname( $t_disk_file_name );
 
 	# prepare variables for insertion
 	$t_file_size = filesize( $f_file['tmp_name'] );
-	$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
+	$t_max_file_size = (int)min( \Core\Utility::ini_get_number( 'upload_max_filesize' ), \Core\Utility::ini_get_number( 'post_max_size' ), \Core\Config::mantis_get( 'max_file_size' ) );
 	if( $t_file_size > $t_max_file_size ) {
 		trigger_error( ERROR_FILE_TOO_BIG, ERROR );
 	}
 
-	$t_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
+	$t_method = \Core\Config::mantis_get( 'file_upload_method' );
 	switch( $t_method ) {
 		case DISK:
-			\Flickerbox\File::ensure_valid_upload_path( $t_file_path );
+			\Core\File::ensure_valid_upload_path( $t_file_path );
 
 			if( file_exists( $t_disk_file_name ) ) {
-				\Flickerbox\File::delete_local( $t_disk_file_name );
+				\Core\File::delete_local( $t_disk_file_name );
 			}
 			if( !move_uploaded_file( $f_file['tmp_name'], $t_disk_file_name ) ) {
 				trigger_error( ERROR_FILE_MOVE_FAILED, ERROR );
 			}
-			chmod( $t_disk_file_name, \Flickerbox\Config::mantis_get( 'attachments_file_permissions' ) );
+			chmod( $t_disk_file_name, \Core\Config::mantis_get( 'attachments_file_permissions' ) );
 
 			$c_content = '';
 			break;
 		case DATABASE:
-			$c_content = \Flickerbox\Database::prepare_binary_string( fread( fopen( $f_file['tmp_name'], 'rb' ), $f_file['size'] ) );
+			$c_content = \Core\Database::prepare_binary_string( fread( fopen( $f_file['tmp_name'], 'rb' ), $f_file['size'] ) );
 			break;
 		default:
 			# @todo Such errors should be checked in the admin checks
 			trigger_error( ERROR_GENERIC, ERROR );
 	}
 	$t_query = 'UPDATE {project_file}
-		SET title=' . \Flickerbox\Database::param() . ', description=' . \Flickerbox\Database::param() . ', date_added=' . \Flickerbox\Database::param() . ',
-			filename=' . \Flickerbox\Database::param() . ', filesize=' . \Flickerbox\Database::param() . ', file_type=' .\Flickerbox\Database::param() . ', content=' .\Flickerbox\Database::param() . '
-			WHERE id=' . \Flickerbox\Database::param();
-	$t_result = \Flickerbox\Database::query( $t_query, array( $f_title, $f_description, \Flickerbox\Database::now(), $f_file['name'], $t_file_size, $f_file['type'], $c_content, $f_file_id ) );
+		SET title=' . \Core\Database::param() . ', description=' . \Core\Database::param() . ', date_added=' . \Core\Database::param() . ',
+			filename=' . \Core\Database::param() . ', filesize=' . \Core\Database::param() . ', file_type=' .\Core\Database::param() . ', content=' .\Core\Database::param() . '
+			WHERE id=' . \Core\Database::param();
+	$t_result = \Core\Database::query( $t_query, array( $f_title, $f_description, \Core\Database::now(), $f_file['name'], $t_file_size, $f_file['type'], $c_content, $f_file_id ) );
 } else {
 	$t_query = 'UPDATE {project_file}
-			SET title=' . \Flickerbox\Database::param() . ', description=' . \Flickerbox\Database::param() . '
-			WHERE id=' . \Flickerbox\Database::param();
-	$t_result = \Flickerbox\Database::query( $t_query, array( $f_title, $f_description, $f_file_id ) );
+			SET title=' . \Core\Database::param() . ', description=' . \Core\Database::param() . '
+			WHERE id=' . \Core\Database::param();
+	$t_result = \Core\Database::query( $t_query, array( $f_title, $f_description, $f_file_id ) );
 }
 
 if( !$t_result ) {
 	trigger_error( ERROR_GENERIC, ERROR );
 }
 
-\Flickerbox\Form::security_purge( 'proj_doc_update' );
+\Core\Form::security_purge( 'proj_doc_update' );
 
 $t_redirect_url = 'proj_doc_page.php';
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

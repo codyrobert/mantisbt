@@ -36,74 +36,74 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\News::ensure_enabled();
+\Core\News::ensure_enabled();
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_news_threshold' ) );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'edit_news_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'edit_news_link' ) );
 ?>
 
 <div id="news-add-div" class="form-container">
 	<form id="news-add-form" method="post" action="news_add.php">
 		<fieldset class="has-required">
-			<legend><span><?php echo \Flickerbox\Lang::get( 'add_news_title' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'news_add' ); ?>
+			<legend><span><?php echo \Core\Lang::get( 'add_news_title' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'news_add' ); ?>
 			<div class="field-container">
-				<label for="news-headline" class="required"><span><?php echo \Flickerbox\Lang::get( 'headline' ) ?></span></label>
+				<label for="news-headline" class="required"><span><?php echo \Core\Lang::get( 'headline' ) ?></span></label>
 				<span class="input"><input type="text" id="news-headline" name="headline" size="64" maxlength="64" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="news-body" class="required"><span><?php echo \Flickerbox\Lang::get( 'body' ) ?></span></label>
+				<label for="news-body" class="required"><span><?php echo \Core\Lang::get( 'body' ) ?></span></label>
 				<span class="textarea"><textarea id="news-body" name="body" cols="60" rows="8"></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="news-announcement"><span><?php echo \Flickerbox\Lang::get( 'announcement' ) ?></span> <span class="help-text"><?php echo \Flickerbox\Lang::get( 'stays_on_top' ) ?></span></label>
+				<label for="news-announcement"><span><?php echo \Core\Lang::get( 'announcement' ) ?></span> <span class="help-text"><?php echo \Core\Lang::get( 'stays_on_top' ) ?></span></label>
 				<span class="checkbox"><input type="checkbox" id="news-announcement" name="announcement" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="news-view-status"><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
+				<label for="news-view-status"><span><?php echo \Core\Lang::get( 'view_status' ) ?></span></label>
 				<span class="select">
 					<select id="news-view-status" name="view_state">
-						<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state' ) ?>
+						<?php \Core\Print_Util::enum_string_option_list( 'view_state' ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'post_news_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'post_news_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 <?php
 # Add News Form END
 # Edit/Delete News Form BEGIN
-if( \Flickerbox\News::get_count( \Flickerbox\Helper::get_current_project(), \Flickerbox\Current_User::is_administrator() ) > 0 ) { ?>
+if( \Core\News::get_count( \Core\Helper::get_current_project(), \Core\Current_User::is_administrator() ) > 0 ) { ?>
 <div id="news-edit-div" class="form-container">
 	<form id="news-edit-form" method="post" action="news_edit_page.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'edit_or_delete_news_title' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'news_delete' ); ?>
+			<legend><span><?php echo \Core\Lang::get( 'edit_or_delete_news_title' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'news_delete' ); ?>
 			<fieldset class="field-container">
 					<span class="radio"><input type="radio" id="news-edit-action" name="action" value="edit" checked="checked" /></span>
-					<label for="news-edit-action"><span><?php echo \Flickerbox\Lang::get( 'edit_post' ) ?></span></label>
+					<label for="news-edit-action"><span><?php echo \Core\Lang::get( 'edit_post' ) ?></span></label>
 					<span class="radio"><input type="radio" id="news-delete-action" name="action" value="delete" /></span>
-					<label for="news-delete-action"><span><?php echo \Flickerbox\Lang::get( 'delete_post' ) ?></span></label>
+					<label for="news-delete-action"><span><?php echo \Core\Lang::get( 'delete_post' ) ?></span></label>
 			</fieldset>
 			<div class="field-container">
-				<label for="news-edit-id"><span><?php echo \Flickerbox\Lang::get( 'select_post' ) ?></span></label>
+				<label for="news-edit-id"><span><?php echo \Core\Lang::get( 'select_post' ) ?></span></label>
 				<span class="select">
 					<select id="news-edit-id" name="news_id">
-						<?php \Flickerbox\Print_Util::news_item_option_list() ?>
+						<?php \Core\Print_Util::news_item_option_list() ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'submit_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'submit_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div><?php
 } # Edit/Delete News Form END
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

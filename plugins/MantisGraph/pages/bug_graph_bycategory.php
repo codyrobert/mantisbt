@@ -25,17 +25,17 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Plugin::require_api( 'core/Period.php' );
-\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
+\Core\Plugin::require_api( 'core/Period.php' );
+\Core\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
-$f_width = \Flickerbox\GPC::get_int( 'width', 600 );
-$t_ar = \Flickerbox\Plugin::config_get( 'bar_aspect' );
+$f_width = \Core\GPC::get_int( 'width', 600 );
+$t_ar = \Core\Plugin::config_get( 'bar_aspect' );
 $t_interval = new Period();
 $t_interval->set_period_from_selector( 'interval' );
-$f_show_as_table = \Flickerbox\GPC::get_bool( 'show_table', false );
-$f_summary = \Flickerbox\GPC::get_bool( 'summary', false );
+$f_show_as_table = \Core\GPC::get_bool( 'show_table', false );
+$f_summary = \Core\GPC::get_bool( 'summary', false );
 
 $t_interval_days = $t_interval->get_elapsed_days();
 if( $t_interval_days <= 14 ) {
@@ -52,11 +52,11 @@ $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = 0;
 
-$t_filter = \Flickerbox\Current_User::get_bug_filter();
+$t_filter = \Core\Current_User::get_bug_filter();
 $t_filter['_view_type']	= 'advanced';
 $t_filter[FILTER_PROPERTY_STATUS] = array(META_FILTER_ANY);
 $t_filter[FILTER_PROPERTY_SORT_FIELD_NAME] = '';
-$t_rows = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, null, null, true );
+$t_rows = \Core\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $t_filter, null, null, true );
 if( count( $t_rows ) == 0 ) {
 	# no data to graph
 	exit();
@@ -68,8 +68,8 @@ $t_ptr = 0;
 $t_end = $t_interval->get_end_timestamp();
 $t_start = $t_interval->get_start_timestamp();
 
-$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
-$t_closed = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
+$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_closed = \Core\Config::mantis_get( 'bug_closed_status_threshold' );
 
 $t_bug = array();
 $t_bug_cat = array(); # save categoties or bugs to look up resolved ones.
@@ -80,11 +80,11 @@ $t_marker[$t_ptr] = time();
 $t_data[$t_ptr] = array();
 foreach ( $t_rows as $t_row ) {
 	# the following function can treat the resolved parameter as an array to match
-	$t_cat = \Flickerbox\Category::get_field( $t_row->category_id );
+	$t_cat = \Core\Category::get_field( $t_row->category_id );
 	if( $t_cat == '' ) {
 		$t_cat = 'none';
 	}
-	if( !\Flickerbox\Access::compare_level( $t_row->status, $t_resolved ) ) {
+	if( !\Core\Access::compare_level( $t_row->status, $t_resolved ) ) {
 		if( in_array( $t_cat, $t_category ) ) {
 			$t_data[$t_ptr][$t_cat] ++;
 		} else {
@@ -103,10 +103,10 @@ $t_select = 'SELECT bug_id, type, field_name, old_value, new_value, date_modifie
 	WHERE bug_id in (' . implode( ',', $t_bug ) . ') and '.
 		'( (type=' . NORMAL_TYPE . ' and field_name=\'category\') or '.
 			'(type=' . NORMAL_TYPE . ' and field_name=\'status\') or type='.NEW_BUG.' ) and '.
-			'date_modified >= ' . \Flickerbox\Database::param() .
+			'date_modified >= ' . \Core\Database::param() .
 		' order by date_modified DESC';
-$t_result = \Flickerbox\Database::query( $t_select, array( $t_start ) );
-$t_row = \Flickerbox\Database::fetch_array( $t_result );
+$t_result = \Core\Database::query( $t_select, array( $t_start ) );
+$t_row = \Core\Database::fetch_array( $t_result );
 
 for( $t_now = time() - $t_incr; $t_now >= $t_start; $t_now -= $t_incr ) {
 	# walk through the data points and use the data retrieved to update counts
@@ -137,9 +137,9 @@ for( $t_now = time() - $t_incr; $t_now >= $t_start; $t_now -= $t_incr ) {
 					# change the category associated with the bug to match in case the bug was
 					#  created during the scan
 					$t_bug_cat[$t_row['bug_id']] = $t_cat;
-				} else { # change of status \Flickerbox\Access::compare_level( $t_row['status'], $t_resolved )
-					if( \Flickerbox\Access::compare_level( $t_row['new_value'], $t_resolved ) &&
-							!\Flickerbox\Access::compare_level( $t_row['old_value'], $t_resolved ) ) {
+				} else { # change of status \Core\Access::compare_level( $t_row['status'], $t_resolved )
+					if( \Core\Access::compare_level( $t_row['new_value'], $t_resolved ) &&
+							!\Core\Access::compare_level( $t_row['old_value'], $t_resolved ) ) {
 						# transition from open to closed
 						$t_cat = $t_bug_cat[$t_row['bug_id']];
 						if( $t_cat == '' ) {
@@ -167,7 +167,7 @@ for( $t_now = time() - $t_incr; $t_now >= $t_start; $t_now -= $t_incr ) {
 				}
 				break;
 		}
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	}
 
 	if( $t_now <= $t_end ) {
@@ -198,14 +198,14 @@ for( $i=0; $i<$t_count_cat; $i++ ) {
 # sort and display the results
 sort( $t_category );
 if( $f_show_as_table ) {
-	$t_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
-	\Flickerbox\HTML::begin();
-	\Flickerbox\HTML::head_begin();
-	\Flickerbox\HTML::css();
-	\Flickerbox\HTML::content_type();
-	\Flickerbox\HTML::title( \Flickerbox\Lang::get( 'by_category' ) );
-	\Flickerbox\HTML::head_end();
-	\Flickerbox\HTML::body_begin();
+	$t_date_format = \Core\Config::mantis_get( 'short_date_format' );
+	\Core\HTML::begin();
+	\Core\HTML::head_begin();
+	\Core\HTML::css();
+	\Core\HTML::content_type();
+	\Core\HTML::title( \Core\Lang::get( 'by_category' ) );
+	\Core\HTML::head_end();
+	\Core\HTML::body_begin();
 	echo '<table class="width100"><tr><td></td>';
 	foreach ( $t_category as $t_cat ) {
 		echo '<th>'.$t_cat.'</th>';
@@ -219,8 +219,8 @@ if( $f_show_as_table ) {
 		echo '</tr>';
 	}
 	echo '</table>';
-	\Flickerbox\HTML::body_end();
-	\Flickerbox\HTML::end();
+	\Core\HTML::body_end();
+	\Core\HTML::end();
 } else {
 	# reverse the array and reorder the data, if necessary
 	$t_metrics = array();
@@ -233,5 +233,5 @@ if( $f_show_as_table ) {
 		}
 	}
 	array_unshift( $t_category, '' ); # add placeholder
-	graph_bydate( $t_metrics, $t_category, \Flickerbox\Lang::get( 'by_category' ), $f_width, $f_width * $t_ar );
+	graph_bydate( $t_metrics, $t_category, \Core\Lang::get( 'by_category' ), $f_width, $f_width * $t_ar );
 }

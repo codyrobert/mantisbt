@@ -46,7 +46,7 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 function action_add_note_print_title() {
 	echo '<tr>';
 	echo '<td class="form-title" colspan="2">';
-	echo \Flickerbox\Lang::get( 'add_bugnote_title' );
+	echo \Core\Lang::get( 'add_bugnote_title' );
 	echo '</td></tr>';
 }
 
@@ -62,7 +62,7 @@ function action_add_note_print_fields() {
 	<tbody>
 		<tr>
 			<th class="category">
-				<?php \Flickerbox\Lang::get( 'add_bugnote_title' ); ?>
+				<?php \Core\Lang::get( 'add_bugnote_title' ); ?>
 			</th>
 			<td>
 				<textarea name="bugnote_text" cols="80" rows="10"></textarea>
@@ -72,18 +72,18 @@ function action_add_note_print_fields() {
 		<!-- View Status -->
 		<tr class="row-2">
 			<th class="category">
-				<?php echo \Flickerbox\Lang::get( 'view_status' ) ?>
+				<?php echo \Core\Lang::get( 'view_status' ) ?>
 			</th>
 			<td>
 <?php
-	$t_default_state = \Flickerbox\Config::mantis_get( 'default_bugnote_view_status' );
-	if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'set_view_status_threshold' ) ) ) { ?>
+	$t_default_state = \Core\Config::mantis_get( 'default_bugnote_view_status' );
+	if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'set_view_status_threshold' ) ) ) { ?>
 				<select name="view_state">
-					<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state', $t_default_state ) ?>
+					<?php \Core\Print_Util::enum_string_option_list( 'view_state', $t_default_state ) ?>
 				</select>
 <?php
 	} else {
-		echo \Flickerbox\Helper::get_enum_element( 'view_state', $t_default_state );
+		echo \Core\Helper::get_enum_element( 'view_state', $t_default_state );
 ?>
 				<input type="hidden" name="view_state" value="<?php echo $t_default_state; ?>" />';
 <?php
@@ -96,7 +96,7 @@ function action_add_note_print_fields() {
 	<tfoot>
 		<tr>
 			<td colspan="2" class="center">
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_bugnote_button' ); ?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_bugnote_button' ); ?>" />
 			</td>
 		</tr>
 	</tfoot>
@@ -110,22 +110,22 @@ function action_add_note_print_fields() {
  * @return string|null On failure: the reason why the action could not be validated. On success: null.
  */
 function action_add_note_validate( $p_bug_id ) {
-	$f_bugnote_text = \Flickerbox\GPC::get_string( 'bugnote_text' );
+	$f_bugnote_text = \Core\GPC::get_string( 'bugnote_text' );
 
-	if( \Flickerbox\Utility::is_blank( $f_bugnote_text ) ) {
-		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'bugnote' ) );
+	if( \Core\Utility::is_blank( $f_bugnote_text ) ) {
+		\Core\Error::parameters( \Core\Lang::get( 'bugnote' ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 
-	$t_add_bugnote_threshold = \Flickerbox\Config::mantis_get( 'add_bugnote_threshold' );
+	$t_add_bugnote_threshold = \Core\Config::mantis_get( 'add_bugnote_threshold' );
 	$t_bug_id = $p_bug_id;
 
-	if( \Flickerbox\Bug::is_readonly( $t_bug_id ) ) {
-		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
+	if( \Core\Bug::is_readonly( $t_bug_id ) ) {
+		return \Core\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
-	if( !\Flickerbox\Access::has_bug_level( $t_add_bugnote_threshold, $t_bug_id ) ) {
-		return \Flickerbox\Lang::get( 'access_denied' );
+	if( !\Core\Access::has_bug_level( $t_add_bugnote_threshold, $t_bug_id ) ) {
+		return \Core\Lang::get( 'access_denied' );
 	}
 
 	return null;
@@ -138,8 +138,8 @@ function action_add_note_validate( $p_bug_id ) {
  * @return null Previous validation ensures that this function doesn't fail. Therefore we can always return null to indicate no errors occurred.
  */
 function action_add_note_process( $p_bug_id ) {
-	$f_bugnote_text = \Flickerbox\GPC::get_string( 'bugnote_text' );
-	$f_view_state = \Flickerbox\GPC::get_int( 'view_state' );
-	\Flickerbox\Bug\Note::add( $p_bug_id, $f_bugnote_text, '0:00', $f_view_state != VS_PUBLIC );
+	$f_bugnote_text = \Core\GPC::get_string( 'bugnote_text' );
+	$f_view_state = \Core\GPC::get_int( 'view_state' );
+	\Core\Bug\Note::add( $p_bug_id, $f_bugnote_text, '0:00', $f_view_state != VS_PUBLIC );
 	return null;
 }

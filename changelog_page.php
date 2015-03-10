@@ -53,26 +53,26 @@ require_once( 'core.php' );
  * @return void
  */
 function print_version_header( $p_version_id ) {
-	$t_project_id   = \Flickerbox\Version::get_field( $p_version_id, 'project_id' );
-	$t_version_name = \Flickerbox\Version::get_field( $p_version_id, 'version' );
-	$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
+	$t_project_id   = \Core\Version::get_field( $p_version_id, 'project_id' );
+	$t_version_name = \Core\Version::get_field( $p_version_id, 'version' );
+	$t_project_name = \Core\Project::get_field( $t_project_id, 'name' );
 
-	$t_release_title = '<a href="changelog_page.php?project_id=' . $t_project_id . '">' . \Flickerbox\String::display_line( $t_project_name ) . '</a> - <a href="changelog_page.php?version_id=' . $p_version_id . '">' . \Flickerbox\String::display_line( $t_version_name ) . '</a>';
+	$t_release_title = '<a href="changelog_page.php?project_id=' . $t_project_id . '">' . \Core\String::display_line( $t_project_name ) . '</a> - <a href="changelog_page.php?version_id=' . $p_version_id . '">' . \Core\String::display_line( $t_version_name ) . '</a>';
 
-	if( \Flickerbox\Config::mantis_get( 'show_changelog_dates' ) ) {
-		$t_version_released = \Flickerbox\Version::get_field( $p_version_id, 'released' );
-		$t_release_timestamp = \Flickerbox\Version::get_field( $p_version_id, 'date_order' );
+	if( \Core\Config::mantis_get( 'show_changelog_dates' ) ) {
+		$t_version_released = \Core\Version::get_field( $p_version_id, 'released' );
+		$t_release_timestamp = \Core\Version::get_field( $p_version_id, 'date_order' );
 
 		if( (bool)$t_version_released ) {
-			$t_release_date = ' (' . \Flickerbox\Lang::get( 'released' ) . ' ' . \Flickerbox\String::display_line( date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $t_release_timestamp ) ) . ')';
+			$t_release_date = ' (' . \Core\Lang::get( 'released' ) . ' ' . \Core\String::display_line( date( \Core\Config::mantis_get( 'short_date_format' ), $t_release_timestamp ) ) . ')';
 		} else {
-			$t_release_date = ' (' . \Flickerbox\Lang::get( 'not_released' ) . ')';
+			$t_release_date = ' (' . \Core\Lang::get( 'not_released' ) . ')';
 		}
 	} else {
 		$t_release_date = '';
 	}
 
-	echo '<br />', $t_release_title, $t_release_date, \Flickerbox\Lang::get( 'word_separator' ), \Flickerbox\Print_Util::bracket_link( 'view_all_set.php?type=1&temporary=y&' . FILTER_PROPERTY_PROJECT_ID . '=' . $t_project_id . '&' . \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_FIXED_IN_VERSION, $t_version_name ), \Flickerbox\Lang::get( 'view_bugs_link' ) ), '<br />';
+	echo '<br />', $t_release_title, $t_release_date, \Core\Lang::get( 'word_separator' ), \Core\Print_Util::bracket_link( 'view_all_set.php?type=1&temporary=y&' . FILTER_PROPERTY_PROJECT_ID . '=' . $t_project_id . '&' . \Core\Filter::encode_field_and_value( FILTER_PROPERTY_FIXED_IN_VERSION, $t_version_name ), \Core\Lang::get( 'view_bugs_link' ) ), '<br />';
 
 	$t_release_title_without_hyperlinks = $t_project_name . ' - ' . $t_version_name . $t_release_date;
 	echo utf8_str_pad( '', utf8_strlen( $t_release_title_without_hyperlinks ), '=' ), '<br />';
@@ -84,92 +84,92 @@ function print_version_header( $p_version_id ) {
  * @return void
  */
 function print_project_header_changelog ( $p_project_name ) {
-	echo '<br /><span class="pagetitle">', \Flickerbox\String::display_line( $p_project_name ), ' - ', \Flickerbox\Lang::get( 'changelog' ), '</span><br />';
+	echo '<br /><span class="pagetitle">', \Core\String::display_line( $p_project_name ), ' - ', \Core\Lang::get( 'changelog' ), '</span><br />';
 	echo '<tt>';
 }
 
 $t_issues_found = false;
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
-$f_project = \Flickerbox\GPC::get_string( 'project', '' );
-if( \Flickerbox\Utility::is_blank( $f_project ) ) {
-	$f_project_id = \Flickerbox\GPC::get_int( 'project_id', -1 );
+$f_project = \Core\GPC::get_string( 'project', '' );
+if( \Core\Utility::is_blank( $f_project ) ) {
+	$f_project_id = \Core\GPC::get_int( 'project_id', -1 );
 } else {
-	$f_project_id = \Flickerbox\Project::get_id_by_name( $f_project );
+	$f_project_id = \Core\Project::get_id_by_name( $f_project );
 
 	if( $f_project_id === 0 ) {
-		\Flickerbox\Error::parameters( $f_project );
+		\Core\Error::parameters( $f_project );
 		trigger_error( ERROR_PROJECT_NOT_FOUND, ERROR );
 	}
 }
 
-$f_version = \Flickerbox\GPC::get_string( 'version', '' );
+$f_version = \Core\GPC::get_string( 'version', '' );
 
-if( \Flickerbox\Utility::is_blank( $f_version ) ) {
-	$f_version_id = \Flickerbox\GPC::get_int( 'version_id', -1 );
+if( \Core\Utility::is_blank( $f_version ) ) {
+	$f_version_id = \Core\GPC::get_int( 'version_id', -1 );
 
 	# If both version_id and project_id parameters are supplied, then version_id take precedence.
 	if( $f_version_id == -1 ) {
 		if( $f_project_id == -1 ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = $f_project_id;
 		}
 	} else {
-		$t_project_id = \Flickerbox\Version::get_field( $f_version_id, 'project_id' );
+		$t_project_id = \Core\Version::get_field( $f_version_id, 'project_id' );
 	}
 } else {
 	if( $f_project_id == -1 ) {
-		$t_project_id = \Flickerbox\Helper::get_current_project();
+		$t_project_id = \Core\Helper::get_current_project();
 	} else {
 		$t_project_id = $f_project_id;
 	}
 
-	$f_version_id = \Flickerbox\Version::get_id( $f_version, $t_project_id );
+	$f_version_id = \Core\Version::get_id( $f_version, $t_project_id );
 
 	if( $f_version_id === false ) {
-		\Flickerbox\Error::parameters( $f_version );
+		\Core\Error::parameters( $f_version );
 		trigger_error( ERROR_VERSION_NOT_FOUND, ERROR );
 	}
 }
 
 if( ALL_PROJECTS == $t_project_id ) {
-	$t_project_ids_to_check = \Flickerbox\User::get_all_accessible_projects( $t_user_id, ALL_PROJECTS );
+	$t_project_ids_to_check = \Core\User::get_all_accessible_projects( $t_user_id, ALL_PROJECTS );
 	$t_project_ids = array();
 
 	foreach ( $t_project_ids_to_check as $t_project_id ) {
-		$t_changelog_view_access_level = \Flickerbox\Config::mantis_get( 'view_changelog_threshold', null, null, $t_project_id );
-		if( \Flickerbox\Access::has_project_level( $t_changelog_view_access_level, $t_project_id ) ) {
+		$t_changelog_view_access_level = \Core\Config::mantis_get( 'view_changelog_threshold', null, null, $t_project_id );
+		if( \Core\Access::has_project_level( $t_changelog_view_access_level, $t_project_id ) ) {
 			$t_project_ids[] = $t_project_id;
 		}
 	}
 } else {
-	\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_changelog_threshold' ), $t_project_id );
-	$t_project_ids = \Flickerbox\User::get_all_accessible_subprojects( $t_user_id, $t_project_id );
+	\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_changelog_threshold' ), $t_project_id );
+	$t_project_ids = \Core\User::get_all_accessible_subprojects( $t_user_id, $t_project_id );
 	array_unshift( $t_project_ids, $t_project_id );
 }
 
 $t_project_id_for_access_check = $t_project_id;
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'changelog' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'changelog' ) );
 
-\Flickerbox\Version::cache_array_rows( $t_project_ids );
-\Flickerbox\Category::cache_array_rows_by_project( $t_project_ids );
+\Core\Version::cache_array_rows( $t_project_ids );
+\Core\Category::cache_array_rows_by_project( $t_project_ids );
 
 foreach( $t_project_ids as $t_project_id ) {
-	$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
-	$t_can_view_private = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'private_bug_threshold' ), $t_project_id );
+	$t_project_name = \Core\Project::get_field( $t_project_id, 'name' );
+	$t_can_view_private = \Core\Access::has_project_level( \Core\Config::mantis_get( 'private_bug_threshold' ), $t_project_id );
 
-	$t_limit_reporters = \Flickerbox\Config::mantis_get( 'limit_reporters' );
-	$t_user_access_level_is_reporter = ( \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, null, $t_project_id ) == \Flickerbox\Access::get_project_level( $t_project_id ) );
+	$t_limit_reporters = \Core\Config::mantis_get( 'limit_reporters' );
+	$t_user_access_level_is_reporter = ( \Core\Config::mantis_get( 'report_bug_threshold', null, null, $t_project_id ) == \Core\Access::get_project_level( $t_project_id ) );
 
-	$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+	$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
 
 	# grab version info for later use
-	$t_version_rows = \Flickerbox\Version::get_all_rows( $t_project_id, null, false );
+	$t_version_rows = \Core\Version::get_all_rows( $t_project_id, null, false );
 
 	# cache category info, but ignore the results for now
-	\Flickerbox\Category::get_all_rows( $t_project_id );
+	\Core\Category::get_all_rows( $t_project_id );
 
 	$t_project_header_printed = false;
 
@@ -189,31 +189,31 @@ foreach( $t_project_ids as $t_project_id ) {
 			LEFT JOIN {bug_relationship} rt
 				ON sbt.id=rt.destination_bug_id AND rt.relationship_type=' . BUG_DEPENDANT . '
 			LEFT JOIN {bug} dbt ON dbt.id=rt.source_bug_id
-			WHERE sbt.project_id=' . \Flickerbox\Database::param() . '
-			  AND sbt.fixed_in_version=' . \Flickerbox\Database::param() . '
+			WHERE sbt.project_id=' . \Core\Database::param() . '
+			  AND sbt.fixed_in_version=' . \Core\Database::param() . '
 			ORDER BY sbt.status ASC, sbt.last_updated DESC';
 
-		$t_description = \Flickerbox\Version::get_field( $t_version_id, 'description' );
+		$t_description = \Core\Version::get_field( $t_version_id, 'description' );
 
 		$t_first_entry = true;
 		$t_issue_ids = array();
 		$t_issue_parents = array();
 		$t_issue_handlers = array();
 
-		$t_result = \Flickerbox\Database::query( $t_query, array( $t_project_id, $t_version ) );
+		$t_result = \Core\Database::query( $t_query, array( $t_project_id, $t_version ) );
 
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			# hide private bugs if user doesn't have access to view them.
 			if( !$t_can_view_private && ( $t_row['view_state'] == VS_PRIVATE ) ) {
 				continue;
 			}
 
-			\Flickerbox\Bug::cache_database_result( $t_row );
+			\Core\Bug::cache_database_result( $t_row );
 
 			# check limit_Reporter (Issue #4770)
 			# reporters can view just issues they reported
 			if( ON === $t_limit_reporters && $t_user_access_level_is_reporter &&
-							!\Flickerbox\Bug::is_user_reporter( $t_row['id'], $t_user_id )) {
+							!\Core\Bug::is_user_reporter( $t_row['id'], $t_user_id )) {
 				continue;
 			}
 
@@ -221,7 +221,7 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_parent = $t_row['source_bug_id'];
 			$t_parent_version = $t_row['parent_version'];
 
-			if( !\Flickerbox\Helper::call_custom_function( 'changelog_include_issue', array( $t_issue_id ) ) ) {
+			if( !\Core\Helper::call_custom_function( 'changelog_include_issue', array( $t_issue_id ) ) ) {
 				continue;
 			}
 
@@ -236,7 +236,7 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_handlers[] = $t_row['handler_id'];
 		}
 
-		\Flickerbox\User::cache_array_rows( array_unique( $t_issue_handlers ) );
+		\Core\User::cache_array_rows( array_unique( $t_issue_handlers ) );
 
 		$t_issues_resolved = count( array_unique( $t_issue_ids ) );
 
@@ -251,8 +251,8 @@ foreach( $t_project_ids as $t_project_id ) {
 				$t_version_header_printed = true;
 			}
 
-			if( !\Flickerbox\Utility::is_blank( $t_description ) ) {
-				echo \Flickerbox\String::display( '<br />' . $t_description . '<br /><br />' );
+			if( !\Core\Utility::is_blank( $t_description ) ) {
+				echo \Core\String::display( '<br />' . $t_description . '<br /><br />' );
 			}
 		} else {
 			continue;
@@ -308,13 +308,13 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_set_id = $t_issue_set_ids[$j];
 			$t_issue_set_level = $t_issue_set_levels[$j];
 
-			\Flickerbox\Helper::call_custom_function( 'changelog_print_issue', array( $t_issue_set_id, $t_issue_set_level ) );
+			\Core\Helper::call_custom_function( 'changelog_print_issue', array( $t_issue_set_id, $t_issue_set_level ) );
 
 			$t_issues_found = true;
 		}
 
 		$t_bug_string = $t_issues_resolved == 1 ? 'bug' : 'bugs';
-		echo '<br />[' . $t_issues_resolved . ' ' . \Flickerbox\Lang::get( $t_bug_string ) . ']<br />';
+		echo '<br />[' . $t_issues_resolved . ' ' . \Core\Lang::get( $t_bug_string ) . ']<br />';
 
 	}
 	if( $t_project_header_printed ) {
@@ -323,13 +323,13 @@ foreach( $t_project_ids as $t_project_id ) {
 }
 
 if( !$t_issues_found ) {
-	if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_project_id_for_access_check ) ) {
+	if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_project_id_for_access_check ) ) {
 		$t_string = 'changelog_empty_manager';
 	} else {
 		$t_string = 'changelog_empty';
 	}
 
-	echo '<p>' . \Flickerbox\Lang::get( $t_string ) . '</p>';
+	echo '<p>' . \Core\Lang::get( $t_string ) . '</p>';
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

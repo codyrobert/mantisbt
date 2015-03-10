@@ -37,14 +37,14 @@ require_mantis_core();
 class Mantis_HelperTest extends PHPUnit_Framework_TestCase {
 
 	/**
-	 * Tests \Flickerbox\Helper::array_transpose()
+	 * Tests \Core\Helper::array_transpose()
 	 * @dataProvider providerArrayTranspose
 	 * @param mixed $p_in  Input array.
 	 * @param mixed $p_out Output array.
 	 * @return void
 	 */
 	public function testArrayTranspose( $p_in, $p_out ) {
-		$this->assertEquals( $p_out, \Flickerbox\Helper::array_transpose( $p_in ) );
+		$this->assertEquals( $p_out, \Core\Helper::array_transpose( $p_in ) );
 	}
 
 	/**

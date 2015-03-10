@@ -39,19 +39,19 @@ require_once( 'core.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'create_project_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'create_project_threshold' ) );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-\Flickerbox\HTML::print_manage_menu( 'manage_proj_create_page.php' );
+\Core\HTML::print_manage_menu( 'manage_proj_create_page.php' );
 
-$f_parent_id = \Flickerbox\GPC::get( 'parent_id', null );
+$f_parent_id = \Core\GPC::get( 'parent_id', null );
 
-if( \Flickerbox\Project::table_empty() ) {
+if( \Core\Project::table_empty() ) {
 	echo '<br />';
 	echo '<div id="create-first-project" class="important-msg">';
 	echo '<ul>';
-	echo '<li>' . \Flickerbox\Lang::get( 'create_first_project' ) . '</li>';
+	echo '<li>' . \Core\Lang::get( 'create_first_project' ) . '</li>';
 	echo '</ul>';
 	echo '</div>';
 }
@@ -60,50 +60,50 @@ if( \Flickerbox\Project::table_empty() ) {
 <div id="manage-project-create-div" class="form-container">
 	<form method="post" id="manage-project-create-form" action="manage_proj_create.php">
 		<fieldset class="has-required"><?php
-			echo \Flickerbox\Form::security_field( 'manage_proj_create' );
+			echo \Core\Form::security_field( 'manage_proj_create' );
 			if( null !== $f_parent_id ) {
 				$f_parent_id = (int)$f_parent_id; ?>
 				<input type="hidden" name="parent_id" value="<?php echo $f_parent_id ?>" /><?php
 			} ?>
 			<legend><span><?php
 			if( null !== $f_parent_id ) {
-				echo \Flickerbox\Lang::get( 'add_subproject_title' );
+				echo \Core\Lang::get( 'add_subproject_title' );
 			} else {
-				echo \Flickerbox\Lang::get( 'add_project_title' );
+				echo \Core\Lang::get( 'add_project_title' );
 			} ?></span></legend>
 
 			<div class="field-container">
-				<label for="project-name" class="required"><span><?php echo \Flickerbox\Lang::get( 'project_name' )?></span></label>
+				<label for="project-name" class="required"><span><?php echo \Core\Lang::get( 'project_name' )?></span></label>
 				<span class="input"><input type="text" id="project-name" name="name" size="60" maxlength="128" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="project-status"><span><?php echo \Flickerbox\Lang::get( 'status' ) ?></span></label>
+				<label for="project-status"><span><?php echo \Core\Lang::get( 'status' ) ?></span></label>
 				<span class="select">
 					<select id="project-status" name="status">
-						<?php \Flickerbox\Print_Util::enum_string_option_list( 'project_status' ) ?>
+						<?php \Core\Print_Util::enum_string_option_list( 'project_status' ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="project-inherit-global"><span><?php echo \Flickerbox\Lang::get( 'inherit_global' ) ?></span></label>
+				<label for="project-inherit-global"><span><?php echo \Core\Lang::get( 'inherit_global' ) ?></span></label>
 				<span class="checkbox"><input type="checkbox" id="project-inherit-global" name="inherit_global" checked="checked" /></span>
 				<span class="label-style"></span>
 			</div>
 			<?php if( !is_null( $f_parent_id ) ) { ?>
 			<div class="field-container">
-				<label for="project-inherit-parent"><span><?php echo \Flickerbox\Lang::get( 'inherit_parent' ) ?></span></label>
+				<label for="project-inherit-parent"><span><?php echo \Core\Lang::get( 'inherit_parent' ) ?></span></label>
 				<span class="checkbox"><input type="checkbox" id="project-inherit-parent" name="inherit_parent" checked="checked" /></span>
 				<span class="label-style"></span>
 			</div><?php
 			} ?>
 
 			<div class="field-container">
-				<label for="project-view-state"><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
+				<label for="project-view-state"><span><?php echo \Core\Lang::get( 'view_status' ) ?></span></label>
 				<span class="select">
 					<select id="project-view-state" name="view_state">
-						<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state' ) ?>
+						<?php \Core\Print_Util::enum_string_option_list( 'view_state' ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
@@ -111,31 +111,31 @@ if( \Flickerbox\Project::table_empty() ) {
 			<?php
 
 			$g_project_override = ALL_PROJECTS;
-			if( \Flickerbox\File::is_uploading_enabled() && DATABASE !== \Flickerbox\Config::mantis_get( 'file_upload_method' ) ) {
+			if( \Core\File::is_uploading_enabled() && DATABASE !== \Core\Config::mantis_get( 'file_upload_method' ) ) {
 				$t_file_path = '';
 				# Don't reveal the absolute path to non-administrators for security reasons
-				if( \Flickerbox\Current_User::is_administrator() ) {
-					$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
+				if( \Core\Current_User::is_administrator() ) {
+					$t_file_path = \Core\Config::mantis_get( 'absolute_path_default_upload_folder' );
 				}
 				?>
 				<div class="field-container">
-					<label for="project-file-path"><span><?php echo \Flickerbox\Lang::get( 'upload_file_path' ) ?></span></label>
+					<label for="project-file-path"><span><?php echo \Core\Lang::get( 'upload_file_path' ) ?></span></label>
 					<span class="input"><input type="text" id="project-file-path" name="file_path" size="60" maxlength="250" value="<?php echo $t_file_path ?>" /></span>
 					<span class="label-style"></span>
 				</div><?php
 			} ?>
 			<div class="field-container">
-				<label for="project-description"><span><?php echo \Flickerbox\Lang::get( 'description' ) ?></span></label>
+				<label for="project-description"><span><?php echo \Core\Lang::get( 'description' ) ?></span></label>
 				<span class="textarea"><textarea id="project-description" name="description" cols="70" rows="5"></textarea></span>
 				<span class="label-style"></span>
 			</div>
 
-			<?php \Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_CREATE_FORM' ) ?>
+			<?php \Core\Event::signal( 'EVENT_MANAGE_PROJECT_CREATE_FORM' ) ?>
 
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_project_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_project_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

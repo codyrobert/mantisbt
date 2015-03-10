@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -84,7 +84,7 @@ class Helper
 			$t_index = $p_index;
 		}
 	
-		\Flickerbox\Error::parameters( __FUNCTION__, 'CSS' );
+		\Core\Error::parameters( __FUNCTION__, 'CSS' );
 		trigger_error( ERROR_DEPRECATED_SUPERSEDED, DEPRECATED );
 	
 		if( 1 == $t_index++ % 2 ) {
@@ -128,8 +128,8 @@ class Helper
 	 * @return string
 	 */
 	static function get_status_color( $p_status, $p_user = null, $p_project = null ) {
-		$t_status_label = \Flickerbox\MantisEnum::getLabel( \Flickerbox\Config::mantis_get( 'status_enum_string', null, $p_user, $p_project ), $p_status );
-		$t_status_colors = \Flickerbox\Config::mantis_get( 'status_colors', null, $p_user, $p_project );
+		$t_status_label = \Core\MantisEnum::getLabel( \Core\Config::mantis_get( 'status_enum_string', null, $p_user, $p_project ), $p_status );
+		$t_status_colors = \Core\Config::mantis_get( 'status_colors', null, $p_user, $p_project );
 		$t_color = '#ffffff';
 	
 		if( isset( $t_status_colors[$t_status_label] ) ) {
@@ -144,24 +144,24 @@ class Helper
 	 * @return array key is the status value, value is the percentage of bugs for the status
 	 */
 	static function get_percentage_by_status() {
-		$t_project_id = \Flickerbox\Helper::get_current_project();
-		$t_user_id = \Flickerbox\Auth::get_current_user_id();
+		$t_project_id = \Core\Helper::get_current_project();
+		$t_user_id = \Core\Auth::get_current_user_id();
 	
 		# checking if it's a per project statistic or all projects
-		$t_specific_where = \Flickerbox\Helper::project_specific_where( $t_project_id, $t_user_id );
+		$t_specific_where = \Core\Helper::project_specific_where( $t_project_id, $t_user_id );
 	
 		$t_query = 'SELECT status, COUNT(*) AS num
 					FROM {bug}
 					WHERE ' . $t_specific_where;
-		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'private_bug_threshold' ) ) ) {
+		if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'private_bug_threshold' ) ) ) {
 			$t_query .= ' AND view_state < ' . VS_PRIVATE;
 		}
 		$t_query .= ' GROUP BY status';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
 		$t_status_count_array = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_status_count_array[$t_row['status']] = $t_row['num'];
 		}
 		$t_bug_count = array_sum( $t_status_count_array );
@@ -182,10 +182,10 @@ class Helper
 	 * @return string
 	 */
 	static function get_enum_element( $p_enum_name, $p_val, $p_user = null, $p_project = null ) {
-		$t_config_var = \Flickerbox\Config::mantis_get( $p_enum_name . '_enum_string', null, $p_user, $p_project );
-		$t_string_var = \Flickerbox\Lang::get( $p_enum_name . '_enum_string' );
+		$t_config_var = \Core\Config::mantis_get( $p_enum_name . '_enum_string', null, $p_user, $p_project );
+		$t_string_var = \Core\Lang::get( $p_enum_name . '_enum_string' );
 	
-		return \Flickerbox\MantisEnum::getLocalizedLabel( $t_config_var, $t_string_var, $p_val );
+		return \Core\MantisEnum::getLocalizedLabel( $t_config_var, $t_string_var, $p_val );
 	}
 	
 	/**
@@ -246,13 +246,13 @@ class Helper
 	static function check_checked( $p_var, $p_val = true, $p_strict = true ) {
 		if( is_array( $p_var ) ) {
 			foreach( $p_var as $t_this_var ) {
-				if( \Flickerbox\Helper::check_variables_equal( $t_this_var, $p_val, $p_strict ) ) {
+				if( \Core\Helper::check_variables_equal( $t_this_var, $p_val, $p_strict ) ) {
 					echo ' checked="checked"';
 					return;
 				}
 			}
 		} else {
-			if( \Flickerbox\Helper::check_variables_equal( $p_var, $p_val, $p_strict ) ) {
+			if( \Core\Helper::check_variables_equal( $p_var, $p_val, $p_strict ) ) {
 				echo ' checked="checked"';
 				return;
 			}
@@ -274,13 +274,13 @@ class Helper
 	static function check_selected( $p_var, $p_val = true, $p_strict = true ) {
 		if( is_array( $p_var ) ) {
 			foreach ( $p_var as $t_this_var ) {
-				if( \Flickerbox\Helper::check_variables_equal( $t_this_var, $p_val, $p_strict ) ) {
+				if( \Core\Helper::check_variables_equal( $t_this_var, $p_val, $p_strict ) ) {
 					echo ' selected="selected"';
 					return;
 				}
 			}
 		} else {
-			if( \Flickerbox\Helper::check_variables_equal( $p_var, $p_val, $p_strict ) ) {
+			if( \Core\Helper::check_variables_equal( $p_var, $p_val, $p_strict ) ) {
 				echo ' selected="selected"';
 			}
 		}
@@ -308,7 +308,7 @@ class Helper
 	 * @return integer
 	 */
 	static function begin_long_process( $p_ignore_abort = false ) {
-		$t_timeout = \Flickerbox\Config::mantis_get( 'long_process_timeout' );
+		$t_timeout = \Core\Config::mantis_get( 'long_process_timeout' );
 	
 		# silent errors or warnings reported when safe_mode is ON.
 		@set_time_limit( $t_timeout );
@@ -330,19 +330,19 @@ class Helper
 		}
 	
 		if( $g_cache_current_project === null ) {
-			$t_cookie_name = \Flickerbox\Config::mantis_get( 'project_cookie' );
+			$t_cookie_name = \Core\Config::mantis_get( 'project_cookie' );
 	
-			$t_project_id = \Flickerbox\GPC::get_cookie( $t_cookie_name, null );
+			$t_project_id = \Core\GPC::get_cookie( $t_cookie_name, null );
 	
 			if( null === $t_project_id ) {
-				$t_pref = \Flickerbox\User\Pref::get( \Flickerbox\Auth::get_current_user_id(), ALL_PROJECTS );
+				$t_pref = \Core\User\Pref::get( \Core\Auth::get_current_user_id(), ALL_PROJECTS );
 				$t_project_id = $t_pref->default_project;
 			} else {
 				$t_project_id = explode( ';', $t_project_id );
 				$t_project_id = $t_project_id[count( $t_project_id ) - 1];
 			}
 	
-			if( !\Flickerbox\Project::exists( $t_project_id ) || ( 0 == \Flickerbox\Project::get_field( $t_project_id, 'enabled' ) ) || !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
+			if( !\Core\Project::exists( $t_project_id ) || ( 0 == \Core\Project::get_field( $t_project_id, 'enabled' ) ) || !\Core\Access::has_project_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id ) ) {
 				$t_project_id = ALL_PROJECTS;
 			}
 			$g_cache_current_project = (int)$t_project_id;
@@ -358,19 +358,19 @@ class Helper
 	 * @return array
 	 */
 	static function get_current_project_trace() {
-		$t_cookie_name = \Flickerbox\Config::mantis_get( 'project_cookie' );
+		$t_cookie_name = \Core\Config::mantis_get( 'project_cookie' );
 	
-		$t_project_id = \Flickerbox\GPC::get_cookie( $t_cookie_name, null );
+		$t_project_id = \Core\GPC::get_cookie( $t_cookie_name, null );
 	
 		if( null === $t_project_id ) {
-			$t_bottom = \Flickerbox\Current_User::get_pref( 'default_project' );
+			$t_bottom = \Core\Current_User::get_pref( 'default_project' );
 			$t_parent = $t_bottom;
 			$t_project_id = array(
 				$t_bottom,
 			);
 	
 			while( true ) {
-				$t_parent = \Flickerbox\Project\Hierarchy::get_parent( $t_parent );
+				$t_parent = \Core\Project\Hierarchy::get_parent( $t_parent );
 				if( 0 == $t_parent ) {
 					break;
 				}
@@ -382,7 +382,7 @@ class Helper
 			$t_bottom = $t_project_id[count( $t_project_id ) - 1];
 		}
 	
-		if( !\Flickerbox\Project::exists( $t_bottom ) || ( 0 == \Flickerbox\Project::get_field( $t_bottom, 'enabled' ) ) || !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_bottom ), $t_bottom ) ) {
+		if( !\Core\Project::exists( $t_bottom ) || ( 0 == \Core\Project::get_field( $t_bottom, 'enabled' ) ) || !\Core\Access::has_project_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_bottom ), $t_bottom ) ) {
 			$t_project_id = array(
 				ALL_PROJECTS,
 			);
@@ -399,10 +399,10 @@ class Helper
 	static function set_current_project( $p_project_id ) {
 		global $g_cache_current_project;
 	
-		$t_project_cookie_name = \Flickerbox\Config::mantis_get( 'project_cookie' );
+		$t_project_cookie_name = \Core\Config::mantis_get( 'project_cookie' );
 	
 		$g_cache_current_project = $p_project_id;
-		\Flickerbox\GPC::set_cookie( $t_project_cookie_name, $p_project_id, true );
+		\Core\GPC::set_cookie( $t_project_cookie_name, $p_project_id, true );
 	
 		return true;
 	}
@@ -412,9 +412,9 @@ class Helper
 	 * @return void
 	 */
 	static function clear_pref_cookies() {
-		\Flickerbox\GPC::clear_cookie( \Flickerbox\Config::mantis_get( 'project_cookie' ) );
-		\Flickerbox\GPC::clear_cookie( \Flickerbox\Config::mantis_get( 'manage_users_cookie' ) );
-		\Flickerbox\GPC::clear_cookie( \Flickerbox\Config::mantis_get( 'manage_config_cookie' ) );
+		\Core\GPC::clear_cookie( \Core\Config::mantis_get( 'project_cookie' ) );
+		\Core\GPC::clear_cookie( \Core\Config::mantis_get( 'manage_users_cookie' ) );
+		\Core\GPC::clear_cookie( \Core\Config::mantis_get( 'manage_config_cookie' ) );
 	}
 	
 	/**
@@ -428,11 +428,11 @@ class Helper
 	 * @return boolean
 	 */
 	static function ensure_confirmed( $p_message, $p_button_label ) {
-		if( true == \Flickerbox\GPC::get_bool( '_confirmed' ) ) {
+		if( true == \Core\GPC::get_bool( '_confirmed' ) ) {
 			return true;
 		}
 	
-		\Flickerbox\HTML::page_top();
+		\Core\HTML::page_top();
 	
 		echo '<div class="confirm-msg center">';
 		echo "\n" . $p_message . "\n";
@@ -440,15 +440,15 @@ class Helper
 		echo '<form method="post" action="">' . "\n";
 		# CSRF protection not required here - user needs to confirm action
 		# before the form is accepted.
-		\Flickerbox\Print_Util::hidden_inputs( $_POST );
-		\Flickerbox\Print_Util::hidden_inputs( $_GET );
+		\Core\Print_Util::hidden_inputs( $_POST );
+		\Core\Print_Util::hidden_inputs( $_GET );
 	
 		echo "<input type=\"hidden\" name=\"_confirmed\" value=\"1\" />\n";
 		echo '<br /><br /><input type="submit" class="button" value="' . $p_button_label . '" />';
 		echo "\n</form>\n";
 	
 		echo '</div>' . "\n";
-		\Flickerbox\HTML::page_bottom();
+		\Core\HTML::page_bottom();
 		exit;
 	}
 	
@@ -480,10 +480,10 @@ class Helper
 	 */
 	static function project_specific_where( $p_project_id, $p_user_id = null ) {
 		if( null === $p_user_id ) {
-			$p_user_id = \Flickerbox\Auth::get_current_user_id();
+			$p_user_id = \Core\Auth::get_current_user_id();
 		}
 	
-		$t_project_ids = \Flickerbox\User::get_all_accessible_projects( $p_user_id, $p_project_id );
+		$t_project_ids = \Core\User::get_all_accessible_projects( $p_user_id, $p_project_id );
 	
 		if( 0 == count( $t_project_ids ) ) {
 			$t_project_filter = ' 1<>1';
@@ -504,7 +504,7 @@ class Helper
 	 * @return array
 	 */
 	static function get_columns_to_view( $p_columns_target = COLUMNS_TARGET_VIEW_PAGE, $p_viewable_only = true, $p_user_id = null ) {
-		$t_columns = \Flickerbox\Helper::call_custom_function( 'get_columns_to_view', array( $p_columns_target, $p_user_id ) );
+		$t_columns = \Core\Helper::call_custom_function( 'get_columns_to_view', array( $p_columns_target, $p_user_id ) );
 	
 		if( !$p_viewable_only ) {
 			return $t_columns;
@@ -524,13 +524,13 @@ class Helper
 			$t_keys_to_remove[] = 'attachment_count';
 		}
 	
-		$t_current_project_id = \Flickerbox\Helper::get_current_project();
+		$t_current_project_id = \Core\Helper::get_current_project();
 	
-		if( $t_current_project_id != ALL_PROJECTS && !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ), $t_current_project_id ) ) {
+		if( $t_current_project_id != ALL_PROJECTS && !\Core\Access::has_project_level( \Core\Config::mantis_get( 'view_handler_threshold' ), $t_current_project_id ) ) {
 			$t_keys_to_remove[] = 'handler_id';
 		}
 	
-		if( $t_current_project_id != ALL_PROJECTS && !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'roadmap_view_threshold' ), $t_current_project_id ) ) {
+		if( $t_current_project_id != ALL_PROJECTS && !\Core\Access::has_project_level( \Core\Config::mantis_get( 'roadmap_view_threshold' ), $t_current_project_id ) ) {
 			$t_keys_to_remove[] = 'target_version';
 		}
 	
@@ -558,12 +558,12 @@ class Helper
 	static function get_default_export_filename( $p_extension_with_dot, $p_prefix = '', $p_suffix = '' ) {
 		$t_filename = $p_prefix;
 	
-		$t_current_project_id = \Flickerbox\Helper::get_current_project();
+		$t_current_project_id = \Core\Helper::get_current_project();
 	
 		if( ALL_PROJECTS == $t_current_project_id ) {
-			$t_filename .= \Flickerbox\User::get_name( \Flickerbox\Auth::get_current_user_id() );
+			$t_filename .= \Core\User::get_name( \Core\Auth::get_current_user_id() );
 		} else {
-			$t_filename .= \Flickerbox\Project::get_field( $t_current_project_id, 'name' );
+			$t_filename .= \Core\Project::get_field( $t_current_project_id, 'name' );
 		}
 	
 		return $t_filename . $p_suffix . $p_extension_with_dot;
@@ -584,7 +584,7 @@ class Helper
 	 * @return string
 	 */
 	static function get_tab_index() {
-		return 'tabindex="' . \Flickerbox\Helper::get_tab_index_value() . '"';
+		return 'tabindex="' . \Core\Helper::get_tab_index_value() . '"';
 	}
 	
 	/**
@@ -594,7 +594,7 @@ class Helper
 	static function log_to_page() {
 		# Check is authenticated before checking access level, otherwise user gets
 		# redirected to login_page.php.  See #8461.
-		return \Flickerbox\Config::get_global( 'log_destination' ) === 'page' && \Flickerbox\Auth::is_user_authenticated() && \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'show_log_threshold' ) );
+		return \Core\Config::get_global( 'log_destination' ) === 'page' && \Core\Auth::is_user_authenticated() && \Core\Access::has_global_level( \Core\Config::mantis_get( 'show_log_threshold' ) );
 	}
 	
 	/**
@@ -602,7 +602,7 @@ class Helper
 	 * @return boolean
 	 */
 	static function show_query_count() {
-		return ON == \Flickerbox\Config::mantis_get( 'show_queries_count' );
+		return ON == \Core\Config::mantis_get( 'show_queries_count' );
 	}
 	
 	/**
@@ -611,10 +611,10 @@ class Helper
 	 * @return string
 	 */
 	static function mantis_url( $p_url ) {
-		if( \Flickerbox\Utility::is_blank( $p_url ) ) {
+		if( \Core\Utility::is_blank( $p_url ) ) {
 			return $p_url;
 		}
-		return \Flickerbox\Config::get_global( 'short_path' ) . $p_url;
+		return \Core\Config::get_global( 'short_path' ) . $p_url;
 	}
 	
 	/**
@@ -623,7 +623,7 @@ class Helper
 	 * @return integer
 	 */
 	static function duration_to_minutes( $p_hhmm ) {
-		if( \Flickerbox\Utility::is_blank( $p_hhmm ) ) {
+		if( \Core\Utility::is_blank( $p_hhmm ) ) {
 			return 0;
 		}
 	
@@ -632,7 +632,7 @@ class Helper
 	
 		# time can be composed of max 3 parts (hh:mm:ss)
 		if( count( $t_a ) > 3 ) {
-			\Flickerbox\Error::parameters( 'p_hhmm', $p_hhmm );
+			\Core\Error::parameters( 'p_hhmm', $p_hhmm );
 			trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 		}
 	
@@ -640,13 +640,13 @@ class Helper
 		for( $i = 0;$i < $t_count;$i++ ) {
 			# all time parts should be integers and non-negative.
 			if( !is_numeric( $t_a[$i] ) || ( (integer)$t_a[$i] < 0 ) ) {
-				\Flickerbox\Error::parameters( 'p_hhmm', $p_hhmm );
+				\Core\Error::parameters( 'p_hhmm', $p_hhmm );
 				trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 			}
 	
 			# minutes and seconds are not allowed to exceed 59.
 			if( ( $i > 0 ) && ( $t_a[$i] > 59 ) ) {
-				\Flickerbox\Error::parameters( 'p_hhmm', $p_hhmm );
+				\Core\Error::parameters( 'p_hhmm', $p_hhmm );
 				trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 			}
 		}

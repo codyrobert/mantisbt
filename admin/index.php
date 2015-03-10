@@ -26,9 +26,9 @@
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 require_once( 'schema.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
 
-\Flickerbox\HTML::page_top( 'MantisBT Administration' );
+\Core\HTML::page_top( 'MantisBT Administration' );
 
 /**
  * Print Check result - information only
@@ -48,7 +48,7 @@ function print_info_row( $p_description, $p_value ) {
 <div id="admin-menu">
 	<ul class="menu">
 		<li><a href="check/index.php">Check your installation</a></li>
-	<?php if( count( $g_upgrade ) - 1 != \Flickerbox\Config::mantis_get( 'database_version' ) ) { ?>
+	<?php if( count( $g_upgrade ) - 1 != \Core\Config::mantis_get( 'database_version' ) ) { ?>
 		<li><a href="install.php"><span class="bold">Upgrade your installation</span></a></li>
 	<?php } ?>
 		<li><a href="system_utils.php">System Utilities</a></li>
@@ -61,39 +61,39 @@ function print_info_row( $p_description, $p_value ) {
 	<table>
 		<tr>
 			<td class="form-title" width="30%" colspan="2">
-				<?php echo \Flickerbox\Lang::get( 'install_information' ) ?>
+				<?php echo \Core\Lang::get( 'install_information' ) ?>
 			</td>
 		</tr>
 <?php
-	if( ON == \Flickerbox\Config::mantis_get( 'show_version' ) ) {
-		$t_version_suffix = \Flickerbox\Config::get_global( 'version_suffix' );
+	if( ON == \Core\Config::mantis_get( 'show_version' ) ) {
+		$t_version_suffix = \Core\Config::get_global( 'version_suffix' );
 	} else {
 		$t_version_suffix = '';
 	}
-	print_info_row( \Flickerbox\Lang::get( 'mantis_version' ), MANTIS_VERSION, $t_version_suffix );
-	print_info_row( \Flickerbox\Lang::get( 'php_version' ), phpversion() );
+	print_info_row( \Core\Lang::get( 'mantis_version' ), MANTIS_VERSION, $t_version_suffix );
+	print_info_row( \Core\Lang::get( 'php_version' ), phpversion() );
 ?>
 		<tr>
 			<td class="form-title" width="30%" colspan="2">
-				<?php echo \Flickerbox\Lang::get( 'database_information' ) ?>
+				<?php echo \Core\Lang::get( 'database_information' ) ?>
 			</td>
 		</tr>
 <?php
-	print_info_row( \Flickerbox\Lang::get( 'schema_version' ), \Flickerbox\Config::mantis_get( 'database_version' ) );
-	print_info_row( \Flickerbox\Lang::get( 'adodb_version' ), $g_db->Version() );
+	print_info_row( \Core\Lang::get( 'schema_version' ), \Core\Config::mantis_get( 'database_version' ) );
+	print_info_row( \Core\Lang::get( 'adodb_version' ), $g_db->Version() );
 ?>
 		<tr>
 			<td class="form-title" width="30%" colspan="2">
-				<?php echo \Flickerbox\Lang::get( 'path_information' ) ?>
+				<?php echo \Core\Lang::get( 'path_information' ) ?>
 			</td>
 		</tr>
 <?php
-	print_info_row( \Flickerbox\Lang::get( 'site_path' ), \Flickerbox\Config::mantis_get( 'absolute_path' ) );
-	print_info_row( \Flickerbox\Lang::get( 'core_path' ), \Flickerbox\Config::mantis_get( 'core_path' ) );
-	print_info_row( \Flickerbox\Lang::get( 'plugin_path' ), \Flickerbox\Config::mantis_get( 'plugin_path' ) );
+	print_info_row( \Core\Lang::get( 'site_path' ), \Core\Config::mantis_get( 'absolute_path' ) );
+	print_info_row( \Core\Lang::get( 'core_path' ), \Core\Config::mantis_get( 'core_path' ) );
+	print_info_row( \Core\Lang::get( 'plugin_path' ), \Core\Config::mantis_get( 'plugin_path' ) );
 ?>
 	</table>
 </div>
 
 <?php
-	\Flickerbox\HTML::page_bottom();
+	\Core\HTML::page_bottom();

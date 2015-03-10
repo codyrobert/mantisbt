@@ -39,46 +39,46 @@
 
 require_once( 'core.php' );
 
-$f_project_id	= \Flickerbox\GPC::get_string( 'project_id' );
-$f_make_default	= \Flickerbox\GPC::get_bool( 'make_default' );
-$f_ref			= \Flickerbox\GPC::get_string( 'ref', '' );
+$f_project_id	= \Core\GPC::get_string( 'project_id' );
+$f_make_default	= \Core\GPC::get_bool( 'make_default' );
+$f_ref			= \Core\GPC::get_string( 'ref', '' );
 
-$c_ref = \Flickerbox\String::prepare_header( $f_ref );
+$c_ref = \Core\String::prepare_header( $f_ref );
 
 $t_project = explode( ';', $f_project_id );
 $t_top     = $t_project[0];
 $t_bottom  = $t_project[count( $t_project ) - 1];
 
 if( ALL_PROJECTS != $t_bottom ) {
-	\Flickerbox\Project::ensure_exists( $t_bottom );
+	\Core\Project::ensure_exists( $t_bottom );
 }
 
 # Set default project
 if( $f_make_default ) {
-	\Flickerbox\Current_User::set_default_project( $t_top );
+	\Core\Current_User::set_default_project( $t_top );
 }
 
-\Flickerbox\Helper::set_current_project( $f_project_id );
+\Core\Helper::set_current_project( $f_project_id );
 
 # redirect to 'same page' when switching projects.
 
 # for proxies that clear out HTTP_REFERER
-if( !\Flickerbox\Utility::is_blank( $c_ref ) ) {
+if( !\Core\Utility::is_blank( $c_ref ) ) {
 	$t_redirect_url = $c_ref;
-} else if( !isset( $_SERVER['HTTP_REFERER'] ) || \Flickerbox\Utility::is_blank( $_SERVER['HTTP_REFERER'] ) ) {
-	$t_redirect_url = \Flickerbox\Config::mantis_get( 'default_home_page' );
+} else if( !isset( $_SERVER['HTTP_REFERER'] ) || \Core\Utility::is_blank( $_SERVER['HTTP_REFERER'] ) ) {
+	$t_redirect_url = \Core\Config::mantis_get( 'default_home_page' );
 } else {
-	$t_home_page = \Flickerbox\Config::mantis_get( 'default_home_page' );
+	$t_home_page = \Core\Config::mantis_get( 'default_home_page' );
 
 	# Check that referrer matches our address after squashing case (case insensitive compare)
-	$t_path = rtrim( \Flickerbox\Config::mantis_get( 'path' ), '/' );
+	$t_path = rtrim( \Core\Config::mantis_get( 'path' ), '/' );
 	if( preg_match( '@^(' . $t_path . ')/(?:/*([^\?#]*))(.*)?$@', $_SERVER['HTTP_REFERER'], $t_matches ) ) {
 		$t_referrer_page = $t_matches[2];
 		$t_param = $t_matches[3];
 
 		# if view_all_bug_page, pass on filter
 		if( strcasecmp( 'view_all_bug_page.php', $t_referrer_page ) == 0 ) {
-			$t_source_filter_id = \Flickerbox\Filter::db_get_project_current( $f_project_id );
+			$t_source_filter_id = \Core\Filter::db_get_project_current( $f_project_id );
 			$t_redirect_url = 'view_all_set.php?type=4';
 
 			if( $t_source_filter_id !== null ) {
@@ -107,13 +107,13 @@ if( !\Flickerbox\Utility::is_blank( $c_ref ) ) {
 	}
 }
 
-\Flickerbox\Print_Util::header_redirect( $t_redirect_url, true, true );
+\Core\Print_Util::header_redirect( $t_redirect_url, true, true );
 
-\Flickerbox\HTML::page_top1();
-\Flickerbox\HTML::meta_redirect( $t_redirect_url );
+\Core\HTML::page_top1();
+\Core\HTML::meta_redirect( $t_redirect_url );
 
-\Flickerbox\HTML::page_top1();
+\Core\HTML::page_top1();
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

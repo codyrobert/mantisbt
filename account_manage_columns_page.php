@@ -43,9 +43,9 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_columns_config' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_columns_config' ) );
 
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
 # Define constant that will be checked by the include page.
 define( 'ACCOUNT_COLUMNS', true );
@@ -53,4 +53,4 @@ define( 'ACCOUNT_COLUMNS', true );
 define( 'MANAGE_COLUMNS_INC_ALLOW', true );
 include ( dirname( __FILE__ ) . '/manage_columns_inc.php' );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

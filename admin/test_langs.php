@@ -29,7 +29,7 @@ $t_mantis_dir = dirname( dirname( __FILE__ ) ) . DIRECTORY_SEPARATOR;
 
 require_once( $t_mantis_dir . 'core.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
 
 if( function_exists( 'xdebug_disable' ) ) {
 	xdebug_disable();
@@ -46,11 +46,11 @@ if( !checkfile( $t_mantis_dir . 'lang' . DIRECTORY_SEPARATOR, STRINGS_ENGLISH, t
 	die;
 }
 
-\Flickerbox\Lang::push( 'english' );
+\Core\Lang::push( 'english' );
 
 set_time_limit( 0 );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
 # check core language files
 if( function_exists( 'scandir' ) ) {
@@ -71,7 +71,7 @@ if( function_exists( 'scandir' ) ) {
 # attempt to find plugin language files
 echo '<br />Trying to find+check plugin language files...<br />';
 if( function_exists( 'scandir' ) ) {
-	checkplugins( \Flickerbox\Config::mantis_get( 'plugin_path' ) );
+	checkplugins( \Core\Config::mantis_get( 'plugin_path' ) );
 } else {
 	echo 'php scandir is disabled - skipping<br />';
 }
@@ -409,4 +409,4 @@ function print_error( $p_string, $p_type = 'ERROR' ) {
 	echo '<p class="error-msg">', $p_type . ': ' . $p_string, '</p>';
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

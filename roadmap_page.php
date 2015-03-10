@@ -56,21 +56,21 @@ function print_version_header( array $p_version_row ) {
 	$t_project_id   = $p_version_row['project_id'];
 	$t_version_id   = $p_version_row['id'];
 	$t_version_name = $p_version_row['version'];
-	$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
+	$t_project_name = \Core\Project::get_field( $t_project_id, 'name' );
 
-	$t_release_title = '<a href="roadmap_page.php?project_id=' . $t_project_id . '">' . \Flickerbox\String::display_line( $t_project_name ) . '</a> - <a href="roadmap_page.php?version_id=' . $t_version_id . '">' . \Flickerbox\String::display_line( $t_version_name ) . '</a>';
+	$t_release_title = '<a href="roadmap_page.php?project_id=' . $t_project_id . '">' . \Core\String::display_line( $t_project_name ) . '</a> - <a href="roadmap_page.php?version_id=' . $t_version_id . '">' . \Core\String::display_line( $t_version_name ) . '</a>';
 
-	if( \Flickerbox\Config::mantis_get( 'show_roadmap_dates' ) ) {
+	if( \Core\Config::mantis_get( 'show_roadmap_dates' ) ) {
 		$t_version_timestamp = $p_version_row['date_order'];
 
-		$t_scheduled_release_date = ' (' . \Flickerbox\Lang::get( 'scheduled_release' ) . ' ' . \Flickerbox\String::display_line( date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $t_version_timestamp ) ) . ')';
+		$t_scheduled_release_date = ' (' . \Core\Lang::get( 'scheduled_release' ) . ' ' . \Core\String::display_line( date( \Core\Config::mantis_get( 'short_date_format' ), $t_version_timestamp ) ) . ')';
 	} else {
 		$t_scheduled_release_date = '';
 	}
 
 	echo '<tt>';
-	echo '<br />', $t_release_title, $t_scheduled_release_date, \Flickerbox\Lang::get( 'word_separator' );
-	\Flickerbox\Print_Util::bracket_link( 'view_all_set.php?type=1&amp;temporary=y&amp;' . FILTER_PROPERTY_PROJECT_ID . '=' . $t_project_id . '&amp;' . \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_TARGET_VERSION, $t_version_name ), \Flickerbox\Lang::get( 'view_bugs_link' ) );
+	echo '<br />', $t_release_title, $t_scheduled_release_date, \Core\Lang::get( 'word_separator' );
+	\Core\Print_Util::bracket_link( 'view_all_set.php?type=1&amp;temporary=y&amp;' . FILTER_PROPERTY_PROJECT_ID . '=' . $t_project_id . '&amp;' . \Core\Filter::encode_field_and_value( FILTER_PROPERTY_TARGET_VERSION, $t_version_name ), \Core\Lang::get( 'view_bugs_link' ) );
 	echo '<br />';
 
 	$t_release_title_without_hyperlinks = $t_project_name . ' - ' . $t_version_name . $t_scheduled_release_date;
@@ -83,91 +83,91 @@ function print_version_header( array $p_version_row ) {
  * @return void
  */
 function print_project_header_roadmap( $p_project_name ) {
-	echo '<br /><span class="pagetitle">', \Flickerbox\String::display( $p_project_name ), ' - ', \Flickerbox\Lang::get( 'roadmap' ), '</span><br />';
+	echo '<br /><span class="pagetitle">', \Core\String::display( $p_project_name ), ' - ', \Core\Lang::get( 'roadmap' ), '</span><br />';
 }
 
 $t_issues_found = false;
 
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
-$f_project = \Flickerbox\GPC::get_string( 'project', '' );
-if( \Flickerbox\Utility::is_blank( $f_project ) ) {
-	$f_project_id = \Flickerbox\GPC::get_int( 'project_id', -1 );
+$f_project = \Core\GPC::get_string( 'project', '' );
+if( \Core\Utility::is_blank( $f_project ) ) {
+	$f_project_id = \Core\GPC::get_int( 'project_id', -1 );
 } else {
-	$f_project_id = \Flickerbox\Project::get_id_by_name( $f_project );
+	$f_project_id = \Core\Project::get_id_by_name( $f_project );
 
 	if( $f_project_id === 0 ) {
-		\Flickerbox\Error::parameters( $f_project );
+		\Core\Error::parameters( $f_project );
 		trigger_error( ERROR_PROJECT_NOT_FOUND, ERROR );
 	}
 }
 
-$f_version = \Flickerbox\GPC::get_string( 'version', '' );
+$f_version = \Core\GPC::get_string( 'version', '' );
 
-if( \Flickerbox\Utility::is_blank( $f_version ) ) {
-	$f_version_id = \Flickerbox\GPC::get_int( 'version_id', -1 );
+if( \Core\Utility::is_blank( $f_version ) ) {
+	$f_version_id = \Core\GPC::get_int( 'version_id', -1 );
 
 	# If both version_id and project_id parameters are supplied, then version_id take precedence.
 	if( $f_version_id == -1 ) {
 		if( $f_project_id == -1 ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = $f_project_id;
 		}
 	} else {
-		$t_project_id = \Flickerbox\Version::get_field( $f_version_id, 'project_id' );
+		$t_project_id = \Core\Version::get_field( $f_version_id, 'project_id' );
 	}
 } else {
 	if( $f_project_id == -1 ) {
-		$t_project_id = \Flickerbox\Helper::get_current_project();
+		$t_project_id = \Core\Helper::get_current_project();
 	} else {
 		$t_project_id = $f_project_id;
 	}
 
-	$f_version_id = \Flickerbox\Version::get_id( $f_version, $t_project_id );
+	$f_version_id = \Core\Version::get_id( $f_version, $t_project_id );
 
 	if( $f_version_id === false ) {
-		\Flickerbox\Error::parameters( $f_version );
+		\Core\Error::parameters( $f_version );
 		trigger_error( ERROR_VERSION_NOT_FOUND, ERROR );
 	}
 }
 
 if( ALL_PROJECTS == $t_project_id ) {
-	$t_project_ids_to_check = \Flickerbox\User::get_all_accessible_projects( $t_user_id, ALL_PROJECTS );
+	$t_project_ids_to_check = \Core\User::get_all_accessible_projects( $t_user_id, ALL_PROJECTS );
 	$t_project_ids = array();
 
 	foreach ( $t_project_ids_to_check as $t_project_id ) {
-		$t_roadmap_view_access_level = \Flickerbox\Config::mantis_get( 'roadmap_view_threshold', null, null, $t_project_id );
-		if( \Flickerbox\Access::has_project_level( $t_roadmap_view_access_level, $t_project_id ) ) {
+		$t_roadmap_view_access_level = \Core\Config::mantis_get( 'roadmap_view_threshold', null, null, $t_project_id );
+		if( \Core\Access::has_project_level( $t_roadmap_view_access_level, $t_project_id ) ) {
 			$t_project_ids[] = $t_project_id;
 		}
 	}
 } else {
-	\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'roadmap_view_threshold' ), $t_project_id );
-	$t_project_ids = \Flickerbox\User::get_all_accessible_subprojects( $t_user_id, $t_project_id );
+	\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'roadmap_view_threshold' ), $t_project_id );
+	$t_project_ids = \Core\User::get_all_accessible_subprojects( $t_user_id, $t_project_id );
 	array_unshift( $t_project_ids, $t_project_id );
 }
 
 $t_project_id_for_access_check = $t_project_id;
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'roadmap' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'roadmap' ) );
 
-\Flickerbox\Version::cache_array_rows( $t_project_ids );
-\Flickerbox\Category::cache_array_rows_by_project( $t_project_ids );
+\Core\Version::cache_array_rows( $t_project_ids );
+\Core\Category::cache_array_rows_by_project( $t_project_ids );
 
 foreach( $t_project_ids as $t_project_id ) {
-	$t_project_name = \Flickerbox\Project::get_field( $t_project_id, 'name' );
-	$t_can_view_private = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'private_bug_threshold' ), $t_project_id );
+	$t_project_name = \Core\Project::get_field( $t_project_id, 'name' );
+	$t_can_view_private = \Core\Access::has_project_level( \Core\Config::mantis_get( 'private_bug_threshold' ), $t_project_id );
 
-	$t_limit_reporters = \Flickerbox\Config::mantis_get( 'limit_reporters' );
-	$t_user_access_level_is_reporter = ( \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, null, $t_project_id ) == \Flickerbox\Access::get_project_level( $t_project_id ) );
+	$t_limit_reporters = \Core\Config::mantis_get( 'limit_reporters' );
+	$t_user_access_level_is_reporter = ( \Core\Config::mantis_get( 'report_bug_threshold', null, null, $t_project_id ) == \Core\Access::get_project_level( $t_project_id ) );
 
-	$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+	$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
 
-	$t_version_rows = array_reverse( \Flickerbox\Version::get_all_rows( $t_project_id ) );
+	$t_version_rows = array_reverse( \Core\Version::get_all_rows( $t_project_id ) );
 
 	# cache category info, but ignore the results for now
-	\Flickerbox\Category::get_all_rows( $t_project_id );
+	\Core\Category::get_all_rows( $t_project_id );
 
 	$t_project_header_printed = false;
 
@@ -192,30 +192,30 @@ foreach( $t_project_ids as $t_project_id ) {
 		$t_query = 'SELECT sbt.*, {bug_relationship}.source_bug_id, dbt.target_version as parent_version FROM {bug} sbt
 					LEFT JOIN {bug_relationship} ON sbt.id={bug_relationship}.destination_bug_id AND {bug_relationship}.relationship_type=2
 					LEFT JOIN {bug} dbt ON dbt.id={bug_relationship}.source_bug_id
-					WHERE sbt.project_id=' . \Flickerbox\Database::param() . ' AND sbt.target_version=' . \Flickerbox\Database::param() . ' ORDER BY sbt.status ASC, sbt.last_updated DESC';
+					WHERE sbt.project_id=' . \Core\Database::param() . ' AND sbt.target_version=' . \Core\Database::param() . ' ORDER BY sbt.status ASC, sbt.last_updated DESC';
 
 		$t_description = $t_version_row['description'];
 
 		$t_first_entry = true;
 
-		$t_result = \Flickerbox\Database::query( $t_query, array( $t_project_id, $t_version ) );
+		$t_result = \Core\Database::query( $t_query, array( $t_project_id, $t_version ) );
 
 		$t_issue_ids = array();
 		$t_issue_parents = array();
 		$t_issue_handlers = array();
 
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			# hide private bugs if user doesn't have access to view them.
 			if( !$t_can_view_private && ( $t_row['view_state'] == VS_PRIVATE ) ) {
 				continue;
 			}
 
-			\Flickerbox\Bug::cache_database_result( $t_row );
+			\Core\Bug::cache_database_result( $t_row );
 
 			# check limit_Reporter (Issue #4770)
 			# reporters can view just issues they reported
 			if( ON === $t_limit_reporters && $t_user_access_level_is_reporter &&
-				 !\Flickerbox\Bug::is_user_reporter( $t_row['id'], $t_user_id )) {
+				 !\Core\Bug::is_user_reporter( $t_row['id'], $t_user_id )) {
 				continue;
 			}
 
@@ -223,14 +223,14 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_parent = $t_row['source_bug_id'];
 			$t_parent_version = $t_row['parent_version'];
 
-			if( !\Flickerbox\Helper::call_custom_function( 'roadmap_include_issue', array( $t_issue_id ) ) ) {
+			if( !\Core\Helper::call_custom_function( 'roadmap_include_issue', array( $t_issue_id ) ) ) {
 				continue;
 			}
 
 			if( !isset( $t_issues_counted[$t_issue_id] ) ) {
 				$t_issues_planned++;
 
-				if( \Flickerbox\Bug::is_resolved( $t_issue_id ) ) {
+				if( \Core\Bug::is_resolved( $t_issue_id ) ) {
 					$t_issues_resolved++;
 				}
 
@@ -248,7 +248,7 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_handlers[] = $t_row['handler_id'];
 		}
 
-		\Flickerbox\User::cache_array_rows( array_unique( $t_issue_handlers ) );
+		\Core\User::cache_array_rows( array_unique( $t_issue_handlers ) );
 
 		$t_progress = $t_issues_planned > 0 ? ( (integer)( $t_issues_resolved * 100 / $t_issues_planned ) ) : 0;
 
@@ -265,8 +265,8 @@ foreach( $t_project_ids as $t_project_id ) {
 				$t_version_header_printed = true;
 			}
 
-			if( !\Flickerbox\Utility::is_blank( $t_description ) ) {
-				echo \Flickerbox\String::display( '<br />' .$t_description . '<br />' );
+			if( !\Core\Utility::is_blank( $t_description ) ) {
+				echo \Core\String::display( '<br />' .$t_description . '<br />' );
 			}
 
 			# show progress bar
@@ -326,27 +326,27 @@ foreach( $t_project_ids as $t_project_id ) {
 			$t_issue_set_id = $t_issue_set_ids[$j];
 			$t_issue_set_level = $t_issue_set_levels[$j];
 
-			\Flickerbox\Helper::call_custom_function( 'roadmap_print_issue', array( $t_issue_set_id, $t_issue_set_level ) );
+			\Core\Helper::call_custom_function( 'roadmap_print_issue', array( $t_issue_set_id, $t_issue_set_level ) );
 
 			$t_issues_found = true;
 		}
 
 		if( $t_issues_planned > 0 ) {
 			echo '<br />';
-			echo sprintf( \Flickerbox\Lang::get( 'resolved_progress' ), $t_issues_resolved, $t_issues_planned, $t_progress );
+			echo sprintf( \Core\Lang::get( 'resolved_progress' ), $t_issues_resolved, $t_issues_planned, $t_progress );
 			echo '<br /></tt>';
 		}
 	}
 }
 
 if( !$t_issues_found ) {
-	if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_project_id_for_access_check ) ) {
+	if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_project_id_for_access_check ) ) {
 		$t_string = 'roadmap_empty_manager';
 	} else {
 		$t_string = 'roadmap_empty';
 	}
 
-	echo '<p>' . \Flickerbox\Lang::get( $t_string ) . '</p>';
+	echo '<p>' . \Core\Lang::get( $t_string ) . '</p>';
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

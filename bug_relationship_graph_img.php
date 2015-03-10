@@ -38,29 +38,29 @@ require_once( 'core.php' );
 # If relationship graphs were made disabled, we disallow any access to
 # this script.
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-if( ON != \Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
-	\Flickerbox\Access::denied();
+if( ON != \Core\Config::mantis_get( 'relationship_graph_enable' ) ) {
+	\Core\Access::denied();
 }
 
-$f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
-$f_type			= \Flickerbox\GPC::get_string( 'graph', 'relation' );
-$f_orientation	= \Flickerbox\GPC::get_string( 'orientation', \Flickerbox\Config::mantis_get( 'relationship_graph_orientation' ) );
+$f_bug_id		= \Core\GPC::get_int( 'bug_id' );
+$f_type			= \Core\GPC::get_string( 'graph', 'relation' );
+$f_orientation	= \Core\GPC::get_string( 'orientation', \Core\Config::mantis_get( 'relationship_graph_orientation' ) );
 
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
+$t_bug = \Core\Bug::get( $f_bug_id, true );
 
-\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $f_bug_id );
+\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_bug->project_id ), $f_bug_id );
 
-\Flickerbox\Compress::enable();
+\Core\Compress::enable();
 
 $t_graph_relation = ( 'relation' == $f_type );
 $t_graph_horizontal = ( 'horizontal' == $f_orientation );
 
 if( $t_graph_relation ) {
-	$t_graph = \Flickerbox\Relationship\Graph::generate_rel_graph( $f_bug_id );
+	$t_graph = \Core\Relationship\Graph::generate_rel_graph( $f_bug_id );
 } else {
-	$t_graph = \Flickerbox\Relationship\Graph::generate_dep_graph( $f_bug_id, $t_graph_horizontal );
+	$t_graph = \Core\Relationship\Graph::generate_dep_graph( $f_bug_id, $t_graph_horizontal );
 }
 
-\Flickerbox\Relationship\Graph::output_image( $t_graph );
+\Core\Relationship\Graph::output_image( $t_graph );

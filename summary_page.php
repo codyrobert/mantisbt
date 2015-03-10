@@ -39,35 +39,35 @@
 
 require_once( 'core.php' );
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id', \Flickerbox\Helper::get_current_project() );
+$f_project_id = \Core\GPC::get_int( 'project_id', \Core\Helper::get_current_project() );
 
 # Override the current page to make sure we get the appropriate project-specific configuration
 $g_project_override = $f_project_id;
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
-$t_project_ids = \Flickerbox\User::get_all_accessible_projects( $t_user_id, $f_project_id );
-$t_specific_where = \Flickerbox\Helper::project_specific_where( $f_project_id, $t_user_id );
+$t_project_ids = \Core\User::get_all_accessible_projects( $t_user_id, $f_project_id );
+$t_specific_where = \Core\Helper::project_specific_where( $f_project_id, $t_user_id );
 
-$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
 # the issue may have passed through the status we consider resolved
 #  (e.g., bug is CLOSED, not RESOLVED). The linkage to the history field
 #  will look up the most recent 'resolved' status change and return it as well
 $t_query = 'SELECT b.id, b.date_submitted, b.last_updated, MAX(h.date_modified) as hist_update, b.status
 	FROM {bug} b LEFT JOIN {bug_history} h
-		ON b.id = h.bug_id  AND h.type=0 AND h.field_name=\'status\' AND h.new_value=' . \Flickerbox\Database::param() . '
-		WHERE b.status >=' . \Flickerbox\Database::param() . ' AND ' . $t_specific_where . '
+		ON b.id = h.bug_id  AND h.type=0 AND h.field_name=\'status\' AND h.new_value=' . \Core\Database::param() . '
+		WHERE b.status >=' . \Core\Database::param() . ' AND ' . $t_specific_where . '
 		GROUP BY b.id, b.status, b.date_submitted, b.last_updated
 		ORDER BY b.id ASC';
-$t_result = \Flickerbox\Database::query( $t_query, array( $t_resolved, $t_resolved ) );
+$t_result = \Core\Database::query( $t_query, array( $t_resolved, $t_resolved ) );
 $t_bug_count = 0;
 
 $t_bug_id       = 0;
 $t_largest_diff = 0;
 $t_total_time   = 0;
-while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 	$t_bug_count++;
 	$t_date_submitted = $t_row['date_submitted'];
 	$t_id = $t_row['id'];
@@ -99,7 +99,7 @@ $t_largest_diff 	= number_format( $t_largest_diff / SECONDS_PER_DAY, 2 );
 $t_total_time		= number_format( $t_total_time / SECONDS_PER_DAY, 2 );
 $t_average_time 	= number_format( $t_average_time / SECONDS_PER_DAY, 2 );
 
-$t_orct_arr = preg_split( '/[\)\/\(]/', \Flickerbox\Lang::get( 'orct' ), -1, PREG_SPLIT_NO_EMPTY );
+$t_orct_arr = preg_split( '/[\)\/\(]/', \Core\Lang::get( 'orct' ), -1, PREG_SPLIT_NO_EMPTY );
 
 $t_orcttab = '';
 foreach ( $t_orct_arr as $t_orct_s ) {
@@ -108,18 +108,18 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 	$t_orcttab .= '</td>';
 }
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'summary_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'summary_link' ) );
 ?>
 
 <br />
 <?php
-\Flickerbox\HTML::print_summary_menu( 'summary_page.php' );
-\Flickerbox\HTML::print_summary_submenu(); ?>
+\Core\HTML::print_summary_menu( 'summary_page.php' );
+\Core\HTML::print_summary_submenu(); ?>
 <br />
 
 <div id="summary" class="section-container">
 
-<h2><?php echo \Flickerbox\Lang::get( 'summary_title' ) ?></h2>
+<h2><?php echo \Core\Lang::get( 'summary_title' ) ?></h2>
 <br>
 
 <!-- LEFT COLUMN -->
@@ -130,11 +130,11 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'by_project' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'by_project' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_project(); ?>
+		<?php \Core\Summary::print_by_project(); ?>
 	</table>
 	<?php } ?>
 
@@ -142,60 +142,60 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'by_status' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'by_status' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_enum( 'status' ) ?>
+		<?php \Core\Summary::print_by_enum( 'status' ) ?>
 	</table>
 
 	<!-- BY SEVERITY -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'by_severity' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'by_severity' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_enum( 'severity' ) ?>
+		<?php \Core\Summary::print_by_enum( 'severity' ) ?>
 	</table>
 
 	<!-- BY CATEGORY -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'by_category' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'by_category' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_category() ?>
+		<?php \Core\Summary::print_by_category() ?>
 	</table>
 
 	<!-- TIME STATS -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th colspan="2"><?php echo \Flickerbox\Lang::get( 'time_stats' ) ?></th>
+				<th colspan="2"><?php echo \Core\Lang::get( 'time_stats' ) ?></th>
 			</tr>
 		</thead>
 		<tr>
-			<td><?php echo \Flickerbox\Lang::get( 'longest_open_bug' ) ?></td>
+			<td><?php echo \Core\Lang::get( 'longest_open_bug' ) ?></td>
 			<td><?php
 				if( $t_bug_id > 0 ) {
-					\Flickerbox\Print_Util::bug_link( $t_bug_id );
+					\Core\Print_Util::bug_link( $t_bug_id );
 				}
 			?></td>
 		</tr>
 		<tr>
-			<td><?php echo \Flickerbox\Lang::get( 'longest_open' ) ?></td>
+			<td><?php echo \Core\Lang::get( 'longest_open' ) ?></td>
 			<td><?php echo $t_largest_diff ?></td>
 		</tr>
 		<tr>
-			<td><?php echo \Flickerbox\Lang::get( 'average_time' ) ?></td>
+			<td><?php echo \Core\Lang::get( 'average_time' ) ?></td>
 			<td><?php echo $t_average_time ?></td>
 		</tr>
 		<tr>
-			<td><?php echo \Flickerbox\Lang::get( 'total_time' ) ?></td>
+			<td><?php echo \Core\Lang::get( 'total_time' ) ?></td>
 			<td><?php echo $t_total_time ?></td>
 		</tr>
 	</table>
@@ -204,11 +204,11 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'developer_stats' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'developer_stats' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_developer() ?>
+		<?php \Core\Summary::print_by_developer() ?>
 	</table>
 
 </div>
@@ -220,81 +220,81 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'by_date' ) ?></th>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'opened' ); ?></td>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'resolved' ); ?></td>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'balance' ); ?></td>
+				<th><?php echo \Core\Lang::get( 'by_date' ) ?></th>
+				<td class="right"><?php echo \Core\Lang::get( 'opened' ); ?></td>
+				<td class="right"><?php echo \Core\Lang::get( 'resolved' ); ?></td>
+				<td class="right"><?php echo \Core\Lang::get( 'balance' ); ?></td>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_date( \Flickerbox\Config::mantis_get( 'date_partitions' ) ) ?>
+		<?php \Core\Summary::print_by_date( \Core\Config::mantis_get( 'date_partitions' ) ) ?>
 	</table>
 
 	<!-- MOST ACTIVE -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'most_active' ) ?></th>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'score' ); ?></td>
+				<th><?php echo \Core\Lang::get( 'most_active' ) ?></th>
+				<td class="right"><?php echo \Core\Lang::get( 'score' ); ?></td>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_activity() ?>
+		<?php \Core\Summary::print_by_activity() ?>
 	</table>
 
 	<!-- LONGEST OPEN -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'longest_open' ) ?></th>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'days' ); ?></td>
+				<th><?php echo \Core\Lang::get( 'longest_open' ) ?></th>
+				<td class="right"><?php echo \Core\Lang::get( 'days' ); ?></td>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_age() ?>
+		<?php \Core\Summary::print_by_age() ?>
 	</table>
 
 	<!-- BY RESOLUTION -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'by_resolution' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'by_resolution' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_enum( 'resolution' ) ?>
+		<?php \Core\Summary::print_by_enum( 'resolution' ) ?>
 	</table>
 
 	<!-- BY PRIORITY -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'by_priority' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'by_priority' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_enum( 'priority' ) ?>
+		<?php \Core\Summary::print_by_enum( 'priority' ) ?>
 	</table>
 
 	<!-- REPORTER STATS -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'reporter_stats' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'reporter_stats' ) ?></th>
 				<?php echo $t_orcttab ?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_by_reporter() ?>
+		<?php \Core\Summary::print_by_reporter() ?>
 	</table>
 
 	<!-- REPORTER EFFECTIVENESS -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'reporter_effectiveness' ) ?></th>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'severity' ); ?></td>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'errors' ); ?></td>
-				<td class="right"><?php echo \Flickerbox\Lang::get( 'total' ); ?></td>
+				<th><?php echo \Core\Lang::get( 'reporter_effectiveness' ) ?></th>
+				<td class="right"><?php echo \Core\Lang::get( 'severity' ); ?></td>
+				<td class="right"><?php echo \Core\Lang::get( 'errors' ); ?></td>
+				<td class="right"><?php echo \Core\Lang::get( 'total' ); ?></td>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_reporter_effectiveness( \Flickerbox\Config::mantis_get( 'severity_enum_string' ), \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) ) ?>
+		<?php \Core\Summary::print_reporter_effectiveness( \Core\Config::mantis_get( 'severity_enum_string' ), \Core\Config::mantis_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 </div>
@@ -306,38 +306,38 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'reporter_by_resolution' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'reporter_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) );
+					$t_resolutions = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
-						echo '<td class="right">', \Flickerbox\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
+						echo '<td class="right">', \Core\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
 					}
 
-					echo '<td class="right">', \Flickerbox\Lang::get( 'percentage_errors' ), "</td>\n";
+					echo '<td class="right">', \Core\Lang::get( 'percentage_errors' ), "</td>\n";
 				?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_reporter_resolution( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) ) ?>
+		<?php \Core\Summary::print_reporter_resolution( \Core\Config::mantis_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 	<!-- DEVELOPER BY RESOLUTION -->
 	<table>
 		<thead>
 			<tr class="row-category2">
-				<th><?php echo \Flickerbox\Lang::get( 'developer_by_resolution' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'developer_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) );
+					$t_resolutions = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
-						echo '<td class="right">', \Flickerbox\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
+						echo '<td class="right">', \Core\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
 					}
 
-					echo '<td class="right">', \Flickerbox\Lang::get( 'percentage_fixed' ), "</td>\n";
+					echo '<td class="right">', \Core\Lang::get( 'percentage_fixed' ), "</td>\n";
 				?>
 			</tr>
 		</thead>
-		<?php \Flickerbox\Summary::print_developer_resolution( \Flickerbox\Config::mantis_get( 'resolution_enum_string' ) ) ?>
+		<?php \Core\Summary::print_developer_resolution( \Core\Config::mantis_get( 'resolution_enum_string' ) ) ?>
 	</table>
 
 </div>
@@ -345,4 +345,4 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

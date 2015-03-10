@@ -25,18 +25,18 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
+\Core\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
-$f_width = \Flickerbox\GPC::get_int( 'width', 300 );
-$t_ar = \Flickerbox\Plugin::config_get( 'bar_aspect' );
+$f_width = \Core\GPC::get_int( 'width', 300 );
+$t_ar = \Core\Plugin::config_get( 'bar_aspect' );
 
-$t_token = \Flickerbox\Token::get_value( TOKEN_GRAPH );
+$t_token = \Core\Token::get_value( TOKEN_GRAPH );
 if( $t_token == null ) {
-	$t_metrics = create_bug_enum_summary( \Flickerbox\Lang::get( 'status_enum_string' ), 'status' );
+	$t_metrics = create_bug_enum_summary( \Core\Lang::get( 'status_enum_string' ), 'status' );
 } else {
 	$t_metrics = json_decode( $t_token, true );
 }
 
-graph_bar( $t_metrics, \Flickerbox\Lang::get( 'by_status' ), $f_width, $f_width * $t_ar );
+graph_bar( $t_metrics, \Core\Lang::get( 'by_status' ), $f_width, $f_width * $t_ar );

@@ -39,39 +39,39 @@
 
 require_once( 'core.php' );
 
-if( !\Flickerbox\Config::mantis_get( 'enable_sponsorship' ) ) {
+if( !\Core\Config::mantis_get( 'enable_sponsorship' ) ) {
 	trigger_error( ERROR_SPONSORSHIP_NOT_ENABLED, ERROR );
 }
 
-\Flickerbox\Form::security_validate( 'account_sponsor_update' );
+\Core\Form::security_validate( 'account_sponsor_update' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_bug_list = \Flickerbox\GPC::get_string( 'buglist', '' );
+$f_bug_list = \Core\GPC::get_string( 'buglist', '' );
 $t_bug_list = explode( ',', $f_bug_list );
 
 foreach( $t_bug_list as $t_bug ) {
 	list( $t_bug_id, $t_sponsor_id ) = explode( ':', $t_bug );
 	$c_bug_id = (int)$t_bug_id;
 
-	\Flickerbox\Bug::ensure_exists( $c_bug_id ); # dies if bug doesn't exist
+	\Core\Bug::ensure_exists( $c_bug_id ); # dies if bug doesn't exist
 
-	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'handle_sponsored_bugs_threshold' ), $c_bug_id ); # dies if user can't handle bug
+	\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'handle_sponsored_bugs_threshold' ), $c_bug_id ); # dies if user can't handle bug
 
-	$t_bug = \Flickerbox\Bug::get( $c_bug_id );
-	$t_sponsor = \Flickerbox\Sponsorship::get( (int)$t_sponsor_id );
+	$t_bug = \Core\Bug::get( $c_bug_id );
+	$t_sponsor = \Core\Sponsorship::get( (int)$t_sponsor_id );
 
-	$t_new_payment = \Flickerbox\GPC::get_int( 'sponsor_' . $c_bug_id . '_' . $t_sponsor->id, $t_sponsor->paid );
+	$t_new_payment = \Core\GPC::get_int( 'sponsor_' . $c_bug_id . '_' . $t_sponsor->id, $t_sponsor->paid );
 	if( $t_new_payment != $t_sponsor->paid ) {
-		\Flickerbox\Sponsorship::update_paid( $t_sponsor_id, $t_new_payment );
+		\Core\Sponsorship::update_paid( $t_sponsor_id, $t_new_payment );
 	}
 }
 
-\Flickerbox\Form::security_purge( 'account_sponsor_update' );
+\Core\Form::security_purge( 'account_sponsor_update' );
 
 $t_redirect_url = 'account_sponsor_page.php';
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url, \Flickerbox\Lang::get( 'payment_updated' ) );
+\Core\HTML::operation_successful( $t_redirect_url, \Core\Lang::get( 'payment_updated' ) );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

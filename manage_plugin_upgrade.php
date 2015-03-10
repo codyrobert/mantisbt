@@ -36,18 +36,18 @@ define( 'PLUGINS_DISABLED', true );
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_plugin_upgrade' );
+\Core\Form::security_validate( 'manage_plugin_upgrade' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
-$f_basename = \Flickerbox\GPC::get_string( 'name' );
-$t_plugin = \Flickerbox\Plugin::register( $f_basename, true );
+$f_basename = \Core\GPC::get_string( 'name' );
+$t_plugin = \Core\Plugin::register( $f_basename, true );
 
 if( !is_null( $t_plugin ) ) {
-	$t_status = \Flickerbox\Plugin::upgrade( $t_plugin );
+	$t_status = \Core\Plugin::upgrade( $t_plugin );
 }
 
-\Flickerbox\Form::security_purge( 'manage_plugin_upgrade' );
+\Core\Form::security_purge( 'manage_plugin_upgrade' );
 
-\Flickerbox\Print_Util::successful_redirect( 'manage_plugin_page.php' );
+\Core\Print_Util::successful_redirect( 'manage_plugin_page.php' );

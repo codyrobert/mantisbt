@@ -73,7 +73,7 @@ function utf8_strrpos($str, $search, $offset = FALSE){
             return FALSE;
         }
         
-        $str = \Flickerbox\PHP::mb_substr($str, $offset);
+        $str = \Core\PHP::mb_substr($str, $offset);
         
         if ( FALSE !== ( $pos = mb_strrpos($str, $search) ) ) {
             return $pos + $offset;
@@ -97,9 +97,9 @@ function utf8_strrpos($str, $search, $offset = FALSE){
 */
 function utf8_substr($str, $offset, $length = FALSE){
     if ( $length === FALSE ) {
-        return \Flickerbox\PHP::mb_substr($str, $offset);
+        return \Core\PHP::mb_substr($str, $offset);
     } else {
-        return \Flickerbox\PHP::mb_substr($str, $offset, $length);
+        return \Core\PHP::mb_substr($str, $offset, $length);
     }
 }
 

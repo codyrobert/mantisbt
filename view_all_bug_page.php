@@ -1,28 +1,28 @@
 <?php
 require_once( 'core.php' );
 
-\Flickerbox\HTML::require_js( 'bugFilter.js' );
-\Flickerbox\HTML::require_css( 'status_config.php' );
+\Core\HTML::require_js( 'bugFilter.js' );
+\Core\HTML::require_css( 'status_config.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_page_number		= \Flickerbox\GPC::get_int( 'page_number', 1 );
+$f_page_number		= \Core\GPC::get_int( 'page_number', 1 );
 # Get Project Id and set it as current
-$t_project_id = \Flickerbox\GPC::get_int( 'project_id', \Flickerbox\Helper::get_current_project() );
-if( ( ALL_PROJECTS == $t_project_id || \Flickerbox\Project::exists( $t_project_id ) ) && $t_project_id != \Flickerbox\Helper::get_current_project() ) {
-	\Flickerbox\Helper::set_current_project( $t_project_id );
+$t_project_id = \Core\GPC::get_int( 'project_id', \Core\Helper::get_current_project() );
+if( ( ALL_PROJECTS == $t_project_id || \Core\Project::exists( $t_project_id ) ) && $t_project_id != \Core\Helper::get_current_project() ) {
+	\Core\Helper::set_current_project( $t_project_id );
 	# Reloading the page is required so that the project browser
 	# reflects the new current project
-	\Flickerbox\Print_Util::header_redirect( $_SERVER['REQUEST_URI'], true, false, true );
+	\Core\Print_Util::header_redirect( $_SERVER['REQUEST_URI'], true, false, true );
 }
 
 $t_per_page = null;
 $t_bug_count = null;
 $t_page_count = null;
 
-$t_rows = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, null, null, null, true );
+$t_rows = \Core\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, null, null, null, true );
 if( $t_rows === false ) {
-	\Flickerbox\Print_Util::header_redirect( 'view_all_set.php?type=0' );
+	\Core\Print_Util::header_redirect( 'view_all_set.php?type=0' );
 }
 
 $t_bugslist = array();
@@ -36,14 +36,14 @@ for( $i=0; $i < $t_row_count; $i++ ) {
 }
 $t_unique_users_handlers = array_unique( $t_users_handlers );
 $t_unique_project_ids = array_unique( $t_project_ids );
-\Flickerbox\User::cache_array_rows( $t_unique_users_handlers );
-\Flickerbox\Project::cache_array_rows( $t_unique_project_ids );
+\Core\User::cache_array_rows( $t_unique_users_handlers );
+\Core\Project::cache_array_rows( $t_unique_project_ids );
 
-\Flickerbox\GPC::set_cookie( \Flickerbox\Config::mantis_get( 'bug_list_cookie' ), implode( ',', $t_bugslist ) );
+\Core\GPC::set_cookie( \Core\Config::mantis_get( 'bug_list_cookie' ), implode( ',', $t_bugslist ) );
 
 # don't index view issues pages
 
-if( \Flickerbox\Current_User::get_pref( 'refresh_delay' ) > 0 ) {
+if( \Core\Current_User::get_pref( 'refresh_delay' ) > 0 ) {
 	$t_query = '?';
 
 	if( $f_page_number > 1 )  {
@@ -52,12 +52,12 @@ if( \Flickerbox\Current_User::get_pref( 'refresh_delay' ) > 0 ) {
 
 	$t_query .= 'refresh=true';
 
-	\Flickerbox\HTML::meta_redirect( 'view_all_bug_page.php' . $t_query, \Flickerbox\Current_User::get_pref( 'refresh_delay' ) * 60 );
+	\Core\HTML::meta_redirect( 'view_all_bug_page.php' . $t_query, \Core\Current_User::get_pref( 'refresh_delay' ) * 60 );
 }
 
-\Flickerbox\Print_Util::recently_visited();
+\Core\Print_Util::recently_visited();
 
 define( 'VIEW_ALL_INC_ALLOW', true );
 include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'view_all_inc.php' );
 
-new \Flickerbox\Page;
+new \Core\Page;

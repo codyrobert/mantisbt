@@ -60,7 +60,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 	 * @param integer $p_default_category Identifier of default category.
 	 */
 	public function __construct( $p_keep_category, $p_default_category ) {
-		$this->newbug_ = new \Flickerbox\BugData;
+		$this->newbug_ = new \Core\BugData;
 		$this->keepCategory_ = $p_keep_category;
 		$this->defaultCategory_ = $p_default_category;
 	}
@@ -72,7 +72,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 	 */
 	public function process( XMLreader $t_reader ) {
 		# print "\nImportIssue process()\n";
-		$t_project_id = \Flickerbox\Helper::get_current_project(); # TODO: category_get_id_by_name could work by default on current project
+		$t_project_id = \Core\Helper::get_current_project(); # TODO: category_get_id_by_name could work by default on current project
 		$t_user_id = auth_get_current_user_id( );
 
 		$t_custom_fields = array();
@@ -110,9 +110,9 @@ class ImportXml_Issue implements ImportXml_Interface {
 							if( $this->keepCategory_ ) {
 								# Check for the category's existence in the current project
 								# well as its parents (if any)
-								$t_projects_hierarchy = \Flickerbox\Project\Hierarchy::inheritance( $t_project_id );
+								$t_projects_hierarchy = \Core\Project\Hierarchy::inheritance( $t_project_id );
 								foreach( $t_projects_hierarchy as $t_project ) {
-									$t_category_id = \Flickerbox\Category::get_id_by_name( $t_reader->value, $t_project, false );
+									$t_category_id = \Core\Category::get_id_by_name( $t_reader->value, $t_project, false );
 									if( $t_category_id !== false ) {
 										$this->newbug_->category_id = $t_category_id;
 										break;
@@ -246,7 +246,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 				if( custom_field_ensure_exists( $t_custom_field_id ) && custom_field_is_linked( $t_custom_field_id, $t_project_id ) ) {
 					custom_field_set_value( $t_custom_field->id, $this->new_id_, $t_custom_field->value );
 				} else {
-					\Flickerbox\Error::parameters( $t_custom_field->name, $t_custom_field_id );
+					\Core\Error::parameters( $t_custom_field->name, $t_custom_field_id );
 					trigger_error( ERROR_CUSTOM_FIELD_NOT_LINKED_TO_PROJECT, ERROR );
 				}
 			}
@@ -255,7 +255,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 		# add bugnotes
 		if( $this->new_id_ > 0 && is_array( $t_bugnotes ) && count( $t_bugnotes ) > 0 ) {
 			foreach( $t_bugnotes as $t_bugnote ) {
-				\Flickerbox\Bug\Note::add(
+				\Core\Bug\Note::add(
 					$this->new_id_,
 					$t_bugnote->note,
 					$t_bugnote->time_tracking,
@@ -285,7 +285,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 				);
 				# unfortunately we have no clue who has added the attachment (this could only be fetched from history -> feel free to implement this)
 				# also I have no clue where description should come from...
-				\Flickerbox\File::add( $this->new_id_, $t_file_data, 'bug', $t_attachment->title, $p_desc = '', $p_user_id = null, $t_attachment->date_added, true );
+				\Core\File::add( $this->new_id_, $t_file_data, 'bug', $t_attachment->title, $p_desc = '', $p_user_id = null, $t_attachment->date_added, true );
 				unlink( $t_temp_file_name );
 			}
 		}
@@ -322,11 +322,11 @@ class ImportXml_Issue implements ImportXml_Interface {
 	 * @return integer
 	*/
 	private function get_user_id( $p_username, $p_squash_userid = 0 ) {
-		$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
+		$t_user_id = \Core\User::get_id_by_name( $p_username );
 		if( $t_user_id === false ) {
 			# user not found by username -> check real name
-			# keep in mind that the setting \Flickerbox\Config::mantis_get( 'show_user_realname_threshold' ) may differ between import and export system!
-			$t_user_id = \Flickerbox\User::get_id_by_realname( $p_username );
+			# keep in mind that the setting \Core\Config::mantis_get( 'show_user_realname_threshold' ) may differ between import and export system!
+			$t_user_id = \Core\User::get_id_by_realname( $p_username );
 			if( $t_user_id === false ) {
 				# not found
 				$t_user_id = $p_squash_userid;

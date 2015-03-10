@@ -24,17 +24,17 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
+\Core\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
-$f_width = \Flickerbox\GPC::get_int( 'width', 300 );
+$f_width = \Core\GPC::get_int( 'width', 300 );
 
-$t_token = \Flickerbox\Token::get_value( TOKEN_GRAPH );
+$t_token = \Core\Token::get_value( TOKEN_GRAPH );
 if( $t_token == null ) {
 	$t_metrics = create_category_summary();
 } else {
 	$t_metrics = json_decode( $t_token, true );
 }
 
-graph_pie( $t_metrics, \Flickerbox\Plugin::langget( 'by_category_pct' ), $f_width, $f_width );
+graph_pie( $t_metrics, \Core\Plugin::langget( 'by_category_pct' ), $f_width, $f_width );

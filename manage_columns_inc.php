@@ -42,75 +42,75 @@ if( !defined( 'MANAGE_COLUMNS_INC_ALLOW' ) ) {
 $t_manage_page = defined( 'MANAGE_COLUMNS' );
 $t_account_page = defined( 'ACCOUNT_COLUMNS' );
 
-$t_project_id = \Flickerbox\Helper::get_current_project();
+$t_project_id = \Core\Helper::get_current_project();
 
 # Calculate the user id to set the configuration for.
 if( $t_manage_page ) {
 	$t_user_id = NO_USER;
 } else {
-	$t_user_id = \Flickerbox\Auth::get_current_user_id();
+	$t_user_id = \Core\Auth::get_current_user_id();
 }
 
-$t_columns = \Flickerbox\Columns::get_all( $t_project_id );
+$t_columns = \Core\Columns::get_all( $t_project_id );
 $t_all = implode( ', ', $t_columns );
 
-$t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_CSV_PAGE, false, $t_user_id );
+$t_columns = \Core\Helper::get_columns_to_view( COLUMNS_TARGET_CSV_PAGE, false, $t_user_id );
 $t_csv = implode( ', ', $t_columns );
 
-$t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_VIEW_PAGE, false, $t_user_id );
+$t_columns = \Core\Helper::get_columns_to_view( COLUMNS_TARGET_VIEW_PAGE, false, $t_user_id );
 $t_view_issues = implode( ', ', $t_columns );
 
-$t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_PRINT_PAGE, false, $t_user_id );
+$t_columns = \Core\Helper::get_columns_to_view( COLUMNS_TARGET_PRINT_PAGE, false, $t_user_id );
 $t_print_issues = implode( ', ', $t_columns );
 
-$t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_EXCEL_PAGE, false, $t_user_id );
+$t_columns = \Core\Helper::get_columns_to_view( COLUMNS_TARGET_EXCEL_PAGE, false, $t_user_id );
 $t_excel = implode( ', ', $t_columns );
 ?>
 
 <div id="manage-columns-div" class="form-container">
 	<form id="manage-columns-form" method="post" action="manage_config_columns_set.php">
 		<fieldset class="has-required">
-			<legend><span><?php echo \Flickerbox\Lang::get( 'manage_columns_config' ) ?></span></legend>
+			<legend><span><?php echo \Core\Lang::get( 'manage_columns_config' ) ?></span></legend>
 			<?php
 			if( $t_account_page ) {
-				\Flickerbox\HTML::print_account_menu( 'account_manage_columns_page.php' );
+				\Core\HTML::print_account_menu( 'account_manage_columns_page.php' );
 			}
 			?>
-			<?php echo \Flickerbox\Form::security_field( 'manage_config_columns_set' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_config_columns_set' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $t_project_id ?>" />
 			<input type="hidden" name="form_page" value="<?php echo $t_account_page ? 'account' : 'manage'; ?>" />
 
 			<div class="field-container">
-				<label for="all-columns"><span><?php echo \Flickerbox\Lang::get( 'all_columns_title' )?></span></label>
-				<span class="textarea"><textarea id="all-columns" <?php echo \Flickerbox\Helper::get_tab_index() ?> name="all_columns" readonly="readonly" cols="80" rows="5"><?php echo $t_all ?></textarea></span>
+				<label for="all-columns"><span><?php echo \Core\Lang::get( 'all_columns_title' )?></span></label>
+				<span class="textarea"><textarea id="all-columns" <?php echo \Core\Helper::get_tab_index() ?> name="all_columns" readonly="readonly" cols="80" rows="5"><?php echo $t_all ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="view-issues-columns" class="required"><span><?php echo \Flickerbox\Lang::get( 'view_issues_columns_title' )?></span></label>
-				<span class="textarea"><textarea id="view-issues-columns" <?php echo \Flickerbox\Helper::get_tab_index() ?> name="view_issues_columns" cols="80" rows="5"><?php echo $t_view_issues ?></textarea></span>
+				<label for="view-issues-columns" class="required"><span><?php echo \Core\Lang::get( 'view_issues_columns_title' )?></span></label>
+				<span class="textarea"><textarea id="view-issues-columns" <?php echo \Core\Helper::get_tab_index() ?> name="view_issues_columns" cols="80" rows="5"><?php echo $t_view_issues ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="print-issues-columns" class="required"><span><?php echo \Flickerbox\Lang::get( 'print_issues_columns_title' )?></span></label>
-				<span class="textarea"><textarea id="print-issues-columns" <?php echo \Flickerbox\Helper::get_tab_index() ?> name="print_issues_columns" cols="80" rows="5"><?php echo $t_print_issues ?></textarea></span>
+				<label for="print-issues-columns" class="required"><span><?php echo \Core\Lang::get( 'print_issues_columns_title' )?></span></label>
+				<span class="textarea"><textarea id="print-issues-columns" <?php echo \Core\Helper::get_tab_index() ?> name="print_issues_columns" cols="80" rows="5"><?php echo $t_print_issues ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="csv-columns" class="required"><span><?php echo \Flickerbox\Lang::get( 'csv_columns_title' )?></span></label>
-				<span class="textarea"><textarea id="csv-columns" <?php echo \Flickerbox\Helper::get_tab_index() ?> name="csv_columns" cols="80" rows="5"><?php echo $t_csv ?></textarea></span>
+				<label for="csv-columns" class="required"><span><?php echo \Core\Lang::get( 'csv_columns_title' )?></span></label>
+				<span class="textarea"><textarea id="csv-columns" <?php echo \Core\Helper::get_tab_index() ?> name="csv_columns" cols="80" rows="5"><?php echo $t_csv ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="excel-columns" class="required"><span><?php echo \Flickerbox\Lang::get( 'excel_columns_title' )?></span></label>
-				<span class="textarea"><textarea id="excel-columns" <?php echo \Flickerbox\Helper::get_tab_index() ?> name="excel_columns" cols="80" rows="5"><?php echo $t_excel ?></textarea></span>
+				<label for="excel-columns" class="required"><span><?php echo \Core\Lang::get( 'excel_columns_title' )?></span></label>
+				<span class="textarea"><textarea id="excel-columns" <?php echo \Core\Helper::get_tab_index() ?> name="excel_columns" cols="80" rows="5"><?php echo $t_excel ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 			<?php
 			if( $t_account_page ) {
 				if( $t_project_id == ALL_PROJECTS ) { ?>
-					<span class="submit-button"><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_columns_as_my_default' ) ?>" /></span><?php
+					<span class="submit-button"><input <?php echo \Core\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_columns_as_my_default' ) ?>" /></span><?php
 				} else { ?>
-					<span class="submit-button"><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_columns_for_current_project' ) ?>" /></span><?php
+					<span class="submit-button"><input <?php echo \Core\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_columns_for_current_project' ) ?>" /></span><?php
 				}
 			}
 
@@ -119,9 +119,9 @@ $t_excel = implode( ', ', $t_columns );
 			if( $t_manage_page ) { ?>
 				<div class="submit-button"><?php
 				if( $t_project_id != ALL_PROJECTS ) { ?>
-					<input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_columns_for_current_project' ) ?>" /><?php
-				} else if( \Flickerbox\Current_User::is_administrator() ) { ?>
-					<input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_columns_as_global_default' ) ?>" /><?php
+					<input <?php echo \Core\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_columns_for_current_project' ) ?>" /><?php
+				} else if( \Core\Current_User::is_administrator() ) { ?>
+					<input <?php echo \Core\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_columns_as_global_default' ) ?>" /><?php
 				} ?>
 				</div><?php
 			} ?>
@@ -132,19 +132,19 @@ $t_excel = implode( ', ', $t_columns );
 <div id="manage-columns-copy-div" class="form-container">
 	<form id="manage-columns-copy-form" method="post" action="manage_columns_copy.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_columns_copy' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_columns_copy' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $t_project_id ?>" />
 			<input type="hidden" name="manage_page" value="<?php echo $t_manage_page ?>" />
 
 			<select name="other_project_id">
-				<?php \Flickerbox\Print_Util::project_option_list( null, true, $t_project_id ); ?>
+				<?php \Core\Print_Util::project_option_list( null, true, $t_project_id ); ?>
 			</select>
 
 			<?php # Skip "Copy From" if the current project is ALL PROJECTS, the current page is management page, and the user is not administrator
-			if( !$t_manage_page || ( $t_project_id != ALL_PROJECTS ) || \Flickerbox\Current_User::is_administrator() ) { ?>
-			<input type="submit" name="copy_from" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_columns_from' ) ?>" /><?php
+			if( !$t_manage_page || ( $t_project_id != ALL_PROJECTS ) || \Core\Current_User::is_administrator() ) { ?>
+			<input type="submit" name="copy_from" class="button" value="<?php echo \Core\Lang::get( 'copy_columns_from' ) ?>" /><?php
 			} ?>
-			<input type="submit" name="copy_to" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_columns_to' ) ?>" />
+			<input type="submit" name="copy_to" class="button" value="<?php echo \Core\Lang::get( 'copy_columns_to' ) ?>" />
 		</fieldset>
 	</form>
 </div>
@@ -155,8 +155,8 @@ if( $t_account_page ) {
 <div class="form-container">
 	<form method="post" action="manage_config_columns_reset.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_config_columns_reset' ) ?>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'reset_columns_configuration' ) ?>" /></span>
+			<?php echo \Core\Form::security_field( 'manage_config_columns_reset' ) ?>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'reset_columns_configuration' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>

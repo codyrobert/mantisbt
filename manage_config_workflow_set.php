@@ -38,7 +38,7 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_config_workflow_set' );
+\Core\Form::security_validate( 'manage_config_workflow_set' );
 
 auth_reauthenticate();
 
@@ -51,21 +51,21 @@ auth_reauthenticate();
  */
 function config_get_parent( $p_project, $p_option ) {
 	if( $p_project == ALL_PROJECTS ) {
-		return \Flickerbox\Config::get_global( $p_option );
+		return \Core\Config::get_global( $p_option );
 	} else {
-		return \Flickerbox\Config::mantis_get( $p_option, null, null, ALL_PROJECTS );
+		return \Core\Config::mantis_get( $p_option, null, null, ALL_PROJECTS );
 	}
 }
 
 
-$t_can_change_level = min( \Flickerbox\Config::get_access( 'notify_flags' ), \Flickerbox\Config::get_access( 'default_notify_flags' ) );
-\Flickerbox\Access::ensure_project_level( $t_can_change_level );
+$t_can_change_level = min( \Core\Config::get_access( 'notify_flags' ), \Core\Config::get_access( 'default_notify_flags' ) );
+\Core\Access::ensure_project_level( $t_can_change_level );
 
 $t_redirect_url = 'manage_config_workflow_page.php';
-$t_project = \Flickerbox\Helper::get_current_project();
-$t_access = \Flickerbox\Current_User::get_access_level();
+$t_project = \Core\Helper::get_current_project();
+$t_access = \Core\Current_User::get_access_level();
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_workflow_config' ), $t_redirect_url );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_workflow_config' ), $t_redirect_url );
 
 # process the changes to threshold values
 $t_valid_thresholds = array(
@@ -75,27 +75,27 @@ $t_valid_thresholds = array(
 );
 
 foreach( $t_valid_thresholds as $t_threshold ) {
-	$t_access_current = \Flickerbox\Config::get_access( $t_threshold );
+	$t_access_current = \Core\Config::get_access( $t_threshold );
 	if( $t_access >= $t_access_current ) {
-		$f_value = \Flickerbox\GPC::get( 'threshold_' . $t_threshold );
-		$t_value_current = \Flickerbox\Config::mantis_get( $t_threshold );
-		$f_access = \Flickerbox\GPC::get( 'access_' . $t_threshold );
+		$f_value = \Core\GPC::get( 'threshold_' . $t_threshold );
+		$t_value_current = \Core\Config::mantis_get( $t_threshold );
+		$f_access = \Core\GPC::get( 'access_' . $t_threshold );
 		if( $f_value == $t_value_current && $f_access == $t_access_current ) {
 			# If new value is equal to parent and access has not changed
-			\Flickerbox\Config::delete( $t_threshold, ALL_USERS, $t_project );
+			\Core\Config::delete( $t_threshold, ALL_USERS, $t_project );
 		} else if( $f_value != $t_value_current || $f_access != $t_access_current ) {
 			# Set config if value or access have changed
-			\Flickerbox\Config::set( $t_threshold, $f_value, NO_USER, $t_project, $f_access );
+			\Core\Config::mantis_set( $t_threshold, $f_value, NO_USER, $t_project, $f_access );
 		}
 	}
 }
 
-$t_enum_status = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
+$t_enum_status = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 
 # process the workflow by reversing the flags to a matrix and creating the appropriate string
-if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
-	$f_value = \Flickerbox\GPC::get( 'flag', array() );
-	$f_access = \Flickerbox\GPC::get( 'workflow_access' );
+if( \Core\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
+	$f_value = \Core\GPC::get( 'flag', array() );
+	$f_access = \Core\GPC::get( 'workflow_access' );
 	$t_matrix = array();
 
 	foreach( $f_value as $t_transition ) {
@@ -105,14 +105,14 @@ if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 	$t_workflow = array();
 	foreach( $t_enum_status as $t_state => $t_label ) {
 		$t_workflow_row = '';
-		$t_default = \Flickerbox\GPC::get_int( 'default_' . $t_state );
+		$t_default = \Core\GPC::get_int( 'default_' . $t_state );
 		if( isset( $t_matrix[$t_state] ) && isset( $t_matrix[$t_state][$t_default] ) ) {
-			$t_workflow_row .= $t_default . ':' . \Flickerbox\Helper::get_enum_element( 'status', $t_default );
+			$t_workflow_row .= $t_default . ':' . \Core\Helper::get_enum_element( 'status', $t_default );
 			unset( $t_matrix[$t_state][$t_default] );
 			$t_first = false;
 		} else {
 			# error default state isn't in the matrix
-			echo '<p>' . sprintf( \Flickerbox\Lang::get( 'default_not_in_flow' ), \Flickerbox\Helper::get_enum_element( 'status', $t_default ), \Flickerbox\Helper::get_enum_element( 'status', $t_state ) )  . '</p>';
+			echo '<p>' . sprintf( \Core\Lang::get( 'default_not_in_flow' ), \Core\Helper::get_enum_element( 'status', $t_default ), \Core\Helper::get_enum_element( 'status', $t_state ) )  . '</p>';
 			$t_first = true;
 		}
 		if( isset( $t_matrix[$t_state] ) ) {
@@ -120,7 +120,7 @@ if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 				if( false == $t_first ) {
 					$t_workflow_row .= ',';
 				}
-				$t_workflow_row .= $t_next_state . ':' . \Flickerbox\Helper::get_enum_element( 'status', $t_next_state );
+				$t_workflow_row .= $t_next_state . ':' . \Core\Helper::get_enum_element( 'status', $t_next_state );
 				$t_first = false;
 			}
 		}
@@ -130,7 +130,7 @@ if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 	}
 
 	# Get the parent's workflow, if not set default to all transitions
-	$t_access_current = \Flickerbox\Config::get_access( 'status_enum_workflow' );
+	$t_access_current = \Core\Config::get_access( 'status_enum_workflow' );
 	$t_workflow_parent = config_get_parent( $t_project, 'status_enum_workflow' );
 	if( 0 == count( $t_workflow_parent ) ) {
 		foreach( $t_enum_status as $t_status => $t_label ) {
@@ -146,23 +146,23 @@ if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 
 	if( $t_workflow == $t_workflow_parent && $f_access == $t_access_current ) {
 		# If new value is equal to parent and access has not changed
-		\Flickerbox\Config::delete( 'status_enum_workflow', ALL_USERS, $t_project );
-	} else if( $t_workflow != \Flickerbox\Config::mantis_get( 'status_enum_workflow' ) || $f_access != $t_access_current ) {
+		\Core\Config::delete( 'status_enum_workflow', ALL_USERS, $t_project );
+	} else if( $t_workflow != \Core\Config::mantis_get( 'status_enum_workflow' ) || $f_access != $t_access_current ) {
 		# Set config if value or access have changed
-		\Flickerbox\Config::set( 'status_enum_workflow', $t_workflow, NO_USER, $t_project, $f_access );
+		\Core\Config::mantis_set( 'status_enum_workflow', $t_workflow, NO_USER, $t_project, $f_access );
 	}
 }
 
 # process the access level changes
-if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
+if( \Core\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 	# get changes to access level to change these values
-	$f_access = \Flickerbox\GPC::get( 'status_access' );
-	$t_access_current = \Flickerbox\Config::get_access( 'status_enum_workflow' );
+	$f_access = \Core\GPC::get( 'status_access' );
+	$t_access_current = \Core\Config::get_access( 'status_enum_workflow' );
 
 	# Build access level reference arrays (parent level and current config)
 	$t_set_parent = config_get_parent( $t_project, 'set_status_threshold' );
-	$t_set_current = \Flickerbox\Config::mantis_get( 'set_status_threshold' );
-	$t_bug_submit_status = \Flickerbox\Config::mantis_get( 'bug_submit_status' );
+	$t_set_current = \Core\Config::mantis_get( 'set_status_threshold' );
+	$t_bug_submit_status = \Core\Config::mantis_get( 'bug_submit_status' );
 	foreach( $t_enum_status as $t_status => $t_status_label ) {
 		if( !isset( $t_set_parent[$t_status] ) ) {
 			if( $t_bug_submit_status == $t_status ) {
@@ -173,9 +173,9 @@ if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 		}
 		if( !isset( $t_set_current[$t_status] ) ) {
 			if( $t_bug_submit_status == $t_status ) {
-				$t_set_current[$t_status] = \Flickerbox\Config::mantis_get( 'report_bug_threshold' );
+				$t_set_current[$t_status] = \Core\Config::mantis_get( 'report_bug_threshold' );
 			} else {
-				$t_set_current[$t_status] = \Flickerbox\Config::mantis_get( 'update_bug_status_threshold' );
+				$t_set_current[$t_status] = \Core\Config::mantis_get( 'update_bug_status_threshold' );
 			}
 		}
 	}
@@ -183,12 +183,12 @@ if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 	# walk through the status labels to set the status threshold
 	$t_set_new = array();
 	foreach( $t_enum_status as $t_status_id => $t_status_label ) {
-		$f_level = \Flickerbox\GPC::get_int( 'access_change_' . $t_status_id );
-		if( \Flickerbox\Config::mantis_get( 'bug_submit_status' ) == $t_status_id ) {
-			if( $f_level != \Flickerbox\Config::mantis_get( 'report_bug_threshold' ) ) {
-				\Flickerbox\Config::set( 'report_bug_threshold', (int)$f_level, ALL_USERS, $t_project, $f_access );
+		$f_level = \Core\GPC::get_int( 'access_change_' . $t_status_id );
+		if( \Core\Config::mantis_get( 'bug_submit_status' ) == $t_status_id ) {
+			if( $f_level != \Core\Config::mantis_get( 'report_bug_threshold' ) ) {
+				\Core\Config::mantis_set( 'report_bug_threshold', (int)$f_level, ALL_USERS, $t_project, $f_access );
 			} else {
-				\Flickerbox\Config::delete( 'report_bug_threshold', ALL_USERS, $t_project );
+				\Core\Config::delete( 'report_bug_threshold', ALL_USERS, $t_project );
 			}
 			unset( $t_set_parent[$t_status_id] );
 			unset( $t_set_current[$t_status_id] );
@@ -199,15 +199,15 @@ if( \Flickerbox\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {
 
 	if( $t_set_new == $t_set_parent && $f_access == $t_access_current ) {
 		# If new value is equal to parent and access has not changed
-		\Flickerbox\Config::delete( 'set_status_threshold', ALL_USERS, $t_project );
+		\Core\Config::delete( 'set_status_threshold', ALL_USERS, $t_project );
 	} else if( $t_set_new != $t_set_current || $f_access != $t_access_current ) {
 		# Set config if value or access have changed
-		\Flickerbox\Config::set( 'set_status_threshold', $t_set_new, ALL_USERS, $t_project, $f_access );
+		\Core\Config::mantis_set( 'set_status_threshold', $t_set_new, ALL_USERS, $t_project, $f_access );
 	}
 }
 
-\Flickerbox\Form::security_purge( 'manage_config_workflow_set' );
+\Core\Form::security_purge( 'manage_config_workflow_set' );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

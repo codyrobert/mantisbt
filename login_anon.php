@@ -39,13 +39,13 @@
 
 require_once( 'core.php' );
 
-$f_return = \Flickerbox\GPC::get_string( 'return', '' );
+$f_return = \Core\GPC::get_string( 'return', '' );
 
-$t_anonymous_account = \Flickerbox\Config::mantis_get( 'anonymous_account' );
+$t_anonymous_account = \Core\Config::mantis_get( 'anonymous_account' );
 
 if( $f_return !== '' ) {
-	$t_return = \Flickerbox\String::url( \Flickerbox\String::sanitize_url( $f_return ) );
-	\Flickerbox\Print_Util::header_redirect( 'login.php?username=' . $t_anonymous_account . '&perm_login=false&return=' . $t_return );
+	$t_return = \Core\String::url( \Core\String::sanitize_url( $f_return ) );
+	\Core\Print_Util::header_redirect( 'login.php?username=' . $t_anonymous_account . '&perm_login=false&return=' . $t_return );
 } else {
-	\Flickerbox\Print_Util::header_redirect( 'login.php?username=' . $t_anonymous_account . '&perm_login=false' );
+	\Core\Print_Util::header_redirect( 'login.php?username=' . $t_anonymous_account . '&perm_login=false' );
 }

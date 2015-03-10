@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -69,10 +69,10 @@ abstract class MantisColumn {
 
 	/**
 	 * Function to display column data for a given bug row.
-	 * @param \Flickerbox\BugData $p_bug            A \Flickerbox\BugData object.
+	 * @param \Core\BugData $p_bug            A \Core\BugData object.
 	 * @param integer $p_columns_target Column display target.
 	 * @return void
 	 */
-	abstract public function display( \Flickerbox\BugData $p_bug, $p_columns_target );
+	abstract public function display( \Core\BugData $p_bug, $p_columns_target );
 }
 

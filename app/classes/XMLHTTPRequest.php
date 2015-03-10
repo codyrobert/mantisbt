@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -62,10 +62,10 @@ class XMLHTTPRequest
 	 * @access public
 	 */
 	static function platform_get_with_prefix() {
-		$f_platform = \Flickerbox\GPC::get_string( 'platform' );
+		$f_platform = \Core\GPC::get_string( 'platform' );
 	
-		$t_unique_entries = \Flickerbox\Profile::get_field_all_for_user( 'platform' );
-		$t_matching_entries = \Flickerbox\XMLHTTPRequest::filter_by_prefix( $t_unique_entries, $f_platform );
+		$t_unique_entries = \Core\Profile::get_field_all_for_user( 'platform' );
+		$t_matching_entries = \Core\XMLHTTPRequest::filter_by_prefix( $t_unique_entries, $f_platform );
 	
 		echo json_encode( $t_matching_entries );
 	}
@@ -76,10 +76,10 @@ class XMLHTTPRequest
 	 * @access public
 	 */
 	static function os_get_with_prefix() {
-		$f_os = \Flickerbox\GPC::get_string( 'os' );
+		$f_os = \Core\GPC::get_string( 'os' );
 	
-		$t_unique_entries = \Flickerbox\Profile::get_field_all_for_user( 'os' );
-		$t_matching_entries = \Flickerbox\XMLHTTPRequest::filter_by_prefix( $t_unique_entries, $f_os );
+		$t_unique_entries = \Core\Profile::get_field_all_for_user( 'os' );
+		$t_matching_entries = \Core\XMLHTTPRequest::filter_by_prefix( $t_unique_entries, $f_os );
 	
 		echo json_encode( $t_matching_entries );
 	}
@@ -90,10 +90,10 @@ class XMLHTTPRequest
 	 * @access public
 	 */
 	static function os_build_get_with_prefix() {
-		$f_os_build = \Flickerbox\GPC::get_string( 'os_build' );
+		$f_os_build = \Core\GPC::get_string( 'os_build' );
 	
-		$t_unique_entries = \Flickerbox\Profile::get_field_all_for_user( 'os_build' );
-		$t_matching_entries = \Flickerbox\XMLHTTPRequest::filter_by_prefix( $t_unique_entries, $f_os_build );
+		$t_unique_entries = \Core\Profile::get_field_all_for_user( 'os_build' );
+		$t_matching_entries = \Core\XMLHTTPRequest::filter_by_prefix( $t_unique_entries, $f_os_build );
 	
 		echo json_encode( $t_matching_entries );
 	}

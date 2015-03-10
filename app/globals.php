@@ -75,7 +75,7 @@ $g_lang_overrides = array();
 # To be used in custom_strings_inc.php :
 $g_active_language = '';
 
-# Set up global for \Flickerbox\Token::purge_expired_once()
+# Set up global for \Core\Token::purge_expired_once()
 $g_tokens_purged = false;
 	
 
@@ -347,7 +347,7 @@ $g_db_connected = false;
 
 # Store whether to log queries ( used for show_queries_count/query list)
 # @global bool $g_db_log_queries
-$g_db_log_queries = ( 0 != ( \Flickerbox\Config::get_global( 'log_level' ) & LOG_DATABASE ) );
+$g_db_log_queries = ( 0 != ( \Core\Config::get_global( 'log_level' ) & LOG_DATABASE ) );
 
 # set adodb fetch mode
 # @global bool $ADODB_FETCH_MODE
@@ -356,7 +356,7 @@ $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 
 # Tracks the query parameter count
 # @global object $g_db_param
-$g_db_param = new \Flickerbox\MantisDbParam();
+$g_db_param = new \Core\MantisDbParam();
 
 
 
@@ -404,7 +404,7 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_STRING] = array (
 	'#function_return_distinct_values' => null,
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
+	'#function_print_input' => '\\Core\\CF_Def::input_textbox',
 	'#function_string_value' => null,
 	'#function_string_value_for_email' => null,
 );
@@ -418,7 +418,7 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_TEXTAREA] = array (
 	'#function_return_distinct_values' => null,
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textarea',
+	'#function_print_input' => '\\Core\\CF_Def::input_textarea',
 	'#function_string_value' => null,
 	'#function_string_value_for_email' => null,
 );
@@ -432,7 +432,7 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_NUMERIC] = array (
 	'#function_return_distinct_values' => null,
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
+	'#function_print_input' => '\\Core\\CF_Def::input_textbox',
 	'#function_string_value' => null,
 	'#function_string_value_for_email' => null,
 );
@@ -446,7 +446,7 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_FLOAT] = array (
 	'#function_return_distinct_values' => null,
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
+	'#function_print_input' => '\\Core\\CF_Def::input_textbox',
 	'#function_string_value' => null,
 	'#function_string_value_for_email' => null,
 );
@@ -457,12 +457,12 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_ENUM] = array (
 	'#display_length_min' => true,
 	'#display_length_max' => true,
 	'#display_default_value' => true,
-	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_return_distinct_values' => '\\Core\\CF_Def::prepare_list_distinct_values',
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_list',
-	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
-	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+	'#function_print_input' => '\\Core\\CF_Def::input_list',
+	'#function_string_value' => '\\Core\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Core\\CF_Def::prepare_list_value_for_email',
 );
 
 $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_EMAIL] = array (
@@ -474,9 +474,9 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_EMAIL] = array (
 	'#function_return_distinct_values' => null,
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_textbox',
-	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_email_value',
-	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_email_value_for_email',
+	'#function_print_input' => '\\Core\\CF_Def::input_textbox',
+	'#function_string_value' => '\\Core\\CF_Def::prepare_email_value',
+	'#function_string_value_for_email' => '\\Core\\CF_Def::prepare_email_value_for_email',
 );
 
 $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_CHECKBOX] = array (
@@ -485,12 +485,12 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_CHECKBOX] = array (
 	'#display_length_min' => true,
 	'#display_length_max' => true,
 	'#display_default_value' => true,
-	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
-	'#function_value_to_database' => '\\Flickerbox\\CF_Def::prepare_list_value_to_database',
-	'#function_database_to_value' => '\\Flickerbox\\CF_Def::prepare_list_database_to_value',
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_checkbox',
-	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
-	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+	'#function_return_distinct_values' => '\\Core\\CF_Def::prepare_list_distinct_values',
+	'#function_value_to_database' => '\\Core\\CF_Def::prepare_list_value_to_database',
+	'#function_database_to_value' => '\\Core\\CF_Def::prepare_list_database_to_value',
+	'#function_print_input' => '\\Core\\CF_Def::input_checkbox',
+	'#function_string_value' => '\\Core\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Core\\CF_Def::prepare_list_value_for_email',
 );
 
 $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_RADIO] = array (
@@ -499,12 +499,12 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_RADIO] = array (
 	'#display_length_min' => false,
 	'#display_length_max' => false,
 	'#display_default_value' => true,
-	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_return_distinct_values' => '\\Core\\CF_Def::prepare_list_distinct_values',
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_radio',
-	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
-	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+	'#function_print_input' => '\\Core\\CF_Def::input_radio',
+	'#function_string_value' => '\\Core\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Core\\CF_Def::prepare_list_value_for_email',
 );
 
 $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_LIST] = array (
@@ -513,12 +513,12 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_LIST] = array (
 	'#display_length_min' => true,
 	'#display_length_max' => true,
 	'#display_default_value' => true,
-	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
+	'#function_return_distinct_values' => '\\Core\\CF_Def::prepare_list_distinct_values',
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_list',
-	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
-	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+	'#function_print_input' => '\\Core\\CF_Def::input_list',
+	'#function_string_value' => '\\Core\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Core\\CF_Def::prepare_list_value_for_email',
 );
 
 $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_MULTILIST] = array (
@@ -527,12 +527,12 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_MULTILIST] = array (
 	'#display_length_min' => true,
 	'#display_length_max' => true,
 	'#display_default_value' => true,
-	'#function_return_distinct_values' => '\\Flickerbox\\CF_Def::prepare_list_distinct_values',
-	'#function_value_to_database' => '\\Flickerbox\\CF_Def::prepare_list_value_to_database',
-	'#function_database_to_value' => '\\Flickerbox\\CF_Def::prepare_list_database_to_value',
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_list',
-	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_list_value',
-	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_list_value_for_email',
+	'#function_return_distinct_values' => '\\Core\\CF_Def::prepare_list_distinct_values',
+	'#function_value_to_database' => '\\Core\\CF_Def::prepare_list_value_to_database',
+	'#function_database_to_value' => '\\Core\\CF_Def::prepare_list_database_to_value',
+	'#function_print_input' => '\\Core\\CF_Def::input_list',
+	'#function_string_value' => '\\Core\\CF_Def::prepare_list_value',
+	'#function_string_value_for_email' => '\\Core\\CF_Def::prepare_list_value_for_email',
 );
 
 $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_DATE] = array (
@@ -544,8 +544,8 @@ $g_custom_field_type_definition[CUSTOM_FIELD_TYPE_DATE] = array (
 	'#function_return_distinct_values' => null,
 	'#function_value_to_database' => null,
 	'#function_database_to_value' => null,
-	'#function_default_to_value' => '\\Flickerbox\\CF_Def::prepare_date_default',
-	'#function_print_input' => '\\Flickerbox\\CF_Def::input_date',
-	'#function_string_value' => '\\Flickerbox\\CF_Def::prepare_date_value',
-	'#function_string_value_for_email' => '\\Flickerbox\\CF_Def::prepare_date_value_for_email',
+	'#function_default_to_value' => '\\Core\\CF_Def::prepare_date_default',
+	'#function_print_input' => '\\Core\\CF_Def::input_date',
+	'#function_string_value' => '\\Core\\CF_Def::prepare_date_value',
+	'#function_string_value_for_email' => '\\Core\\CF_Def::prepare_date_value_for_email',
 );

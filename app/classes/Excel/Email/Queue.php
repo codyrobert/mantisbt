@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox\Email;
+namespace Core\Email;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -43,7 +43,7 @@ class Queue
 	 * @param EmailData $p_email_data Email Data structure to store.
 	 * @return EmailData
 	 */
-	static function prepare_db( \Flickerbox\Email\Data $p_email_data ) {
+	static function prepare_db( \Core\Email\Data $p_email_data ) {
 		$p_email_data->email_id = (int)$p_email_data->email_id;
 	
 		return $p_email_data;
@@ -54,24 +54,24 @@ class Queue
 	 * @param EmailData $p_email_data Email Data structure.
 	 * @return integer
 	 */
-	static function add( \Flickerbox\Email\Data $p_email_data ) {
-		$t_email_data = \Flickerbox\Email\Queue::prepare_db( $p_email_data );
+	static function add( \Core\Email\Data $p_email_data ) {
+		$t_email_data = \Core\Email\Queue::prepare_db( $p_email_data );
 	
 		# email cannot be blank
-		if( \Flickerbox\Utility::is_blank( $t_email_data->email ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'email' ) );
+		if( \Core\Utility::is_blank( $t_email_data->email ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'email' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# subject cannot be blank
-		if( \Flickerbox\Utility::is_blank( $t_email_data->subject ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'subject' ) );
+		if( \Core\Utility::is_blank( $t_email_data->subject ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'subject' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# body cannot be blank
-		if( \Flickerbox\Utility::is_blank( $t_email_data->body ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'body' ) );
+		if( \Core\Utility::is_blank( $t_email_data->body ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'body' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
@@ -83,11 +83,11 @@ class Queue
 		$t_query = 'INSERT INTO {email}
 					    ( email, subject, body, submitted, metadata)
 					  VALUES
-					    (' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
-		\Flickerbox\Database::query( $t_query, array( $c_email, $c_subject, $c_body, \Flickerbox\Database::now(), $c_metadata ) );
-		$t_id = \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'email' ), 'email_id' );
+					    (' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ')';
+		\Core\Database::query( $t_query, array( $c_email, $c_subject, $c_body, \Core\Database::now(), $c_metadata ) );
+		$t_id = \Core\Database::insert_id( \Core\Database::get_table( 'email' ), 'email_id' );
 	
-		\Flickerbox\Log::event( LOG_EMAIL, 'message #' . $t_id . ' queued' );
+		\Core\Log::event( LOG_EMAIL, 'message #' . $t_id . ' queued' );
 	
 		return $t_id;
 	}
@@ -98,7 +98,7 @@ class Queue
 	 * @return boolean|EmailData
 	 */
 	static function row_to_object( $p_row ) {
-		# typically this function takes as an input the result of \Flickerbox\Database::fetch_array() which can be false.
+		# typically this function takes as an input the result of \Core\Database::fetch_array() which can be false.
 		if( $p_row === false ) {
 			return false;
 		}
@@ -106,7 +106,7 @@ class Queue
 		$t_row = $p_row;
 		$t_row['metadata'] = unserialize( $t_row['metadata'] );
 	
-		$t_email_data = new \Flickerbox\Email\Data;
+		$t_email_data = new \Core\Email\Data;
 	
 		$t_row_keys = array_keys( $t_row );
 		$t_vars = get_object_vars( $t_email_data );
@@ -129,10 +129,10 @@ class Queue
 	 * @return boolean|EmailData
 	 */
 	static function get( $p_email_id ) {
-		$t_query = 'SELECT * FROM {email} WHERE email_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_email_id ) );
+		$t_query = 'SELECT * FROM {email} WHERE email_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_email_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		return email_queue_row_to_object( $t_row );
 	}
@@ -143,10 +143,10 @@ class Queue
 	 * @return void
 	 */
 	static function delete( $p_email_id ) {
-		$t_query = 'DELETE FROM {email} WHERE email_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_email_id ) );
+		$t_query = 'DELETE FROM {email} WHERE email_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_email_id ) );
 	
-		\Flickerbox\Log::event( LOG_EMAIL, 'message #' . $p_email_id . ' deleted from queue' );
+		\Core\Log::event( LOG_EMAIL, 'message #' . $p_email_id . ' deleted from queue' );
 	}
 	
 	/**
@@ -155,10 +155,10 @@ class Queue
 	 */
 	static function get_ids() {
 		$t_query = 'SELECT email_id FROM {email} ORDER BY email_id ASC';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
 		$t_ids = array();
-		while( ( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) !== false ) {
+		while( ( $t_row = \Core\Database::fetch_array( $t_result ) ) !== false ) {
 			$t_ids[] = $t_row['email_id'];
 		}
 	

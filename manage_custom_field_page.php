@@ -39,23 +39,23 @@ require_api( 'custom_field_api.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_custom_fields_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_custom_field_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_custom_field_link' ) );
 
-\Flickerbox\HTML::print_manage_menu( 'manage_custom_field_page.php' );
+\Core\HTML::print_manage_menu( 'manage_custom_field_page.php' );
 ?>
 
 <div class="table-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'custom_fields_setup' ) ?></h2>
+	<h2><?php echo \Core\Lang::get( 'custom_fields_setup' ) ?></h2>
 	<table>
 		<thead>
 			<tr>
-				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_name' ) ?></th>
-				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_project_count' ) ?></th>
-				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_type' ) ?></th>
-				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_possible_values' ) ?></th>
-				<th class="category"><?php echo \Flickerbox\Lang::get( 'custom_field_default_value' ) ?></th>
+				<th class="category"><?php echo \Core\Lang::get( 'custom_field_name' ) ?></th>
+				<th class="category"><?php echo \Core\Lang::get( 'custom_field_project_count' ) ?></th>
+				<th class="category"><?php echo \Core\Lang::get( 'custom_field_type' ) ?></th>
+				<th class="category"><?php echo \Core\Lang::get( 'custom_field_possible_values' ) ?></th>
+				<th class="category"><?php echo \Core\Lang::get( 'custom_field_default_value' ) ?></th>
 			</tr>
 		</thead>
 		<tbody><?php
@@ -67,21 +67,21 @@ auth_reauthenticate();
 					<a href="manage_custom_field_edit_page.php?field_id=<?php echo $t_field_id ?>"><?php echo custom_field_get_display_name( $t_desc['name'] ) ?></a>
 				</td>
 				<td><?php echo count( custom_field_get_project_ids( $t_field_id ) ) ?></td>
-				<td><?php echo \Flickerbox\Helper::get_enum_element( 'custom_field_type', $t_desc['type'] ) ?></td>
-				<td><?php echo \Flickerbox\String::display( $t_desc['possible_values'] ) ?></td>
-				<td><?php echo \Flickerbox\String::display( $t_desc['default_value'] ) ?></td>
+				<td><?php echo \Core\Helper::get_enum_element( 'custom_field_type', $t_desc['type'] ) ?></td>
+				<td><?php echo \Core\String::display( $t_desc['possible_values'] ) ?></td>
+				<td><?php echo \Core\String::display( $t_desc['default_value'] ) ?></td>
 			</tr><?php
 		} # Create Form END ?>
 		</tbody>
 	</table>
 	<form method="post" action="manage_custom_field_create.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_custom_field_create' ); ?>
+			<?php echo \Core\Form::security_field( 'manage_custom_field_create' ); ?>
 			<input type="text" name="name" size="32" maxlength="64" />
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_custom_field_button' ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_custom_field_button' ) ?>" />
 		</fieldset>
 	</form>
 </div><?php
 
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

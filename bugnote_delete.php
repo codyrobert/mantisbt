@@ -41,34 +41,34 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bugnote_delete' );
+\Core\Form::security_validate( 'bugnote_delete' );
 
-$f_bugnote_id = \Flickerbox\GPC::get_int( 'bugnote_id' );
+$f_bugnote_id = \Core\GPC::get_int( 'bugnote_id' );
 
-$t_bug_id = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );
+$t_bug_id = \Core\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );
 
-$t_bug = \Flickerbox\Bug::get( $t_bug_id, true );
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+$t_bug = \Core\Bug::get( $t_bug_id, true );
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
 # Check if the current user is allowed to delete the bugnote
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
-$t_reporter_id = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'reporter_id' );
+$t_user_id = \Core\Auth::get_current_user_id();
+$t_reporter_id = \Core\Bug\Note::get_field( $f_bugnote_id, 'reporter_id' );
 
 if( $t_user_id == $t_reporter_id ) {
-	\Flickerbox\Access::ensure_bugnote_level( \Flickerbox\Config::mantis_get( 'bugnote_user_delete_threshold' ), $f_bugnote_id );
+	\Core\Access::ensure_bugnote_level( \Core\Config::mantis_get( 'bugnote_user_delete_threshold' ), $f_bugnote_id );
 } else {
-	\Flickerbox\Access::ensure_bugnote_level( \Flickerbox\Config::mantis_get( 'delete_bugnote_threshold' ), $f_bugnote_id );
+	\Core\Access::ensure_bugnote_level( \Core\Config::mantis_get( 'delete_bugnote_threshold' ), $f_bugnote_id );
 }
 
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_bugnote_sure_msg' ),
-						 \Flickerbox\Lang::get( 'delete_bugnote_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'delete_bugnote_sure_msg' ),
+						 \Core\Lang::get( 'delete_bugnote_button' ) );
 
-\Flickerbox\Bug\Note::delete( $f_bugnote_id );
+\Core\Bug\Note::delete( $f_bugnote_id );
 
-\Flickerbox\Form::security_purge( 'bugnote_delete' );
+\Core\Form::security_purge( 'bugnote_delete' );
 
-\Flickerbox\Print_Util::successful_redirect( \Flickerbox\String::get_bug_view_url( $t_bug_id ) . '#bugnotes' );
+\Core\Print_Util::successful_redirect( \Core\String::get_bug_view_url( $t_bug_id ) . '#bugnotes' );

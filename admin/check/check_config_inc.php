@@ -96,7 +96,7 @@ check_print_test_warn_row( 'Email debugging should be OFF',
 );
 
 check_print_test_row( 'Default move category must exists ("default_category_for_moves")',
-	\Flickerbox\Category::exists( \Flickerbox\Config::mantis_get( 'default_category_for_moves' ) ),
+	\Core\Category::exists( \Core\Config::mantis_get( 'default_category_for_moves' ) ),
 	array( false => 'Issues moved may end up with invalid category id.' )
 );
 

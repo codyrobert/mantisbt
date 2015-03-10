@@ -1,38 +1,5 @@
 <?php
-namespace Flickerbox;
-
-# MantisBT - A PHP based bugtracking system
-
-# MantisBT is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-#
-# MantisBT is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with MantisBT.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Configuration API
- *
- * @package CoreAPI
- * @subpackage ConfigurationAPI
- * @copyright Copyright 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- * @copyright Copyright 2002  MantisBT Team - mantisbt-dev@lists.sourceforge.net
- * @link http://www.mantisbt.org
- *
- * @uses authentication_api.php
- * @uses constant_inc.php
- * @uses database_api.php
- * @uses error_api.php
- * @uses helper_api.php
- * @uses utility_api.php
- */
-
+namespace Core;
 
 
 class Config
@@ -52,6 +19,11 @@ class Config
 		}
 		
 		return @Config::$data[$key] ? Config::$data[$key] : false;
+	}
+	
+	static function set($key, $val)
+	{
+		self::$data[$key] = $val;
 	}
 	
 	/**
@@ -77,7 +49,7 @@ class Config
 	
 		# @@ debug @@ echo "lu o=$p_option ";
 		# bypass table lookup for certain options
-		$t_bypass_lookup = !\Flickerbox\Config::can_set_in_database( $p_option );
+		$t_bypass_lookup = !\Core\Config::can_set_in_database( $p_option );
 	
 		# @@ debug @@ if( $t_bypass_lookup ) { echo "bp=$p_option match=$t_match_pattern <br />"; }
 	
@@ -85,20 +57,20 @@ class Config
 			if( $g_project_override !== null && $p_project === null ) {
 				$p_project = $g_project_override;
 			}
-			# @@ debug @@ if( ! \Flickerbox\Database::is_connected() ) { echo "no db "; }
-			# @@ debug @@ echo "lu table=" . ( \Flickerbox\Database::table_exists( $t_config_table ) ? "yes " : "no " );
+			# @@ debug @@ if( ! \Core\Database::is_connected() ) { echo "no db "; }
+			# @@ debug @@ echo "lu table=" . ( \Core\Database::table_exists( $t_config_table ) ? "yes " : "no " );
 			if( !$g_cache_db_table_exists ) {
-				$g_cache_db_table_exists = ( true === \Flickerbox\Database::is_connected() ) && \Flickerbox\Database::table_exists( \Flickerbox\Database::get_table( 'config' ) );
+				$g_cache_db_table_exists = ( true === \Core\Database::is_connected() ) && \Core\Database::table_exists( \Core\Database::get_table( 'config' ) );
 			}
 	
 			if( $g_cache_db_table_exists ) {
 				# @@ debug @@ echo " lu db $p_option ";
-				# @@ debug @@ \Flickerbox\Error::print_stack_trace();
+				# @@ debug @@ \Core\Error::print_stack_trace();
 				# prepare the user's list
 				$t_users = array();
 				if( null === $p_user ) {
 					if( !isset( $g_cache_config_user ) ) {
-						$t_users[] = \Flickerbox\Auth::is_user_authenticated() ? \Flickerbox\Auth::get_current_user_id() : ALL_USERS;
+						$t_users[] = \Core\Auth::is_user_authenticated() ? \Core\Auth::get_current_user_id() : ALL_USERS;
 						if( !in_array( ALL_USERS, $t_users ) ) {
 							$t_users[] = ALL_USERS;
 						}
@@ -117,7 +89,7 @@ class Config
 				$t_projects = array();
 				if( ( null === $p_project ) ) {
 					if( !isset( $g_cache_config_project ) ) {
-						$t_projects[] = \Flickerbox\Auth::is_user_authenticated() ? \Flickerbox\Helper::get_current_project() : ALL_PROJECTS;
+						$t_projects[] = \Core\Auth::is_user_authenticated() ? \Core\Helper::get_current_project() : ALL_PROJECTS;
 						if( !in_array( ALL_PROJECTS, $t_projects ) ) {
 							$t_projects[] = ALL_PROJECTS;
 						}
@@ -137,8 +109,8 @@ class Config
 	
 				if( !$g_cache_filled ) {
 					$t_query = 'SELECT config_id, user_id, project_id, type, value, access_reqd FROM {config}';
-					$t_result = \Flickerbox\Database::query( $t_query );
-					while( false <> ( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) ) {
+					$t_result = \Core\Database::query( $t_query );
+					while( false <> ( $t_row = \Core\Database::fetch_array( $t_result ) ) ) {
 						$t_config = $t_row['config_id'];
 						$t_user = $t_row['user_id'];
 						$t_project = $t_row['project_id'];
@@ -178,14 +150,14 @@ class Config
 								break;
 							case CONFIG_TYPE_STRING:
 							default:
-								$t_value = \Flickerbox\Config::do_eval( $t_raw_value );
+								$t_value = \Core\Config::do_eval( $t_raw_value );
 						}
 						return $t_value;
 					}
 				}
 			}
 		}
-		return \Flickerbox\Config::get_global( $p_option, $p_default );
+		return \Core\Config::get_global( $p_option, $p_default );
 	}
 	
 	/**
@@ -199,7 +171,7 @@ class Config
 		global $g_cache_config_eval;
 		if( isset( $GLOBALS['g_' . $p_option] ) ) {
 			if( !isset( $g_cache_config_eval['g_' . $p_option] ) ) {
-				$t_value = \Flickerbox\Config::do_eval( $GLOBALS['g_' . $p_option], true );
+				$t_value = \Core\Config::do_eval( $GLOBALS['g_' . $p_option], true );
 				$g_cache_config_eval['g_' . $p_option] = $t_value;
 			} else {
 				$t_value = $g_cache_config_eval['g_' . $p_option];
@@ -209,7 +181,7 @@ class Config
 			# unless we were allowing for the option not to exist by passing
 			#  a default, trigger a WARNING
 			if( null === $p_default ) {
-				\Flickerbox\Error::parameters( $p_option );
+				\Core\Error::parameters( $p_option );
 				trigger_error( ERROR_CONFIG_OPT_NOT_FOUND, WARNING );
 			}
 			return $p_default;
@@ -228,13 +200,13 @@ class Config
 		global $g_cache_config, $g_cache_config_access, $g_cache_filled;
 	
 		if( !$g_cache_filled ) {
-			\Flickerbox\Config::mantis_get( $p_option, -1, $p_user, $p_project );
+			\Core\Config::mantis_get( $p_option, -1, $p_user, $p_project );
 		}
 	
 		# prepare the user's list
 		$t_users = array();
-		if( ( null === $p_user ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
-			$t_users[] = \Flickerbox\Auth::get_current_user_id();
+		if( ( null === $p_user ) && ( \Core\Auth::is_user_authenticated() ) ) {
+			$t_users[] = \Core\Auth::get_current_user_id();
 		} else if( !in_array( $p_user, $t_users ) ) {
 			$t_users[] = $p_user;
 		}
@@ -242,8 +214,8 @@ class Config
 	
 		# prepare the projects list
 		$t_projects = array();
-		if( ( null === $p_project ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
-			$t_selected_project = \Flickerbox\Helper::get_current_project();
+		if( ( null === $p_project ) && ( \Core\Auth::is_user_authenticated() ) ) {
+			$t_selected_project = \Core\Helper::get_current_project();
 			$t_projects[] = $t_selected_project;
 			if( ALL_PROJECTS <> $t_selected_project ) {
 				$t_projects[] = ALL_PROJECTS;
@@ -266,7 +238,7 @@ class Config
 			}
 		}
 	
-		return $t_found ? $t_access : \Flickerbox\Config::get_global( 'admin_site_threshold' );
+		return $t_found ? $t_access : \Core\Config::get_global( 'admin_site_threshold' );
 	}
 	
 	/**
@@ -282,13 +254,13 @@ class Config
 		global $g_cache_config, $g_cache_filled;
 	
 		if( !$g_cache_filled ) {
-			\Flickerbox\Config::mantis_get( $p_option, -1, $p_user, $p_project );
+			\Core\Config::mantis_get( $p_option, -1, $p_user, $p_project );
 		}
 	
 		# prepare the user's list
 		$t_users = array( ALL_USERS );
-		if( ( null === $p_user ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
-			$t_users[] = \Flickerbox\Auth::get_current_user_id();
+		if( ( null === $p_user ) && ( \Core\Auth::is_user_authenticated() ) ) {
+			$t_users[] = \Core\Auth::get_current_user_id();
 		} else if( !in_array( $p_user, $t_users ) ) {
 			$t_users[] = $p_user;
 		}
@@ -296,8 +268,8 @@ class Config
 	
 		# prepare the projects list
 		$t_projects = array( ALL_PROJECTS );
-		if( ( null === $p_project ) && ( \Flickerbox\Auth::is_user_authenticated() ) ) {
-			$t_selected_project = \Flickerbox\Helper::get_current_project();
+		if( ( null === $p_project ) && ( \Core\Auth::is_user_authenticated() ) ) {
+			$t_selected_project = \Core\Helper::get_current_project();
 			if( ALL_PROJECTS <> $t_selected_project ) {
 				$t_projects[] = $t_selected_project;
 			}
@@ -334,9 +306,9 @@ class Config
 	 * @param integer $p_access  Access level. Defaults to DEFAULT_ACCESS_LEVEL.
 	 * @return boolean
 	 */
-	static function set( $p_option, $p_value, $p_user = NO_USER, $p_project = ALL_PROJECTS, $p_access = DEFAULT_ACCESS_LEVEL ) {
+	static function mantis_set( $p_option, $p_value, $p_user = NO_USER, $p_project = ALL_PROJECTS, $p_access = DEFAULT_ACCESS_LEVEL ) {
 		if( $p_access == DEFAULT_ACCESS_LEVEL ) {
-			$p_access = \Flickerbox\Config::get_global( 'admin_site_threshold' );
+			$p_access = \Core\Config::get_global( 'admin_site_threshold' );
 		}
 		if( is_array( $p_value ) || is_object( $p_value ) ) {
 			$t_type = CONFIG_TYPE_COMPLEX;
@@ -352,28 +324,28 @@ class Config
 			$c_value = $p_value;
 		}
 	
-		if( \Flickerbox\Config::can_set_in_database( $p_option ) ) {
+		if( \Core\Config::can_set_in_database( $p_option ) ) {
 			# before we set in the database, ensure that the user and project id exist
 			if( $p_project !== ALL_PROJECTS ) {
-				\Flickerbox\Project::ensure_exists( $p_project );
+				\Core\Project::ensure_exists( $p_project );
 			}
 			if( $p_user !== NO_USER ) {
-				\Flickerbox\User::ensure_exists( $p_user );
+				\Core\User::ensure_exists( $p_user );
 			}
 	
 			$t_query = 'SELECT COUNT(*) from {config}
-					WHERE config_id = ' . \Flickerbox\Database::param() . ' AND
-						project_id = ' . \Flickerbox\Database::param() . ' AND
-						user_id = ' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $p_option, (int)$p_project, (int)$p_user ) );
+					WHERE config_id = ' . \Core\Database::param() . ' AND
+						project_id = ' . \Core\Database::param() . ' AND
+						user_id = ' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $p_option, (int)$p_project, (int)$p_user ) );
 	
 			$t_params = array();
-			if( 0 < \Flickerbox\Database::result( $t_result ) ) {
+			if( 0 < \Core\Database::result( $t_result ) ) {
 				$t_set_query = 'UPDATE {config}
-						SET value=' . \Flickerbox\Database::param() . ', type=' . \Flickerbox\Database::param() . ', access_reqd=' . \Flickerbox\Database::param() . '
-						WHERE config_id = ' . \Flickerbox\Database::param() . ' AND
-							project_id = ' . \Flickerbox\Database::param() . ' AND
-							user_id = ' . \Flickerbox\Database::param();
+						SET value=' . \Core\Database::param() . ', type=' . \Core\Database::param() . ', access_reqd=' . \Core\Database::param() . '
+						WHERE config_id = ' . \Core\Database::param() . ' AND
+							project_id = ' . \Core\Database::param() . ' AND
+							user_id = ' . \Core\Database::param();
 				$t_params = array(
 					(string)$c_value,
 					$t_type,
@@ -386,7 +358,7 @@ class Config
 				$t_set_query = 'INSERT INTO {config}
 						( value, type, access_reqd, config_id, project_id, user_id )
 						VALUES
-						(' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ' )';
+						(' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ',' . \Core\Database::param() . ' )';
 				$t_params = array(
 					(string)$c_value,
 					$t_type,
@@ -397,10 +369,10 @@ class Config
 				);
 			}
 	
-			\Flickerbox\Database::query( $t_set_query, $t_params );
+			\Core\Database::query( $t_set_query, $t_params );
 		}
 	
-		\Flickerbox\Config::set_cache( $p_option, $c_value, $t_type, $p_user, $p_project, $p_access );
+		\Core\Config::set_cache( $p_option, $c_value, $t_type, $p_user, $p_project, $p_access );
 	
 		return true;
 	}
@@ -442,7 +414,7 @@ class Config
 		global $g_cache_config, $g_cache_config_access;
 	
 		if( $p_access == DEFAULT_ACCESS_LEVEL ) {
-			$p_access = \Flickerbox\Config::get_global( 'admin_site_threshold' );
+			$p_access = \Core\Config::get_global( 'admin_site_threshold' );
 		}
 	
 		$g_cache_config[$p_option][$p_user][$p_project] = $p_type . ';' . $p_value;
@@ -467,7 +439,7 @@ class Config
 	
 		# bypass table lookup for certain options
 		if( $g_cache_can_set_in_database == '' ) {
-			$g_cache_can_set_in_database = \Flickerbox\Config::get_global( 'global_settings' );
+			$g_cache_can_set_in_database = \Core\Config::get_global( 'global_settings' );
 		}
 		$t_bypass_lookup = in_array( $p_option, $g_cache_can_set_in_database, true );
 	
@@ -496,21 +468,21 @@ class Config
 	 */
 	static function delete( $p_option, $p_user = ALL_USERS, $p_project = ALL_PROJECTS ) {
 		# bypass table lookup for certain options
-		$t_bypass_lookup = !\Flickerbox\Config::can_set_in_database( $p_option );
+		$t_bypass_lookup = !\Core\Config::can_set_in_database( $p_option );
 	
-		if( ( !$t_bypass_lookup ) && ( true === \Flickerbox\Database::is_connected() ) && ( \Flickerbox\Database::table_exists( \Flickerbox\Database::get_table( 'config' ) ) ) ) {
-			if( !\Flickerbox\Config::can_delete( $p_option ) ) {
+		if( ( !$t_bypass_lookup ) && ( true === \Core\Database::is_connected() ) && ( \Core\Database::table_exists( \Core\Database::get_table( 'config' ) ) ) ) {
+			if( !\Core\Config::can_delete( $p_option ) ) {
 				return;
 			}
 	
 			$t_query = 'DELETE FROM {config}
-					WHERE config_id = ' . \Flickerbox\Database::param() . ' AND
-						project_id=' . \Flickerbox\Database::param() . ' AND
-						user_id=' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_query, array( $p_option, $p_project, $p_user ) );
+					WHERE config_id = ' . \Core\Database::param() . ' AND
+						project_id=' . \Core\Database::param() . ' AND
+						user_id=' . \Core\Database::param();
+			\Core\Database::query( $t_query, array( $p_option, $p_project, $p_user ) );
 		}
 	
-		\Flickerbox\Config::flush_cache( $p_option, $p_user, $p_project );
+		\Core\Config::flush_cache( $p_option, $p_user, $p_project );
 	}
 	
 	/**
@@ -521,13 +493,13 @@ class Config
 	 * @return void
 	 */
 	static function delete_for_user( $p_option, $p_user_id ) {
-		if( !\Flickerbox\Config::can_delete( $p_option ) ) {
+		if( !\Core\Config::can_delete( $p_option ) ) {
 			return;
 		}
 	
 		# Delete the corresponding bugnote texts
-		$t_query = 'DELETE FROM {config} WHERE config_id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_option, $p_user_id ) );
+		$t_query = 'DELETE FROM {config} WHERE config_id=' . \Core\Database::param() . ' AND user_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_option, $p_user_id ) );
 	}
 	
 	/**
@@ -537,11 +509,11 @@ class Config
 	 * @return void
 	 */
 	static function delete_project( $p_project = ALL_PROJECTS ) {
-		$t_query = 'DELETE FROM {config} WHERE project_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_project ) );
+		$t_query = 'DELETE FROM {config} WHERE project_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_project ) );
 	
 		# flush cache here in case some of the deleted configs are in use.
-		\Flickerbox\Config::flush_cache();
+		\Core\Config::flush_cache();
 	}
 	
 	/**
@@ -581,7 +553,7 @@ class Config
 		#     have extra data plugged into them (we need to give the old and
 		#     new config option names in the warning text)
 	
-		if( \Flickerbox\Config::is_set( $p_var ) ) {
+		if( \Core\Config::is_set( $p_var ) ) {
 			$t_description = 'The configuration option <em>' . $p_var . '</em> is now obsolete';
 			$t_info = '';
 	
@@ -595,10 +567,10 @@ class Config
 	
 				foreach( $g_cache_config[$p_var] as $t_user_id => $t_user ) {
 					$t_info .= '<li>'
-						. ( ( $t_user_id == 0 ) ? \Flickerbox\Lang::get( 'all_users' ) : \Flickerbox\User::get_name( $t_user_id ) )
+						. ( ( $t_user_id == 0 ) ? \Core\Lang::get( 'all_users' ) : \Core\User::get_name( $t_user_id ) )
 						. ': ';
 					foreach ( $t_user as $t_project_id => $t_project ) {
-						$t_info .= \Flickerbox\Project::get_name( $t_project_id ) . ', ';
+						$t_info .= \Core\Project::get_name( $t_project_id ) . ', ';
 					}
 					$t_info = rtrim( $t_info, ', ' ) . '</li>';
 				}
@@ -612,7 +584,7 @@ class Config
 					$t_info .= '<li>' . $t_option . '</li>';
 				}
 				$t_info .= '</ul>';
-			} else if( !\Flickerbox\Utility::is_blank( $p_replace ) ) {
+			} else if( !\Core\Utility::is_blank( $p_replace ) ) {
 				$t_info .= 'please use ' . $p_replace . ' instead.';
 			}
 	
@@ -655,9 +627,9 @@ class Config
 					# $t_matches[0][$i] is the matched string including the delimiters
 					# $t_matches[1][$i] is the target parameter string
 					if( $p_global ) {
-						$t_repl = \Flickerbox\Config::get_global( $t_matches[2][$i] );
+						$t_repl = \Core\Config::get_global( $t_matches[2][$i] );
 					} else {
-						$t_repl = \Flickerbox\Config::mantis_get( $t_matches[2][$i] );
+						$t_repl = \Core\Config::mantis_get( $t_matches[2][$i] );
 					}
 	
 					# Handle the simple case where there is no need to do string replace.

@@ -41,46 +41,46 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bug_reminder' );
+\Core\Form::security_validate( 'bug_reminder' );
 
-$f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
-$f_to			= \Flickerbox\GPC::get_int_array( 'to' );
-$f_body			= \Flickerbox\GPC::get_string( 'body' );
+$f_bug_id		= \Core\GPC::get_int( 'bug_id' );
+$f_to			= \Core\GPC::get_int_array( 'to' );
+$f_body			= \Core\GPC::get_string( 'body' );
 
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+$t_bug = \Core\Bug::get( $f_bug_id, true );
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
-if( \Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
-	\Flickerbox\Error::parameters( $f_bug_id );
+if( \Core\Bug::is_readonly( $f_bug_id ) ) {
+	\Core\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'bug_reminder_threshold' ), $f_bug_id );
+\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'bug_reminder_threshold' ), $f_bug_id );
 
 # Automatically add recipients to monitor list if they are above the monitor
 # threshold, option is enabled, and not reporter or handler.
-$t_reminder_recipients_monitor_bug = \Flickerbox\Config::mantis_get( 'reminder_recipients_monitor_bug' );
-$t_monitor_bug_threshold = \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' );
-$t_handler = \Flickerbox\Bug::get_field( $f_bug_id, 'handler_id' );
-$t_reporter = \Flickerbox\Bug::get_field( $f_bug_id, 'reporter_id' );
+$t_reminder_recipients_monitor_bug = \Core\Config::mantis_get( 'reminder_recipients_monitor_bug' );
+$t_monitor_bug_threshold = \Core\Config::mantis_get( 'monitor_bug_threshold' );
+$t_handler = \Core\Bug::get_field( $f_bug_id, 'handler_id' );
+$t_reporter = \Core\Bug::get_field( $f_bug_id, 'reporter_id' );
 foreach ( $f_to as $t_recipient ) {
 	if( ON == $t_reminder_recipients_monitor_bug
-		&& \Flickerbox\Access::has_bug_level( $t_monitor_bug_threshold, $f_bug_id )
+		&& \Core\Access::has_bug_level( $t_monitor_bug_threshold, $f_bug_id )
 		&& $t_recipient != $t_handler
 		&& $t_recipient != $t_reporter
 	) {
-		\Flickerbox\Bug::monitor( $f_bug_id, $t_recipient );
+		\Core\Bug::monitor( $f_bug_id, $t_recipient );
 	}
 }
 
-$t_result = \Flickerbox\Email::bug_reminder( $f_to, $f_bug_id, $f_body );
+$t_result = \Core\Email::bug_reminder( $f_to, $f_bug_id, $f_body );
 
 # Add reminder as bugnote if store reminders option is ON.
-if( ON == \Flickerbox\Config::mantis_get( 'store_reminders' ) ) {
+if( ON == \Core\Config::mantis_get( 'store_reminders' ) ) {
 	# Build list of recipients, truncated to note_attr fields's length
 	$t_attr = '|';
 	$t_length = 0;
@@ -94,14 +94,14 @@ if( ON == \Flickerbox\Config::mantis_get( 'store_reminders' ) ) {
 		}
 		$t_attr .= $t_recipient;
 	}
-	\Flickerbox\Bug\Note::add( $f_bug_id, $f_body, 0, \Flickerbox\Config::mantis_get( 'default_reminder_view_status' ) == VS_PRIVATE, REMINDER, $t_attr, null, false );
+	\Core\Bug\Note::add( $f_bug_id, $f_body, 0, \Core\Config::mantis_get( 'default_reminder_view_status' ) == VS_PRIVATE, REMINDER, $t_attr, null, false );
 }
 
-\Flickerbox\Form::security_purge( 'bug_reminder' );
+\Core\Form::security_purge( 'bug_reminder' );
 
-\Flickerbox\HTML::page_top( null, \Flickerbox\String::get_bug_view_url( $f_bug_id ) );
+\Core\HTML::page_top( null, \Core\String::get_bug_view_url( $f_bug_id ) );
 
-$t_redirect = \Flickerbox\String::get_bug_view_url( $f_bug_id );
-\Flickerbox\HTML::operation_successful( $t_redirect );
+$t_redirect = \Core\String::get_bug_view_url( $f_bug_id );
+\Core\HTML::operation_successful( $t_redirect );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

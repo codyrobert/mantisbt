@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -91,7 +91,7 @@ class HTTP
 			if( !$p_inline ) {
 				$t_disposition = 'attachment;';
 			}
-			if( \Flickerbox\HTTP::is_browser_internet_explorer() || \Flickerbox\HTTP::is_browser_chrome() ) {
+			if( \Core\HTTP::is_browser_internet_explorer() || \Core\HTTP::is_browser_chrome() ) {
 				# Internet Explorer does not support RFC2231 however it does
 				# incorrectly decode URL encoded filenames and we can use this to
 				# get UTF8 filenames to work with the file download dialog. Chrome
@@ -118,7 +118,7 @@ class HTTP
 		# with option to bypass if running from script
 		if( !headers_sent() ) {
 			if( $p_allow_caching || ( isset( $g_allow_browser_cache ) && ON == $g_allow_browser_cache ) ) {
-				if( \Flickerbox\HTTP::is_browser_internet_explorer() ) {
+				if( \Core\HTTP::is_browser_internet_explorer() ) {
 					header( 'Cache-Control: private, proxy-revalidate' );
 				} else {
 					header( 'Cache-Control: private, must-revalidate' );
@@ -153,15 +153,15 @@ class HTTP
 		if( !headers_sent() ) {
 			header( 'X-Frame-Options: DENY' );
 			$t_avatar_img_allow = '';
-			if( \Flickerbox\Config::get_global( 'show_avatar' ) ) {
-				if( \Flickerbox\HTTP::is_protocol_https() ) {
+			if( \Core\Config::get_global( 'show_avatar' ) ) {
+				if( \Core\HTTP::is_protocol_https() ) {
 					$t_avatar_img_allow = "; img-src 'self' https://secure.gravatar.com:443";
 				} else {
 					$t_avatar_img_allow = "; img-src 'self' http://www.gravatar.com:80";
 				}
 			}
 			header( 'Content-Security-Policy: default-src \'self\';' . $t_avatar_img_allow . '; frame-ancestors \'none\'' );
-			if( \Flickerbox\HTTP::is_protocol_https() ) {
+			if( \Core\HTTP::is_protocol_https() ) {
 				header( 'Strict-Transport-Security: max-age=7776000' );
 			}
 		}
@@ -174,7 +174,7 @@ class HTTP
 	static function custom_headers() {
 		if( !headers_sent() ) {
 			# send user-defined headers
-			foreach( \Flickerbox\Config::get_global( 'custom_headers' ) as $t_header ) {
+			foreach( \Core\Config::get_global( 'custom_headers' ) as $t_header ) {
 				header( $t_header );
 			}
 		}
@@ -188,10 +188,10 @@ class HTTP
 		global $g_bypass_headers;
 	
 		if( !$g_bypass_headers && !headers_sent() ) {
-			\Flickerbox\HTTP::content_headers();
-			\Flickerbox\HTTP::caching_headers();
-			\Flickerbox\HTTP::security_headers();
-			\Flickerbox\HTTP::custom_headers();
+			\Core\HTTP::content_headers();
+			\Core\HTTP::caching_headers();
+			\Core\HTTP::security_headers();
+			\Core\HTTP::custom_headers();
 		}
 	}
 

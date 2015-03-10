@@ -39,30 +39,30 @@
  */
 
 require_once( 'core.php' );
-\Flickerbox\HTML::require_css( 'login.css' );
+\Core\HTML::require_css( 'login.css' );
 
-$f_error                 = \Flickerbox\GPC::get_bool( 'error' );
-$f_cookie_error          = \Flickerbox\GPC::get_bool( 'cookie_error' );
-$f_return                = \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'return', '' ) );
-$f_username              = \Flickerbox\GPC::get_string( 'username', '' );
-$f_perm_login            = \Flickerbox\GPC::get_bool( 'perm_login', false );
-$f_secure_session        = \Flickerbox\GPC::get_bool( 'secure_session', false );
-$f_secure_session_cookie = \Flickerbox\GPC::get_cookie( \Flickerbox\Config::get_global( 'cookie_prefix' ) . '_secure_session', null );
+$f_error                 = \Core\GPC::get_bool( 'error' );
+$f_cookie_error          = \Core\GPC::get_bool( 'cookie_error' );
+$f_return                = \Core\String::sanitize_url( \Core\GPC::get_string( 'return', '' ) );
+$f_username              = \Core\GPC::get_string( 'username', '' );
+$f_perm_login            = \Core\GPC::get_bool( 'perm_login', false );
+$f_secure_session        = \Core\GPC::get_bool( 'secure_session', false );
+$f_secure_session_cookie = \Core\GPC::get_cookie( \Core\Config::get_global( 'cookie_prefix' ) . '_secure_session', null );
 
 # Set username to blank if invalid to prevent possible XSS exploits
-if( !\Flickerbox\User::is_name_valid( $f_username ) ) {
+if( !\Core\User::is_name_valid( $f_username ) ) {
 	$f_username = '';
 }
 
-$t_session_validation = ( ON == \Flickerbox\Config::get_global( 'session_validation' ) );
+$t_session_validation = ( ON == \Core\Config::get_global( 'session_validation' ) );
 
 # If user is already authenticated and not anonymous
-if( auth_is_user_authenticated() && !\Flickerbox\Current_User::is_anonymous() ) {
+if( auth_is_user_authenticated() && !\Core\Current_User::is_anonymous() ) {
 	# If return URL is specified redirect to it; otherwise use default page
-	if( !\Flickerbox\Utility::is_blank( $f_return ) ) {
-		\Flickerbox\Print_Util::header_redirect( $f_return, false, false, true );
+	if( !\Core\Utility::is_blank( $f_return ) ) {
+		\Core\Print_Util::header_redirect( $f_return, false, false, true );
 	} else {
-		\Flickerbox\Print_Util::header_redirect( \Flickerbox\Config::mantis_get( 'default_home_page' ) );
+		\Core\Print_Util::header_redirect( \Core\Config::mantis_get( 'default_home_page' ) );
 	}
 }
 
@@ -70,15 +70,15 @@ if( auth_is_user_authenticated() && !\Flickerbox\Current_User::is_anonymous() ) 
 if( auth_automatic_logon_bypass_form() ) {
 	$t_uri = 'login.php';
 
-	if( ON == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
+	if( ON == \Core\Config::mantis_get( 'allow_anonymous_login' ) ) {
 		$t_uri = 'login_anon.php';
 	}
 
-	if( !\Flickerbox\Utility::is_blank( $f_return ) ) {
-		$t_uri .= '?return=' . \Flickerbox\String::url( $f_return );
+	if( !\Core\Utility::is_blank( $f_return ) ) {
+		$t_uri .= '?return=' . \Core\String::url( $f_return );
 	}
 
-	\Flickerbox\Print_Util::header_redirect( $t_uri );
+	\Core\Print_Util::header_redirect( $t_uri );
 	exit;
 }
 
@@ -103,24 +103,24 @@ if( $f_username ) {
 }
 
 # Login page shouldn't be indexed by search engines
-\Flickerbox\HTML::robots_noindex();
+\Core\HTML::robots_noindex();
 
-\Flickerbox\HTML::page_top1();
-\Flickerbox\HTML::page_top2a();
+\Core\HTML::page_top1();
+\Core\HTML::page_top2a();
 
 if( $f_error || $f_cookie_error ) {
 	echo '<div class="important-msg">';
 	echo '<ul>';
 
 	# Display short greeting message
-	# echo \Flickerbox\Lang::get( 'login_page_info' ) . '<br />';
+	# echo \Core\Lang::get( 'login_page_info' ) . '<br />';
 
 	# Only echo error message if error variable is set
 	if( $f_error ) {
-		echo '<li>' . \Flickerbox\Lang::get( 'login_error' ) . '</li>';
+		echo '<li>' . \Core\Lang::get( 'login_error' ) . '</li>';
 	}
 	if( $f_cookie_error ) {
-		echo '<li>' . \Flickerbox\Lang::get( 'login_cookies_disabled' ) . '</li>';
+		echo '<li>' . \Core\Lang::get( 'login_cookies_disabled' ) . '</li>';
 	}
 	echo '</ul>';
 	echo '</div>';
@@ -128,12 +128,12 @@ if( $f_error || $f_cookie_error ) {
 
 $t_warnings = array();
 $t_upgrade_required = false;
-if( \Flickerbox\Config::get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ ) .'/admin' ) ) {
+if( \Core\Config::get_global( 'admin_checks' ) == ON && file_exists( dirname( __FILE__ ) .'/admin' ) ) {
 	# Generate a warning if default user administrator/root is valid.
-	$t_admin_user_id = \Flickerbox\User::get_id_by_name( 'administrator' );
+	$t_admin_user_id = \Core\User::get_id_by_name( 'administrator' );
 	if( $t_admin_user_id !== false ) {
-		if( \Flickerbox\User::is_enabled( $t_admin_user_id ) && auth_does_password_match( $t_admin_user_id, 'root' ) ) {
-			$t_warnings[] = \Flickerbox\Lang::get( 'warning_default_administrator_account_present' );
+		if( \Core\User::is_enabled( $t_admin_user_id ) && auth_does_password_match( $t_admin_user_id, 'root' ) ) {
+			$t_warnings[] = \Core\Lang::get( 'warning_default_administrator_account_present' );
 		}
 	}
 
@@ -145,17 +145,17 @@ if( \Flickerbox\Config::get_global( 'admin_checks' ) == ON && file_exists( dirna
 	 * @return string
 	 */
 	function debug_setting_message ( $p_type, $p_setting, $p_value ) {
-		return sprintf( \Flickerbox\Lang::get( 'warning_change_setting' ), $p_setting, $p_value )
-			. sprintf( \Flickerbox\Lang::get( 'word_separator' ) )
-			. sprintf( \Flickerbox\Lang::get( "warning_${p_type}_hazard" ) );
+		return sprintf( \Core\Lang::get( 'warning_change_setting' ), $p_setting, $p_value )
+			. sprintf( \Core\Lang::get( 'word_separator' ) )
+			. sprintf( \Core\Lang::get( "warning_${p_type}_hazard" ) );
 	}
 
 	$t_config = 'show_detailed_errors';
-	if( \Flickerbox\Config::mantis_get( $t_config ) != OFF ) {
+	if( \Core\Config::mantis_get( $t_config ) != OFF ) {
 		$t_warnings[] = debug_setting_message( 'security', $t_config, 'OFF' );
 	}
 	$t_config = 'display_errors';
-	$t_errors = \Flickerbox\Config::get_global( $t_config );
+	$t_errors = \Core\Config::get_global( $t_config );
 	if( $t_errors[E_USER_ERROR] != DISPLAY_ERROR_HALT ) {
 		$t_warnings[] = debug_setting_message(
 			'integrity',
@@ -165,9 +165,9 @@ if( \Flickerbox\Config::get_global( 'admin_checks' ) == ON && file_exists( dirna
 
 	# since admin directory and db_upgrade lists are available check for missing db upgrades
 	# if db version is 0, we do not have a valid database.
-	$t_db_version = \Flickerbox\Config::mantis_get( 'database_version', 0 );
+	$t_db_version = \Core\Config::mantis_get( 'database_version', 0 );
 	if( $t_db_version == 0 ) {
-		$t_warnings[] = \Flickerbox\Lang::get( 'error_database_no_schema_version' );
+		$t_warnings[] = \Core\Lang::get( 'error_database_no_schema_version' );
 	}
 
 	# Check for db upgrade for versions > 1.0.0 using new installer and schema
@@ -180,10 +180,10 @@ if( \Flickerbox\Config::get_global( 'admin_checks' ) == ON && file_exists( dirna
 			( $t_db_version != $t_upgrades_reqd ) ) {
 
 		if( $t_db_version < $t_upgrades_reqd ) {
-			$t_warnings[] = \Flickerbox\Lang::get( 'error_database_version_out_of_date_2' );
+			$t_warnings[] = \Core\Lang::get( 'error_database_version_out_of_date_2' );
 			$t_upgrade_required = true;
 		} else {
-			$t_warnings[] = \Flickerbox\Lang::get( 'error_code_version_out_of_date' );
+			$t_warnings[] = \Core\Lang::get( 'error_code_version_out_of_date' );
 		}
 	}
 }
@@ -193,10 +193,10 @@ if( \Flickerbox\Config::get_global( 'admin_checks' ) == ON && file_exists( dirna
 <div id="login-div" class="form-container">
 	<form id="login-form" method="post" action="login.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'login_title' ) ?></span></legend>
+			<legend><span><?php echo \Core\Lang::get( 'login_title' ) ?></span></legend>
 			<?php
-			if( !\Flickerbox\Utility::is_blank( $f_return ) ) {
-				echo '<input type="hidden" name="return" value="', \Flickerbox\String::html_specialchars( $f_return ), '" />';
+			if( !\Core\Utility::is_blank( $f_return ) ) {
+				echo '<input type="hidden" name="return" value="', \Core\String::html_specialchars( $f_return ), '" />';
 			}
 
 			if( $t_upgrade_required ) {
@@ -206,53 +206,53 @@ if( \Flickerbox\Config::get_global( 'admin_checks' ) == ON && file_exists( dirna
 			# CSRF protection not required here - form does not result in modifications
 			echo '<ul id="login-links">';
 
-			if( ON == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
-				echo '<li><a href="login_anon.php?return=' . \Flickerbox\String::url( $f_return ) . '">' . \Flickerbox\Lang::get( 'login_anonymously' ) . '</a></li>';
+			if( ON == \Core\Config::mantis_get( 'allow_anonymous_login' ) ) {
+				echo '<li><a href="login_anon.php?return=' . \Core\String::url( $f_return ) . '">' . \Core\Lang::get( 'login_anonymously' ) . '</a></li>';
 			}
 
-			if( ( ON == \Flickerbox\Config::get_global( 'allow_signup' ) ) &&
-				( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
-				( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) )
+			if( ( ON == \Core\Config::get_global( 'allow_signup' ) ) &&
+				( LDAP != \Core\Config::get_global( 'login_method' ) ) &&
+				( ON == \Core\Config::mantis_get( 'enable_email_notification' ) )
 			) {
-				echo '<li><a href="signup_page.php">', \Flickerbox\Lang::get( 'signup_link' ), '</a></li>';
+				echo '<li><a href="signup_page.php">', \Core\Lang::get( 'signup_link' ), '</a></li>';
 			}
 			# lost password feature disabled or reset password via email disabled -> stop here!
-			if( ( LDAP != \Flickerbox\Config::get_global( 'login_method' ) ) &&
-				( ON == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ) &&
-				( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) &&
-				( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
-				echo '<li><a href="lost_pwd_page.php">', \Flickerbox\Lang::get( 'lost_password_link' ), '</a></li>';
+			if( ( LDAP != \Core\Config::get_global( 'login_method' ) ) &&
+				( ON == \Core\Config::mantis_get( 'lost_password_feature' ) ) &&
+				( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) &&
+				( ON == \Core\Config::mantis_get( 'enable_email_notification' ) ) ) {
+				echo '<li><a href="lost_pwd_page.php">', \Core\Lang::get( 'lost_password_link' ), '</a></li>';
 			}
 			?>
 			</ul>
 			<div class="field-container">
-				<label for="username"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></label>
-				<span class="input"><input id="username" type="text" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" value="<?php echo \Flickerbox\String::attribute( $f_username ); ?>" class="<?php echo $t_username_field_autofocus ?>" /></span>
+				<label for="username"><span><?php echo \Core\Lang::get( 'username' ) ?></span></label>
+				<span class="input"><input id="username" type="text" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" value="<?php echo \Core\String::attribute( $f_username ); ?>" class="<?php echo $t_username_field_autofocus ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="password"><span><?php echo \Flickerbox\Lang::get( 'password' ) ?></span></label>
+				<label for="password"><span><?php echo \Core\Lang::get( 'password' ) ?></span></label>
 				<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" class="<?php echo $t_password_field_autofocus ?>" /></span>
 				<span class="label-style"></span>
 			</div>
-			<?php if( ON == \Flickerbox\Config::mantis_get( 'allow_permanent_cookie' ) ) { ?>
+			<?php if( ON == \Core\Config::mantis_get( 'allow_permanent_cookie' ) ) { ?>
 			<div class="field-container">
-				<label for="remember-login"><span><?php echo \Flickerbox\Lang::get( 'save_login' ) ?></span></label>
+				<label for="remember-login"><span><?php echo \Core\Lang::get( 'save_login' ) ?></span></label>
 				<span class="input"><input id="remember-login" type="checkbox" name="perm_login" <?php echo ( $f_perm_login ? 'checked="checked" ' : '' ) ?>/></span>
 				<span class="label-style"></span>
 			</div>
 			<?php } ?>
 			<?php if( $t_session_validation ) { ?>
 			<div class="field-container">
-				<label id="secure-session-label" for="secure-session"><span><?php echo \Flickerbox\Lang::get( 'secure_session' ) ?></span></label>
+				<label id="secure-session-label" for="secure-session"><span><?php echo \Core\Lang::get( 'secure_session' ) ?></span></label>
 				<span class="input">
 					<input id="secure-session" type="checkbox" name="secure_session" <?php echo ( $t_default_secure_session ? 'checked="checked" ' : '' ) ?>/>
-					<span id="session-msg"><?php echo \Flickerbox\Lang::get( 'secure_session_long' ); ?></span>
+					<span id="session-msg"><?php echo \Core\Lang::get( 'secure_session_long' ); ?></span>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<?php } ?>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'login_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'login_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -272,4 +272,4 @@ if( count( $t_warnings ) > 0 ) {
 	echo '</div>';
 }
 
-\Flickerbox\HTML::page_bottom1a( __FILE__ );
+\Core\HTML::page_bottom1a( __FILE__ );

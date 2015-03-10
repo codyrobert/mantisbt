@@ -35,16 +35,16 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bug_revision_drop' );
+\Core\Form::security_validate( 'bug_revision_drop' );
 
-$f_revision_id = \Flickerbox\GPC::get_int( 'id' );
-$t_revision = \Flickerbox\Bug\Revision::get( $f_revision_id );
+$f_revision_id = \Core\GPC::get_int( 'id' );
+$t_revision = \Core\Bug\Revision::get( $f_revision_id );
 
-\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'bug_revision_drop_threshold' ), $t_revision['bug_id'] );
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_revision_drop' ), \Flickerbox\Lang::get( 'revision_drop' ) );
+\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'bug_revision_drop_threshold' ), $t_revision['bug_id'] );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'confirm_revision_drop' ), \Core\Lang::get( 'revision_drop' ) );
 
-\Flickerbox\Bug\Revision::drop( $f_revision_id );
-\Flickerbox\Form::security_purge( 'bug_revision_drop' );
+\Core\Bug\Revision::drop( $f_revision_id );
+\Core\Form::security_purge( 'bug_revision_drop' );
 
-\Flickerbox\Print_Util::successful_redirect_to_bug( $t_revision['bug_id'] );
+\Core\Print_Util::successful_redirect_to_bug( $t_revision['bug_id'] );
 

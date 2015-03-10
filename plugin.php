@@ -29,37 +29,37 @@
 
 require_once( 'core.php' );
 
-$t_plugin_path = \Flickerbox\Config::mantis_get( 'plugin_path' );
+$t_plugin_path = \Core\Config::mantis_get( 'plugin_path' );
 
-$f_page = \Flickerbox\GPC::get_string( 'page' );
+$f_page = \Core\GPC::get_string( 'page' );
 
 if( !preg_match( '/^([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+[\/a-zA-Z0-9_-]*)/', $f_page, $t_matches ) ) {
-	\Flickerbox\Error::parameters( $f_page );
+	\Core\Error::parameters( $f_page );
 	trigger_error( ERROR_PLUGIN_INVALID_PAGE, ERROR );
 }
 
 $t_basename = $t_matches[1];
 $t_action = $t_matches[2];
 
-$t_plugin = \Flickerbox\Plugin::get( $t_basename );
+$t_plugin = \Core\Plugin::get( $t_basename );
 
-if( \Flickerbox\Plugin::needs_upgrade( $t_plugin ) ) {
-	\Flickerbox\Error::parameters( $t_basename );
+if( \Core\Plugin::needs_upgrade( $t_plugin ) ) {
+	\Core\Error::parameters( $t_basename );
 	trigger_error( ERROR_PLUGIN_UPGRADE_NEEDED, ERROR );
 }
 
 # Plugin can be registered but fail to load e.g. due to unmet dependencies
-if( !\Flickerbox\Plugin::is_loaded( $t_basename ) ) {
-	\Flickerbox\Error::parameters( $t_basename );
+if( !\Core\Plugin::is_loaded( $t_basename ) ) {
+	\Core\Error::parameters( $t_basename );
 	trigger_error( ERROR_PLUGIN_NOT_LOADED, ERROR );
 }
 
 $t_page = $t_plugin_path . $t_basename . '/pages/' . $t_action . '.php';
 
 if( !is_file( $t_page ) ) {
-	\Flickerbox\Error::parameters( $t_basename, $t_action );
+	\Core\Error::parameters( $t_basename, $t_action );
 	trigger_error( ERROR_PLUGIN_PAGE_NOT_FOUND, ERROR );
 }
 
-\Flickerbox\Plugin::push_current( $t_basename );
+\Core\Plugin::push_current( $t_basename );
 include( $t_page );

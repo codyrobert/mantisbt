@@ -89,76 +89,76 @@ check_print_test_row(
 
 check_print_test_row(
 	'register_globals php.ini directive is disabled',
-	!\Flickerbox\Utility::ini_get_bool( 'register_globals' ),
+	!\Core\Utility::ini_get_bool( 'register_globals' ),
 	array( false => 'PHP\'s register globals feature is <a href="http://php.net/manual/en/security.globals.php">deprecated in PHP 5.3.0</a> and should not be used.' )
 );
 
 check_print_test_warn_row(
 	'register_argc_argv php.ini directive is disabled',
-	!\Flickerbox\Utility::ini_get_bool( 'register_argc_argv' ),
+	!\Core\Utility::ini_get_bool( 'register_argc_argv' ),
 	array( false => 'This directive should be disabled to increase performance (it only affects PHP in CLI mode).' )
 );
 
 check_print_test_warn_row(
 	'register_long_arrays php.ini directive is disabled',
-	!\Flickerbox\Utility::ini_get_bool( 'register_long_arrays' ),
+	!\Core\Utility::ini_get_bool( 'register_long_arrays' ),
 	array( false => 'This directive is deprecated in PHP 5.3.0 and should be disabled for performance reasons.' )
 );
 
 check_print_test_warn_row(
 	'auto_globals_jit php.ini directive is enabled',
-	\Flickerbox\Utility::ini_get_bool( 'auto_globals_jit' ),
+	\Core\Utility::ini_get_bool( 'auto_globals_jit' ),
 	array( false => 'This directive is currently disabled: enable it for a performance gain.' )
 );
 
 check_print_test_warn_row(
 	'display_errors php.ini directive is disabled',
-	!\Flickerbox\Utility::ini_get_bool( 'display_errors' ),
+	!\Core\Utility::ini_get_bool( 'display_errors' ),
 	array( false => 'For security reasons this directive should be disabled on all production and Internet facing servers.' )
 );
 
 check_print_test_warn_row(
 	'display_startup_errors php.ini directive is disabled',
-	!\Flickerbox\Utility::ini_get_bool( 'display_startup_errors' ),
+	!\Core\Utility::ini_get_bool( 'display_startup_errors' ),
 	array( false => 'For security reasons this directive should be disabled on all production and Internet facing servers.' )
 );
 
 check_print_test_warn_row(
 	'PHP errors are being logged or reported',
-	\Flickerbox\Utility::ini_get_bool( 'display_errors' ) || \Flickerbox\Utility::ini_get_bool( 'log_errors' ),
+	\Core\Utility::ini_get_bool( 'display_errors' ) || \Core\Utility::ini_get_bool( 'log_errors' ),
 	array( false => 'PHP is not currently set to log or report errors and thus you may be unaware of PHP errors that occur.' )
 );
 
 check_print_info_row(
 	'php.ini directive: memory_limit',
-	htmlentities( \Flickerbox\Utility::ini_get_number( 'memory_limit' ) ) . ' bytes'
+	htmlentities( \Core\Utility::ini_get_number( 'memory_limit' ) ) . ' bytes'
 );
 
 check_print_info_row(
 	'php.ini directive: post_max_size',
-	htmlentities( \Flickerbox\Utility::ini_get_number( 'post_max_size' ) ) . ' bytes'
+	htmlentities( \Core\Utility::ini_get_number( 'post_max_size' ) ) . ' bytes'
 );
 
 check_print_test_row(
 	'memory_limit php.ini directive is at least equal to the post_max_size directive',
-	\Flickerbox\Utility::ini_get_number( 'memory_limit' ) >= \Flickerbox\Utility::ini_get_number( 'post_max_size' ),
-	array( false => 'The current value of the memory_limit directive is ' . htmlentities( \Flickerbox\Utility::ini_get_number( 'memory_limit' ) ) . ' bytes. This value needs to be at least equal to the post_max_size directive value of ' . htmlentities( \Flickerbox\Utility::ini_get_number( 'post_max_size' ) ) . ' bytes.' )
+	\Core\Utility::ini_get_number( 'memory_limit' ) >= \Core\Utility::ini_get_number( 'post_max_size' ),
+	array( false => 'The current value of the memory_limit directive is ' . htmlentities( \Core\Utility::ini_get_number( 'memory_limit' ) ) . ' bytes. This value needs to be at least equal to the post_max_size directive value of ' . htmlentities( \Core\Utility::ini_get_number( 'post_max_size' ) ) . ' bytes.' )
 );
 
 check_print_info_row(
 	'File uploads are enabled (php.ini directive: file_uploads)',
-	\Flickerbox\Utility::ini_get_bool( 'file_uploads' ) ? 'Yes' : 'No'
+	\Core\Utility::ini_get_bool( 'file_uploads' ) ? 'Yes' : 'No'
 );
 
 check_print_info_row(
 	'php.ini directive: upload_max_filesize',
-	htmlentities( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ) ) . ' bytes'
+	htmlentities( \Core\Utility::ini_get_number( 'upload_max_filesize' ) ) . ' bytes'
 );
 
 check_print_test_row(
 	'post_max_size php.ini directive is at least equal to the upload_max_size directive',
-	\Flickerbox\Utility::ini_get_number( 'post_max_size' ) >= \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ),
-	array( false => 'The current value of the post_max_size directive is ' . htmlentities( \Flickerbox\Utility::ini_get_number( 'post_max_size' ) ) . ' bytes. This value needs to be at least equal to the upload_max_size directive value of ' . htmlentities( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ) ) . ' bytes.' )
+	\Core\Utility::ini_get_number( 'post_max_size' ) >= \Core\Utility::ini_get_number( 'upload_max_filesize' ),
+	array( false => 'The current value of the post_max_size directive is ' . htmlentities( \Core\Utility::ini_get_number( 'post_max_size' ) ) . ' bytes. This value needs to be at least equal to the upload_max_size directive value of ' . htmlentities( \Core\Utility::ini_get_number( 'upload_max_filesize' ) ) . ' bytes.' )
 );
 
 $t_disabled_functions = explode( ',', ini_get( 'disable_functions' ) );
@@ -201,7 +201,7 @@ while( list( $t_foo, $t_var ) = each( $t_vars ) ) {
 	}
 }
 
-if( \Flickerbox\Utility::is_windows_server() ) {
+if( \Core\Utility::is_windows_server() ) {
 	check_print_test_warn_row(
 		'There is a performance issue on windows for PHP versions &lt; 5.4 in openssl_random_pseudo_bytes',
 		version_compare( phpversion(), '5.4.0', '>=' ),

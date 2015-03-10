@@ -35,17 +35,17 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_custom_field_copy' );
+\Core\Form::security_validate( 'manage_proj_custom_field_copy' );
 
 auth_reauthenticate();
 
-$f_project_id		= \Flickerbox\GPC::get_int( 'project_id' );
-$f_other_project_id	= \Flickerbox\GPC::get_int( 'other_project_id' );
-$f_copy_from		= \Flickerbox\GPC::get_bool( 'copy_from' );
-$f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
+$f_project_id		= \Core\GPC::get_int( 'project_id' );
+$f_other_project_id	= \Core\GPC::get_int( 'other_project_id' );
+$f_copy_from		= \Core\GPC::get_bool( 'copy_from' );
+$f_copy_to			= \Core\GPC::get_bool( 'copy_to' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_other_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_other_project_id );
 
 if( $f_copy_from ) {
 	$t_src_project_id = $f_other_project_id;
@@ -57,8 +57,8 @@ if( $f_copy_from ) {
 	trigger_error( ERROR_CATEGORY_NO_ACTION, ERROR );
 }
 
-\Flickerbox\Project::copy_custom_fields( $t_dst_project_id, $t_src_project_id );
+\Core\Project::copy_custom_fields( $t_dst_project_id, $t_src_project_id );
 
-\Flickerbox\Form::security_purge( 'manage_proj_custom_field_copy' );
+\Core\Form::security_purge( 'manage_proj_custom_field_copy' );
 
-\Flickerbox\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );
+\Core\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

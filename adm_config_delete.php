@@ -35,23 +35,23 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'adm_config_delete' );
+\Core\Form::security_validate( 'adm_config_delete' );
 
-$f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
-$f_config_option = \Flickerbox\GPC::get_string( 'config_option' );
+$f_user_id = \Core\GPC::get_int( 'user_id' );
+$f_project_id = \Core\GPC::get_int( 'project_id' );
+$f_config_option = \Core\GPC::get_string( 'config_option' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'set_configuration_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'set_configuration_threshold' ) );
 
 if( $f_project_id != ALL_PROJECTS ) {
-	\Flickerbox\Project::ensure_exists( $f_project_id );
+	\Core\Project::ensure_exists( $f_project_id );
 }
 
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_config_sure_msg' ), \Flickerbox\Lang::get( 'delete_link' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'delete_config_sure_msg' ), \Core\Lang::get( 'delete_link' ) );
 
-\Flickerbox\Config::delete( $f_config_option, $f_user_id, $f_project_id );
+\Core\Config::delete( $f_config_option, $f_user_id, $f_project_id );
 
-\Flickerbox\Form::security_purge( 'adm_config_delete' );
+\Core\Form::security_purge( 'adm_config_delete' );
 
-\Flickerbox\Print_Util::successful_redirect( 'adm_config_report.php' );
+\Core\Print_Util::successful_redirect( 'adm_config_report.php' );
 

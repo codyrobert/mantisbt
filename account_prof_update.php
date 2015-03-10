@@ -37,97 +37,97 @@
 
 require_once( 'core.php' );
 
-if( !\Flickerbox\Config::mantis_get( 'enable_profiles' ) ) {
+if( !\Core\Config::mantis_get( 'enable_profiles' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
 }
 
-\Flickerbox\Form::security_validate( 'profile_update' );
+\Core\Form::security_validate( 'profile_update' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
-$f_action = \Flickerbox\GPC::get_string( 'action' );
+$f_action = \Core\GPC::get_string( 'action' );
 
 if( $f_action != 'add' ) {
-	$f_profile_id = \Flickerbox\GPC::get_int( 'profile_id' );
+	$f_profile_id = \Core\GPC::get_int( 'profile_id' );
 
 	# Make sure user did select an existing profile from the list
 	if( $f_action != 'make_default' && $f_profile_id == 0 ) {
-		\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'select_profile' ) );
+		\Core\Error::parameters( \Core\Lang::get( 'select_profile' ) );
 		trigger_error( ERROR_EMPTY_FIELD, ERROR );
 	}
 }
 
 switch( $f_action ) {
 	case 'edit':
-		\Flickerbox\Form::security_purge( 'profile_update' );
-		\Flickerbox\Print_Util::header_redirect( 'account_prof_edit_page.php?profile_id=' . $f_profile_id );
+		\Core\Form::security_purge( 'profile_update' );
+		\Core\Print_Util::header_redirect( 'account_prof_edit_page.php?profile_id=' . $f_profile_id );
 		break;
 
 	case 'add':
-		$f_platform		= \Flickerbox\GPC::get_string( 'platform' );
-		$f_os			= \Flickerbox\GPC::get_string( 'os' );
-		$f_os_build		= \Flickerbox\GPC::get_string( 'os_build' );
-		$f_description	= \Flickerbox\GPC::get_string( 'description' );
+		$f_platform		= \Core\GPC::get_string( 'platform' );
+		$f_os			= \Core\GPC::get_string( 'os' );
+		$f_os_build		= \Core\GPC::get_string( 'os_build' );
+		$f_description	= \Core\GPC::get_string( 'description' );
 
-		$t_user_id		= \Flickerbox\GPC::get_int( 'user_id' );
+		$t_user_id		= \Core\GPC::get_int( 'user_id' );
 		if( ALL_USERS != $t_user_id ) {
-			$t_user_id = \Flickerbox\Auth::get_current_user_id();
+			$t_user_id = \Core\Auth::get_current_user_id();
 		}
 
 		if( ALL_USERS == $t_user_id ) {
-			\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) );
+			\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_global_profile_threshold' ) );
 		} else {
-			\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'add_profile_threshold' ) );
+			\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'add_profile_threshold' ) );
 		}
 
-		\Flickerbox\Profile::create( $t_user_id, $f_platform, $f_os, $f_os_build, $f_description );
-		\Flickerbox\Form::security_purge( 'profile_update' );
+		\Core\Profile::create( $t_user_id, $f_platform, $f_os, $f_os_build, $f_description );
+		\Core\Form::security_purge( 'profile_update' );
 
 		if( ALL_USERS == $t_user_id ) {
-			\Flickerbox\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
+			\Core\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
 		} else {
-			\Flickerbox\Print_Util::header_redirect( 'account_prof_menu_page.php' );
+			\Core\Print_Util::header_redirect( 'account_prof_menu_page.php' );
 		}
 		break;
 
 	case 'update':
-		$f_platform = \Flickerbox\GPC::get_string( 'platform' );
-		$f_os = \Flickerbox\GPC::get_string( 'os' );
-		$f_os_build = \Flickerbox\GPC::get_string( 'os_build' );
-		$f_description = \Flickerbox\GPC::get_string( 'description' );
+		$f_platform = \Core\GPC::get_string( 'platform' );
+		$f_os = \Core\GPC::get_string( 'os' );
+		$f_os_build = \Core\GPC::get_string( 'os_build' );
+		$f_description = \Core\GPC::get_string( 'description' );
 
-		if( \Flickerbox\Profile::is_global( $f_profile_id ) ) {
-			\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) );
+		if( \Core\Profile::is_global( $f_profile_id ) ) {
+			\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_global_profile_threshold' ) );
 
-			\Flickerbox\Profile::update( ALL_USERS, $f_profile_id, $f_platform, $f_os, $f_os_build, $f_description );
-			\Flickerbox\Form::security_purge( 'profile_update' );
-			\Flickerbox\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
+			\Core\Profile::update( ALL_USERS, $f_profile_id, $f_platform, $f_os, $f_os_build, $f_description );
+			\Core\Form::security_purge( 'profile_update' );
+			\Core\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
 		} else {
-			\Flickerbox\Profile::update( auth_get_current_user_id(), $f_profile_id, $f_platform, $f_os, $f_os_build, $f_description );
-			\Flickerbox\Form::security_purge( 'profile_update' );
-			\Flickerbox\Print_Util::header_redirect( 'account_prof_menu_page.php' );
+			\Core\Profile::update( auth_get_current_user_id(), $f_profile_id, $f_platform, $f_os, $f_os_build, $f_description );
+			\Core\Form::security_purge( 'profile_update' );
+			\Core\Print_Util::header_redirect( 'account_prof_menu_page.php' );
 		}
 		break;
 
 	case 'delete':
-		if( \Flickerbox\Profile::is_global( $f_profile_id ) ) {
-			\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) );
+		if( \Core\Profile::is_global( $f_profile_id ) ) {
+			\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_global_profile_threshold' ) );
 
-			\Flickerbox\Profile::delete( ALL_USERS, $f_profile_id );
-			\Flickerbox\Form::security_purge( 'profile_update' );
-			\Flickerbox\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
+			\Core\Profile::delete( ALL_USERS, $f_profile_id );
+			\Core\Form::security_purge( 'profile_update' );
+			\Core\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
 		} else {
-			\Flickerbox\Profile::delete( auth_get_current_user_id(), $f_profile_id );
-			\Flickerbox\Form::security_purge( 'profile_update' );
-			\Flickerbox\Print_Util::header_redirect( 'account_prof_menu_page.php' );
+			\Core\Profile::delete( auth_get_current_user_id(), $f_profile_id );
+			\Core\Form::security_purge( 'profile_update' );
+			\Core\Print_Util::header_redirect( 'account_prof_menu_page.php' );
 		}
 		break;
 
 	case 'make_default':
-		\Flickerbox\Current_User::set_pref( 'default_profile', $f_profile_id );
-		\Flickerbox\Form::security_purge( 'profile_update' );
-		\Flickerbox\Print_Util::header_redirect( 'account_prof_menu_page.php' );
+		\Core\Current_User::set_pref( 'default_profile', $f_profile_id );
+		\Core\Form::security_purge( 'profile_update' );
+		\Core\Print_Util::header_redirect( 'account_prof_menu_page.php' );
 		break;
 }

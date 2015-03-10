@@ -39,23 +39,23 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_ver_update' );
+\Core\Form::security_validate( 'manage_proj_ver_update' );
 
 auth_reauthenticate();
 
-$f_version_id = \Flickerbox\GPC::get_int( 'version_id' );
+$f_version_id = \Core\GPC::get_int( 'version_id' );
 
-$t_version = \Flickerbox\Version::get( $f_version_id );
+$t_version = \Core\Version::get( $f_version_id );
 
-$f_date_order	= \Flickerbox\GPC::get_string( 'date_order' );
-$f_new_version	= \Flickerbox\GPC::get_string( 'new_version' );
-$f_description  = \Flickerbox\GPC::get_string( 'description' );
-$f_released     = \Flickerbox\GPC::get_bool( 'released' );
-$f_obsolete	= \Flickerbox\GPC::get_bool( 'obsolete' );
+$f_date_order	= \Core\GPC::get_string( 'date_order' );
+$f_new_version	= \Core\GPC::get_string( 'new_version' );
+$f_description  = \Core\GPC::get_string( 'description' );
+$f_released     = \Core\GPC::get_bool( 'released' );
+$f_obsolete	= \Core\GPC::get_bool( 'obsolete' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_version->project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_version->project_id );
 
-if( \Flickerbox\Utility::is_blank( $f_new_version ) ) {
+if( \Core\Utility::is_blank( $f_new_version ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
@@ -67,15 +67,15 @@ $t_version->released = $f_released ? VERSION_RELEASED : VERSION_FUTURE;
 $t_version->obsolete = $f_obsolete;
 $t_version->date_order = $f_date_order;
 
-\Flickerbox\Version::update( $t_version );
-\Flickerbox\Event::signal( 'EVENT_MANAGE_VERSION_UPDATE', array( $t_version->id ) );
+\Core\Version::update( $t_version );
+\Core\Event::signal( 'EVENT_MANAGE_VERSION_UPDATE', array( $t_version->id ) );
 
-\Flickerbox\Form::security_purge( 'manage_proj_ver_update' );
+\Core\Form::security_purge( 'manage_proj_ver_update' );
 
 $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $t_version->project_id;
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

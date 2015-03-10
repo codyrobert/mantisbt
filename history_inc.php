@@ -38,8 +38,8 @@ if( !defined( 'HISTORY_INC_ALLOW' ) ) {
 }
 
 
-$t_access_level_needed = \Flickerbox\Config::mantis_get( 'view_history_threshold' );
-if( !\Flickerbox\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
+$t_access_level_needed = \Core\Config::mantis_get( 'view_history_threshold' );
+if( !\Core\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
 	return;
 }
 ?>
@@ -47,31 +47,31 @@ if( !\Flickerbox\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
 <a id="history"></a><br />
 
 <?php
-	\Flickerbox\Collapse::open( 'history', '', 'table-container' );
-	$t_history = \Flickerbox\History::get_events_array( $f_bug_id );
+	\Core\Collapse::open( 'history', '', 'table-container' );
+	$t_history = \Core\History::get_events_array( $f_bug_id );
 ?>
 <table>
 	<thead>
 		<tr>
 			<td class="form-title" colspan="4">
 <?php
-			\Flickerbox\Collapse::icon( 'history' );
-			echo \Flickerbox\Lang::get( 'bug_history' ) ?>
+			\Core\Collapse::icon( 'history' );
+			echo \Core\Lang::get( 'bug_history' ) ?>
 			</td>
 		</tr>
 
 		<tr class="row-category-history">
 			<th class="small-caption">
-				<?php echo \Flickerbox\Lang::get( 'date_modified' ) ?>
+				<?php echo \Core\Lang::get( 'date_modified' ) ?>
 			</th>
 			<th class="small-caption">
-				<?php echo \Flickerbox\Lang::get( 'username' ) ?>
+				<?php echo \Core\Lang::get( 'username' ) ?>
 			</th>
 			<th class="small-caption">
-				<?php echo \Flickerbox\Lang::get( 'field' ) ?>
+				<?php echo \Core\Lang::get( 'field' ) ?>
 			</th>
 			<th class="small-caption">
-				<?php echo \Flickerbox\Lang::get( 'change' ) ?>
+				<?php echo \Core\Lang::get( 'change' ) ?>
 			</th>
 		</tr>
 	</thead>
@@ -85,13 +85,13 @@ if( !\Flickerbox\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
 				<?php echo $t_item['date'] ?>
 			</td>
 			<td class="small-caption">
-				<?php \Flickerbox\Print_Util::user( $t_item['userid'] ) ?>
+				<?php \Core\Print_Util::user( $t_item['userid'] ) ?>
 			</td>
 			<td class="small-caption">
-				<?php echo \Flickerbox\String::display( $t_item['note'] ) ?>
+				<?php echo \Core\String::display( $t_item['note'] ) ?>
 			</td>
 			<td class="small-caption">
-				<?php echo ( $t_item['raw'] ? \Flickerbox\String::display_line_links( $t_item['change'] ) : $t_item['change'] ) ?>
+				<?php echo ( $t_item['raw'] ? \Core\String::display_line_links( $t_item['change'] ) : $t_item['change'] ) ?>
 			</td>
 		</tr>
 <?php
@@ -100,16 +100,16 @@ if( !\Flickerbox\Access::has_bug_level( $t_access_level_needed, $f_bug_id ) ) {
 	</tbody>
 </table>
 <?php
-	\Flickerbox\Collapse::closed( 'history' );
+	\Core\Collapse::closed( 'history' );
 ?>
 <table class="width100" cellspacing="0">
 <tr>
 	<td class="form-title" colspan="4">
-	<?php	\Flickerbox\Collapse::icon( 'history' );
-		echo \Flickerbox\Lang::get( 'bug_history' ) ?>
+	<?php	\Core\Collapse::icon( 'history' );
+		echo \Core\Lang::get( 'bug_history' ) ?>
 	</td>
 </tr>
 </table>
 
 <?php
-\Flickerbox\Collapse::end( 'history' );
+\Core\Collapse::end( 'history' );

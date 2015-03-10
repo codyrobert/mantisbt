@@ -25,17 +25,17 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
 
 # Page header, menu
-\Flickerbox\HTML::page_top( 'MantisBT Administration - Moving Attachments' );
+\Core\HTML::page_top( 'MantisBT Administration - Moving Attachments' );
 echo '<div align="center"><p>';
-\Flickerbox\Print_Util::bracket_link( \Flickerbox\Helper::mantis_url( 'admin/system_utils.php' ), 'Back to System Utilities' );
+\Core\Print_Util::bracket_link( \Core\Helper::mantis_url( 'admin/system_utils.php' ), 'Back to System Utilities' );
 echo '</p></div>';
 
 
 # File type should be 'bug' (default) or 'project'
-$f_file_type = \Flickerbox\GPC::get( 'type', 'bug' );
+$f_file_type = \Core\GPC::get( 'type', 'bug' );
 
 function get_attachment_stats( $p_file_type, $p_in_db ) {
 	if( $p_in_db ) {
@@ -63,10 +63,10 @@ function get_attachment_stats( $p_file_type, $p_in_db ) {
 				ORDER BY p.name";
 			break;
 	}
-	$t_result = \Flickerbox\Database::query( $t_query );
+	$t_result = \Core\Database::query( $t_query );
 	$t_stats = array();
 
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		$t_project_id = (int) $t_row['id'];
 		$t_stats[$t_project_id] = $t_row['stats'];
 	}
@@ -86,7 +86,7 @@ switch( $f_file_type ) {
 # Build list, excluding projects having upload method other than DISK
 $t_db_stats = get_attachment_stats( $f_file_type, true );
 $t_disk_stats = get_attachment_stats( $f_file_type, false );
-$t_projects = \Flickerbox\Project::get_all_rows();
+$t_projects = \Core\Project::get_all_rows();
 
 # Display name for All Projects
 if( isset( $t_projects[ALL_PROJECTS] ) ) {
@@ -130,7 +130,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 			$t_disk_count = $t_disk_stats[$t_id];
 		}
 
-		$t_upload_method = \Flickerbox\Config::mantis_get( 'file_upload_method', null, ALL_USERS, $t_id );
+		$t_upload_method = \Core\Config::mantis_get( 'file_upload_method', null, ALL_USERS, $t_id );
 		if( $t_upload_method == DISK ) {
 			$t_method = 'Disk';
 		} else {
@@ -139,8 +139,8 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 		}
 
 		$t_file_path = $t_project['file_path'];
-		if( \Flickerbox\Utility::is_blank( $t_file_path ) ) {
-			$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
+		if( \Core\Utility::is_blank( $t_file_path ) ) {
+			$t_file_path = \Core\Config::mantis_get( 'absolute_path_default_upload_folder' );
 		}
 
 		echo '<tr>';
@@ -152,7 +152,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 		echo '<td class="center">' . $t_method . '</td>';
 
 		if( $t_upload_method == DISK ) {
-			if ( !\Flickerbox\Utility::is_blank( $t_file_path ) && $t_db_count > 0 ) {
+			if ( !\Core\Utility::is_blank( $t_file_path ) && $t_db_count > 0 ) {
 				echo '<td class="center"><input type="radio" name="to_move" value="disk:' . $t_id . '" /></td>';
 			} else {
 				echo '<td class="center">-</td>';
@@ -169,7 +169,7 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 		echo "</tr>\n";
 	}
 
-	echo \Flickerbox\Form::security_field( 'move_attachments_project_select' );
+	echo \Core\Form::security_field( 'move_attachments_project_select' );
 ?>
 
 </table>
@@ -184,4 +184,4 @@ if( isset( $t_projects[ALL_PROJECTS] ) ) {
 
 <?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

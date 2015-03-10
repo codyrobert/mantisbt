@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 /**
@@ -15,17 +15,17 @@ class MantisPHPSession extends MantisSession {
 	function __construct( $p_session_id = null ) {
 		global $g_cookie_secure_flag_enabled;
 
-		$this->key = hash( 'whirlpool', 'session_key' . \Flickerbox\Config::get_global( 'crypto_master_salt' ), false );
+		$this->key = hash( 'whirlpool', 'session_key' . \Core\Config::get_global( 'crypto_master_salt' ), false );
 
 		# Save session information where specified or with PHP's default
-		$t_session_save_path = \Flickerbox\Config::get_global( 'session_save_path' );
+		$t_session_save_path = \Core\Config::get_global( 'session_save_path' );
 		if( $t_session_save_path ) {
 			session_save_path( $t_session_save_path );
 		}
 
 		# Handle session cookie and caching
 		session_cache_limiter( 'private_no_expire' );
-		session_set_cookie_params( 0, \Flickerbox\Config::mantis_get( 'cookie_path' ), \Flickerbox\Config::mantis_get( 'cookie_domain' ), $g_cookie_secure_flag_enabled, true );
+		session_set_cookie_params( 0, \Core\Config::mantis_get( 'cookie_path' ), \Core\Config::mantis_get( 'cookie_domain' ), $g_cookie_secure_flag_enabled, true );
 
 		# Handle existent session ID
 		if( !is_null( $p_session_id ) ) {
@@ -57,7 +57,7 @@ class MantisPHPSession extends MantisSession {
 			return $p_default;
 		}
 
-		\Flickerbox\Error::parameters( $p_name );
+		\Core\Error::parameters( $p_name );
 		trigger_error( ERROR_SESSION_VAR_NOT_FOUND, ERROR );
 	}
 
@@ -86,7 +86,7 @@ class MantisPHPSession extends MantisSession {
 	 */
 	function destroy() {
 		if( isset( $_COOKIE[session_name()] ) && !headers_sent() ) {
-			\Flickerbox\GPC::set_cookie( session_name(), '', time() - 42000 );
+			\Core\GPC::set_cookie( session_name(), '', time() - 42000 );
 		}
 
 		unset( $_SESSION[$this->key] );

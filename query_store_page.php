@@ -38,52 +38,52 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Compress::enable();
+\Core\Compress::enable();
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 ?>
 <br />
 <div id="save-filter">
 <?php
-$t_query_to_store = \Flickerbox\Filter::db_get_filter( \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), '' ) );
-$t_query_arr = \Flickerbox\Filter::db_get_available_queries();
+$t_query_to_store = \Core\Filter::db_get_filter( \Core\GPC::get_cookie( \Core\Config::mantis_get( 'view_all_cookie' ), '' ) );
+$t_query_arr = \Core\Filter::db_get_available_queries();
 
 # Let's just see if any of the current filters are the
 # same as the one we're about the try and save
 foreach( $t_query_arr as $t_id => $t_name ) {
-	if( \Flickerbox\Filter::db_get_filter( $t_id ) == $t_query_to_store ) {
-		print \Flickerbox\Lang::get( 'query_exists' ) . ' (' . $t_name . ')<br />';
+	if( \Core\Filter::db_get_filter( $t_id ) == $t_query_to_store ) {
+		print \Core\Lang::get( 'query_exists' ) . ' (' . $t_name . ')<br />';
 	}
 }
 
 # Check for an error
-$t_error_msg = strip_tags( \Flickerbox\GPC::get_string( 'error_msg', null ) );
+$t_error_msg = strip_tags( \Core\GPC::get_string( 'error_msg', null ) );
 if( $t_error_msg != null ) {
 	print '<br />' . $t_error_msg . '<br /><br />';
 }
 
-print \Flickerbox\Lang::get( 'query_name_label' ) . \Flickerbox\Lang::get( 'word_separator' );
+print \Core\Lang::get( 'query_name_label' ) . \Core\Lang::get( 'word_separator' );
 ?>
 <form method="post" action="query_store.php">
-<?php echo \Flickerbox\Form::security_field( 'query_store' ) ?>
+<?php echo \Core\Form::security_field( 'query_store' ) ?>
 <input type="text" name="query_name" /><br />
 <?php
-if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_create_shared_threshold' ) ) ) {
+if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'stored_query_create_shared_threshold' ) ) ) {
 	print '<input type="checkbox" name="is_public" value="on" /> ';
-	print \Flickerbox\Lang::get( 'make_public' );
+	print \Core\Lang::get( 'make_public' );
 	print '<br />';
 }
 ?>
-<input type="checkbox" name="all_projects" value="on" <?php \Flickerbox\Helper::check_checked( ALL_PROJECTS == \Flickerbox\Helper::get_current_project() ) ?> />
-<?php print \Flickerbox\Lang::get( 'all_projects' ); ?><br /><br />
-<input type="submit" class="button" value="<?php print \Flickerbox\Lang::get( 'save_query' ); ?>" />
+<input type="checkbox" name="all_projects" value="on" <?php \Core\Helper::check_checked( ALL_PROJECTS == \Core\Helper::get_current_project() ) ?> />
+<?php print \Core\Lang::get( 'all_projects' ); ?><br /><br />
+<input type="submit" class="button" value="<?php print \Core\Lang::get( 'save_query' ); ?>" />
 </form>
 <form action="view_all_bug_page.php">
 <?php # CSRF protection not required here - form does not result in modifications ?>
-<input type="submit" class="button" value="<?php print \Flickerbox\Lang::get( 'go_back' ); ?>" />
+<input type="submit" class="button" value="<?php print \Core\Lang::get( 'go_back' ); ?>" />
 </form>
 <?php
 echo '</div>';
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

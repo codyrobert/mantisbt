@@ -42,26 +42,26 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'account_update' );
+\Core\Form::security_validate( 'account_update' );
 
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
 # If token is set, it's a password reset request from verify.php, and if
 # not we need to reauthenticate the user
-$t_account_verification = \Flickerbox\Token::get_value( TOKEN_ACCOUNT_VERIFY, $t_user_id );
+$t_account_verification = \Core\Token::get_value( TOKEN_ACCOUNT_VERIFY, $t_user_id );
 if( !$t_account_verification ) {
 	auth_reauthenticate();
 }
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
-$f_email           	= \Flickerbox\GPC::get_string( 'email', '' );
-$f_realname        	= \Flickerbox\GPC::get_string( 'realname', '' );
-$f_password_current = \Flickerbox\GPC::get_string( 'password_current', '' );
-$f_password        	= \Flickerbox\GPC::get_string( 'password', '' );
-$f_password_confirm	= \Flickerbox\GPC::get_string( 'password_confirm', '' );
+$f_email           	= \Core\GPC::get_string( 'email', '' );
+$f_realname        	= \Core\GPC::get_string( 'realname', '' );
+$f_password_current = \Core\GPC::get_string( 'password_current', '' );
+$f_password        	= \Core\GPC::get_string( 'password', '' );
+$f_password_confirm	= \Core\GPC::get_string( 'password_confirm', '' );
 
 $t_redirect_url = 'index.php';
 
@@ -70,34 +70,34 @@ $t_email_updated = false;
 $t_password_updated = false;
 $t_realname_updated = false;
 
-$t_ldap = ( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) );
+$t_ldap = ( LDAP == \Core\Config::mantis_get( 'login_method' ) );
 
 # Update email (but only if LDAP isn't being used)
-if( !( $t_ldap && \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) ) {
-	\Flickerbox\Email::ensure_valid( $f_email );
-	\Flickerbox\Email::ensure_not_disposable( $f_email );
+if( !( $t_ldap && \Core\Config::mantis_get( 'use_ldap_email' ) ) ) {
+	\Core\Email::ensure_valid( $f_email );
+	\Core\Email::ensure_not_disposable( $f_email );
 
-	if( $f_email != \Flickerbox\User::get_email( $t_user_id ) ) {
-		\Flickerbox\User::set_email( $t_user_id, $f_email );
+	if( $f_email != \Core\User::get_email( $t_user_id ) ) {
+		\Core\User::set_email( $t_user_id, $f_email );
 		$t_email_updated = true;
 	}
 }
 
 # Update real name (but only if LDAP isn't being used)
-if( !( $t_ldap && \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) ) {
+if( !( $t_ldap && \Core\Config::mantis_get( 'use_ldap_realname' ) ) ) {
 	# strip extra spaces from real name
 	$t_realname = string_normalize( $f_realname );
-	if( $t_realname != \Flickerbox\User::get_field( $t_user_id, 'realname' ) ) {
+	if( $t_realname != \Core\User::get_field( $t_user_id, 'realname' ) ) {
 		# checks for problems with realnames
-		$t_username = \Flickerbox\User::get_field( $t_user_id, 'username' );
-		\Flickerbox\User::ensure_realname_unique( $t_username, $t_realname );
-		\Flickerbox\User::set_realname( $t_user_id, $t_realname );
+		$t_username = \Core\User::get_field( $t_user_id, 'username' );
+		\Core\User::ensure_realname_unique( $t_username, $t_realname );
+		\Core\User::set_realname( $t_user_id, $t_realname );
 		$t_realname_updated = true;
 	}
 }
 
 # Update password if the two match and are not empty
-if( !\Flickerbox\Utility::is_blank( $f_password ) ) {
+if( !\Core\Utility::is_blank( $f_password ) ) {
 	if( $f_password != $f_password_confirm ) {
 		trigger_error( ERROR_USER_CREATE_PASSWORD_MISMATCH, ERROR );
 	} else {
@@ -106,37 +106,37 @@ if( !\Flickerbox\Utility::is_blank( $f_password ) ) {
 		}
 
 		if( !auth_does_password_match( $t_user_id, $f_password ) ) {
-			\Flickerbox\User::set_password( $t_user_id, $f_password );
+			\Core\User::set_password( $t_user_id, $f_password );
 			$t_password_updated = true;
 		}
 	}
 }
 
-\Flickerbox\Form::security_purge( 'account_update' );
+\Core\Form::security_purge( 'account_update' );
 
 # Clear the verification token
 if( $t_account_verification ) {
-	\Flickerbox\Token::delete( TOKEN_ACCOUNT_VERIFY, $t_user_id );
+	\Core\Token::delete( TOKEN_ACCOUNT_VERIFY, $t_user_id );
 }
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
 $t_message = '';
 
 if( $t_email_updated ) {
-	$t_message .= \Flickerbox\Lang::get( 'email_updated' );
+	$t_message .= \Core\Lang::get( 'email_updated' );
 }
 
 if( $t_password_updated ) {
-	$t_message = \Flickerbox\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
-	$t_message .= \Flickerbox\Lang::get( 'password_updated' );
+	$t_message = \Core\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
+	$t_message .= \Core\Lang::get( 'password_updated' );
 }
 
 if( $t_realname_updated ) {
-	$t_message = \Flickerbox\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
-	$t_message .= \Flickerbox\Lang::get( 'realname_updated' );
+	$t_message = \Core\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
+	$t_message .= \Core\Lang::get( 'realname_updated' );
 }
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url, $t_message );
+\Core\HTML::operation_successful( $t_redirect_url, $t_message );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

@@ -35,14 +35,14 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_user_copy' );
+\Core\Form::security_validate( 'manage_proj_user_copy' );
 
 auth_reauthenticate();
 
-$f_project_id		= \Flickerbox\GPC::get_int( 'project_id' );
-$f_other_project_id	= \Flickerbox\GPC::get_int( 'other_project_id' );
-$f_copy_from		= \Flickerbox\GPC::get_bool( 'copy_from' );
-$f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
+$f_project_id		= \Core\GPC::get_int( 'project_id' );
+$f_other_project_id	= \Core\GPC::get_int( 'other_project_id' );
+$f_copy_from		= \Core\GPC::get_bool( 'copy_from' );
+$f_copy_to			= \Core\GPC::get_bool( 'copy_to' );
 
 if( $f_copy_from ) {
 	$t_src_project_id = $f_other_project_id;
@@ -58,11 +58,11 @@ if( $f_copy_from ) {
 # We should check both since we are in the project section and an
 #  admin might raise the first threshold and not realize they need
 #  to raise the second
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_dst_project_id );
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'project_user_threshold' ), $t_dst_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_dst_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'project_user_threshold' ), $t_dst_project_id );
 
-\Flickerbox\Project::copy_users( $t_dst_project_id, $t_src_project_id, \Flickerbox\Access::get_project_level( $t_dst_project_id ) );
+\Core\Project::copy_users( $t_dst_project_id, $t_src_project_id, \Core\Access::get_project_level( $t_dst_project_id ) );
 
-\Flickerbox\Form::security_purge( 'manage_proj_user_copy' );
+\Core\Form::security_purge( 'manage_proj_user_copy' );
 
-\Flickerbox\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );
+\Core\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

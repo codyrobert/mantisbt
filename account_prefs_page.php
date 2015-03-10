@@ -17,7 +17,7 @@
 /**
  * CALLERS
  * This page is called from:
- * - \Flickerbox\HTML::print_account_menu()
+ * - \Core\HTML::print_account_menu()
  * - header redirects from account_*.php
  *
  * EXPECTED BEHAVIOUR
@@ -52,15 +52,15 @@ require_once( 'core.php' );
 # (none)
 
 #============ Permissions ============
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
 define( 'ACCOUNT_PREFS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/account_prefs_inc.php' );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'change_preferences_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'change_preferences_link' ) );
 
 edit_account_prefs();
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

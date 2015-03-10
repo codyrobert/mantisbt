@@ -41,25 +41,25 @@ $t_external_action = utf8_strtolower( utf8_substr( $f_action, utf8_strlen( $t_ex
 $t_form_fields_page = 'bug_actiongroup_' . $t_external_action . '_inc.php';
 $t_form_name = 'bug_actiongroup_' . $t_external_action;
 
-\Flickerbox\Bug\Group::action_init( $t_external_action );
+\Core\Bug\Group::action_init( $t_external_action );
 
-\Flickerbox\Bug\Group::action_print_top();
+\Core\Bug\Group::action_print_top();
 ?>
 
 <br />
 
 <div id="action-group-div" class="form-container" >
 	<form method="post" action="bug_actiongroup_ext.php">
-		<?php echo \Flickerbox\Form::security_field( $t_form_name ); ?>
-		<input type="hidden" name="action" value="<?php echo \Flickerbox\String::attribute( $t_external_action ) ?>" />
+		<?php echo \Core\Form::security_field( $t_form_name ); ?>
+		<input type="hidden" name="action" value="<?php echo \Core\String::attribute( $t_external_action ) ?>" />
 		<table>
 			<thead>
-				<?php \Flickerbox\Bug\Group::action_print_title( $t_external_action ); ?>
+				<?php \Core\Bug\Group::action_print_title( $t_external_action ); ?>
 			</thead>
 			<tbody>
 <?php
-	\Flickerbox\Bug\Group::action_print_hidden_fields( $f_bug_arr );
-	\Flickerbox\Bug\Group::action_print_action_fields( $t_external_action );
+	\Core\Bug\Group::action_print_hidden_fields( $f_bug_arr );
+	\Core\Bug\Group::action_print_action_fields( $t_external_action );
 ?>
 			</tbody>
 		</table>
@@ -69,5 +69,5 @@ $t_form_name = 'bug_actiongroup_' . $t_external_action;
 <br />
 
 <?php
-\Flickerbox\Bug\Group::action_print_bug_list( $f_bug_arr );
-\Flickerbox\Bug\Group::action_print_bottom();
+\Core\Bug\Group::action_print_bug_list( $f_bug_arr );
+\Core\Bug\Group::action_print_bottom();

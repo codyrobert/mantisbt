@@ -22,27 +22,27 @@
  * @link http://www.mantisbt.org
  */
 
-\Flickerbox\Form::security_validate( 'plugin_format_config_edit' );
+\Core\Form::security_validate( 'plugin_format_config_edit' );
 
 auth_reauthenticate( );
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
-$f_process_text = \Flickerbox\GPC::get_int( 'process_text', ON );
-$f_process_urls = \Flickerbox\GPC::get_int( 'process_urls', ON );
-$f_process_buglinks = \Flickerbox\GPC::get_int( 'process_buglinks', ON );
+$f_process_text = \Core\GPC::get_int( 'process_text', ON );
+$f_process_urls = \Core\GPC::get_int( 'process_urls', ON );
+$f_process_buglinks = \Core\GPC::get_int( 'process_buglinks', ON );
 
-if( \Flickerbox\Plugin::config_get( 'process_text' ) != $f_process_text ) {
-	\Flickerbox\Plugin::config_set( 'process_text', $f_process_text );
+if( \Core\Plugin::config_get( 'process_text' ) != $f_process_text ) {
+	\Core\Plugin::config_set( 'process_text', $f_process_text );
 }
 
-if( \Flickerbox\Plugin::config_get( 'process_urls' ) != $f_process_urls ) {
-	\Flickerbox\Plugin::config_set( 'process_urls', $f_process_urls );
+if( \Core\Plugin::config_get( 'process_urls' ) != $f_process_urls ) {
+	\Core\Plugin::config_set( 'process_urls', $f_process_urls );
 }
 
-if( \Flickerbox\Plugin::config_get( 'process_buglinks' ) != $f_process_buglinks ) {
-	\Flickerbox\Plugin::config_set( 'process_buglinks', $f_process_buglinks );
+if( \Core\Plugin::config_get( 'process_buglinks' ) != $f_process_buglinks ) {
+	\Core\Plugin::config_set( 'process_buglinks', $f_process_buglinks );
 }
 
-\Flickerbox\Form::security_purge( 'plugin_format_config_edit' );
+\Core\Form::security_purge( 'plugin_format_config_edit' );
 
-\Flickerbox\Print_Util::successful_redirect( \Flickerbox\Plugin::page( 'config', true ) );
+\Core\Print_Util::successful_redirect( \Core\Plugin::page( 'config', true ) );

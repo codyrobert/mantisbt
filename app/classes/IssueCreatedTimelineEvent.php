@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -50,7 +50,7 @@ class IssueCreatedTimelineEvent extends TimelineEvent {
 	 */
 	public function html() {
 		$t_html = $this->html_start();
-		$t_html .= '<div class="action">' . sprintf( \Flickerbox\Lang::get( 'timeline_issue_created' ), \Flickerbox\User::get_name( $this->user_id ), \Flickerbox\String::get_bug_view_link( $this->issue_id ) ) . '</div>';
+		$t_html .= '<div class="action">' . sprintf( \Core\Lang::get( 'timeline_issue_created' ), \Core\User::get_name( $this->user_id ), \Core\String::get_bug_view_link( $this->issue_id ) ) . '</div>';
 		$t_html .= $this->html_end();
 
 		return $t_html;

@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -83,11 +83,11 @@ class Compress
 	 * @access public
 	 */
 	static function start_handler() {
-		if( \Flickerbox\Compress::handler_is_enabled() ) {
+		if( \Core\Compress::handler_is_enabled() ) {
 			# Before doing anything else, start output buffering so we don't prevent
 			# headers from being sent if there's a blank line in an included file
 			ob_start( 'compress_handler' );
-		} else if( \Flickerbox\Utility::ini_get_bool( 'zlib.output_compression' ) == true ) {
+		} else if( \Core\Utility::ini_get_bool( 'zlib.output_compression' ) == true ) {
 			if( defined( 'COMPRESSION_DISABLED' ) ) {
 				return;
 			}
@@ -97,7 +97,7 @@ class Compress
 	
 	/**
 	 * Output Buffering handler that either compresses the buffer or just.
-	 * returns it, depending on the return value of \Flickerbox\Compress::handler_is_enabled()
+	 * returns it, depending on the return value of \Core\Compress::handler_is_enabled()
 	 * @param string  &$p_buffer Buffer.
 	 * @param integer $p_mode    Mode.
 	 * @return string
@@ -105,7 +105,7 @@ class Compress
 	 */
 	static function handler( &$p_buffer, $p_mode ) {
 		global $g_compression_started;
-		if( $g_compression_started && \Flickerbox\Compress::handler_is_enabled() ) {
+		if( $g_compression_started && \Core\Compress::handler_is_enabled() ) {
 			return ob_gzhandler( $p_buffer, $p_mode );
 		} else {
 			return $p_buffer;

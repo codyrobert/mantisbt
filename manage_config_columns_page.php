@@ -32,10 +32,10 @@ require_once( 'core.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_columns_config' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_columns_config' ) );
 
-\Flickerbox\HTML::print_manage_menu( 'adm_permissions_report.php' );
-\Flickerbox\HTML::print_manage_config_menu( 'manage_config_columns_page.php' );
+\Core\HTML::print_manage_menu( 'adm_permissions_report.php' );
+\Core\HTML::print_manage_config_menu( 'manage_config_columns_page.php' );
 
 # Define constant that will be checked by the include page.
 define( 'MANAGE_COLUMNS', true );
@@ -43,4 +43,4 @@ define( 'MANAGE_COLUMNS', true );
 define( 'MANAGE_COLUMNS_INC_ALLOW', true );
 include ( dirname( __FILE__ ) . '/manage_columns_inc.php' );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

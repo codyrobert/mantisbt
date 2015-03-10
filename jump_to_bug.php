@@ -29,9 +29,9 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
 # Determine which view page to redirect back to.
-$f_bug_id		= \Flickerbox\GPC::get_int( 'bug_id' );
+$f_bug_id		= \Core\GPC::get_int( 'bug_id' );
 
-\Flickerbox\Print_Util::header_redirect_view( $f_bug_id );
+\Core\Print_Util::header_redirect_view( $f_bug_id );

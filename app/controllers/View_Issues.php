@@ -1,22 +1,31 @@
 <?php
-namespace Flickerbox\Controller;
+namespace Controller;
 
 
-use Flickerbox\Access as Access;
-use Flickerbox\Auth as Auth;
-use Flickerbox\Category as Category;
-use Flickerbox\Config as Config;
-use Flickerbox\Controller as Controller;
-use Flickerbox\Current_User as Current_User;
-use Flickerbox\GPC as GPC;
-use Flickerbox\HTML as HTML;
-use Flickerbox\Page as Page;
+use Core\Access;
+use Core\App;
+use Core\Auth;
+use Core\Category;
+use Core\Config;
+use Core\Controller\Page;
+use Core\Current_User;
+use Core\GPC;
+use Core\Helper;
+use Core\HTML;
+use Core\Lang;
 
 
-class View_Issues extends Controller
+class View_Issues extends Page
 {
 	function action_my_view()
 	{
+		$this->set([
+			'page_title'	=> Lang::get( 'my_view_link' ),
+			'view'			=> 'My_View',
+		]);
+		
+		
+		HTML::require_css('status_config.php');
 		
 		Auth::ensure_user_authenticated();
 		
@@ -24,11 +33,6 @@ class View_Issues extends Controller
 		
 		# Improve performance by caching category data in one pass
 		Category::get_all_rows( Helper::get_current_project() );
-		
-		new Page([
-			'title'	=> Lang::get( 'my_view_link' ),
-			'view'	=> 'pages/my_view',
-		]);
 		
 		if( Current_User::get_pref( 'refresh_delay' ) > 0 ) {
 			HTML::meta_redirect( 'my_view_page.php?refresh=true', Current_User::get_pref( 'refresh_delay' ) * 60 );
@@ -49,7 +53,7 @@ class View_Issues extends Controller
 		?>
 		
 		<div>
-		<?php include( $g_core_path . 'timeline_inc.php' ); ?>
+		<?php include( ROOT . 'core/timeline_inc.php' ); ?>
 		
 		<div class="myview_boxes_area">
 		
@@ -83,12 +87,12 @@ class View_Issues extends Controller
 					if( 1 == $t_counter%2 ) {
 						# for even box number start new row and column
 						echo '<tr><td class="myview-left-col">';
-						include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'my_view_inc.php' );
+						include( ROOT . 'my_view_inc.php' );
 						echo '</td></tr>';
 					} else if( 0 == $t_counter%2 ) {
 						# for odd box number only start new column
 						echo '<tr><td class="myview-right-col">';
-						include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'my_view_inc.php' );
+						include( ROOT . 'my_view_inc.php' );
 						echo '</td></tr>';
 					}
 				} else if( OFF == $t_boxes_position ) {
@@ -103,7 +107,7 @@ class View_Issues extends Controller
 					}
 		
 					# display the required box
-					include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'my_view_inc.php' );
+					include( ROOT . 'my_view_inc.php' );
 					echo '<br />';
 		
 					# close the first column for first half of boxes

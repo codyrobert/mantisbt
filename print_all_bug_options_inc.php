@@ -81,15 +81,15 @@ function get_field_names() {
  */
 function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $p_redirect_url = '' ) {
 	if( null === $p_user_id ) {
-		$p_user_id = \Flickerbox\Auth::get_current_user_id();
+		$p_user_id = \Core\Auth::get_current_user_id();
 	}
 
 	# protected account check
 	if( $p_error_if_protected ) {
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	}
 
-	if( \Flickerbox\Utility::is_blank( $p_redirect_url ) ) {
+	if( \Core\Utility::is_blank( $p_redirect_url ) ) {
 		$p_redirect_url = 'print_all_bug_page.php';
 	}
 
@@ -98,10 +98,10 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 	$t_field_name_count = count( $t_field_name_arr );
 
 	# Grab the data
-	$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . \Flickerbox\Database::param();
-	$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+	$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . \Core\Database::param();
+	$t_result = \Core\Database::query( $t_query, array( $p_user_id ) );
 
-	$t_row = \Flickerbox\Database::fetch_array( $t_result );
+	$t_row = \Core\Database::fetch_array( $t_result );
 
 	## OOPS, No entry in the database yet.	Lets make one
 	if( !$t_row ) {
@@ -116,14 +116,14 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 				INTO {user_print_pref}
 				(user_id, print_pref)
 				VALUES
-				(' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
-		\Flickerbox\Database::query( $t_query, array( $p_user_id, $t_default ) );
+				(' . \Core\Database::param() . ',' . \Core\Database::param() . ')';
+		\Core\Database::query( $t_query, array( $p_user_id, $t_default ) );
 
 		# Rerun select query
-		$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+		$t_query = 'SELECT print_pref FROM {user_print_pref} WHERE user_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_user_id ) );
 
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	}
 
 	# putting the query result into an array with the same size as $t_fields_arr
@@ -134,13 +134,13 @@ function edit_printing_prefs( $p_user_id = null, $p_error_if_protected = true, $
 <br />
 <div>
 <form method="post" action="print_all_bug_options_update.php">
-<?php echo \Flickerbox\Form::security_field( 'print_all_bug_options_update' ) ?>
+<?php echo \Core\Form::security_field( 'print_all_bug_options_update' ) ?>
 <input type="hidden" name="user_id" value="<?php echo $p_user_id ?>" />
-<input type="hidden" name="redirect_url" value="<?php echo \Flickerbox\String::attribute( $p_redirect_url ) ?>" />
+<input type="hidden" name="redirect_url" value="<?php echo \Core\String::attribute( $p_redirect_url ) ?>" />
 <table class="width75" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo \Flickerbox\Lang::get( 'printing_preferences_title' ) ?>
+		<?php echo \Core\Lang::get( 'printing_preferences_title' ) ?>
 	</td>
 	<td class="right">
 	</td>
@@ -154,7 +154,7 @@ for( $i=0; $i <$t_field_name_count; $i++ ) {
 ?>
 
 	<th class="category">
-		<?php echo \Flickerbox\Lang::get( $t_field_name_arr[$i] ) ?>
+		<?php echo \Core\Lang::get( $t_field_name_arr[$i] ) ?>
 	</th>
 	<td>
 		<input type="checkbox" name="<?php echo 'print_' . $t_field_name_arr[$i]; ?>"
@@ -173,7 +173,7 @@ for( $i=0; $i <$t_field_name_count; $i++ ) {
 <tr>
 	<td>&#160;</td>
 	<td>
-		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_prefs_button' ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_prefs_button' ) ?>" />
 	</td>
 </tr>
 </table>
@@ -184,8 +184,8 @@ for( $i=0; $i <$t_field_name_count; $i++ ) {
 
 <div class="border center">
 	<form method="post" action="print_all_bug_options_reset.php">
-	<?php echo \Flickerbox\Form::security_field( 'print_all_bug_options_reset' ) ?>
-	<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'reset_prefs_button' ) ?>" />
+	<?php echo \Core\Form::security_field( 'print_all_bug_options_reset' ) ?>
+	<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'reset_prefs_button' ) ?>" />
 	</form>
 </div>
 

@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 /**
  * The <tt>ExcelStyle</tt> class is able to render style information
@@ -66,7 +66,7 @@ class ExcelStyle {
 	 */
 	function setBackgroundColor( $p_color, $p_pattern = 'Solid' ) {
 		if( ! isset ( $this->interior ) ) {
-			$this->interior = new \Flickerbox\Excel\Interior();
+			$this->interior = new \Core\Excel\Interior();
 		}
 
 		$this->interior->color = $p_color;
@@ -83,7 +83,7 @@ class ExcelStyle {
 	 */
 	function setFont( $p_bold, $p_color = '', $p_name = '', $p_italic = -1 ) {
 		if( !isset( $this->font ) ) {
-			$this->font = new \Flickerbox\Excel\Font();
+			$this->font = new \Core\Excel\Font();
 		}
 
 		if( $p_bold != -1 ) {
@@ -113,7 +113,7 @@ class ExcelStyle {
 	 */
 	function setBorder( $p_color, $p_line_style = 'Continuous', $p_weight = 1 ) {
 		if( !isset( $this->border ) ) {
-			$this->border = new \Flickerbox\Excel\Border();
+			$this->border = new \Core\Excel\Border();
 		}
 
 		if( $p_color != '' ) {
@@ -139,7 +139,7 @@ class ExcelStyle {
 	 */
 	function setAlignment( $p_wrap_text, $p_horizontal = '', $p_vertical = '' ) {
 		if( !isset( $this->alignment ) ) {
-			$this->alignment = new \Flickerbox\Excel\Alignment();
+			$this->alignment = new \Core\Excel\Alignment();
 		}
 
 		if( $p_wrap_text != '' ) {

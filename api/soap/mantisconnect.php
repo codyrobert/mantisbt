@@ -69,7 +69,7 @@ if( !mci_is_webservice_call() ) {
 
 	header( 'Content-Type: text/xml' );
 	$t_wsdl = file_get_contents( 'mantisconnect.wsdl' );
-	$t_wsdl = str_replace( 'http://www.mantisbt.org/bugs/api/soap/mantisconnect.php', \Flickerbox\Config::mantis_get( 'path' ).'api/soap/mantisconnect.php', $t_wsdl );
+	$t_wsdl = str_replace( 'http://www.mantisbt.org/bugs/api/soap/mantisconnect.php', \Core\Config::mantis_get( 'path' ).'api/soap/mantisconnect.php', $t_wsdl );
 	echo $t_wsdl;
 	exit();
 }
@@ -87,5 +87,5 @@ if( $g_email_stored ) {
 	if( function_exists( 'fastcgi_finish_request' ) ) {
 		fastcgi_finish_request();
 	}
-	\Flickerbox\Email::send_all();
+	\Core\Email::send_all();
 }

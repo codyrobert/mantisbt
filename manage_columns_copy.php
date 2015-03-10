@@ -36,15 +36,15 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_columns_copy' );
+\Core\Form::security_validate( 'manage_columns_copy' );
 
 auth_reauthenticate();
 
-$f_project_id		= \Flickerbox\GPC::get_int( 'project_id' );
-$f_other_project_id	= \Flickerbox\GPC::get_int( 'other_project_id' );
-$f_copy_from		= \Flickerbox\GPC::get_bool( 'copy_from' );
-$f_copy_to			= \Flickerbox\GPC::get_bool( 'copy_to' );
-$f_manage_page		= \Flickerbox\GPC::get_bool( 'manage_page' );
+$f_project_id		= \Core\GPC::get_int( 'project_id' );
+$f_other_project_id	= \Core\GPC::get_int( 'other_project_id' );
+$f_copy_from		= \Core\GPC::get_bool( 'copy_from' );
+$f_copy_to			= \Core\GPC::get_bool( 'copy_to' );
+$f_manage_page		= \Core\GPC::get_bool( 'manage_page' );
 
 if( $f_copy_from ) {
 	$t_src_project_id = $f_other_project_id;
@@ -57,48 +57,48 @@ if( $f_copy_from ) {
 }
 
 # only admins can set global defaults.for ALL_PROJECT
-if( $f_manage_page && $t_dst_project_id == ALL_PROJECTS && !\Flickerbox\Current_User::is_administrator() ) {
-	\Flickerbox\Access::denied();
+if( $f_manage_page && $t_dst_project_id == ALL_PROJECTS && !\Core\Current_User::is_administrator() ) {
+	\Core\Access::denied();
 }
 
 # only MANAGERS can set global defaults.for a project
 if( $f_manage_page && $t_dst_project_id != ALL_PROJECTS ) {
-	\Flickerbox\Access::ensure_project_level( MANAGER, $t_dst_project_id );
+	\Core\Access::ensure_project_level( MANAGER, $t_dst_project_id );
 }
 
 # user should only be able to set columns for a project that is accessible.
 if( $t_dst_project_id != ALL_PROJECTS ) {
-	\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_dst_project_id ), $t_dst_project_id );
+	\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_dst_project_id ), $t_dst_project_id );
 }
 
 # Calculate the user id to set the configuration for.
 if( $f_manage_page ) {
 	$t_user_id = NO_USER;
 } else {
-	$t_user_id = \Flickerbox\Auth::get_current_user_id();
+	$t_user_id = \Core\Auth::get_current_user_id();
 }
 
-$t_all_columns = \Flickerbox\Columns::get_all();
+$t_all_columns = \Core\Columns::get_all();
 $t_default = null;
 
-$t_view_issues_page_columns = \Flickerbox\Config::mantis_get( 'view_issues_page_columns', $t_default, $t_user_id, $t_src_project_id );
-$t_view_issues_page_columns = \Flickerbox\Columns::remove_invalid( $t_view_issues_page_columns, $t_all_columns );
+$t_view_issues_page_columns = \Core\Config::mantis_get( 'view_issues_page_columns', $t_default, $t_user_id, $t_src_project_id );
+$t_view_issues_page_columns = \Core\Columns::remove_invalid( $t_view_issues_page_columns, $t_all_columns );
 
-$t_print_issues_page_columns = \Flickerbox\Config::mantis_get( 'print_issues_page_columns', $t_default, $t_user_id, $t_src_project_id );
-$t_print_issues_page_columns = \Flickerbox\Columns::remove_invalid( $t_print_issues_page_columns, $t_all_columns );
+$t_print_issues_page_columns = \Core\Config::mantis_get( 'print_issues_page_columns', $t_default, $t_user_id, $t_src_project_id );
+$t_print_issues_page_columns = \Core\Columns::remove_invalid( $t_print_issues_page_columns, $t_all_columns );
 
-$t_csv_columns = \Flickerbox\Config::mantis_get( 'csv_columns', $t_default, $t_user_id, $t_src_project_id );
-$t_csv_columns = \Flickerbox\Columns::remove_invalid( $t_csv_columns, $t_all_columns );
+$t_csv_columns = \Core\Config::mantis_get( 'csv_columns', $t_default, $t_user_id, $t_src_project_id );
+$t_csv_columns = \Core\Columns::remove_invalid( $t_csv_columns, $t_all_columns );
 
-$t_excel_columns = \Flickerbox\Config::mantis_get( 'excel_columns', $t_default, $t_user_id, $t_src_project_id );
-$t_excel_columns = \Flickerbox\Columns::remove_invalid( $t_excel_columns, $t_all_columns );
+$t_excel_columns = \Core\Config::mantis_get( 'excel_columns', $t_default, $t_user_id, $t_src_project_id );
+$t_excel_columns = \Core\Columns::remove_invalid( $t_excel_columns, $t_all_columns );
 
-\Flickerbox\Config::set( 'view_issues_page_columns', $t_view_issues_page_columns, $t_user_id, $t_dst_project_id );
-\Flickerbox\Config::set( 'print_issues_page_columns', $t_print_issues_page_columns, $t_user_id, $t_dst_project_id );
-\Flickerbox\Config::set( 'csv_columns', $t_csv_columns, $t_user_id, $t_dst_project_id );
-\Flickerbox\Config::set( 'excel_columns', $t_excel_columns, $t_user_id, $t_dst_project_id );
+\Core\Config::mantis_set( 'view_issues_page_columns', $t_view_issues_page_columns, $t_user_id, $t_dst_project_id );
+\Core\Config::mantis_set( 'print_issues_page_columns', $t_print_issues_page_columns, $t_user_id, $t_dst_project_id );
+\Core\Config::mantis_set( 'csv_columns', $t_csv_columns, $t_user_id, $t_dst_project_id );
+\Core\Config::mantis_set( 'excel_columns', $t_excel_columns, $t_user_id, $t_dst_project_id );
 
-\Flickerbox\Form::security_purge( 'manage_columns_copy' );
+\Core\Form::security_purge( 'manage_columns_copy' );
 
 $t_redirect_url = $f_manage_page ? 'manage_config_columns_page.php' : 'account_manage_columns_page.php';
-\Flickerbox\Print_Util::header_redirect( $t_redirect_url );
+\Core\Print_Util::header_redirect( $t_redirect_url );

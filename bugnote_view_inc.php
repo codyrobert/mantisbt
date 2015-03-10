@@ -48,22 +48,22 @@ if( !defined( 'BUGNOTE_VIEW_INC_ALLOW' ) ) {
 
 
 # grab the user id currently logged in
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
 #precache access levels
-\Flickerbox\Access::cache_matrix_project( \Flickerbox\Helper::get_current_project() );
+\Core\Access::cache_matrix_project( \Core\Helper::get_current_project() );
 
 # get the bugnote data
-$t_bugnote_order = \Flickerbox\Current_User::get_pref( 'bugnote_order' );
-$t_bugnotes = \Flickerbox\Bug\Note::get_all_visible_bugnotes( $f_bug_id, $t_bugnote_order, 0, $t_user_id );
-$t_show_time_tracking = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_view_threshold' ), $f_bug_id );
+$t_bugnote_order = \Core\Current_User::get_pref( 'bugnote_order' );
+$t_bugnotes = \Core\Bug\Note::get_all_visible_bugnotes( $f_bug_id, $t_bugnote_order, 0, $t_user_id );
+$t_show_time_tracking = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'time_tracking_view_threshold' ), $f_bug_id );
 
 #precache users
 $t_bugnote_users = array();
 foreach( $t_bugnotes as $t_bugnote ) {
 	$t_bugnote_users[] = $t_bugnote->reporter_id;
 }
-\Flickerbox\User::cache_array_rows( $t_bugnote_users );
+\Core\User::cache_array_rows( $t_bugnote_users );
 
 $t_num_notes = count( $t_bugnotes );
 ?>
@@ -72,14 +72,14 @@ $t_num_notes = count( $t_bugnotes );
 <a id="bugnotes"></a><br />
 
 <?php
-	\Flickerbox\Collapse::open( 'bugnotes' );
+	\Core\Collapse::open( 'bugnotes' );
 ?>
 <table class="bugnotes width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
 <?php
-		\Flickerbox\Collapse::icon( 'bugnotes' ); ?>
-		<?php echo \Flickerbox\Lang::get( 'bug_notes_title' ) ?>
+		\Core\Collapse::icon( 'bugnotes' ); ?>
+		<?php echo \Core\Lang::get( 'bug_notes_title' ) ?>
 	</td>
 </tr>
 <?php
@@ -88,22 +88,22 @@ $t_num_notes = count( $t_bugnotes );
 ?>
 <tr class="bugnotes-empty">
 	<td class="center" colspan="2">
-		<?php echo \Flickerbox\Lang::get( 'no_bugnotes_msg' ) ?>
+		<?php echo \Core\Lang::get( 'no_bugnotes_msg' ) ?>
 	</td>
 </tr>
 <?php }
 
-	\Flickerbox\Event::signal( 'EVENT_VIEW_BUGNOTES_START', array( $f_bug_id, $t_bugnotes ) );
+	\Core\Event::signal( 'EVENT_VIEW_BUGNOTES_START', array( $f_bug_id, $t_bugnotes ) );
 
-	$t_normal_date_format = \Flickerbox\Config::mantis_get( 'normal_date_format' );
+	$t_normal_date_format = \Core\Config::mantis_get( 'normal_date_format' );
 	$t_total_time = 0;
 
-	$t_bugnote_user_edit_threshold = \Flickerbox\Config::mantis_get( 'bugnote_user_edit_threshold' );
-	$t_bugnote_user_delete_threshold = \Flickerbox\Config::mantis_get( 'bugnote_user_delete_threshold' );
-	$t_bugnote_user_change_view_state_threshold = \Flickerbox\Config::mantis_get( 'bugnote_user_change_view_state_threshold' );
-	$t_can_edit_all_bugnotes = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bugnote_threshold' ), $f_bug_id );
-	$t_can_delete_all_bugnotes = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'delete_bugnote_threshold' ), $f_bug_id );
-	$t_can_change_view_state_all_bugnotes = $t_can_edit_all_bugnotes && \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'change_view_status_threshold' ), $f_bug_id );
+	$t_bugnote_user_edit_threshold = \Core\Config::mantis_get( 'bugnote_user_edit_threshold' );
+	$t_bugnote_user_delete_threshold = \Core\Config::mantis_get( 'bugnote_user_delete_threshold' );
+	$t_bugnote_user_change_view_state_threshold = \Core\Config::mantis_get( 'bugnote_user_change_view_state_threshold' );
+	$t_can_edit_all_bugnotes = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'update_bugnote_threshold' ), $f_bug_id );
+	$t_can_delete_all_bugnotes = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'delete_bugnote_threshold' ), $f_bug_id );
+	$t_can_change_view_state_all_bugnotes = $t_can_edit_all_bugnotes && \Core\Access::has_bug_level( \Core\Config::mantis_get( 'change_view_status_threshold' ), $f_bug_id );
 
 	for( $i=0; $i < $t_num_notes; $i++ ) {
 		$t_bugnote = $t_bugnotes[$i];
@@ -114,10 +114,10 @@ $t_num_notes = count( $t_bugnotes );
 			$t_bugnote_modified = false;
 		}
 
-		$t_bugnote_id_formatted = \Flickerbox\Bug\Note::format_id( $t_bugnote->id );
+		$t_bugnote_id_formatted = \Core\Bug\Note::format_id( $t_bugnote->id );
 
 		if( $t_bugnote->time_tracking != 0 ) {
-			$t_time_tracking_hhmm = \Flickerbox\Database::minutes_to_hhmm( $t_bugnote->time_tracking );
+			$t_time_tracking_hhmm = \Core\Database::minutes_to_hhmm( $t_bugnote->time_tracking );
 			$t_total_time += $t_bugnote->time_tracking;
 		} else {
 			$t_time_tracking_hhmm = '';
@@ -137,36 +137,36 @@ $t_num_notes = count( $t_bugnotes );
 ?>
 <tr class="bugnote <?php echo $t_bugnote_css ?>" id="c<?php echo $t_bugnote->id ?>">
 		<td class="bugnote-meta">
-		<?php \Flickerbox\Print_Util::avatar( $t_bugnote->reporter_id ); ?>
-		<p class="compact"><span class="small bugnote-permalink"><a rel="bookmark" href="<?php echo \Flickerbox\String::get_bugnote_view_url( $t_bugnote->bug_id, $t_bugnote->id ) ?>" title="<?php echo \Flickerbox\Lang::get( 'bugnote_link_title' ) ?>"><?php echo htmlentities( \Flickerbox\Config::get_global( 'bugnote_link_tag' ) ) . $t_bugnote_id_formatted ?></a></span></p>
+		<?php \Core\Print_Util::avatar( $t_bugnote->reporter_id ); ?>
+		<p class="compact"><span class="small bugnote-permalink"><a rel="bookmark" href="<?php echo \Core\String::get_bugnote_view_url( $t_bugnote->bug_id, $t_bugnote->id ) ?>" title="<?php echo \Core\Lang::get( 'bugnote_link_title' ) ?>"><?php echo htmlentities( \Core\Config::get_global( 'bugnote_link_tag' ) ) . $t_bugnote_id_formatted ?></a></span></p>
 
 		<p class="compact">
 		<span class="bugnote-reporter">
 		<?php
-			\Flickerbox\Print_Util::user( $t_bugnote->reporter_id );
+			\Core\Print_Util::user( $t_bugnote->reporter_id );
 		?>
 		<span class="small access-level"><?php
-			if( \Flickerbox\User::exists( $t_bugnote->reporter_id ) ) {
-				$t_access_level = \Flickerbox\Access::get_project_level( null, (int)$t_bugnote->reporter_id );
+			if( \Core\User::exists( $t_bugnote->reporter_id ) ) {
+				$t_access_level = \Core\Access::get_project_level( null, (int)$t_bugnote->reporter_id );
 				# Only display access level when higher than 0 (ANYBODY)
 				if( $t_access_level > ANYBODY ) {
-					echo '(', \Flickerbox\Helper::get_enum_element( 'access_levels', $t_access_level ), ')';
+					echo '(', \Core\Helper::get_enum_element( 'access_levels', $t_access_level ), ')';
 				}
 			}
 		?></span>
 		</span>
 
 		<?php if( VS_PRIVATE == $t_bugnote->view_state ) { ?>
-		<span class="small bugnote-view-state">[ <?php echo \Flickerbox\Lang::get( 'private' ) ?> ]</span>
+		<span class="small bugnote-view-state">[ <?php echo \Core\Lang::get( 'private' ) ?> ]</span>
 		<?php } ?>
 		</p>
 		<p class="compact"><span class="small bugnote-date-submitted"><?php echo date( $t_normal_date_format, $t_bugnote->date_submitted ); ?></span></p>
 		<?php
 		if( $t_bugnote_modified ) {
-			echo '<p class="compact"><span class="small bugnote-last-modified">' . \Flickerbox\Lang::get( 'last_edited' ) . \Flickerbox\Lang::get( 'word_separator' ) . date( $t_normal_date_format, $t_bugnote->last_modified ) . '</span></p>';
-			$t_revision_count = \Flickerbox\Bug\Revision::count( $f_bug_id, REV_BUGNOTE, $t_bugnote->id );
+			echo '<p class="compact"><span class="small bugnote-last-modified">' . \Core\Lang::get( 'last_edited' ) . \Core\Lang::get( 'word_separator' ) . date( $t_normal_date_format, $t_bugnote->last_modified ) . '</span></p>';
+			$t_revision_count = \Core\Bug\Revision::count( $f_bug_id, REV_BUGNOTE, $t_bugnote->id );
 			if( $t_revision_count >= 1 ) {
-				$t_view_num_revisions_text = sprintf( \Flickerbox\Lang::get( 'view_num_revisions' ), $t_revision_count );
+				$t_view_num_revisions_text = sprintf( \Core\Lang::get( 'view_num_revisions' ), $t_revision_count );
 				echo '<p class="compact"><span class="small bugnote-revisions-link"><a href="bug_revision_view_page.php?bugnote_id=' . $t_bugnote->id . '">' . $t_view_num_revisions_text . '</a></span></p>';
 			}
 		}
@@ -174,45 +174,45 @@ $t_num_notes = count( $t_bugnotes );
 		<div class="small bugnote-buttons">
 		<?php
 			# bug must be open to be editable
-			if( !\Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
+			if( !\Core\Bug::is_readonly( $f_bug_id ) ) {
 
 				# check if the user can edit this bugnote
 				if( $t_user_id == $t_bugnote->reporter_id ) {
-					$t_can_edit_bugnote = \Flickerbox\Access::has_bugnote_level( $t_bugnote_user_edit_threshold, $t_bugnote->id );
+					$t_can_edit_bugnote = \Core\Access::has_bugnote_level( $t_bugnote_user_edit_threshold, $t_bugnote->id );
 				} else {
 					$t_can_edit_bugnote = $t_can_edit_all_bugnotes;
 				}
 
 				# check if the user can delete this bugnote
 				if( $t_user_id == $t_bugnote->reporter_id ) {
-					$t_can_delete_bugnote = \Flickerbox\Access::has_bugnote_level( $t_bugnote_user_delete_threshold, $t_bugnote->id );
+					$t_can_delete_bugnote = \Core\Access::has_bugnote_level( $t_bugnote_user_delete_threshold, $t_bugnote->id );
 				} else {
 					$t_can_delete_bugnote = $t_can_delete_all_bugnotes;
 				}
 
 				# check if the user can make this bugnote private
 				if( $t_user_id == $t_bugnote->reporter_id ) {
-					$t_can_change_view_state = \Flickerbox\Access::has_bugnote_level( $t_bugnote_user_change_view_state_threshold, $t_bugnote->id );
+					$t_can_change_view_state = \Core\Access::has_bugnote_level( $t_bugnote_user_change_view_state_threshold, $t_bugnote->id );
 				} else {
 					$t_can_change_view_state = $t_can_change_view_state_all_bugnotes;
 				}
 
 				# show edit button if the user is allowed to edit this bugnote
 				if( $t_can_edit_bugnote ) {
-					\Flickerbox\Print_Util::button( 'bugnote_edit_page.php?bugnote_id='.$t_bugnote->id, \Flickerbox\Lang::get( 'bugnote_edit_link' ) );
+					\Core\Print_Util::button( 'bugnote_edit_page.php?bugnote_id='.$t_bugnote->id, \Core\Lang::get( 'bugnote_edit_link' ) );
 				}
 
 				# show delete button if the user is allowed to delete this bugnote
 				if( $t_can_delete_bugnote ) {
-					\Flickerbox\Print_Util::button( 'bugnote_delete.php?bugnote_id='.$t_bugnote->id, \Flickerbox\Lang::get( 'delete_link' ) );
+					\Core\Print_Util::button( 'bugnote_delete.php?bugnote_id='.$t_bugnote->id, \Core\Lang::get( 'delete_link' ) );
 				}
 
 				# show make public or make private button if the user is allowed to change the view state of this bugnote
 				if( $t_can_change_view_state ) {
 					if( VS_PRIVATE == $t_bugnote->view_state ) {
-						\Flickerbox\Print_Util::button( 'bugnote_set_view_state.php?private=0&bugnote_id=' . $t_bugnote->id, \Flickerbox\Lang::get( 'make_public' ) );
+						\Core\Print_Util::button( 'bugnote_set_view_state.php?private=0&bugnote_id=' . $t_bugnote->id, \Core\Lang::get( 'make_public' ) );
 					} else {
-						\Flickerbox\Print_Util::button( 'bugnote_set_view_state.php?private=1&bugnote_id=' . $t_bugnote->id, \Flickerbox\Lang::get( 'make_private' ) );
+						\Core\Print_Util::button( 'bugnote_set_view_state.php?private=1&bugnote_id=' . $t_bugnote->id, \Core\Lang::get( 'make_private' ) );
 					}
 				}
 			}
@@ -229,7 +229,7 @@ $t_num_notes = count( $t_bugnotes );
 					$t_recipients = trim( $t_bugnote->note_attr, '|' );
 
 					if( empty( $t_recipients ) ) {
-						echo \Flickerbox\Lang::get( 'reminder_sent_none' );
+						echo \Core\Lang::get( 'reminder_sent_none' );
 					} else {
 						# If recipients list's last char is not a delimiter, it was truncated
 						$t_truncated = ( '|' != utf8_substr( $t_bugnote->note_attr, utf8_strlen( $t_bugnote->note_attr ) - 1 ) );
@@ -237,12 +237,12 @@ $t_num_notes = count( $t_bugnotes );
 						# Build recipients list for display
 						$t_to = array();
 						foreach ( explode( '|', $t_recipients ) as $t_recipient ) {
-							$t_to[] = \Flickerbox\Prepare::user_name( $t_recipient );
+							$t_to[] = \Core\Prepare::user_name( $t_recipient );
 						}
 
-						echo \Flickerbox\Lang::get( 'reminder_sent_to' ) . ': '
+						echo \Core\Lang::get( 'reminder_sent_to' ) . ': '
 							. implode( ', ', $t_to )
-							. ( $t_truncated ? ' (' . \Flickerbox\Lang::get( 'reminder_list_truncated' ) . ')' : '' );
+							. ( $t_truncated ? ' (' . \Core\Lang::get( 'reminder_list_truncated' ) . ')' : '' );
 					}
 
 					echo '</strong><br /><br />';
@@ -250,40 +250,40 @@ $t_num_notes = count( $t_bugnotes );
 
 				case TIME_TRACKING:
 					if( $t_show_time_tracking ) {
-						echo '<div class="time-tracked">', \Flickerbox\Lang::get( 'time_tracking_time_spent' ) . ' ' . $t_time_tracking_hhmm, '</div>';
+						echo '<div class="time-tracked">', \Core\Lang::get( 'time_tracking_time_spent' ) . ' ' . $t_time_tracking_hhmm, '</div>';
 					}
 					break;
 			}
 
-			echo \Flickerbox\String::display_links( $t_bugnote->note );
+			echo \Core\String::display_links( $t_bugnote->note );
 		?>
 	</td>
 </tr>
-<?php \Flickerbox\Event::signal( 'EVENT_VIEW_BUGNOTE', array( $f_bug_id, $t_bugnote->id, VS_PRIVATE == $t_bugnote->view_state ) ); ?>
+<?php \Core\Event::signal( 'EVENT_VIEW_BUGNOTE', array( $f_bug_id, $t_bugnote->id, VS_PRIVATE == $t_bugnote->view_state ) ); ?>
 <tr class="spacer">
 	<td colspan="2"></td>
 </tr>
 <?php
 	} # end for loop
 
-	\Flickerbox\Event::signal( 'EVENT_VIEW_BUGNOTES_END', $f_bug_id );
+	\Core\Event::signal( 'EVENT_VIEW_BUGNOTES_END', $f_bug_id );
 ?>
 </table>
 <?php
 
 if( $t_total_time > 0 && $t_show_time_tracking ) {
-	echo '<p class="time-tracking-total">', sprintf( \Flickerbox\Lang::get( 'total_time_for_issue' ), '<span class="time-tracked">' . \Flickerbox\Database::minutes_to_hhmm( $t_total_time ) . '</span>' ), '</p>';
+	echo '<p class="time-tracking-total">', sprintf( \Core\Lang::get( 'total_time_for_issue' ), '<span class="time-tracked">' . \Core\Database::minutes_to_hhmm( $t_total_time ) . '</span>' ), '</p>';
 }
-	\Flickerbox\Collapse::closed( 'bugnotes' );
+	\Core\Collapse::closed( 'bugnotes' );
 ?>
 
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
-		<?php \Flickerbox\Collapse::icon( 'bugnotes' ); ?>
-		<?php echo \Flickerbox\Lang::get( 'bug_notes_title' ) ?>
+		<?php \Core\Collapse::icon( 'bugnotes' ); ?>
+		<?php echo \Core\Lang::get( 'bug_notes_title' ) ?>
 	</td>
 </tr>
 </table>
 <?php
-	\Flickerbox\Collapse::end( 'bugnotes' );
+	\Core\Collapse::end( 'bugnotes' );

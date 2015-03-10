@@ -198,23 +198,23 @@ function show_notify_threshold( $p_access, $p_action ) {
  * @return void
  */
 function get_section_begin_for_email( $p_section_name ) {
-	$t_access_levels = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'access_levels_enum_string' ) );
+	$t_access_levels = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 	echo '<div class="form-container">'. "\n";
 	echo '<table>' . "\n";
 	echo '  <thead>' . "\n";
 	echo '    <tr>' . "\n";
 	echo '      <td class="form-title-caps" colspan="' . ( count( $t_access_levels ) + 5 ) . '">' . $p_section_name . '</td></tr>' . "\n";
 	echo '    <tr class="row-category2">' . "\n";
-	echo '      <th class="width30" rowspan="2">' . \Flickerbox\Lang::get( 'message' ) . '</th>';
-	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Flickerbox\Lang::get( 'issue_reporter' ) . '&#160;</th>' . "\n";
-	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Flickerbox\Lang::get( 'issue_handler' ) . '&#160;</th>' . "\n";
-	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Flickerbox\Lang::get( 'users_monitoring_bug' ) . '&#160;</th>' . "\n";
-	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Flickerbox\Lang::get( 'users_added_bugnote' ) . '&#160;</th>' . "\n";
-	echo '      <th class="form-title" style="text-align:center" colspan="' . count( $t_access_levels ) . '">&#160;' . \Flickerbox\Lang::get( 'access_levels' ) . '&#160;</th>' . "\n";
+	echo '      <th class="width30" rowspan="2">' . \Core\Lang::get( 'message' ) . '</th>';
+	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Core\Lang::get( 'issue_reporter' ) . '&#160;</th>' . "\n";
+	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Core\Lang::get( 'issue_handler' ) . '&#160;</th>' . "\n";
+	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Core\Lang::get( 'users_monitoring_bug' ) . '&#160;</th>' . "\n";
+	echo '      <th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Core\Lang::get( 'users_added_bugnote' ) . '&#160;</th>' . "\n";
+	echo '      <th class="form-title" style="text-align:center" colspan="' . count( $t_access_levels ) . '">&#160;' . \Core\Lang::get( 'access_levels' ) . '&#160;</th>' . "\n";
 	echo '    </tr><tr class="row-category2">' . "\n";
 
 	foreach( $t_access_levels as $t_access_level ) {
-		echo '      <th>&#160;' . \Flickerbox\MantisEnum::getLabel( \Flickerbox\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>' . "\n";
+		echo '      <th>&#160;' . \Core\MantisEnum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>' . "\n";
 	}
 
 	echo '    </tr>' . "\n";
@@ -230,9 +230,9 @@ function get_section_begin_for_email( $p_section_name ) {
  * @return void
  */
 function get_capability_row_for_email( $p_caption, $p_message_type ) {
-	$t_access_levels = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'access_levels_enum_string' ) );
+	$t_access_levels = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 
-	echo '<tr><td>' . \Flickerbox\String::display( $p_caption ) . '</td>' . "\n";
+	echo '<tr><td>' . \Core\String::display( $p_caption ) . '</td>' . "\n";
 	echo '  <td' . color_notify_flag( $p_message_type, 'reporter' ) . '>' . show_notify_flag( $p_message_type, 'reporter' )  . '</td>' . "\n";
 	echo '  <td' . color_notify_flag( $p_message_type, 'handler' ) . '>' . show_notify_flag( $p_message_type, 'handler' ) . '</td>' . "\n";
 	echo '  <td' . color_notify_flag( $p_message_type, 'monitor' ) . '>' . show_notify_flag( $p_message_type, 'monitor' ) . '</td>' . "\n";
@@ -254,120 +254,120 @@ function get_section_end_for_email() {
 }
 
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_email_config' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_email_config' ) );
 
-\Flickerbox\HTML::print_manage_menu( 'adm_permissions_report.php' );
-\Flickerbox\HTML::print_manage_config_menu( 'manage_config_email_page.php' );
+\Core\HTML::print_manage_menu( 'adm_permissions_report.php' );
+\Core\HTML::print_manage_config_menu( 'manage_config_email_page.php' );
 
-$t_access = \Flickerbox\Current_User::get_access_level();
-$t_project = \Flickerbox\Helper::get_current_project();
+$t_access = \Core\Current_User::get_access_level();
+$t_project = \Core\Helper::get_current_project();
 
 # build a list of all of the actions
 $t_actions = array( 'owner', 'reopened', 'deleted', 'bugnote' );
-if( \Flickerbox\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
+if( \Core\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
 	$t_actions[] = 'sponsor';
 }
 
 $t_actions[] = 'relation';
 
-$t_statuses = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
+$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 foreach( $t_statuses as $t_status ) {
 	$t_actions[] =  $t_status;
 }
 
 # build a composite of the status flags, exploding the defaults
-$t_global_default_notify_flags = \Flickerbox\Config::mantis_get( 'default_notify_flags', null, ALL_USERS, ALL_PROJECTS );
+$t_global_default_notify_flags = \Core\Config::mantis_get( 'default_notify_flags', null, ALL_USERS, ALL_PROJECTS );
 $g_global_notify_flags = array();
 foreach ( $t_global_default_notify_flags as $t_flag => $t_value ) {
 	foreach ( $t_actions as $t_action ) {
 		$g_global_notify_flags[$t_action][$t_flag] = $t_value;
 	}
 }
-$g_global_notify_flags = array_merge_recursive2( $g_global_notify_flags, \Flickerbox\Config::mantis_get( 'notify_flags', null, ALL_USERS, ALL_PROJECTS ) );
+$g_global_notify_flags = array_merge_recursive2( $g_global_notify_flags, \Core\Config::mantis_get( 'notify_flags', null, ALL_USERS, ALL_PROJECTS ) );
 
-$t_file_default_notify_flags = \Flickerbox\Config::get_global( 'default_notify_flags' );
+$t_file_default_notify_flags = \Core\Config::get_global( 'default_notify_flags' );
 $g_file_notify_flags = array();
 foreach ( $t_file_default_notify_flags as $t_flag => $t_value ) {
 	foreach ( $t_actions as $t_action ) {
 		$g_file_notify_flags[$t_action][$t_flag] = $t_value;
 	}
 }
-$g_file_notify_flags = array_merge_recursive2( $g_file_notify_flags, \Flickerbox\Config::get_global( 'notify_flags' ) );
+$g_file_notify_flags = array_merge_recursive2( $g_file_notify_flags, \Core\Config::get_global( 'notify_flags' ) );
 
-$g_default_notify_flags = \Flickerbox\Config::mantis_get( 'default_notify_flags' );
+$g_default_notify_flags = \Core\Config::mantis_get( 'default_notify_flags' );
 $g_notify_flags = array();
 foreach ( $g_default_notify_flags as $t_flag => $t_value ) {
 	foreach ( $t_actions as $t_action ) {
 		$g_notify_flags[$t_action][$t_flag] = $t_value;
 	}
 }
-$g_notify_flags = array_merge_recursive2( $g_notify_flags, \Flickerbox\Config::mantis_get( 'notify_flags' ) );
+$g_notify_flags = array_merge_recursive2( $g_notify_flags, \Core\Config::mantis_get( 'notify_flags' ) );
 
-$g_can_change_flags = $t_access >= \Flickerbox\Config::get_access( 'notify_flags' );
-$g_can_change_defaults = $t_access >= \Flickerbox\Config::get_access( 'default_notify_flags' );
+$g_can_change_flags = $t_access >= \Core\Config::get_access( 'notify_flags' );
+$g_can_change_defaults = $t_access >= \Core\Config::get_access( 'default_notify_flags' );
 
 echo '<br /><br />';
 
 # Email notifications
-if( \Flickerbox\Config::mantis_get( 'enable_email_notification' ) == ON ) {
+if( \Core\Config::mantis_get( 'enable_email_notification' ) == ON ) {
 
 	if( $g_can_change_flags  || $g_can_change_defaults ) {
 		echo '<form id="mail_config_action" method="post" action="manage_config_email_set.php">' . "\n";
-		echo \Flickerbox\Form::security_field( 'manage_config_email_set' );
+		echo \Core\Form::security_field( 'manage_config_email_set' );
 	}
 
 	if( ALL_PROJECTS == $t_project ) {
-		$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
+		$t_project_title = \Core\Lang::get( 'config_all_projects' );
 	} else {
-		$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project ) ) );
+		$t_project_title = sprintf( \Core\Lang::get( 'config_project' ), \Core\String::display( \Core\Project::get_name( $t_project ) ) );
 	}
 	echo '<p class="bold">' . $t_project_title . '</p>' . "\n";
-	echo '<p>' . \Flickerbox\Lang::get( 'colour_coding' ) . '<br />';
+	echo '<p>' . \Core\Lang::get( 'colour_coding' ) . '<br />';
 	if( ALL_PROJECTS <> $t_project ) {
-		echo '<span class="color-project">' . \Flickerbox\Lang::get( 'colour_project' ) . '</span><br />';
+		echo '<span class="color-project">' . \Core\Lang::get( 'colour_project' ) . '</span><br />';
 	}
-	echo '<span class="color-global">' . \Flickerbox\Lang::get( 'colour_global' ) . '</span></p>';
+	echo '<span class="color-global">' . \Core\Lang::get( 'colour_global' ) . '</span></p>';
 
-	get_section_begin_for_email( \Flickerbox\Lang::get( 'email_notification' ) );
-#		get_capability_row_for_email( \Flickerbox\Lang::get( 'email_on_new' ), 'new' );  # duplicate of status change to 'new'
-	get_capability_row_for_email( \Flickerbox\Lang::get( 'email_on_assigned' ), 'owner' );
-	get_capability_row_for_email( \Flickerbox\Lang::get( 'email_on_reopened' ), 'reopened' );
-	get_capability_row_for_email( \Flickerbox\Lang::get( 'email_on_deleted' ), 'deleted' );
-	get_capability_row_for_email( \Flickerbox\Lang::get( 'email_on_bugnote_added' ), 'bugnote' );
-	if( \Flickerbox\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
-		get_capability_row_for_email( \Flickerbox\Lang::get( 'email_on_sponsorship_changed' ), 'sponsor' );
+	get_section_begin_for_email( \Core\Lang::get( 'email_notification' ) );
+#		get_capability_row_for_email( \Core\Lang::get( 'email_on_new' ), 'new' );  # duplicate of status change to 'new'
+	get_capability_row_for_email( \Core\Lang::get( 'email_on_assigned' ), 'owner' );
+	get_capability_row_for_email( \Core\Lang::get( 'email_on_reopened' ), 'reopened' );
+	get_capability_row_for_email( \Core\Lang::get( 'email_on_deleted' ), 'deleted' );
+	get_capability_row_for_email( \Core\Lang::get( 'email_on_bugnote_added' ), 'bugnote' );
+	if( \Core\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
+		get_capability_row_for_email( \Core\Lang::get( 'email_on_sponsorship_changed' ), 'sponsor' );
 	}
 
-	get_capability_row_for_email( \Flickerbox\Lang::get( 'email_on_relationship_changed' ), 'relation' );
+	get_capability_row_for_email( \Core\Lang::get( 'email_on_relationship_changed' ), 'relation' );
 
-	$t_statuses = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
+	$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 	foreach ( $t_statuses as $t_status => $t_label ) {
-		get_capability_row_for_email( \Flickerbox\Lang::get( 'status_changed_to' ) . ' \'' . \Flickerbox\Helper::get_enum_element( 'status', $t_status ) . '\'', $t_label );
+		get_capability_row_for_email( \Core\Lang::get( 'status_changed_to' ) . ' \'' . \Core\Helper::get_enum_element( 'status', $t_status ) . '\'', $t_label );
 	}
 
 	get_section_end_for_email();
 
 	if( $g_can_change_flags  || $g_can_change_defaults ) {
-		echo '<p>' . \Flickerbox\Lang::get( 'notify_actions_change_access' ) . "\n";
+		echo '<p>' . \Core\Lang::get( 'notify_actions_change_access' ) . "\n";
 		echo '<select name="notify_actions_access">' . "\n";
-		\Flickerbox\Print_Util::enum_string_option_list( 'access_levels', \Flickerbox\Config::get_access( 'notify_flags' ) );
+		\Core\Print_Util::enum_string_option_list( 'access_levels', \Core\Config::get_access( 'notify_flags' ) );
 		echo "\n</select></p>";
 
-		echo '<input type="submit" class="button" value="' . \Flickerbox\Lang::get( 'change_configuration' ) . '" />' . "\n";
+		echo '<input type="submit" class="button" value="' . \Core\Lang::get( 'change_configuration' ) . '" />' . "\n";
 
 		echo "</form>\n";
 
 		echo '<div class="right">' . "\n";
 		echo '<form id="mail_config_action" method="post" action="manage_config_revert.php">' . "\n";
-		echo \Flickerbox\Form::security_field( 'manage_config_revert' ) . "\n";
+		echo \Core\Form::security_field( 'manage_config_revert' ) . "\n";
 		echo '<input name="revert" type="hidden" value="notify_flags,default_notify_flags" />' . "\n";
 		echo '<input name="project" type="hidden" value="' . $t_project . '" />' . "\n";
-		echo '<input name="return" type="hidden" value="' . \Flickerbox\String::attribute( \Flickerbox\Form::action_self() ) . '" />' . "\n";
+		echo '<input name="return" type="hidden" value="' . \Core\String::attribute( \Core\Form::action_self() ) . '" />' . "\n";
 		echo '<input type="submit" class="button" value="';
 		if( ALL_PROJECTS == $t_project ) {
-			echo \Flickerbox\Lang::get( 'revert_to_system' );
+			echo \Core\Lang::get( 'revert_to_system' );
 		} else {
-			echo \Flickerbox\Lang::get( 'revert_to_all_project' );
+			echo \Core\Lang::get( 'revert_to_all_project' );
 		}
 		echo '" />' . "\n";
 		echo "</form></div>\n";
@@ -375,4 +375,4 @@ if( \Flickerbox\Config::mantis_get( 'enable_email_notification' ) == ON ) {
 
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

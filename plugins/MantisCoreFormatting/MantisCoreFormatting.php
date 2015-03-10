@@ -21,14 +21,14 @@
 /**
  * Mantis Core Formatting plugin
  */
-class MantisCoreFormattingPlugin extends \Flickerbox\MantisFormattingPlugin {
+class MantisCoreFormattingPlugin extends \Core\MantisFormattingPlugin {
 	/**
 	 * A method that populates the plugin information and minimum requirements.
 	 * @return void
 	 */
 	function register() {
-		$this->name = \Flickerbox\Lang::get( 'plugin_format_title' );
-		$this->description = \Flickerbox\Lang::get( 'plugin_format_description' );
+		$this->name = \Core\Lang::get( 'plugin_format_title' );
+		$this->description = \Core\Lang::get( 'plugin_format_description' );
 		$this->page = 'config';
 
 		$this->version = '1.3.0';
@@ -72,17 +72,17 @@ class MantisCoreFormattingPlugin extends \Flickerbox\MantisFormattingPlugin {
 		$t_string = $p_string;
 
 		if( null === $s_text ) {
-			$s_text = \Flickerbox\Plugin::config_get( 'process_text' );
+			$s_text = \Core\Plugin::config_get( 'process_text' );
 		}
 
 		if( ON == $s_text ) {
-			$t_string = \Flickerbox\String::strip_hrefs( $t_string );
-			$t_string = \Flickerbox\String::html_specialchars( $t_string );
-			$t_string = \Flickerbox\String::restore_valid_html_tags( $t_string, $p_multiline );
+			$t_string = \Core\String::strip_hrefs( $t_string );
+			$t_string = \Core\String::html_specialchars( $t_string );
+			$t_string = \Core\String::restore_valid_html_tags( $t_string, $p_multiline );
 
 			if( $p_multiline ) {
-				$t_string = \Flickerbox\String::preserve_spaces_at_bol( $t_string );
-				$t_string = \Flickerbox\String::nl2br( $t_string );
+				$t_string = \Core\String::preserve_spaces_at_bol( $t_string );
+				$t_string = \Core\String::nl2br( $t_string );
 			}
 		}
 
@@ -109,17 +109,17 @@ class MantisCoreFormattingPlugin extends \Flickerbox\MantisFormattingPlugin {
 		$t_string = $this->text( $p_event, $p_string, $p_multiline );
 
 		if( null === $s_urls ) {
-			$s_urls = \Flickerbox\Plugin::config_get( 'process_urls' );
-			$s_buglinks = \Flickerbox\Plugin::config_get( 'process_buglinks' );
+			$s_urls = \Core\Plugin::config_get( 'process_urls' );
+			$s_buglinks = \Core\Plugin::config_get( 'process_buglinks' );
 		}
 
 		if( ON == $s_urls ) {
-			$t_string = \Flickerbox\String::insert_hrefs( $t_string );
+			$t_string = \Core\String::insert_hrefs( $t_string );
 		}
 
 		if( ON == $s_buglinks ) {
-			$t_string = \Flickerbox\String::process_bug_link( $t_string );
-			$t_string = \Flickerbox\String::process_bugnote_link( $t_string );
+			$t_string = \Core\String::process_bug_link( $t_string );
+			$t_string = \Core\String::process_bugnote_link( $t_string );
 		}
 
 		return $t_string;
@@ -137,25 +137,25 @@ class MantisCoreFormattingPlugin extends \Flickerbox\MantisFormattingPlugin {
 		$t_string = $p_string;
 
 		if( null === $s_text ) {
-			$s_text = \Flickerbox\Plugin::config_get( 'process_text' );
-			$s_urls = \Flickerbox\Plugin::config_get( 'process_urls' );
-			$s_buglinks = \Flickerbox\Plugin::config_get( 'process_buglinks' );
+			$s_text = \Core\Plugin::config_get( 'process_text' );
+			$s_urls = \Core\Plugin::config_get( 'process_urls' );
+			$s_buglinks = \Core\Plugin::config_get( 'process_buglinks' );
 		}
 
 		if( ON == $s_text ) {
-			$t_string = \Flickerbox\String::strip_hrefs( $t_string );
-			$t_string = \Flickerbox\String::html_specialchars( $t_string );
-			$t_string = \Flickerbox\String::restore_valid_html_tags( $t_string );
-			$t_string = \Flickerbox\String::nl2br( $t_string );
+			$t_string = \Core\String::strip_hrefs( $t_string );
+			$t_string = \Core\String::html_specialchars( $t_string );
+			$t_string = \Core\String::restore_valid_html_tags( $t_string );
+			$t_string = \Core\String::nl2br( $t_string );
 		}
 
 		if( ON == $s_urls ) {
-			$t_string = \Flickerbox\String::insert_hrefs( $t_string );
+			$t_string = \Core\String::insert_hrefs( $t_string );
 		}
 
 		if( ON == $s_buglinks ) {
-			$t_string = \Flickerbox\String::process_bug_link( $t_string, true, false, true );
-			$t_string = \Flickerbox\String::process_bugnote_link( $t_string, true, false, true );
+			$t_string = \Core\String::process_bug_link( $t_string, true, false, true );
+			$t_string = \Core\String::process_bugnote_link( $t_string, true, false, true );
 		}
 
 		return $t_string;
@@ -173,17 +173,17 @@ class MantisCoreFormattingPlugin extends \Flickerbox\MantisFormattingPlugin {
 		$t_string = $p_string;
 
 		if( null === $s_text ) {
-			$s_text = \Flickerbox\Plugin::config_get( 'process_text' );
-			$s_buglinks = \Flickerbox\Plugin::config_get( 'process_buglinks' );
+			$s_text = \Core\Plugin::config_get( 'process_text' );
+			$s_buglinks = \Core\Plugin::config_get( 'process_buglinks' );
 		}
 
 		if( ON == $s_text ) {
-			$t_string = \Flickerbox\String::strip_hrefs( $t_string );
+			$t_string = \Core\String::strip_hrefs( $t_string );
 		}
 
 		if( ON == $s_buglinks ) {
-			$t_string = \Flickerbox\String::process_bug_link( $t_string, false );
-			$t_string = \Flickerbox\String::process_bugnote_link( $t_string, false );
+			$t_string = \Core\String::process_bug_link( $t_string, false );
+			$t_string = \Core\String::process_bugnote_link( $t_string, false );
 		}
 
 		return $t_string;

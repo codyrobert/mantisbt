@@ -37,28 +37,28 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_ver_delete' );
+\Core\Form::security_validate( 'manage_proj_ver_delete' );
 
 auth_reauthenticate();
 
-$f_version_id = \Flickerbox\GPC::get_int( 'version_id' );
+$f_version_id = \Core\GPC::get_int( 'version_id' );
 
-$t_version_info = \Flickerbox\Version::get( $f_version_id );
+$t_version_info = \Core\Version::get( $f_version_id );
 $t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $t_version_info->project_id;
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_version_info->project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_version_info->project_id );
 
 # Confirm with the user
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'version_delete_sure' ) .
-	'<br/>' . \Flickerbox\Lang::get( 'version_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::display_line( $t_version_info->version ),
-	\Flickerbox\Lang::get( 'delete_version_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'version_delete_sure' ) .
+	'<br/>' . \Core\Lang::get( 'version_label' ) . \Core\Lang::get( 'word_separator' ) . \Core\String::display_line( $t_version_info->version ),
+	\Core\Lang::get( 'delete_version_button' ) );
 
-\Flickerbox\Version::remove( $f_version_id );
+\Core\Version::remove( $f_version_id );
 
-\Flickerbox\Form::security_purge( 'manage_proj_ver_delete' );
+\Core\Form::security_purge( 'manage_proj_ver_delete' );
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

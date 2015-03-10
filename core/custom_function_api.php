@@ -53,11 +53,11 @@ require_api( 'custom_field_api.php' );
  * @return boolean
  */
 function custom_function_default_changelog_include_issue( $p_issue_id ) {
-	$t_issue = \Flickerbox\Bug::get( $p_issue_id );
+	$t_issue = \Core\Bug::get( $p_issue_id );
 
-	return( ( $t_issue->resolution >= \Flickerbox\Config::mantis_get( 'bug_resolution_fixed_threshold' ) &&
-		$t_issue->resolution < \Flickerbox\Config::mantis_get( 'bug_resolution_not_fixed_threshold' ) &&
-		$t_issue->status >= \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' ) ) );
+	return( ( $t_issue->resolution >= \Core\Config::mantis_get( 'bug_resolution_fixed_threshold' ) &&
+		$t_issue->resolution < \Core\Config::mantis_get( 'bug_resolution_not_fixed_threshold' ) &&
+		$t_issue->status >= \Core\Config::mantis_get( 'bug_resolved_status_threshold' ) ) );
 }
 
 /**
@@ -70,7 +70,7 @@ function custom_function_default_changelog_include_issue( $p_issue_id ) {
 function custom_function_default_changelog_print_issue( $p_issue_id, $p_issue_level = 0 ) {
 	static $s_status;
 
-	$t_bug = \Flickerbox\Bug::get( $p_issue_id );
+	$t_bug = \Core\Bug::get( $p_issue_id );
 
 	if( $t_bug->category_id ) {
 		$t_category_name = category_get_name( $t_bug->category_id );
@@ -78,15 +78,15 @@ function custom_function_default_changelog_print_issue( $p_issue_id, $p_issue_le
 		$t_category_name = '';
 	}
 
-	$t_category = \Flickerbox\Utility::is_blank( $t_category_name ) ? '' : '<strong>[' . \Flickerbox\String::display_line( $t_category_name ) . ']</strong> ';
-	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', \Flickerbox\String::get_bug_view_link( $p_issue_id ), ': ', $t_category, \Flickerbox\String::display_line_links( $t_bug->summary );
+	$t_category = \Core\Utility::is_blank( $t_category_name ) ? '' : '<strong>[' . \Core\String::display_line( $t_category_name ) . ']</strong> ';
+	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', \Core\String::get_bug_view_link( $p_issue_id ), ': ', $t_category, \Core\String::display_line_links( $t_bug->summary );
 
 	if( $t_bug->handler_id != 0 ) {
 		echo ' (', prepare_user_name( $t_bug->handler_id ), ')';
 	}
 
 	if( !isset( $s_status[$t_bug->status] ) ) {
-		$s_status[$t_bug->status] = \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$s_status[$t_bug->status] = \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 	}
 	echo ' - ', $s_status[$t_bug->status], '.<br />';
 }
@@ -112,9 +112,9 @@ function custom_function_default_roadmap_include_issue( $p_issue_id ) {
 function custom_function_default_roadmap_print_issue( $p_issue_id, $p_issue_level = 0 ) {
 	static $s_status;
 
-	$t_bug = \Flickerbox\Bug::get( $p_issue_id );
+	$t_bug = \Core\Bug::get( $p_issue_id );
 
-	if( \Flickerbox\Bug::is_resolved( $p_issue_id ) ) {
+	if( \Core\Bug::is_resolved( $p_issue_id ) ) {
 		$t_strike_start = '<span class="strike">';
 		$t_strike_end = '</span>';
 	} else {
@@ -127,16 +127,16 @@ function custom_function_default_roadmap_print_issue( $p_issue_id, $p_issue_leve
 		$t_category_name = '';
 	}
 
-	$t_category = \Flickerbox\Utility::is_blank( $t_category_name ) ? '' : '<strong>[' . \Flickerbox\String::display_line( $t_category_name ) . ']</strong> ';
+	$t_category = \Core\Utility::is_blank( $t_category_name ) ? '' : '<strong>[' . \Core\String::display_line( $t_category_name ) . ']</strong> ';
 
-	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', $t_strike_start, \Flickerbox\String::get_bug_view_link( $p_issue_id ), ': ', $t_category, \Flickerbox\String::display_line_links( $t_bug->summary );
+	echo utf8_str_pad( '', $p_issue_level * 6, '&#160;' ), '- ', $t_strike_start, \Core\String::get_bug_view_link( $p_issue_id ), ': ', $t_category, \Core\String::display_line_links( $t_bug->summary );
 
 	if( $t_bug->handler_id != 0 ) {
 		echo ' (', prepare_user_name( $t_bug->handler_id ), ')';
 	}
 
 	if( !isset( $s_status[$t_bug->status] ) ) {
-		$s_status[$t_bug->status] = \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$s_status[$t_bug->status] = \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 	}
 	echo ' - ', $s_status[$t_bug->status], $t_strike_end, '.<br />';
 }
@@ -151,16 +151,16 @@ function custom_function_default_roadmap_print_issue( $p_issue_id, $p_issue_leve
 function custom_function_default_format_issue_summary( $p_issue_id, $p_context = 0 ) {
 	switch( $p_context ) {
 		case SUMMARY_CAPTION:
-			$t_string = \Flickerbox\Bug::format_id( $p_issue_id ) . ': ' . \Flickerbox\String::attribute( \Flickerbox\Bug::get_field( $p_issue_id, 'summary' ) );
+			$t_string = \Core\Bug::format_id( $p_issue_id ) . ': ' . \Core\String::attribute( \Core\Bug::get_field( $p_issue_id, 'summary' ) );
 			break;
 		case SUMMARY_FIELD:
-			$t_string = \Flickerbox\Bug::format_id( $p_issue_id ) . ': ' . \Flickerbox\String::display_line_links( \Flickerbox\Bug::get_field( $p_issue_id, 'summary' ) );
+			$t_string = \Core\Bug::format_id( $p_issue_id ) . ': ' . \Core\String::display_line_links( \Core\Bug::get_field( $p_issue_id, 'summary' ) );
 			break;
 		case SUMMARY_EMAIL:
-			$t_string = \Flickerbox\Bug::format_id( $p_issue_id ) . ': ' . \Flickerbox\String::attribute( \Flickerbox\Bug::get_field( $p_issue_id, 'summary' ) );
+			$t_string = \Core\Bug::format_id( $p_issue_id ) . ': ' . \Core\String::attribute( \Core\Bug::get_field( $p_issue_id, 'summary' ) );
 			break;
 		default:
-			$t_string = \Flickerbox\String::attribute( \Flickerbox\Bug::get_field( $p_issue_id, 'summary' ) );
+			$t_string = \Core\String::attribute( \Core\Bug::get_field( $p_issue_id, 'summary' ) );
 			break;
 	}
 	return $t_string;
@@ -173,11 +173,11 @@ function custom_function_default_format_issue_summary( $p_issue_id, $p_context =
  * In case of invalid data, this function should call trigger_error()
  *
  * @param integer $p_issue_id       Issue number that can be used to get the existing state.
- * @param \Flickerbox\BugData $p_new_issue_data Is an object (\Flickerbox\BugData) with the appropriate fields updated.
+ * @param \Core\BugData $p_new_issue_data Is an object (\Core\BugData) with the appropriate fields updated.
  * @param string  $p_bugnote_text   Bugnote text.
  * @return void
  */
-function custom_function_default_issue_update_validate( $p_issue_id, \Flickerbox\BugData $p_new_issue_data, $p_bugnote_text ) {
+function custom_function_default_issue_update_validate( $p_issue_id, \Core\BugData $p_new_issue_data, $p_bugnote_text ) {
 }
 
 /**
@@ -195,10 +195,10 @@ function custom_function_default_issue_update_notify( $p_issue_id ) {
  * Verify that the proper fields are set before proceeding to create an issue
  * In case of errors, this function should call trigger_error()
  *
- * @param \Flickerbox\BugData $p_new_issue_data Object (BugData) with the appropriate fields updated.
+ * @param \Core\BugData $p_new_issue_data Object (BugData) with the appropriate fields updated.
  * @return void
  */
-function custom_function_default_issue_create_validate( \Flickerbox\BugData $p_new_issue_data ) {
+function custom_function_default_issue_create_validate( \Core\BugData $p_new_issue_data ) {
 }
 
 /**
@@ -246,7 +246,7 @@ function custom_function_default_auth_can_change_password() {
 		CRYPT_FULL_SALT,
 		MD5,
 	);
-	if( in_array( \Flickerbox\Config::mantis_get( 'login_method' ), $t_can_change ) ) {
+	if( in_array( \Core\Config::mantis_get( 'login_method' ), $t_can_change ) ) {
 		return true;
 	} else {
 		return false;
@@ -268,19 +268,19 @@ function custom_function_default_auth_can_change_password() {
  * @return array
  */
 function custom_function_default_get_columns_to_view( $p_columns_target = COLUMNS_TARGET_VIEW_PAGE, $p_user_id = null ) {
-	$t_project_id = \Flickerbox\Helper::get_current_project();
+	$t_project_id = \Core\Helper::get_current_project();
 
 	if( $p_columns_target == COLUMNS_TARGET_CSV_PAGE ) {
-		$t_columns = \Flickerbox\Config::mantis_get( 'csv_columns', '', $p_user_id, $t_project_id );
+		$t_columns = \Core\Config::mantis_get( 'csv_columns', '', $p_user_id, $t_project_id );
 	} else if( $p_columns_target == COLUMNS_TARGET_EXCEL_PAGE ) {
-		$t_columns = \Flickerbox\Config::mantis_get( 'excel_columns', '', $p_user_id, $t_project_id );
+		$t_columns = \Core\Config::mantis_get( 'excel_columns', '', $p_user_id, $t_project_id );
 	} else if( $p_columns_target == COLUMNS_TARGET_VIEW_PAGE ) {
-		$t_columns = \Flickerbox\Config::mantis_get( 'view_issues_page_columns', '', $p_user_id, $t_project_id );
+		$t_columns = \Core\Config::mantis_get( 'view_issues_page_columns', '', $p_user_id, $t_project_id );
 	} else {
-		$t_columns = \Flickerbox\Config::mantis_get( 'print_issues_page_columns', '', $p_user_id, $t_project_id );
+		$t_columns = \Core\Config::mantis_get( 'print_issues_page_columns', '', $p_user_id, $t_project_id );
 	}
 
-	$t_columns = \Flickerbox\Columns::remove_invalid( $t_columns, \Flickerbox\Columns::get_all( $t_project_id ) );
+	$t_columns = \Core\Columns::remove_invalid( $t_columns, \Core\Columns::get_all( $t_project_id ) );
 
 	return $t_columns;
 }
@@ -295,7 +295,7 @@ function custom_function_default_get_columns_to_view( $p_columns_target = COLUMN
 function custom_function_default_print_column_title( $p_column, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	global $t_sort, $t_dir;
 
-	$t_custom_field = \Flickerbox\Columns::column_get_custom_field_name( $p_column );
+	$t_custom_field = \Core\Columns::column_get_custom_field_name( $p_column );
 	if( $t_custom_field !== null ) {
 		if( COLUMNS_TARGET_CSV_PAGE != $p_columns_target ) {
 			echo '<th class="column-custom-' . $t_custom_field . '">';
@@ -309,8 +309,8 @@ function custom_function_default_print_column_title( $p_column, $p_columns_targe
 			$t_custom_field = lang_get_defaulted( $t_def['name'] );
 
 			if( COLUMNS_TARGET_CSV_PAGE != $p_columns_target ) {
-				\Flickerbox\Print_Util::view_bug_sort_link( $t_custom_field, $p_column, $t_sort, $t_dir, $p_columns_target );
-				\Flickerbox\Icon::print_sort_icon( $t_dir, $t_sort, $p_column );
+				\Core\Print_Util::view_bug_sort_link( $t_custom_field, $p_column, $t_sort, $t_dir, $p_columns_target );
+				\Core\Icon::print_sort_icon( $t_dir, $t_sort, $p_column );
 			} else {
 				echo $t_custom_field;
 			}
@@ -320,7 +320,7 @@ function custom_function_default_print_column_title( $p_column, $p_columns_targe
 			echo '</th>';
 		}
 	} else {
-		$t_plugin_columns = \Flickerbox\Columns::get_plugin_columns();
+		$t_plugin_columns = \Core\Columns::get_plugin_columns();
 
 		$t_function = 'print_column_title_' . $p_column;
 		if( function_exists( $t_function ) ) {
@@ -328,12 +328,12 @@ function custom_function_default_print_column_title( $p_column, $p_columns_targe
 
 		} else if( isset( $t_plugin_columns[$p_column] ) ) {
 			$t_column_object = $t_plugin_columns[$p_column];
-			\Flickerbox\Columns::print_column_title_plugin( $p_column, $t_column_object, $t_sort, $t_dir, $p_columns_target );
+			\Core\Columns::print_column_title_plugin( $p_column, $t_column_object, $t_sort, $t_dir, $p_columns_target );
 
 		} else {
 			echo '<th>';
-			\Flickerbox\Print_Util::view_bug_sort_link( \Flickerbox\Columns::column_get_title( $p_column ), $p_column, $t_sort, $t_dir, $p_columns_target );
-			\Flickerbox\Icon::print_sort_icon( $t_dir, $t_sort, $p_column );
+			\Core\Print_Util::view_bug_sort_link( \Core\Columns::column_get_title( $p_column ), $p_column, $t_sort, $t_dir, $p_columns_target );
+			\Core\Icon::print_sort_icon( $t_dir, $t_sort, $p_column );
 			echo '</th>';
 		}
 	}
@@ -344,11 +344,11 @@ function custom_function_default_print_column_title( $p_column, $p_columns_targe
  * the specified issue and the current user has read access to it.
  * see custom_function_default_print_column_title() for rules about column names.
  * @param string  $p_column         Name of field to show in the column.
- * @param \Flickerbox\BugData $p_bug            Bug object.
+ * @param \Core\BugData $p_bug            Bug object.
  * @param integer $p_columns_target See COLUMNS_TARGET_* in constant_inc.php.
  * @return void
  */
-function custom_function_default_print_column_value( $p_column, \Flickerbox\BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
+function custom_function_default_print_column_value( $p_column, \Core\BugData $p_bug, $p_columns_target = COLUMNS_TARGET_VIEW_PAGE ) {
 	if( COLUMNS_TARGET_CSV_PAGE == $p_columns_target ) {
 		$t_column_start = '';
 		$t_column_end = '';
@@ -359,7 +359,7 @@ function custom_function_default_print_column_value( $p_column, \Flickerbox\BugD
 		$t_column_empty = '&#160;';
 	}
 
-	$t_custom_field = \Flickerbox\Columns::column_get_custom_field_name( $p_column );
+	$t_custom_field = \Core\Columns::column_get_custom_field_name( $p_column );
 	if( $t_custom_field !== null ) {
 		printf( $t_column_start, 'custom-' . $t_custom_field );
 
@@ -380,12 +380,12 @@ function custom_function_default_print_column_value( $p_column, \Flickerbox\BugD
 		}
 		echo $t_column_end;
 	} else {
-		$t_plugin_columns = \Flickerbox\Columns::get_plugin_columns();
+		$t_plugin_columns = \Core\Columns::get_plugin_columns();
 
 		if( $p_columns_target != COLUMNS_TARGET_CSV_PAGE ) {
 			$t_function = 'print_column_' . $p_column;
 		} else {
-			$t_function = '\\Flickerbox\\CSV::format_' . $p_column;
+			$t_function = '\\Core\\CSV::format_' . $p_column;
 		}
 
 		if( function_exists( $t_function ) ) {
@@ -397,12 +397,12 @@ function custom_function_default_print_column_value( $p_column, \Flickerbox\BugD
 
 		} else if( isset( $t_plugin_columns[$p_column] ) ) {
 			$t_column_object = $t_plugin_columns[$p_column];
-			\Flickerbox\Columns::print_column_plugin( $t_column_object, $p_bug, $p_columns_target );
+			\Core\Columns::print_column_plugin( $t_column_object, $p_bug, $p_columns_target );
 
 		} else {
 			printf( $t_column_start, $p_column );
 			if( isset( $p_bug->$p_column ) ) {
-				echo \Flickerbox\String::display_line( $p_bug->$p_column ) . $t_column_end;
+				echo \Core\String::display_line( $p_bug->$p_column ) . $t_column_end;
 			} else {
 				echo '@' . $p_column . '@' . $t_column_end;
 			}
@@ -418,7 +418,7 @@ function custom_function_default_print_column_value( $p_column, \Flickerbox\BugD
  * @return string
  */
 function custom_function_default_enum_versions() {
-	$t_versions = \Flickerbox\Version::get_all_rows( \Flickerbox\Helper::get_current_project() );
+	$t_versions = \Core\Version::get_all_rows( \Core\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -438,7 +438,7 @@ function custom_function_default_enum_versions() {
  * @return string
  */
 function custom_function_default_enum_released_versions() {
-	$t_versions = \Flickerbox\Version::get_all_rows( \Flickerbox\Helper::get_current_project() );
+	$t_versions = \Core\Version::get_all_rows( \Core\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -460,7 +460,7 @@ function custom_function_default_enum_released_versions() {
  * @return string
  */
 function custom_function_default_enum_future_versions() {
-	$t_versions = \Flickerbox\Version::get_all_rows( \Flickerbox\Helper::get_current_project() );
+	$t_versions = \Core\Version::get_all_rows( \Core\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_versions as $t_version ) {
@@ -482,7 +482,7 @@ function custom_function_default_enum_future_versions() {
  * @return string
  */
 function custom_function_default_enum_categories() {
-	$t_categories = category_get_all_rows( \Flickerbox\Helper::get_current_project() );
+	$t_categories = category_get_all_rows( \Core\Helper::get_current_project() );
 
 	$t_enum = array();
 	foreach( $t_categories as $t_category ) {
@@ -496,7 +496,7 @@ function custom_function_default_enum_categories() {
 
 /**
  * This function prints the custom buttons on the current view page based on specified bug id
- * and the context.  The printing of the buttons will typically call \Flickerbox\HTML::button() from
+ * and the context.  The printing of the buttons will typically call \Core\HTML::button() from
  * html_api.php.  For each button, this function needs to generate the enclosing '<td>' and '</td>'.
  *
  * @param integer $p_bug_id A bug identifier.

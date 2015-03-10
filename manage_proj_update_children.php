@@ -35,20 +35,20 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_update_children' );
+\Core\Form::security_validate( 'manage_proj_update_children' );
 
 auth_reauthenticate();
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+$f_project_id = \Core\GPC::get_int( 'project_id' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
-$t_subproject_ids = \Flickerbox\Current_User::get_accessible_subprojects( $f_project_id, true );
+$t_subproject_ids = \Core\Current_User::get_accessible_subprojects( $f_project_id, true );
 foreach ( $t_subproject_ids as $t_subproject_id ) {
-	$f_inherit_child = \Flickerbox\GPC::get_bool( 'inherit_child_' . $t_subproject_id, false );
-	\Flickerbox\Project\Hierarchy::update( $t_subproject_id, $f_project_id, $f_inherit_child );
+	$f_inherit_child = \Core\GPC::get_bool( 'inherit_child_' . $t_subproject_id, false );
+	\Core\Project\Hierarchy::update( $t_subproject_id, $f_project_id, $f_inherit_child );
 }
 
-\Flickerbox\Form::security_purge( 'manage_proj_update_children' );
+\Core\Form::security_purge( 'manage_proj_update_children' );
 
-\Flickerbox\Print_Util::successful_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );
+\Core\Print_Util::successful_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

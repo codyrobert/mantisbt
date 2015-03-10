@@ -32,7 +32,7 @@ require_once( 'core.php' );
  * @return void
  */
 function print_config_value( $p_config_key ) {
-	echo "config['" . $p_config_key . "'] = '" . addslashes( \Flickerbox\Config::mantis_get( $p_config_key ) ) . "';\n";
+	echo "config['" . $p_config_key . "'] = '" . addslashes( \Core\Config::mantis_get( $p_config_key ) ) . "';\n";
 }
 
 # Send correct MIME Content-Type header for JavaScript content.

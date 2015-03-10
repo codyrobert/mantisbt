@@ -38,35 +38,35 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_config_email_set' );
+\Core\Form::security_validate( 'manage_config_email_set' );
 
 auth_reauthenticate();
 
-$t_can_change_level = min( \Flickerbox\Config::get_access( 'notify_flags' ), \Flickerbox\Config::get_access( 'default_notify_flags' ) );
-\Flickerbox\Access::ensure_project_level( $t_can_change_level );
+$t_can_change_level = min( \Core\Config::get_access( 'notify_flags' ), \Core\Config::get_access( 'default_notify_flags' ) );
+\Core\Access::ensure_project_level( $t_can_change_level );
 
 $t_redirect_url = 'manage_config_email_page.php';
-$t_project = \Flickerbox\Helper::get_current_project();
+$t_project = \Core\Helper::get_current_project();
 
-$f_flags			= \Flickerbox\GPC::get( 'flag', array() );
-$f_thresholds		= \Flickerbox\GPC::get( 'flag_threshold', array() );
-$f_actions_access	= \Flickerbox\GPC::get_int( 'notify_actions_access' );
+$f_flags			= \Core\GPC::get( 'flag', array() );
+$f_thresholds		= \Core\GPC::get( 'flag_threshold', array() );
+$f_actions_access	= \Core\GPC::get_int( 'notify_actions_access' );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_email_config' ), $t_redirect_url );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_email_config' ), $t_redirect_url );
 
-$t_access = \Flickerbox\Current_User::get_access_level();
-$t_can_change_flags = $t_access >= \Flickerbox\Config::get_access( 'notify_flags' );
-$t_can_change_defaults = $t_access >= \Flickerbox\Config::get_access( 'default_notify_flags' );
+$t_access = \Core\Current_User::get_access_level();
+$t_can_change_flags = $t_access >= \Core\Config::get_access( 'notify_flags' );
+$t_can_change_defaults = $t_access >= \Core\Config::get_access( 'default_notify_flags' );
 
 # build a list of the possible actions and flags
 $t_valid_actions = array( 'owner', 'reopened', 'deleted', 'bugnote' );
-if( \Flickerbox\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
+if( \Core\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
 	$t_valid_actions[] = 'sponsor';
 }
 
 $t_valid_actions[] = 'relation';
 
-$t_statuses = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
+$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 ksort( $t_statuses );
 reset( $t_statuses );
 
@@ -124,14 +124,14 @@ if( $t_can_change_defaults ) {
 	$t_default_flags['threshold_min'] = $t_default_min;
 	$t_default_flags['threshold_max'] = $t_default_max;
 
-	$t_existing_default_flags = \Flickerbox\Config::mantis_get( 'default_notify_flags' );
-	$t_existing_default_access = \Flickerbox\Config::get_access( 'default_notify_flags' );
+	$t_existing_default_flags = \Core\Config::mantis_get( 'default_notify_flags' );
+	$t_existing_default_access = \Core\Config::get_access( 'default_notify_flags' );
 	if( ( $t_existing_default_flags != $t_default_flags )
 			|| ( $t_existing_default_access != $f_actions_access ) ) { # only set the flags if they are different
-		\Flickerbox\Config::set( 'default_notify_flags', $t_default_flags, NO_USER, $t_project, $f_actions_access );
+		\Core\Config::mantis_set( 'default_notify_flags', $t_default_flags, NO_USER, $t_project, $f_actions_access );
 	}
 } else {
-	$t_default_flags = \Flickerbox\Config::mantis_get( 'default_notify_flags' );
+	$t_default_flags = \Core\Config::mantis_get( 'default_notify_flags' );
 }
 
 # set the values for specific actions if different from the defaults
@@ -155,16 +155,16 @@ foreach ( $t_valid_actions as $t_action ) {
 	}
 }
 if( isset( $t_notify_flags ) ) {
-	$t_existing_flags = \Flickerbox\Config::mantis_get( 'notify_flags' );
-	$t_existing_access = \Flickerbox\Config::get_access( 'notify_flags' );
+	$t_existing_flags = \Core\Config::mantis_get( 'notify_flags' );
+	$t_existing_access = \Core\Config::get_access( 'notify_flags' );
 	if( ( $t_existing_flags != $t_notify_flags )
 			|| ( $t_existing_access != $f_actions_access ) ) { # only set the flags if they are different
-		\Flickerbox\Config::set( 'notify_flags', $t_notify_flags, NO_USER, $t_project, $f_actions_access );
+		\Core\Config::mantis_set( 'notify_flags', $t_notify_flags, NO_USER, $t_project, $f_actions_access );
 	}
 }
 
-\Flickerbox\Form::security_purge( 'manage_config_email_set' );
+\Core\Form::security_purge( 'manage_config_email_set' );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

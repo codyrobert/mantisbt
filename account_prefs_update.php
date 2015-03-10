@@ -38,86 +38,86 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'account_prefs_update' );
+\Core\Form::security_validate( 'account_prefs_update' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_user_id					= \Flickerbox\GPC::get_int( 'user_id' );
-$f_redirect_url				= \Flickerbox\GPC::get_string( 'redirect_url' );
+$f_user_id					= \Core\GPC::get_int( 'user_id' );
+$f_redirect_url				= \Core\GPC::get_string( 'redirect_url' );
 
-\Flickerbox\User::ensure_exists( $f_user_id );
+\Core\User::ensure_exists( $f_user_id );
 
-$t_user = \Flickerbox\User::get_row( $f_user_id );
+$t_user = \Core\User::get_row( $f_user_id );
 
 # This page is currently called from the manage_* namespace and thus we
 # have to allow authorised users to update the accounts of other users.
 # TODO: split this functionality into manage_user_prefs_update.php
 if( auth_get_current_user_id() != $f_user_id ) {
-	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
-	\Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
+	\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
+	\Core\Access::ensure_global_level( $t_user['access_level'] );
 } else {
 	# Protected users should not be able to update the preferences of their
 	# user account. The anonymous user is always considered a protected
 	# user and hence will also not be allowed to update preferences.
-	\Flickerbox\User::ensure_unprotected( $f_user_id );
+	\Core\User::ensure_unprotected( $f_user_id );
 }
 
-$t_prefs = \Flickerbox\User\Pref::get( $f_user_id );
+$t_prefs = \Core\User\Pref::get( $f_user_id );
 
-$t_prefs->redirect_delay	= \Flickerbox\GPC::get_int( 'redirect_delay' );
-$t_prefs->refresh_delay		= \Flickerbox\GPC::get_int( 'refresh_delay' );
-$t_prefs->default_project	= \Flickerbox\GPC::get_int( 'default_project' );
+$t_prefs->redirect_delay	= \Core\GPC::get_int( 'redirect_delay' );
+$t_prefs->refresh_delay		= \Core\GPC::get_int( 'refresh_delay' );
+$t_prefs->default_project	= \Core\GPC::get_int( 'default_project' );
 
-$t_lang = \Flickerbox\GPC::get_string( 'language' );
-if( \Flickerbox\Lang::language_exists( $t_lang ) ) {
+$t_lang = \Core\GPC::get_string( 'language' );
+if( \Core\Lang::language_exists( $t_lang ) ) {
 	$t_prefs->language = $t_lang;
 }
 
-$t_prefs->email_on_new		= \Flickerbox\GPC::get_bool( 'email_on_new' );
-$t_prefs->email_on_assigned	= \Flickerbox\GPC::get_bool( 'email_on_assigned' );
-$t_prefs->email_on_feedback	= \Flickerbox\GPC::get_bool( 'email_on_feedback' );
-$t_prefs->email_on_resolved	= \Flickerbox\GPC::get_bool( 'email_on_resolved' );
-$t_prefs->email_on_closed	= \Flickerbox\GPC::get_bool( 'email_on_closed' );
-$t_prefs->email_on_reopened	= \Flickerbox\GPC::get_bool( 'email_on_reopened' );
-$t_prefs->email_on_bugnote	= \Flickerbox\GPC::get_bool( 'email_on_bugnote' );
-$t_prefs->email_on_status	= \Flickerbox\GPC::get_bool( 'email_on_status' );
-$t_prefs->email_on_priority	= \Flickerbox\GPC::get_bool( 'email_on_priority' );
-$t_prefs->email_on_new_min_severity			= \Flickerbox\GPC::get_int( 'email_on_new_min_severity' );
-$t_prefs->email_on_assigned_min_severity	= \Flickerbox\GPC::get_int( 'email_on_assigned_min_severity' );
-$t_prefs->email_on_feedback_min_severity	= \Flickerbox\GPC::get_int( 'email_on_feedback_min_severity' );
-$t_prefs->email_on_resolved_min_severity	= \Flickerbox\GPC::get_int( 'email_on_resolved_min_severity' );
-$t_prefs->email_on_closed_min_severity		= \Flickerbox\GPC::get_int( 'email_on_closed_min_severity' );
-$t_prefs->email_on_reopened_min_severity	= \Flickerbox\GPC::get_int( 'email_on_reopened_min_severity' );
-$t_prefs->email_on_bugnote_min_severity		= \Flickerbox\GPC::get_int( 'email_on_bugnote_min_severity' );
-$t_prefs->email_on_status_min_severity		= \Flickerbox\GPC::get_int( 'email_on_status_min_severity' );
-$t_prefs->email_on_priority_min_severity	= \Flickerbox\GPC::get_int( 'email_on_priority_min_severity' );
+$t_prefs->email_on_new		= \Core\GPC::get_bool( 'email_on_new' );
+$t_prefs->email_on_assigned	= \Core\GPC::get_bool( 'email_on_assigned' );
+$t_prefs->email_on_feedback	= \Core\GPC::get_bool( 'email_on_feedback' );
+$t_prefs->email_on_resolved	= \Core\GPC::get_bool( 'email_on_resolved' );
+$t_prefs->email_on_closed	= \Core\GPC::get_bool( 'email_on_closed' );
+$t_prefs->email_on_reopened	= \Core\GPC::get_bool( 'email_on_reopened' );
+$t_prefs->email_on_bugnote	= \Core\GPC::get_bool( 'email_on_bugnote' );
+$t_prefs->email_on_status	= \Core\GPC::get_bool( 'email_on_status' );
+$t_prefs->email_on_priority	= \Core\GPC::get_bool( 'email_on_priority' );
+$t_prefs->email_on_new_min_severity			= \Core\GPC::get_int( 'email_on_new_min_severity' );
+$t_prefs->email_on_assigned_min_severity	= \Core\GPC::get_int( 'email_on_assigned_min_severity' );
+$t_prefs->email_on_feedback_min_severity	= \Core\GPC::get_int( 'email_on_feedback_min_severity' );
+$t_prefs->email_on_resolved_min_severity	= \Core\GPC::get_int( 'email_on_resolved_min_severity' );
+$t_prefs->email_on_closed_min_severity		= \Core\GPC::get_int( 'email_on_closed_min_severity' );
+$t_prefs->email_on_reopened_min_severity	= \Core\GPC::get_int( 'email_on_reopened_min_severity' );
+$t_prefs->email_on_bugnote_min_severity		= \Core\GPC::get_int( 'email_on_bugnote_min_severity' );
+$t_prefs->email_on_status_min_severity		= \Core\GPC::get_int( 'email_on_status_min_severity' );
+$t_prefs->email_on_priority_min_severity	= \Core\GPC::get_int( 'email_on_priority_min_severity' );
 
-$t_prefs->bugnote_order = \Flickerbox\GPC::get_string( 'bugnote_order' );
-$t_prefs->email_bugnote_limit = \Flickerbox\GPC::get_int( 'email_bugnote_limit' );
+$t_prefs->bugnote_order = \Core\GPC::get_string( 'bugnote_order' );
+$t_prefs->email_bugnote_limit = \Core\GPC::get_int( 'email_bugnote_limit' );
 
 # make sure the delay isn't too low
-if( ( \Flickerbox\Config::mantis_get( 'min_refresh_delay' ) > $t_prefs->refresh_delay )&&
+if( ( \Core\Config::mantis_get( 'min_refresh_delay' ) > $t_prefs->refresh_delay )&&
 	( $t_prefs->refresh_delay != 0 )) {
-	$t_prefs->refresh_delay = \Flickerbox\Config::mantis_get( 'min_refresh_delay' );
+	$t_prefs->refresh_delay = \Core\Config::mantis_get( 'min_refresh_delay' );
 }
 
-$t_timezone = \Flickerbox\GPC::get_string( 'timezone' );
+$t_timezone = \Core\GPC::get_string( 'timezone' );
 if( in_array( $t_timezone, timezone_identifiers_list() ) ) {
-	if( $t_timezone == \Flickerbox\Config::get_global( 'default_timezone' ) ) {
+	if( $t_timezone == \Core\Config::get_global( 'default_timezone' ) ) {
 		$t_prefs->timezone = '';
 	} else {
 		$t_prefs->timezone = $t_timezone;
 	}
 }
 
-\Flickerbox\Event::signal( 'EVENT_ACCOUNT_PREF_UPDATE', array( $f_user_id ) );
+\Core\Event::signal( 'EVENT_ACCOUNT_PREF_UPDATE', array( $f_user_id ) );
 
-\Flickerbox\User\Pref::set( $f_user_id, $t_prefs );
+\Core\User\Pref::set( $f_user_id, $t_prefs );
 
-\Flickerbox\Form::security_purge( 'account_prefs_update' );
+\Core\Form::security_purge( 'account_prefs_update' );
 
-\Flickerbox\HTML::page_top( null, $f_redirect_url );
+\Core\HTML::page_top( null, $f_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $f_redirect_url );
+\Core\HTML::operation_successful( $f_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

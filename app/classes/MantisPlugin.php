@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -181,14 +181,14 @@ abstract class MantisPlugin {
 	 * <code>
 	 * function schema() {
 	 *	return array(
-	 *		array( 'CreateTableSQL', array( \Flickerbox\Plugin::table( 'user' ), "
+	 *		array( 'CreateTableSQL', array( \Core\Plugin::table( 'user' ), "
 	 *	 		user_id		I		NOTNULL UNSIGNED PRIMARY",
 	 *			array('mysql' => 'ENGINE=MyISAM DEFAULT CHARSET=utf8', 'pgsql' => 'WITHOUT OIDS')));
-	 *		array( 'AddColumnSQL', array( \Flickerbox\Plugin::table( 'user' ), "
+	 *		array( 'AddColumnSQL', array( \Core\Plugin::table( 'user' ), "
 	 *			count	I		NOTNULL UNSIGNED DEFAULT '0' " ) ),
-	 *		array( 'UpdateSQL', array( \Flickerbox\Plugin::table( 'user' ), " SET count=count+1" ) ),
+	 *		array( 'UpdateSQL', array( \Core\Plugin::table( 'user' ), " SET count=count+1" ) ),
 	 *		array( 'CreateIndexSQL',
-	 *         array( 'idx_<plugin>_userid', \Flickerbox\Plugin::table('user'), 'userid', array('UNIQUE'))),
+	 *         array( 'idx_<plugin>_userid', \Core\Plugin::table('user'), 'userid', array('UNIQUE'))),
 	 *  );
 	 * }
 	 * </code>
@@ -256,9 +256,9 @@ abstract class MantisPlugin {
 	 * @return void
 	 */
 	final public function __init() {
-		\Flickerbox\Plugin::config_defaults( $this->config() );
-		\Flickerbox\Event::declare_many( $this->events() );
-		\Flickerbox\Plugin::event_hook_many( $this->hooks() );
+		\Core\Plugin::config_defaults( $this->config() );
+		\Core\Event::declare_many( $this->events() );
+		\Core\Plugin::event_hook_many( $this->hooks() );
 
 		$this->init();
 	}

@@ -40,9 +40,9 @@ define( 'COMPRESSION_DISABLED', true );
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_show_inline = \Flickerbox\GPC::get_bool( 'show_inline', false );
+$f_show_inline = \Core\GPC::get_bool( 'show_inline', false );
 
 # To prevent cross-domain inline hotlinking to attachments we require a CSRF
 # token from the user to show any attachment inline within the browser.
@@ -55,14 +55,14 @@ if( $f_show_inline ) {
 	# headers prior to raising an error (the error handler
 	# doesn't check that headers have been sent, it just
 	# makes the assumption that they've been sent already).
-	if( !@\Flickerbox\Form::security_validate( 'file_show_inline' ) ) {
-		\Flickerbox\HTTP::all_headers();
+	if( !@\Core\Form::security_validate( 'file_show_inline' ) ) {
+		\Core\HTTP::all_headers();
 		trigger_error( ERROR_FORM_TOKEN_INVALID, ERROR );
 	}
 }
 
-$f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
-$f_type	= \Flickerbox\GPC::get_string( 'type' );
+$f_file_id = \Core\GPC::get_int( 'file_id' );
+$f_type	= \Core\GPC::get_string( 'type' );
 
 $c_file_id = (integer)$f_file_id;
 
@@ -71,20 +71,20 @@ $c_file_id = (integer)$f_file_id;
 $t_query = '';
 switch( $f_type ) {
 	case 'bug':
-		$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Flickerbox\Database::param();
+		$t_query = 'SELECT * FROM {bug_file} WHERE id=' . \Core\Database::param();
 		break;
 	case 'doc':
-		$t_query = 'SELECT * FROM {project_file} WHERE id=' . \Flickerbox\Database::param();
+		$t_query = 'SELECT * FROM {project_file} WHERE id=' . \Core\Database::param();
 		break;
 	default:
-		\Flickerbox\Access::denied();
+		\Core\Access::denied();
 }
-$t_result = \Flickerbox\Database::query( $t_query, array( $c_file_id ) );
-$t_row = \Flickerbox\Database::fetch_array( $t_result );
+$t_result = \Core\Database::query( $t_query, array( $c_file_id ) );
+$t_row = \Core\Database::fetch_array( $t_result );
 extract( $t_row, EXTR_PREFIX_ALL, 'v' );
 
 if( $f_type == 'bug' ) {
-	$t_project_id = \Flickerbox\Bug::get_field( $v_bug_id, 'project_id' );
+	$t_project_id = \Core\Bug::get_field( $v_bug_id, 'project_id' );
 } else {
 	$t_project_id = $v_project_id;
 }
@@ -92,17 +92,17 @@ if( $f_type == 'bug' ) {
 # Check access rights
 switch( $f_type ) {
 	case 'bug':
-		if( !\Flickerbox\File::can_download_bug_attachments( $v_bug_id, (int)$v_user_id ) ) {
-			\Flickerbox\Access::denied();
+		if( !\Core\File::can_download_bug_attachments( $v_bug_id, (int)$v_user_id ) ) {
+			\Core\Access::denied();
 		}
 		break;
 	case 'doc':
 		# Check if project documentation feature is enabled.
-		if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
-			\Flickerbox\Access::denied();
+		if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ) {
+			\Core\Access::denied();
 		}
 
-		\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_proj_doc_threshold' ), $v_project_id );
+		\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_proj_doc_threshold' ), $v_project_id );
 		break;
 }
 
@@ -114,7 +114,7 @@ if( ini_get( 'zlib.output_compression' ) && function_exists( 'ini_set' ) ) {
 	ini_set( 'zlib.output_compression', false );
 }
 
-\Flickerbox\HTTP::security_headers();
+\Core\HTTP::security_headers();
 
 # Make sure that IE can download the attachments under https.
 header( 'Pragma: public' );
@@ -123,7 +123,7 @@ header( 'Pragma: public' );
 # attached files via HTTPS, we disable the "Pragma: no-cache"
 # command when IE is used over HTTPS.
 global $g_allow_file_cache;
-if( \Flickerbox\HTTP::is_protocol_https() && \Flickerbox\HTTP::is_browser_internet_explorer() ) {
+if( \Core\HTTP::is_protocol_https() && \Core\HTTP::is_browser_internet_explorer() ) {
 	# Suppress "Pragma: no-cache" header.
 } else {
 	if( !isset( $g_allow_file_cache ) ) {
@@ -134,22 +134,22 @@ header( 'Expires: ' . gmdate( 'D, d M Y H:i:s \G\M\T', time() ) );
 
 header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s \G\M\T', $v_date_added ) );
 
-$t_upload_method = \Flickerbox\Config::mantis_get( 'file_upload_method' );
-$t_filename = \Flickerbox\File::get_display_name( $v_filename );
+$t_upload_method = \Core\Config::mantis_get( 'file_upload_method' );
+$t_filename = \Core\File::get_display_name( $v_filename );
 
 # Content headers
 
 # If finfo is available (always true for PHP >= 5.3.0) we can use it to determine the MIME type of files
-$t_finfo = \Flickerbox\Utility::finfo_get_if_available();
+$t_finfo = \Core\Utility::finfo_get_if_available();
 
 $t_content_type = $v_file_type;
 
-$t_content_type_override = \Flickerbox\File::get_content_type_override( $t_filename );
+$t_content_type_override = \Core\File::get_content_type_override( $t_filename );
 $t_file_info_type = false;
 
 switch( $t_upload_method ) {
 	case DISK:
-		$t_local_disk_file = \Flickerbox\File::normalize_attachment_path( $v_diskfile, $t_project_id );
+		$t_local_disk_file = \Core\File::normalize_attachment_path( $v_diskfile, $t_project_id );
 		if( file_exists( $t_local_disk_file ) && $t_finfo ) {
 			$t_file_info_type = $t_finfo->file( $t_local_disk_file );
 		}
@@ -174,9 +174,9 @@ if( $t_content_type_override ) {
 
 # Don't allow inline flash
 if( false !== strpos( $t_content_type, 'application/x-shockwave-flash' ) ) {
-	\Flickerbox\HTTP::content_disposition_header( $t_filename );
+	\Core\HTTP::content_disposition_header( $t_filename );
 } else {
-	\Flickerbox\HTTP::content_disposition_header( $t_filename, $f_show_inline );
+	\Core\HTTP::content_disposition_header( $t_filename, $f_show_inline );
 }
 
 header( 'Content-Type: ' . $t_content_type );

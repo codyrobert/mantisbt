@@ -32,13 +32,13 @@
 
 require_once( 'core.php' );
 
-if( !\Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) ) {
+if( !\Core\Config::mantis_get( 'time_tracking_enabled' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
 }
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'time_tracking_reporting_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'time_tracking_reporting_threshold' ) );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'time_tracking_billing_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'time_tracking_billing_link' ) );
 ?>
 
 <br />
@@ -48,5 +48,5 @@ if( !\Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) ) {
 define( 'BILLING_INC_ALLOW', true );
 include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'billing_inc.php' );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();
 

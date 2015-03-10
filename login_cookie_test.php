@@ -33,13 +33,13 @@
 require_once( 'core.php' );
 
 if( auth_is_user_authenticated() ) {
-	$f_return = \Flickerbox\GPC::get_string( 'return' );
-	$c_return = \Flickerbox\String::prepare_header( $f_return );
+	$f_return = \Core\GPC::get_string( 'return' );
+	$c_return = \Core\String::prepare_header( $f_return );
 
 	# If this is the first login for an instance, then redirect to create project page.
 	# Use lack of projects as a hint for such scenario.
-	if( \Flickerbox\Utility::is_blank( $f_return ) || $f_return == 'index.php' ) {
-		if( \Flickerbox\Current_User::is_administrator() && \Flickerbox\Project::table_empty() ) {
+	if( \Core\Utility::is_blank( $f_return ) || $f_return == 'index.php' ) {
+		if( \Core\Current_User::is_administrator() && \Core\Project::table_empty() ) {
 			$c_return = 'manage_proj_create_page.php';
 		}
 	}
@@ -49,4 +49,4 @@ if( auth_is_user_authenticated() ) {
 	$t_redirect_url = 'login_page.php?cookie_error=1';
 }
 
-\Flickerbox\Print_Util::header_redirect( $t_redirect_url, true, true );
+\Core\Print_Util::header_redirect( $t_redirect_url, true, true );

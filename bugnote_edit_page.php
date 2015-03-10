@@ -52,58 +52,58 @@
 
 require_once( 'core.php' );
 
-$f_bugnote_id = \Flickerbox\GPC::get_int( 'bugnote_id' );
-$t_bug_id = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );
+$f_bugnote_id = \Core\GPC::get_int( 'bugnote_id' );
+$t_bug_id = \Core\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );
 
-$t_bug = \Flickerbox\Bug::get( $t_bug_id, true );
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+$t_bug = \Core\Bug::get( $t_bug_id, true );
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
 # Check if the current user is allowed to edit the bugnote
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
-$t_reporter_id = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'reporter_id' );
+$t_user_id = \Core\Auth::get_current_user_id();
+$t_reporter_id = \Core\Bug\Note::get_field( $f_bugnote_id, 'reporter_id' );
 
 if( $t_user_id == $t_reporter_id ) {
-	\Flickerbox\Access::ensure_bugnote_level( \Flickerbox\Config::mantis_get( 'bugnote_user_edit_threshold' ), $f_bugnote_id );
+	\Core\Access::ensure_bugnote_level( \Core\Config::mantis_get( 'bugnote_user_edit_threshold' ), $f_bugnote_id );
 } else {
-	\Flickerbox\Access::ensure_bugnote_level( \Flickerbox\Config::mantis_get( 'update_bugnote_threshold' ), $f_bugnote_id );
+	\Core\Access::ensure_bugnote_level( \Core\Config::mantis_get( 'update_bugnote_threshold' ), $f_bugnote_id );
 }
 
 # Check if the bug is readonly
-if( \Flickerbox\Bug::is_readonly( $t_bug_id ) ) {
-	\Flickerbox\Error::parameters( $t_bug_id );
+if( \Core\Bug::is_readonly( $t_bug_id ) ) {
+	\Core\Error::parameters( $t_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
-$t_bugnote_text = \Flickerbox\String::textarea( \Flickerbox\Bug\Note::get_text( $f_bugnote_id ) );
+$t_bugnote_text = \Core\String::textarea( \Core\Bug\Note::get_text( $f_bugnote_id ) );
 
 # No need to gather the extra information if not used
-if( \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) &&
-	\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) {
-	$t_time_tracking = \Flickerbox\Bug\Note::get_field( $f_bugnote_id, 'time_tracking' );
-	$t_time_tracking = \Flickerbox\Database::minutes_to_hhmm( $t_time_tracking );
+if( \Core\Config::mantis_get( 'time_tracking_enabled' ) &&
+	\Core\Access::has_bug_level( \Core\Config::mantis_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) {
+	$t_time_tracking = \Core\Bug\Note::get_field( $f_bugnote_id, 'time_tracking' );
+	$t_time_tracking = \Core\Database::minutes_to_hhmm( $t_time_tracking );
 }
 
 # Determine which view page to redirect back to.
-$t_redirect_url = \Flickerbox\String::get_bug_view_url( $t_bug_id );
+$t_redirect_url = \Core\String::get_bug_view_url( $t_bug_id );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Bug::format_summary( $t_bug_id, SUMMARY_CAPTION ) );
+\Core\HTML::page_top( \Core\Bug::format_summary( $t_bug_id, SUMMARY_CAPTION ) );
 ?>
 <br />
 <div>
 <form method="post" action="bugnote_update.php">
-<?php echo \Flickerbox\Form::security_field( 'bugnote_update' ) ?>
+<?php echo \Core\Form::security_field( 'bugnote_update' ) ?>
 <table class="width75" cellspacing="1">
 <tr>
 	<td class="form-title">
 		<input type="hidden" name="bugnote_id" value="<?php echo $f_bugnote_id ?>" />
-		<?php echo \Flickerbox\Lang::get( 'edit_bugnote_title' ) ?>
+		<?php echo \Core\Lang::get( 'edit_bugnote_title' ) ?>
 	</td>
 	<td class="right">
-		<?php \Flickerbox\Print_Util::bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'go_back' ) ) ?>
+		<?php \Core\Print_Util::bracket_link( $t_redirect_url, \Core\Lang::get( 'go_back' ) ) ?>
 	</td>
 </tr>
 <tr class="row-1">
@@ -111,26 +111,26 @@ $t_redirect_url = \Flickerbox\String::get_bug_view_url( $t_bug_id );
 		<textarea cols="80" rows="10" name="bugnote_text"><?php echo $t_bugnote_text ?></textarea>
 	</td>
 </tr>
-<?php if( \Flickerbox\Config::mantis_get( 'time_tracking_enabled' ) ) { ?>
-<?php if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) { ?>
+<?php if( \Core\Config::mantis_get( 'time_tracking_enabled' ) ) { ?>
+<?php if( \Core\Access::has_bug_level( \Core\Config::mantis_get( 'time_tracking_edit_threshold' ), $t_bug_id ) ) { ?>
 <tr class="row-2">
 	<td class="center" colspan="2">
-		<strong><?php echo \Flickerbox\Lang::get( 'time_tracking' ) ?> (HH:MM)</strong><br />
+		<strong><?php echo \Core\Lang::get( 'time_tracking' ) ?> (HH:MM)</strong><br />
 		<input type="text" name="time_tracking" size="5" value="<?php echo $t_time_tracking ?>" />
 	</td>
 </tr>
 <?php } ?>
 <?php } ?>
 
-<?php \Flickerbox\Event::signal( 'EVENT_BUGNOTE_EDIT_FORM', array( $t_bug_id, $f_bugnote_id ) ); ?>
+<?php \Core\Event::signal( 'EVENT_BUGNOTE_EDIT_FORM', array( $t_bug_id, $f_bugnote_id ) ); ?>
 
 <tr>
 	<td class="center" colspan="2">
-		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_information_button' ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_information_button' ) ?>" />
 	</td>
 </tr>
 </table>
 </form>
 </div>
 
-<?php \Flickerbox\HTML::page_bottom();
+<?php \Core\HTML::page_bottom();

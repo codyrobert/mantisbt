@@ -36,29 +36,29 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bug_file_delete' );
+\Core\Form::security_validate( 'bug_file_delete' );
 
-$f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
+$f_file_id = \Core\GPC::get_int( 'file_id' );
 
-$t_bug_id = \Flickerbox\File::get_field( $f_file_id, 'bug_id' );
+$t_bug_id = \Core\File::get_field( $f_file_id, 'bug_id' );
 
-$t_bug = \Flickerbox\Bug::get( $t_bug_id, true );
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+$t_bug = \Core\Bug::get( $t_bug_id, true );
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
-$t_attachment_owner = \Flickerbox\File::get_field( $f_file_id, 'user_id' );
-$t_current_user_is_attachment_owner = $t_attachment_owner == \Flickerbox\Auth::get_current_user_id();
-if( !$t_current_user_is_attachment_owner || ( $t_current_user_is_attachment_owner && !\Flickerbox\Config::mantis_get( 'allow_delete_own_attachments' ) ) ) {
-	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'delete_attachments_threshold' ), $t_bug_id );
+$t_attachment_owner = \Core\File::get_field( $f_file_id, 'user_id' );
+$t_current_user_is_attachment_owner = $t_attachment_owner == \Core\Auth::get_current_user_id();
+if( !$t_current_user_is_attachment_owner || ( $t_current_user_is_attachment_owner && !\Core\Config::mantis_get( 'allow_delete_own_attachments' ) ) ) {
+	\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'delete_attachments_threshold' ), $t_bug_id );
 }
 
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_attachment_sure_msg' ), \Flickerbox\Lang::get( 'delete_attachment_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'delete_attachment_sure_msg' ), \Core\Lang::get( 'delete_attachment_button' ) );
 
-\Flickerbox\File::delete( $f_file_id, 'bug' );
+\Core\File::delete( $f_file_id, 'bug' );
 
-\Flickerbox\Form::security_purge( 'bug_file_delete' );
+\Core\Form::security_purge( 'bug_file_delete' );
 
-\Flickerbox\Print_Util::header_redirect_view( $t_bug_id );
+\Core\Print_Util::header_redirect_view( $t_bug_id );

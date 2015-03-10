@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -167,7 +167,7 @@ class Utility
 			return $p_array;
 		}
 		if( !is_array( current( $p_array ) ) ) {
-			\Flickerbox\Error::parameters( 'tried to multisort an invalid multi-dimensional array' );
+			\Core\Error::parameters( 'tried to multisort an invalid multi-dimensional array' );
 			trigger_error( ERROR_GENERIC, ERROR );
 		}
 	
@@ -257,7 +257,7 @@ class Utility
 		}
 		if( $p_include_parent ) {
 			if( $t_parentclass = $t_ref->getParentClass() ) {
-				$t_parent_props_arr = \Flickerbox\Utility::getClassProperties( $t_parentclass->getName() );
+				$t_parent_props_arr = \Core\Utility::getClassProperties( $t_parentclass->getName() );
 				if( count( $t_parent_props_arr ) > 0 ) {
 					$t_props_arr = array_merge( $t_parent_props_arr, $t_props_arr );
 				}
@@ -272,9 +272,9 @@ class Utility
 	 * @return string representing system path to font location
 	 */
 	static function get_font_path() {
-			$t_font_path = \Flickerbox\Config::get_global( 'system_font_folder' );
+			$t_font_path = \Core\Config::get_global( 'system_font_folder' );
 			if( $t_font_path == '' ) {
-				if( \Flickerbox\Utility::is_windows_server() ) {
+				if( \Core\Utility::is_windows_server() ) {
 					$t_system_root = $_SERVER['SystemRoot'];
 					if( empty( $t_system_root ) ) {
 						return '';
@@ -302,9 +302,9 @@ class Utility
 	 */
 	static function finfo_get_if_available() {
 		if( class_exists( 'finfo' ) ) {
-			$t_info_file = \Flickerbox\Config::mantis_get( 'fileinfo_magic_db_file' );
+			$t_info_file = \Core\Config::mantis_get( 'fileinfo_magic_db_file' );
 	
-			if( \Flickerbox\Utility::is_blank( $t_info_file ) ) {
+			if( \Core\Utility::is_blank( $t_info_file ) ) {
 				$t_finfo = new \finfo( FILEINFO_MIME );
 			} else {
 				$t_finfo = new \finfo( FILEINFO_MIME, $t_info_file );

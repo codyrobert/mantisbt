@@ -34,15 +34,15 @@
 
 require_once( 'core.php' );
 
-$t_allow_perm_login = ( ON == \Flickerbox\Config::mantis_get( 'allow_permanent_cookie' ) );
+$t_allow_perm_login = ( ON == \Core\Config::mantis_get( 'allow_permanent_cookie' ) );
 
-$f_username		= \Flickerbox\GPC::get_string( 'username', '' );
-$f_password		= \Flickerbox\GPC::get_string( 'password', '' );
-$f_perm_login	= $t_allow_perm_login && \Flickerbox\GPC::get_bool( 'perm_login' );
-$t_return		= \Flickerbox\String::url( \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'return', \Flickerbox\Config::mantis_get( 'default_home_page' ) ) ) );
-$f_from			= \Flickerbox\GPC::get_string( 'from', '' );
-$f_secure_session = \Flickerbox\GPC::get_bool( 'secure_session', false );
-$f_install = \Flickerbox\GPC::get_bool( 'install' );
+$f_username		= \Core\GPC::get_string( 'username', '' );
+$f_password		= \Core\GPC::get_string( 'password', '' );
+$f_perm_login	= $t_allow_perm_login && \Core\GPC::get_bool( 'perm_login' );
+$t_return		= \Core\String::url( \Core\String::sanitize_url( \Core\GPC::get_string( 'return', \Core\Config::mantis_get( 'default_home_page' ) ) ) );
+$f_from			= \Core\GPC::get_string( 'from', '' );
+$f_secure_session = \Core\GPC::get_bool( 'secure_session', false );
+$f_install = \Core\GPC::get_bool( 'install' );
 
 # If upgrade required, always redirect to install page.
 if( $f_install ) {
@@ -52,12 +52,12 @@ if( $f_install ) {
 $f_username = auth_prepare_username( $f_username );
 $f_password = auth_prepare_password( $f_password );
 
-\Flickerbox\GPC::set_cookie( \Flickerbox\Config::get_global( 'cookie_prefix' ) . '_secure_session', $f_secure_session ? '1' : '0' );
+\Core\GPC::set_cookie( \Core\Config::get_global( 'cookie_prefix' ) . '_secure_session', $f_secure_session ? '1' : '0' );
 
 if( auth_attempt_login( $f_username, $f_password, $f_perm_login ) ) {
-	\Flickerbox\Session::set( 'secure_session', $f_secure_session );
+	\Core\Session::set( 'secure_session', $f_secure_session );
 
-	if( $f_username == 'administrator' && $f_password == 'root' && ( \Flickerbox\Utility::is_blank( $t_return ) || $t_return == 'index.php' ) ) {
+	if( $f_username == 'administrator' && $f_password == 'root' && ( \Core\Utility::is_blank( $t_return ) || $t_return == 'index.php' ) ) {
 		$t_return = 'account_page.php';
 	}
 
@@ -71,10 +71,10 @@ if( auth_attempt_login( $f_username, $f_password, $f_perm_login ) ) {
 		$t_redirect_url .= '&perm_login=' . ( $f_perm_login ? 1 : 0 );
 	}
 
-	if( HTTP_AUTH == \Flickerbox\Config::mantis_get( 'login_method' ) ) {
+	if( HTTP_AUTH == \Core\Config::mantis_get( 'login_method' ) ) {
 		auth_http_prompt();
 		exit;
 	}
 }
 
-\Flickerbox\Print_Util::header_redirect( $t_redirect_url );
+\Core\Print_Util::header_redirect( $t_redirect_url );

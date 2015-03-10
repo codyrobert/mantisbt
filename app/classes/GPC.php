@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -61,7 +61,7 @@ class GPC
 			# check for a default passed in (allowing null)
 			$t_result = $p_default;
 		} else {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_VAR_NOT_FOUND, ERROR );
 			$t_result = null;
 		}
@@ -85,7 +85,7 @@ class GPC
 	}
 	
 	/**
-	 * Retrieve a string GPC variable. Uses \Flickerbox\GPC::get().
+	 * Retrieve a string GPC variable. Uses \Core\GPC::get().
 	 * If you pass in *no* default, an error will be triggered if
 	 * the variable does not exist
 	 * @param string $p_var_name Variable name to retrieve.
@@ -96,10 +96,10 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		#  otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
+		$t_result = call_user_func_array( '\\Core\\GPC::get', $t_args );
 	
 		if( is_array( $t_result ) ) {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_ARRAY_UNEXPECTED, ERROR );
 		}
 	
@@ -111,7 +111,7 @@ class GPC
 	}
 	
 	/**
-	 * Retrieve an integer GPC variable. Uses \Flickerbox\GPC::get().
+	 * Retrieve an integer GPC variable. Uses \Core\GPC::get().
 	 * If you pass in *no* default, an error will be triggered if
 	 * the variable does not exist
 	 * @param string  $p_var_name Variable name to retrieve.
@@ -122,15 +122,15 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		#  otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
+		$t_result = call_user_func_array( '\\Core\\GPC::get', $t_args );
 	
 		if( is_array( $t_result ) ) {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_ARRAY_UNEXPECTED, ERROR );
 		}
 		$t_val = str_replace( ' ', '', trim( $t_result ) );
 		if( !preg_match( '/^-?([0-9])*$/', $t_val ) ) {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_NOT_NUMBER, ERROR );
 		}
 	
@@ -138,29 +138,29 @@ class GPC
 	}
 	
 	/**
-	 * Retrieve a boolean GPC variable. Uses \Flickerbox\GPC::get().
+	 * Retrieve a boolean GPC variable. Uses \Core\GPC::get().
 	 *  If you pass in *no* default, false will be used
 	 * @param string  $p_var_name Variable name to retrieve.
 	 * @param boolean $p_default  Default boolean value if not set (optional).
 	 * @return boolean|null
 	 */
 	static function get_bool( $p_var_name, $p_default = false ) {
-		$t_result = \Flickerbox\GPC::get( $p_var_name, $p_default );
+		$t_result = \Core\GPC::get( $p_var_name, $p_default );
 	
 		if( $t_result === $p_default ) {
 			return (bool)$p_default;
 		} else {
 			if( is_array( $t_result ) ) {
-				\Flickerbox\Error::parameters( $p_var_name );
+				\Core\Error::parameters( $p_var_name );
 				trigger_error( ERROR_GPC_ARRAY_UNEXPECTED, ERROR );
 			}
 	
-			return \Flickerbox\GPC::string_to_bool( $t_result );
+			return \Core\GPC::string_to_bool( $t_result );
 		}
 	}
 	
 	/**
-	 * see if a custom field variable is set.  Uses \Flickerbox\GPC::is_set().
+	 * see if a custom field variable is set.  Uses \Core\GPC::is_set().
 	 * @param string  $p_var_name          Variable name to retrieve.
 	 * @param integer $p_custom_field_type Custom field type.
 	 * @return boolean
@@ -172,25 +172,25 @@ class GPC
 			case CUSTOM_FIELD_TYPE_DATE:
 				# date field is three dropdowns that default to 0
 				# Dropdowns are always present, so check if they are set
-				return \Flickerbox\GPC::is_set( $t_field_name . '_day' ) &&
-					\Flickerbox\GPC::get_int( $t_field_name . '_day', 0 ) != 0 &&
-					\Flickerbox\GPC::is_set( $t_field_name . '_month' ) &&
-					\Flickerbox\GPC::get_int( $t_field_name . '_month', 0 ) != 0 &&
-					\Flickerbox\GPC::is_set( $t_field_name . '_year' ) &&
-					\Flickerbox\GPC::get_int( $t_field_name . '_year', 0 ) != 0 ;
+				return \Core\GPC::is_set( $t_field_name . '_day' ) &&
+					\Core\GPC::get_int( $t_field_name . '_day', 0 ) != 0 &&
+					\Core\GPC::is_set( $t_field_name . '_month' ) &&
+					\Core\GPC::get_int( $t_field_name . '_month', 0 ) != 0 &&
+					\Core\GPC::is_set( $t_field_name . '_year' ) &&
+					\Core\GPC::get_int( $t_field_name . '_year', 0 ) != 0 ;
 			case CUSTOM_FIELD_TYPE_STRING:
 			case CUSTOM_FIELD_TYPE_NUMERIC:
 			case CUSTOM_FIELD_TYPE_FLOAT:
 			case CUSTOM_FIELD_TYPE_ENUM:
 			case CUSTOM_FIELD_TYPE_EMAIL:
-				return \Flickerbox\GPC::is_set( $t_field_name ) && !\Flickerbox\Utility::is_blank( \Flickerbox\GPC::get_string( $t_field_name ) );
+				return \Core\GPC::is_set( $t_field_name ) && !\Core\Utility::is_blank( \Core\GPC::get_string( $t_field_name ) );
 			default:
-				return \Flickerbox\GPC::is_set( $t_field_name );
+				return \Core\GPC::is_set( $t_field_name );
 		}
 	}
 	
 	/**
-	 * Retrieve a custom field variable.  Uses \Flickerbox\GPC::get().
+	 * Retrieve a custom field variable.  Uses \Core\GPC::get().
 	 * If you pass in *no* default, an error will be triggered if
 	 * the variable does not exist
 	 * @param string  $p_var_name          Variable name.
@@ -206,7 +206,7 @@ class GPC
 				if( ( $p_default !== null ) && !is_array( $p_default ) ) {
 					$p_default = array( $p_default );
 				}
-				$t_values = \Flickerbox\GPC::get_string_array( $p_var_name, $p_default );
+				$t_values = \Core\GPC::get_string_array( $p_var_name, $p_default );
 				if( is_array( $t_values ) ) {
 					return implode( '|', $t_values );
 				} else {
@@ -214,9 +214,9 @@ class GPC
 				}
 				break;
 			case CUSTOM_FIELD_TYPE_DATE:
-				$t_day = \Flickerbox\GPC::get_int( $p_var_name . '_day', 0 );
-				$t_month = \Flickerbox\GPC::get_int( $p_var_name . '_month', 0 );
-				$t_year = \Flickerbox\GPC::get_int( $p_var_name . '_year', 0 );
+				$t_day = \Core\GPC::get_int( $p_var_name . '_day', 0 );
+				$t_month = \Core\GPC::get_int( $p_var_name . '_month', 0 );
+				$t_year = \Core\GPC::get_int( $p_var_name . '_year', 0 );
 				if( ( $t_year == 0 ) || ( $t_month == 0 ) || ( $t_day == 0 ) ) {
 					if( $p_default == null ) {
 						return '';
@@ -228,12 +228,12 @@ class GPC
 				}
 				break;
 			default:
-				return \Flickerbox\GPC::get_string( $p_var_name, $p_default );
+				return \Core\GPC::get_string( $p_var_name, $p_default );
 		}
 	}
 	
 	/**
-	 * Retrieve a string array GPC variable.  Uses \Flickerbox\GPC::get().
+	 * Retrieve a string array GPC variable.  Uses \Core\GPC::get().
 	 * If you pass in *no* default, an error will be triggered if
 	 * the variable does not exist
 	 * @param string $p_var_name Variable name to retrieve.
@@ -244,11 +244,11 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		# otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
+		$t_result = call_user_func_array( '\\Core\\GPC::get', $t_args );
 	
 		# If the result isn't the default we were given or an array, error
 		if( !((( 1 < func_num_args() ) && ( $t_result === $p_default ) ) || is_array( $t_result ) ) ) {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_ARRAY_EXPECTED, ERROR );
 		}
 	
@@ -267,7 +267,7 @@ class GPC
 	}
 	
 	/**
-	 * Retrieve an integer array GPC variable.  Uses \Flickerbox\GPC::get().
+	 * Retrieve an integer array GPC variable.  Uses \Core\GPC::get().
 	 * If you pass in *no* default, an error will be triggered if
 	 * the variable does not exist
 	 * @param string $p_var_name Variable name to retrieve.
@@ -278,11 +278,11 @@ class GPC
 		# Don't pass along a default unless one was given to us
 		# otherwise we prevent an error being triggered
 		$t_args = func_get_args();
-		$t_result = call_user_func_array( '\\Flickerbox\\GPC::get', $t_args );
+		$t_result = call_user_func_array( '\\Core\\GPC::get', $t_args );
 	
 		# If the result isn't the default we were given or an array, error
 		if( !((( 1 < func_num_args() ) && ( $t_result === $p_default ) ) || is_array( $t_result ) ) ) {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_ARRAY_EXPECTED, ERROR );
 		}
 	
@@ -295,7 +295,7 @@ class GPC
 	}
 	
 	/**
-	 * Retrieve a boolean array GPC variable.  Uses \Flickerbox\GPC::get().
+	 * Retrieve a boolean array GPC variable.  Uses \Core\GPC::get().
 	 * If you pass in *no* default, an error will be triggered if the variable does not exist.
 	 * @param string $p_var_name Variable name to retrieve.
 	 * @param array  $p_default  Default value of the boolean array if not set.
@@ -309,13 +309,13 @@ class GPC
 	
 		# If the result isn't the default we were given or an array, error
 		if( !((( 1 < func_num_args() ) && ( $t_result === $p_default ) ) || is_array( $t_result ) ) ) {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_ARRAY_EXPECTED, ERROR );
 		}
 	
 		$t_count = count( $t_result );
 		for( $i = 0; $i < $t_count; $i++ ) {
-			$t_result[$i] = \Flickerbox\GPC::string_to_bool( $t_result[$i] );
+			$t_result[$i] = \Core\GPC::string_to_bool( $t_result[$i] );
 		}
 	
 		return $t_result;
@@ -336,7 +336,7 @@ class GPC
 			# check for a default passed in (allowing null)
 			$t_result = $p_default;
 		} else {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_VAR_NOT_FOUND, ERROR );
 		}
 	
@@ -366,14 +366,14 @@ class GPC
 		if( false === $p_expire ) {
 			$p_expire = 0;
 		} else if( true === $p_expire ) {
-			$t_cookie_length = \Flickerbox\Config::mantis_get( 'cookie_time_length' );
+			$t_cookie_length = \Core\Config::mantis_get( 'cookie_time_length' );
 			$p_expire = time() + $t_cookie_length;
 		}
 		if( null === $p_path ) {
-			$p_path = \Flickerbox\Config::mantis_get( 'cookie_path' );
+			$p_path = \Core\Config::mantis_get( 'cookie_path' );
 		}
 		if( null === $p_domain ) {
-			$p_domain = \Flickerbox\Config::mantis_get( 'cookie_domain' );
+			$p_domain = \Core\Config::mantis_get( 'cookie_domain' );
 		}
 	
 		return setcookie( $p_name, $p_value, $p_expire, $p_path, $p_domain, $g_cookie_secure_flag_enabled, true );
@@ -388,10 +388,10 @@ class GPC
 	 */
 	static function clear_cookie( $p_name, $p_path = null, $p_domain = null ) {
 		if( null === $p_path ) {
-			$p_path = \Flickerbox\Config::mantis_get( 'cookie_path' );
+			$p_path = \Core\Config::mantis_get( 'cookie_path' );
 		}
 		if( null === $p_domain ) {
-			$p_domain = \Flickerbox\Config::mantis_get( 'cookie_domain' );
+			$p_domain = \Core\Config::mantis_get( 'cookie_domain' );
 		}
 	
 		if( isset( $_COOKIE[$p_name] ) ) {
@@ -423,7 +423,7 @@ class GPC
 			# check for a default passed in (allowing null)
 			$t_result = $p_default;
 		} else {
-			\Flickerbox\Error::parameters( $p_var_name );
+			\Core\Error::parameters( $p_var_name );
 			trigger_error( ERROR_GPC_VAR_NOT_FOUND, ERROR );
 		}
 	

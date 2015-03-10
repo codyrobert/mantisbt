@@ -25,7 +25,7 @@
  * @uses config_api.php
  */
 
-@require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
+require dirname(__DIR__).'/app/bootstrap.php';
 
 /**
  * Send correct MIME Content-Type header for css content.
@@ -67,12 +67,12 @@ switch( $t_referer_page ) {
 		exit;
 }
 
-$t_status_string = \Flickerbox\Config::mantis_get( 'status_enum_string' );
-$t_statuses = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( $t_status_string );
-$t_colors = \Flickerbox\Config::mantis_get( 'status_colors' );
+$t_status_string = \Core\Config::mantis_get( 'status_enum_string' );
+$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( $t_status_string );
+$t_colors = \Core\Config::mantis_get( 'status_colors' );
 $t_color_count = count( $t_colors );
 $t_color_width = ( $t_color_count > 0 ? ( round( 100/$t_color_count ) ) : 0 );
-$t_status_percents = \Flickerbox\Auth::is_user_authenticated() ? \Flickerbox\Helper::get_percentage_by_status() : array();
+$t_status_percents = \Core\Auth::is_user_authenticated() ? \Core\Helper::get_percentage_by_status() : array();
 
 foreach( $t_statuses AS $t_id=>$t_label ) {
 	if( array_key_exists( $t_label, $t_colors ) ) {

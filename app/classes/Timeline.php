@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -42,25 +42,25 @@ class Timeline
 	 * @return array
 	 */
 	static function get_affected_issues( $p_start_time, $p_end_time ) {
-		$t_query = 'SELECT DISTINCT(bug_id) from {bug_history} WHERE date_modified >= ' . \Flickerbox\Database::param() . ' AND date_modified < ' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_start_time, $p_end_time ) );
+		$t_query = 'SELECT DISTINCT(bug_id) from {bug_history} WHERE date_modified >= ' . \Core\Database::param() . ' AND date_modified < ' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_start_time, $p_end_time ) );
 	
-		$t_current_project = \Flickerbox\Helper::get_current_project();
+		$t_current_project = \Core\Helper::get_current_project();
 	
 		$t_all_issue_ids = array();
-		while( ( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) !== false ) {
+		while( ( $t_row = \Core\Database::fetch_array( $t_result ) ) !== false ) {
 			$t_all_issue_ids[] = $t_row['bug_id'];
 		}
 	
-		\Flickerbox\Bug::cache_array_rows( $t_all_issue_ids );
+		\Core\Bug::cache_array_rows( $t_all_issue_ids );
 	
 		$t_issue_ids = array();
 		foreach( $t_all_issue_ids as $t_issue_id ) {
-			if( $t_current_project != ALL_PROJECTS && $t_current_project != \Flickerbox\Bug::get_field( $t_issue_id, 'project_id' ) ) {
+			if( $t_current_project != ALL_PROJECTS && $t_current_project != \Core\Bug::get_field( $t_issue_id, 'project_id' ) ) {
 				continue;
 			}
 	
-			if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ), $t_issue_id ) ) {
+			if( !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'view_bug_threshold' ), $t_issue_id ) ) {
 				continue;
 			}
 	
@@ -78,12 +78,12 @@ class Timeline
 	 * @return array
 	 */
 	static function events( $p_start_time, $p_end_time ) {
-		$t_issue_ids = \Flickerbox\Timeline::get_affected_issues( $p_start_time, $p_end_time );
+		$t_issue_ids = \Core\Timeline::get_affected_issues( $p_start_time, $p_end_time );
 	
 		$t_timeline_events = array();
 	
 		foreach ( $t_issue_ids as $t_issue_id ) {
-			$t_history_events_array = \Flickerbox\History::get_raw_events_array( $t_issue_id, null, $p_start_time, $p_end_time );
+			$t_history_events_array = \Core\History::get_raw_events_array( $t_issue_id, null, $p_start_time, $p_end_time );
 			$t_history_events_array = array_reverse( $t_history_events_array );
 	
 			foreach ( $t_history_events_array as $t_history_event ) {
@@ -98,35 +98,35 @@ class Timeline
 	
 				switch( $t_history_event['type'] ) {
 					case NEW_BUG:
-						$t_event = new \Flickerbox\IssueCreatedTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id );
+						$t_event = new \Core\IssueCreatedTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id );
 						break;
 					case BUGNOTE_ADDED:
 						$t_bugnote_id = $t_history_event['old_value'];
-						$t_event = new \Flickerbox\IssueNoteCreatedTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_bugnote_id );
+						$t_event = new \Core\IssueNoteCreatedTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_bugnote_id );
 						break;
 					case BUG_MONITOR:
 						# Skip monitors added for others due to reminders, only add monitor events where added
 						# user is the same as the logged in user.
 						if( (int)$t_history_event['old_value'] == (int)$t_history_event['userid'] ) {
-							$t_event = new \Flickerbox\IssueMonitorTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, true );
+							$t_event = new \Core\IssueMonitorTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, true );
 						}
 						break;
 					case BUG_UNMONITOR:
-						$t_event = new \Flickerbox\IssueMonitorTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, false );
+						$t_event = new \Core\IssueMonitorTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, false );
 						break;
 					case TAG_ATTACHED:
-						$t_event = new \Flickerbox\IssueTagTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['old_value'], true );
+						$t_event = new \Core\IssueTagTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['old_value'], true );
 						break;
 					case TAG_DETACHED:
-						$t_event = new \Flickerbox\IssueTagTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['old_value'], false );
+						$t_event = new \Core\IssueTagTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['old_value'], false );
 						break;
 					case NORMAL_TYPE:
 						switch( $t_history_event['field'] ) {
 							case 'status':
-								$t_event = new \Flickerbox\IssueStatusChangeTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['old_value'], $t_history_event['new_value'] );
+								$t_event = new \Core\IssueStatusChangeTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['old_value'], $t_history_event['new_value'] );
 								break;
 							case 'handler_id':
-								$t_event = new \Flickerbox\IssueAssignedTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['new_value'] );
+								$t_event = new \Core\IssueAssignedTimelineEvent( $t_timestamp, $t_user_id, $t_issue_id, $t_history_event['new_value'] );
 								break;
 						}
 						break;
@@ -175,7 +175,7 @@ class Timeline
 	 */
 	static function print_events( array $p_events, $p_max_num = 0 ) {
 		if( empty( $p_events ) ) {
-			echo '<p>' . \Flickerbox\Lang::get( 'timeline_no_activity' ) . '</p>';
+			echo '<p>' . \Core\Lang::get( 'timeline_no_activity' ) . '</p>';
 			return 0;
 		}
 	

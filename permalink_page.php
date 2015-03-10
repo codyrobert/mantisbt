@@ -35,25 +35,25 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'create_permalink_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'create_permalink_threshold' ) );
 
-$f_url = \Flickerbox\String::sanitize_url( \Flickerbox\GPC::get_string( 'url' ) );
+$f_url = \Core\String::sanitize_url( \Core\GPC::get_string( 'url' ) );
 ?>
 <div>
 	<p>
 <?php
-echo \Flickerbox\Lang::get( 'filter_permalink' ), '<br />';
-$t_safe_url = \Flickerbox\String::display_line( $f_url );
+echo \Core\Lang::get( 'filter_permalink' ), '<br />';
+$t_safe_url = \Core\String::display_line( $f_url );
 echo '<a href="' . $t_safe_url . '">' . $t_safe_url . '</a></p>';
 
-$t_create_short_url = \Flickerbox\Config::mantis_get( 'create_short_url' );
+$t_create_short_url = \Core\Config::mantis_get( 'create_short_url' );
 
-if( !\Flickerbox\Utility::is_blank( $t_create_short_url ) ) {
-	\Flickerbox\Print_Util::bracket_link( sprintf( $t_create_short_url, $f_url ), \Flickerbox\Lang::get( 'create_short_link' ), true );
+if( !\Core\Utility::is_blank( $t_create_short_url ) ) {
+	\Core\Print_Util::bracket_link( sprintf( $t_create_short_url, $f_url ), \Core\Lang::get( 'create_short_link' ), true );
 }
 ?>
 </div>
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

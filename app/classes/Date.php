@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -47,7 +47,7 @@ class Date
 	 * @access public
 	 */
 	static function is_null( $p_date ) {
-		return $p_date == \Flickerbox\Date::get_null();
+		return $p_date == \Core\Date::get_null();
 	}
 	
 	/**
@@ -106,9 +106,9 @@ class Date
 		for( $i = 1;$i <= 12;$i++ ) {
 			$t_month_name = date( 'F', mktime( 0, 0, 0, $i, 1, 2000 ) );
 			if( $i == $p_month ) {
-				echo '<option value="' . $i . '" selected="selected">' . \Flickerbox\Lang::get( 'month_' . strtolower( $t_month_name ) ) . '</option>';
+				echo '<option value="' . $i . '" selected="selected">' . \Core\Lang::get( 'month_' . strtolower( $t_month_name ) ) . '</option>';
 			} else {
-				echo '<option value="' . $i . '">' . \Flickerbox\Lang::get( 'month_' . strtolower( $t_month_name ) ) . '</option>';
+				echo '<option value="' . $i . '">' . \Core\Lang::get( 'month_' . strtolower( $t_month_name ) ) . '</option>';
 			}
 		}
 	}
@@ -175,11 +175,11 @@ class Date
 	 */
 	static function print_year_range_option_list( $p_year = 0, $p_start = 0, $p_end = 0 ) {
 		$t_current = date( 'Y' );
-		$t_forward_years = \Flickerbox\Config::mantis_get( 'forward_year_count' );
+		$t_forward_years = \Core\Config::mantis_get( 'forward_year_count' );
 	
 		$t_start_year = $p_start;
 		if( $t_start_year == 0 ) {
-			$t_backward_years = \Flickerbox\Config::mantis_get( 'backward_year_count' );
+			$t_backward_years = \Core\Config::mantis_get( 'backward_year_count' );
 			$t_start_year = $t_current - $t_backward_years;
 		}
 	
@@ -235,27 +235,27 @@ class Date
 	
 		foreach( $t_chars as $t_char ) {
 			if( strcmp( $t_char, 'M' ) == 0 ) {
-				echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
+				echo '<select ' . \Core\Helper::get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
 				echo $t_blank_line;
-				\Flickerbox\Date::print_month_option_list( $t_date[1] );
+				\Core\Date::print_month_option_list( $t_date[1] );
 				echo "</select>\n";
 			}
 			if( strcmp( $t_char, 'm' ) == 0 ) {
-				echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
+				echo '<select ' . \Core\Helper::get_tab_index() . ' name="' . $p_name . '_month"' . $t_disable . '>';
 				echo $t_blank_line;
-				\Flickerbox\Date::print_month_option_list( $t_date[1] );
+				\Core\Date::print_month_option_list( $t_date[1] );
 				echo '</select>' . "\n";
 			}
 			if( strcasecmp( $t_char, 'D' ) == 0 ) {
-				echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_day"' . $t_disable . '>';
+				echo '<select ' . \Core\Helper::get_tab_index() . ' name="' . $p_name . '_day"' . $t_disable . '>';
 				echo $t_blank_line;
-				\Flickerbox\Date::print_day_option_list( $t_date[2] );
+				\Core\Date::print_day_option_list( $t_date[2] );
 				echo '</select>' . "\n";
 			}
 			if( strcasecmp( $t_char, 'Y' ) == 0 ) {
-				echo '<select ' .  \Flickerbox\Helper::get_tab_index() . ' name="' . $p_name . '_year"' . $t_disable . '>';
+				echo '<select ' .  \Core\Helper::get_tab_index() . ' name="' . $p_name . '_year"' . $t_disable . '>';
 				echo $t_blank_line;
-				\Flickerbox\Date::print_year_range_option_list( $t_date[0], $p_year_start, $p_year_end );
+				\Core\Date::print_year_range_option_list( $t_date[0], $p_year_start, $p_year_end );
 				echo '</select>' . "\n";
 			}
 		}

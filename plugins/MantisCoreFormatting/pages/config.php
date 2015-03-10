@@ -23,68 +23,68 @@
  */
 
 auth_reauthenticate( );
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'plugin_format_title' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'plugin_format_title' ) );
 
-\Flickerbox\HTML::print_manage_menu( );
+\Core\HTML::print_manage_menu( );
 
 ?>
 
 <div id="formatting-config-div" class="form-container">
-	<form id="formatting-config-form" action="<?php echo \Flickerbox\Plugin::page( 'config_edit' )?>" method="post">
+	<form id="formatting-config-form" action="<?php echo \Core\Plugin::page( 'config_edit' )?>" method="post">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'plugin_format_title' ) . ': ' . \Flickerbox\Lang::get( 'plugin_format_config' )?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'plugin_format_config_edit' ) ?>
+			<legend><span><?php echo \Core\Lang::get( 'plugin_format_title' ) . ': ' . \Core\Lang::get( 'plugin_format_config' )?></span></legend>
+			<?php echo \Core\Form::security_field( 'plugin_format_config_edit' ) ?>
 
 			<div class="field-container">
-				<label><span><?php echo \Flickerbox\Lang::get( 'plugin_format_process_text' )?>
-				<br /><span class="small"><?php echo \Flickerbox\Lang::get( 'plugin_format_process_text_warning_notice' )?></span>
+				<label><span><?php echo \Core\Lang::get( 'plugin_format_process_text' )?>
+				<br /><span class="small"><?php echo \Core\Lang::get( 'plugin_format_process_text_warning_notice' )?></span>
 				</span></label>
 				<span class="radio">
-					<label><input type="radio" name="process_text" value="1" <?php echo( ON == \Flickerbox\Plugin::config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
-					<label><input type="radio" name="process_text" value="0" <?php echo( OFF == \Flickerbox\Plugin::config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
+					<label><input type="radio" name="process_text" value="1" <?php echo( ON == \Core\Plugin::config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
+					<?php echo \Core\Lang::get( 'plugin_format_enabled' )?></label>
+					<label><input type="radio" name="process_text" value="0" <?php echo( OFF == \Core\Plugin::config_get( 'process_text' ) ) ? 'checked="checked" ' : ''?>/>
+					<?php echo \Core\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<div class="field-container">
-				<label><span><?php echo \Flickerbox\Lang::get( 'plugin_format_process_urls' )?></span></label>
+				<label><span><?php echo \Core\Lang::get( 'plugin_format_process_urls' )?></span></label>
 				<span class="radio">
-					<label><input type="radio" name="process_urls" value="1" <?php echo( ON == \Flickerbox\Plugin::config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
-					<label><input type="radio" name="process_urls" value="0" <?php echo( OFF == \Flickerbox\Plugin::config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
+					<label><input type="radio" name="process_urls" value="1" <?php echo( ON == \Core\Plugin::config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
+					<?php echo \Core\Lang::get( 'plugin_format_enabled' )?></label>
+					<label><input type="radio" name="process_urls" value="0" <?php echo( OFF == \Core\Plugin::config_get( 'process_urls' ) ) ? 'checked="checked" ' : ''?>/>
+					<?php echo \Core\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<div class="field-container">
 				<label><span>
-				<?php echo \Flickerbox\Lang::get( 'plugin_format_process_buglinks' )?>
+				<?php echo \Core\Lang::get( 'plugin_format_process_buglinks' )?>
 				<br />
 				<span class="small"><?php
-					printf( \Flickerbox\Lang::get( 'plugin_format_process_buglinks_info' ),
-						\Flickerbox\Config::mantis_get( 'bug_link_tag' ), \Flickerbox\Config::mantis_get( 'bugnote_link_tag' ) );
+					printf( \Core\Lang::get( 'plugin_format_process_buglinks_info' ),
+						\Core\Config::mantis_get( 'bug_link_tag' ), \Core\Config::mantis_get( 'bugnote_link_tag' ) );
 				?></span>
 				</span></label>
 				<span class="radio">
-					<label><input type="radio" name="process_buglinks" value="1" <?php echo( ON == \Flickerbox\Plugin::config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo \Flickerbox\Lang::get( 'plugin_format_enabled' )?></label>
-					<label><input type="radio" name="process_buglinks" value="0" <?php echo( OFF == \Flickerbox\Plugin::config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
-					<?php echo \Flickerbox\Lang::get( 'plugin_format_disabled' )?></label>
+					<label><input type="radio" name="process_buglinks" value="1" <?php echo( ON == \Core\Plugin::config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
+					<?php echo \Core\Lang::get( 'plugin_format_enabled' )?></label>
+					<label><input type="radio" name="process_buglinks" value="0" <?php echo( OFF == \Core\Plugin::config_get( 'process_buglinks' ) ) ? 'checked="checked" ' : ''?>/>
+					<?php echo \Core\Lang::get( 'plugin_format_disabled' )?></label>
 				</span>
 				<span class="label-style"></span>
 			</div>
 
 			<span class="submit-button">
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'change_configuration' )?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'change_configuration' )?>" />
 			</span>
 		</fieldset>
 	</form>
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

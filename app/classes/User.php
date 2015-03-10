@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -64,21 +64,21 @@ class User
 			return $g_cache_user[$p_user_id];
 		}
 	
-		$t_query = 'SELECT * FROM {user} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+		$t_query = 'SELECT * FROM {user} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_user_id ) );
 	
-		if( 0 == \Flickerbox\Database::num_rows( $t_result ) ) {
+		if( 0 == \Core\Database::num_rows( $t_result ) ) {
 			$g_cache_user[$p_user_id] = false;
 	
 			if( $p_trigger_errors ) {
-				\Flickerbox\Error::parameters( (integer)$p_user_id );
+				\Core\Error::parameters( (integer)$p_user_id );
 				trigger_error( ERROR_USER_BY_ID_NOT_FOUND, ERROR );
 			}
 	
 			return false;
 		}
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		$g_cache_user[$p_user_id] = $t_row;
 	
@@ -106,9 +106,9 @@ class User
 		}
 	
 		$t_query = 'SELECT * FROM {user} WHERE id IN (' . implode( ',', $c_user_id_array ) . ')';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$g_cache_user[(int)$t_row['id']] = $t_row;
 		}
 		return;
@@ -159,7 +159,7 @@ class User
 		if( isset( $g_cache_user[$p_user_id] ) && isset( $g_cache_user[$p_user_id][$p_field] ) ) {
 			$g_cache_user[$p_user_id][$p_field] = $p_value;
 		} else {
-			\Flickerbox\User::clear_cache( $p_user_id );
+			\Core\User::clear_cache( $p_user_id );
 		}
 	}
 	
@@ -191,7 +191,7 @@ class User
 	 * @return boolean
 	 */
 	static function exists( $p_user_id ) {
-		$t_row = \Flickerbox\User::cache_row( $p_user_id, false );
+		$t_row = \Core\User::cache_row( $p_user_id, false );
 	
 		if( false === $t_row ) {
 			return false;
@@ -210,8 +210,8 @@ class User
 	static function ensure_exists( $p_user_id ) {
 		$c_user_id = (integer)$p_user_id;
 	
-		if( !\Flickerbox\User::exists( $c_user_id ) ) {
-			\Flickerbox\Error::parameters( $c_user_id );
+		if( !\Core\User::exists( $c_user_id ) ) {
+			\Core\Error::parameters( $c_user_id );
 			trigger_error( ERROR_USER_BY_ID_NOT_FOUND, ERROR );
 		}
 	}
@@ -222,10 +222,10 @@ class User
 	 * @return boolean
 	 */
 	static function is_name_unique( $p_username ) {
-		$t_query = 'SELECT username FROM {user} WHERE username=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_username ), 1 );
+		$t_query = 'SELECT username FROM {user} WHERE username=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_username ), 1 );
 	
-		return !\Flickerbox\Database::result( $t_result );
+		return !\Core\Database::result( $t_result );
 	}
 	
 	/**
@@ -234,7 +234,7 @@ class User
 	 * @return void
 	 */
 	static function ensure_name_unique( $p_username ) {
-		if( !\Flickerbox\User::is_name_unique( $p_username ) ) {
+		if( !\Core\User::is_name_unique( $p_username ) ) {
 			trigger_error( ERROR_USER_NAME_NOT_UNIQUE, ERROR );
 		}
 	}
@@ -248,7 +248,7 @@ class User
 	 * @return integer
 	 */
 	static function is_realname_unique( $p_username, $p_realname ) {
-		if( \Flickerbox\Utility::is_blank( $p_realname ) ) {
+		if( \Core\Utility::is_blank( $p_realname ) ) {
 			# don't bother checking if realname is blank
 			return 1;
 		}
@@ -261,28 +261,28 @@ class User
 		if( $p_realname !== $p_username ) {
 			# check realname does not match an existing username
 			#  but allow it to match the current user
-			$t_target_user = \Flickerbox\User::get_id_by_name( $p_username );
-			$t_other_user = \Flickerbox\User::get_id_by_name( $p_realname );
+			$t_target_user = \Core\User::get_id_by_name( $p_username );
+			$t_other_user = \Core\User::get_id_by_name( $p_realname );
 			if( ( false !== $t_other_user ) && ( $t_target_user !== $t_other_user ) ) {
 				return 0;
 			}
 	
 			# check to see if the realname is unique
-			$t_query = 'SELECT id FROM {user} WHERE realname=' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $p_realname ) );
+			$t_query = 'SELECT id FROM {user} WHERE realname=' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $p_realname ) );
 	
 			$t_users = array();
-			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 				$t_users[] = $t_row;
 			}
 			$t_duplicate_count = count( $t_users );
 	
 			if( $t_duplicate_count > 0 ) {
 				# set flags for non-unique realnames
-				if( \Flickerbox\Config::mantis_get( 'differentiate_duplicates' ) ) {
+				if( \Core\Config::mantis_get( 'differentiate_duplicates' ) ) {
 					for( $i = 0;$i < $t_duplicate_count;$i++ ) {
 						$t_user_id = $t_users[$i]['id'];
-						\Flickerbox\User::set_field( $t_user_id, 'duplicate_realname', ON );
+						\Core\User::set_field( $t_user_id, 'duplicate_realname', ON );
 					}
 				}
 			}
@@ -299,7 +299,7 @@ class User
 	 * @return void
 	 */
 	static function ensure_realname_unique( $p_username, $p_realname ) {
-		if( 1 > \Flickerbox\User::is_realname_unique( $p_username, $p_realname ) ) {
+		if( 1 > \Core\User::is_realname_unique( $p_username, $p_realname ) ) {
 			trigger_error( ERROR_USER_REAL_MATCH_USER, ERROR );
 		}
 	}
@@ -316,12 +316,12 @@ class User
 		}
 	
 		# username must consist of at least one character
-		if( \Flickerbox\Utility::is_blank( $p_username ) ) {
+		if( \Core\Utility::is_blank( $p_username ) ) {
 			return false;
 		}
 	
 		# Only allow a basic set of characters
-		if( 0 == preg_match( \Flickerbox\Config::mantis_get( 'user_login_valid_regex' ), $p_username ) ) {
+		if( 0 == preg_match( \Core\Config::mantis_get( 'user_login_valid_regex' ), $p_username ) ) {
 			return false;
 		}
 	
@@ -336,7 +336,7 @@ class User
 	 * @return void
 	 */
 	static function ensure_name_valid( $p_username ) {
-		if( !\Flickerbox\User::is_name_valid( $p_username ) ) {
+		if( !\Core\User::is_name_valid( $p_username ) ) {
 			trigger_error( ERROR_USER_NAME_INVALID, ERROR );
 		}
 	}
@@ -349,11 +349,11 @@ class User
 	 */
 	static function is_monitoring_bug( $p_user_id, $p_bug_id ) {
 		$t_query = 'SELECT COUNT(*) FROM {bug_monitor}
-					  WHERE user_id=' . \Flickerbox\Database::param() . ' AND bug_id=' . \Flickerbox\Database::param();
+					  WHERE user_id=' . \Core\Database::param() . ' AND bug_id=' . \Core\Database::param();
 	
-		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_user_id, (int)$p_bug_id ) );
+		$t_result = \Core\Database::query( $t_query, array( (int)$p_user_id, (int)$p_bug_id ) );
 	
-		if( 0 == \Flickerbox\Database::result( $t_result ) ) {
+		if( 0 == \Core\Database::result( $t_result ) ) {
 			return false;
 		} else {
 			return true;
@@ -366,9 +366,9 @@ class User
 	 * @return boolean
 	 */
 	static function is_administrator( $p_user_id ) {
-		$t_access_level = \Flickerbox\User::get_field( $p_user_id, 'access_level' );
+		$t_access_level = \Core\User::get_field( $p_user_id, 'access_level' );
 	
-		if( $t_access_level >= \Flickerbox\Config::get_global( 'admin_site_threshold' ) ) {
+		if( $t_access_level >= \Core\Config::get_global( 'admin_site_threshold' ) ) {
 			return true;
 		} else {
 			return false;
@@ -387,7 +387,7 @@ class User
 	 * @access public
 	 */
 	static function is_protected( $p_user_id ) {
-		if( \Flickerbox\User::is_anonymous( $p_user_id ) || ON == \Flickerbox\User::get_field( $p_user_id, 'protected' ) ) {
+		if( \Core\User::is_anonymous( $p_user_id ) || ON == \Core\User::get_field( $p_user_id, 'protected' ) ) {
 			return true;
 		}
 		return false;
@@ -402,7 +402,7 @@ class User
 	 * @access public
 	 */
 	static function is_anonymous( $p_user_id ) {
-		if( ON == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) && \Flickerbox\User::get_field( $p_user_id, 'username' ) == \Flickerbox\Config::mantis_get( 'anonymous_account' ) ) {
+		if( ON == \Core\Config::mantis_get( 'allow_anonymous_login' ) && \Core\User::get_field( $p_user_id, 'username' ) == \Core\Config::mantis_get( 'anonymous_account' ) ) {
 			return true;
 		}
 		return false;
@@ -415,7 +415,7 @@ class User
 	 * @return void
 	 */
 	static function ensure_unprotected( $p_user_id ) {
-		if( \Flickerbox\User::is_protected( $p_user_id ) ) {
+		if( \Core\User::is_protected( $p_user_id ) ) {
 			trigger_error( ERROR_PROTECTED_ACCOUNT, ERROR );
 		}
 	}
@@ -427,7 +427,7 @@ class User
 	 * @return boolean
 	 */
 	static function is_enabled( $p_user_id ) {
-		if( ON == \Flickerbox\User::get_field( $p_user_id, 'enabled' ) ) {
+		if( ON == \Core\User::get_field( $p_user_id, 'enabled' ) ) {
 			return true;
 		} else {
 			return false;
@@ -441,11 +441,11 @@ class User
 	 * @return integer
 	 */
 	static function count_level( $p_level = ANYBODY ) {
-		$t_query = 'SELECT COUNT(id) FROM {user} WHERE access_level>=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_level ) );
+		$t_query = 'SELECT COUNT(id) FROM {user} WHERE access_level>=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_level ) );
 	
 		# Get the list of connected users
-		$t_users = \Flickerbox\Database::result( $t_result );
+		$t_users = \Core\Database::result( $t_result );
 	
 		return $t_users;
 	}
@@ -470,12 +470,12 @@ class User
 		$t_last_timestamp_threshold = mktime( date( 'H' ), date( 'i' ) - 1 * $t_session_duration_in_minutes, date( 's' ), date( 'm' ), date( 'd' ), date( 'Y' ) );
 	
 		# Execute query
-		$t_query = 'SELECT id FROM {user} WHERE last_visit > ' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $t_last_timestamp_threshold ), 1 );
+		$t_query = 'SELECT id FROM {user} WHERE last_visit > ' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $t_last_timestamp_threshold ), 1 );
 	
 		# Get the list of connected users
 		$t_users_connected = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_users_connected[] = $t_row['id'];
 		}
 	
@@ -500,41 +500,41 @@ class User
 		$p_access_level = null, $p_protected = false, $p_enabled = true,
 		$p_realname = '', $p_admin_name = '' ) {
 		if( null === $p_access_level ) {
-			$p_access_level = \Flickerbox\Config::mantis_get( 'default_new_account_access_level' );
+			$p_access_level = \Core\Config::mantis_get( 'default_new_account_access_level' );
 		}
 	
-		$t_password = \Flickerbox\Auth::process_plain_password( $p_password );
+		$t_password = \Core\Auth::process_plain_password( $p_password );
 	
 		$c_enabled = (bool)$p_enabled;
 	
-		\Flickerbox\User::ensure_name_valid( $p_username );
-		\Flickerbox\User::ensure_name_unique( $p_username );
-		\Flickerbox\User::ensure_realname_unique( $p_username, $p_realname );
-		\Flickerbox\Email::ensure_valid( $p_email );
+		\Core\User::ensure_name_valid( $p_username );
+		\Core\User::ensure_name_unique( $p_username );
+		\Core\User::ensure_realname_unique( $p_username, $p_realname );
+		\Core\Email::ensure_valid( $p_email );
 	
-		$t_cookie_string = \Flickerbox\Auth::generate_unique_cookie_string();
+		$t_cookie_string = \Core\Auth::generate_unique_cookie_string();
 	
 		$t_query = 'INSERT INTO {user}
 					    ( username, email, password, date_created, last_visit,
 					     enabled, access_level, login_count, cookie_string, realname )
 					  VALUES
-					    ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param()  . ',
-					     ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ')';
-		\Flickerbox\Database::query( $t_query, array( $p_username, $p_email, $t_password, \Flickerbox\Database::now(), \Flickerbox\Database::now(), $c_enabled, (int)$p_access_level, 0, $t_cookie_string, $p_realname ) );
+					    ( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param()  . ',
+					     ' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ', ' . \Core\Database::param() . ')';
+		\Core\Database::query( $t_query, array( $p_username, $p_email, $t_password, \Core\Database::now(), \Core\Database::now(), $c_enabled, (int)$p_access_level, 0, $t_cookie_string, $p_realname ) );
 	
 		# Create preferences for the user
-		$t_user_id = \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'user' ) );
+		$t_user_id = \Core\Database::insert_id( \Core\Database::get_table( 'user' ) );
 	
 		# Users are added with protected set to FALSE in order to be able to update
 		# preferences.  Now set the real value of protected.
 		if( $p_protected ) {
-			\Flickerbox\User::set_field( $t_user_id, 'protected', (bool)$p_protected );
+			\Core\User::set_field( $t_user_id, 'protected', (bool)$p_protected );
 		}
 	
 		# Send notification email
-		if( !\Flickerbox\Utility::is_blank( $p_email ) ) {
-			$t_confirm_hash = \Flickerbox\Auth::generate_confirm_hash( $t_user_id );
-			\Flickerbox\Email::signup( $t_user_id, $p_password, $t_confirm_hash, $p_admin_name );
+		if( !\Core\Utility::is_blank( $p_email ) ) {
+			$t_confirm_hash = \Core\Auth::generate_confirm_hash( $t_user_id );
+			\Core\Email::signup( $t_user_id, $p_password, $t_confirm_hash, $p_admin_name );
 		}
 	
 		return $t_cookie_string;
@@ -565,10 +565,10 @@ class User
 			#  I'll re-enable this once a plan has been properly formulated for LDAP
 			#  account management and creation.
 			#			$t_email = '';
-			#			if( ON == \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) {
-			#				$t_email = \Flickerbox\LDAP::email_from_username( $p_username );
+			#			if( ON == \Core\Config::mantis_get( 'use_ldap_email' ) ) {
+			#				$t_email = \Core\LDAP::email_from_username( $p_username );
 			#			}
-			#			if( !\Flickerbox\Utility::is_blank( $t_email ) ) {
+			#			if( !\Core\Utility::is_blank( $t_email ) ) {
 			#				$p_email = $t_email;
 			#			}
 		}
@@ -576,9 +576,9 @@ class User
 		$p_email = trim( $p_email );
 	
 		# Create random password
-		$t_password = \Flickerbox\Auth::generate_random_password();
+		$t_password = \Core\Auth::generate_random_password();
 	
-		return \Flickerbox\User::create( $p_username, $t_password, $p_email );
+		return \Core\User::create( $p_username, $t_password, $p_email );
 	}
 	
 	/**
@@ -589,12 +589,12 @@ class User
 	 * @return boolean Always true
 	 */
 	static function delete_project_specific_access_levels( $p_user_id ) {
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	
-		$t_query = 'DELETE FROM {project_user_list} WHERE user_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_user_id ) );
+		$t_query = 'DELETE FROM {project_user_list} WHERE user_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_user_id ) );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		return true;
 	}
@@ -606,13 +606,13 @@ class User
 	 * @return boolean
 	 */
 	static function delete_profiles( $p_user_id ) {
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	
 		# Remove associated profiles
-		$t_query = 'DELETE FROM {user_profile} WHERE user_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_user_id ) );
+		$t_query = 'DELETE FROM {user_profile} WHERE user_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_user_id ) );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		return true;
 	}
@@ -627,25 +627,25 @@ class User
 	static function delete( $p_user_id ) {
 		$c_user_id = (int)$p_user_id;
 	
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	
 		# Remove associated profiles
-		\Flickerbox\User::delete_profiles( $p_user_id );
+		\Core\User::delete_profiles( $p_user_id );
 	
 		# Remove associated preferences
-		\Flickerbox\User\Pref::delete_all( $p_user_id );
+		\Core\User\Pref::delete_all( $p_user_id );
 	
 		# Remove project specific access levels
-		\Flickerbox\User::delete_project_specific_access_levels( $p_user_id );
+		\Core\User::delete_project_specific_access_levels( $p_user_id );
 	
 		# unset non-unique realname flags if necessary
-		if( \Flickerbox\Config::mantis_get( 'differentiate_duplicates' ) ) {
-			$c_realname = \Flickerbox\User::get_field( $p_user_id, 'realname' );
-			$t_query = 'SELECT id FROM {user} WHERE realname=' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $c_realname ) );
+		if( \Core\Config::mantis_get( 'differentiate_duplicates' ) ) {
+			$c_realname = \Core\User::get_field( $p_user_id, 'realname' );
+			$t_query = 'SELECT id FROM {user} WHERE realname=' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $c_realname ) );
 	
 			$t_users = array();
-			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 				$t_users[] = $t_row;
 			}
 	
@@ -655,16 +655,16 @@ class User
 				# unset flags if there are now only 2 unique names
 				for( $i = 0;$i < $t_user_count;$i++ ) {
 					$t_user_id = $t_users[$i]['id'];
-					\Flickerbox\User::set_field( $t_user_id, 'duplicate_realname', OFF );
+					\Core\User::set_field( $t_user_id, 'duplicate_realname', OFF );
 				}
 			}
 		}
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		# Remove account
-		$t_query = 'DELETE FROM {user} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_user_id ) );
+		$t_query = 'DELETE FROM {user} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_user_id ) );
 	
 		return true;
 	}
@@ -677,16 +677,16 @@ class User
 	 * @return integer|boolean
 	 */
 	static function get_id_by_name( $p_username ) {
-		if( $t_user = \Flickerbox\User::search_cache( 'username', $p_username ) ) {
+		if( $t_user = \Core\User::search_cache( 'username', $p_username ) ) {
 			return $t_user['id'];
 		}
 	
-		$t_query = 'SELECT * FROM {user} WHERE username=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_username ) );
+		$t_query = 'SELECT * FROM {user} WHERE username=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_username ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( $t_row ) {
-			\Flickerbox\User::cache_database_result( $t_row );
+			\Core\User::cache_database_result( $t_row );
 			return $t_row['id'];
 		}
 		return false;
@@ -700,16 +700,16 @@ class User
 	 */
 	static function get_id_by_email( $p_email ) {
 		global $g_cache_user;
-		if( $t_user = \Flickerbox\User::search_cache( 'email', $p_email ) ) {
+		if( $t_user = \Core\User::search_cache( 'email', $p_email ) ) {
 			return $t_user['id'];
 		}
 	
-		$t_query = 'SELECT * FROM {user} WHERE email=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_email ) );
+		$t_query = 'SELECT * FROM {user} WHERE email=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_email ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( $t_row ) {
-			\Flickerbox\User::cache_database_result( $t_row );
+			\Core\User::cache_database_result( $t_row );
 			return $t_row['id'];
 		}
 		return false;
@@ -724,19 +724,19 @@ class User
 	 */
 	static function get_id_by_realname( $p_realname ) {
 		global $g_cache_user;
-		if( $t_user = \Flickerbox\User::search_cache( 'realname', $p_realname ) ) {
+		if( $t_user = \Core\User::search_cache( 'realname', $p_realname ) ) {
 			return $t_user['id'];
 		}
 	
-		$t_query = 'SELECT * FROM {user} WHERE realname=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_realname ) );
+		$t_query = 'SELECT * FROM {user} WHERE realname=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_realname ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			return false;
 		} else {
-			\Flickerbox\User::cache_database_result( $t_row );
+			\Core\User::cache_database_result( $t_row );
 			return $t_row['id'];
 		}
 	}
@@ -749,13 +749,13 @@ class User
 	 * @return array
 	 */
 	static function get_row_by_name( $p_username ) {
-		$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
+		$t_user_id = \Core\User::get_id_by_name( $p_username );
 	
 		if( false === $t_user_id ) {
 			return false;
 		}
 	
-		$t_row = \Flickerbox\User::get_row( $t_user_id );
+		$t_row = \Core\User::get_row( $t_user_id );
 	
 		return $t_row;
 	}
@@ -767,7 +767,7 @@ class User
 	 * @return array
 	 */
 	static function get_row( $p_user_id ) {
-		return \Flickerbox\User::cache_row( $p_user_id );
+		return \Core\User::cache_row( $p_user_id );
 	}
 	
 	/**
@@ -779,12 +779,12 @@ class User
 	 */
 	static function get_field( $p_user_id, $p_field_name ) {
 		if( NO_USER == $p_user_id ) {
-			\Flickerbox\Error::parameters( NO_USER );
+			\Core\Error::parameters( NO_USER );
 			trigger_error( ERROR_USER_BY_ID_NOT_FOUND, WARNING );
 			return '@null@';
 		}
 	
-		$t_row = \Flickerbox\User::get_row( $p_user_id );
+		$t_row = \Core\User::get_row( $p_user_id );
 	
 		if( isset( $t_row[$p_field_name] ) ) {
 			switch( $p_field_name ) {
@@ -794,7 +794,7 @@ class User
 					return $t_row[$p_field_name];
 			}
 		} else {
-			\Flickerbox\Error::parameters( $p_field_name );
+			\Core\Error::parameters( $p_field_name );
 			trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 			return '';
 		}
@@ -808,11 +808,11 @@ class User
 	 */
 	static function get_email( $p_user_id ) {
 		$t_email = '';
-		if( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) && ON == \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) {
-			$t_email = \Flickerbox\LDAP::email( $p_user_id );
+		if( LDAP == \Core\Config::mantis_get( 'login_method' ) && ON == \Core\Config::mantis_get( 'use_ldap_email' ) ) {
+			$t_email = \Core\LDAP::email( $p_user_id );
 		}
-		if( \Flickerbox\Utility::is_blank( $t_email ) ) {
-			$t_email = \Flickerbox\User::get_field( $p_user_id, 'email' );
+		if( \Core\Utility::is_blank( $t_email ) ) {
+			$t_email = \Core\User::get_field( $p_user_id, 'email' );
 		}
 		return $t_email;
 	}
@@ -826,12 +826,12 @@ class User
 	static function get_realname( $p_user_id ) {
 		$t_realname = '';
 	
-		if( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) && ON == \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) {
-			$t_realname = \Flickerbox\LDAP::realname( $p_user_id );
+		if( LDAP == \Core\Config::mantis_get( 'login_method' ) && ON == \Core\Config::mantis_get( 'use_ldap_realname' ) ) {
+			$t_realname = \Core\LDAP::realname( $p_user_id );
 		}
 	
-		if( \Flickerbox\Utility::is_blank( $t_realname ) ) {
-			$t_realname = \Flickerbox\User::get_field( $p_user_id, 'realname' );
+		if( \Core\Utility::is_blank( $t_realname ) ) {
+			$t_realname = \Core\User::get_field( $p_user_id, 'realname' );
 		}
 	
 		return $t_realname;
@@ -845,13 +845,13 @@ class User
 	 * @return string
 	 */
 	static function get_name( $p_user_id ) {
-		$t_row = \Flickerbox\User::cache_row( $p_user_id, false );
+		$t_row = \Core\User::cache_row( $p_user_id, false );
 	
 		if( false == $t_row ) {
-			return \Flickerbox\Lang::get( 'prefix_for_deleted_users' ) . (int)$p_user_id;
+			return \Core\Lang::get( 'prefix_for_deleted_users' ) . (int)$p_user_id;
 		} else {
-			if( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) ) {
-				if( \Flickerbox\Utility::is_blank( $t_row['realname'] ) ) {
+			if( ON == \Core\Config::mantis_get( 'show_realname' ) ) {
+				if( \Core\Utility::is_blank( $t_row['realname'] ) ) {
 					return $t_row['username'];
 				} else {
 					if( isset( $t_row['duplicate_realname'] ) && ( ON == $t_row['duplicate_realname'] ) ) {
@@ -877,7 +877,7 @@ class User
 	* @return array
 	*/
 	static function get_avatar( $p_user_id, $p_size = 80 ) {
-		$t_default_avatar = \Flickerbox\Config::mantis_get( 'show_avatar' );
+		$t_default_avatar = \Core\Config::mantis_get( 'show_avatar' );
 	
 		if( OFF === $t_default_avatar ) {
 			# Avatars are not used
@@ -893,14 +893,14 @@ class User
 		$t_default_avatar = urlencode( $t_default_avatar );
 		$t_rating = 'G';
 	
-		if ( \Flickerbox\User::exists( $p_user_id ) ) {
-			$t_email_hash = md5( strtolower( trim( \Flickerbox\User::get_email( $p_user_id ) ) ) );
+		if ( \Core\User::exists( $p_user_id ) ) {
+			$t_email_hash = md5( strtolower( trim( \Core\User::get_email( $p_user_id ) ) ) );
 		} else {
 			$t_email_hash = md5( 'generic-avatar-since-user-not-found' );
 		}
 	
 		# Build Gravatar URL
-		if( \Flickerbox\HTTP::is_protocol_https() ) {
+		if( \Core\HTTP::is_protocol_https() ) {
 			$t_avatar_url = 'https://secure.gravatar.com/';
 		} else {
 			$t_avatar_url = 'http://www.gravatar.com/';
@@ -919,13 +919,13 @@ class User
 	 * @return integer
 	 */
 	static function get_access_level( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-		$t_access_level = \Flickerbox\User::get_field( $p_user_id, 'access_level' );
+		$t_access_level = \Core\User::get_field( $p_user_id, 'access_level' );
 	
-		if( \Flickerbox\User::is_administrator( $p_user_id ) ) {
+		if( \Core\User::is_administrator( $p_user_id ) ) {
 			return $t_access_level;
 		}
 	
-		$t_project_access_level = \Flickerbox\Project::get_local_user_access_level( $p_project_id, $p_user_id );
+		$t_project_access_level = \Core\Project::get_local_user_access_level( $p_project_id, $p_user_id );
 	
 		if( false === $t_project_access_level ) {
 			return $t_access_level;
@@ -944,12 +944,12 @@ class User
 	static function get_accessible_projects( $p_user_id, $p_show_disabled = false ) {
 		global $g_user_accessible_projects_cache;
 	
-		if( null !== $g_user_accessible_projects_cache && \Flickerbox\Auth::get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
+		if( null !== $g_user_accessible_projects_cache && \Core\Auth::get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
 			return $g_user_accessible_projects_cache;
 		}
 	
-		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'private_project_threshold' ), $p_user_id ) ) {
-			$t_projects = \Flickerbox\Project\Hierarchy::get_subprojects( ALL_PROJECTS, $p_show_disabled );
+		if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'private_project_threshold' ), $p_user_id ) ) {
+			$t_projects = \Core\Project\Hierarchy::get_subprojects( ALL_PROJECTS, $p_show_disabled );
 		} else {
 			$t_public = VS_PUBLIC;
 			$t_private = VS_PRIVATE;
@@ -957,20 +957,20 @@ class User
 			$t_query = 'SELECT p.id, p.name, ph.parent_id
 							  FROM {project} p
 							  LEFT JOIN {project_user_list} u
-							    ON p.id=u.project_id AND u.user_id=' . \Flickerbox\Database::param() . '
+							    ON p.id=u.project_id AND u.user_id=' . \Core\Database::param() . '
 							  LEFT JOIN {project_hierarchy} ph
 							    ON ph.child_id = p.id
-							  WHERE ' . ( $p_show_disabled ? '' : ( 'p.enabled = ' . \Flickerbox\Database::param() . ' AND ' ) ) . '
-								( p.view_state=' . \Flickerbox\Database::param() . '
-								    OR (p.view_state=' . \Flickerbox\Database::param() . '
+							  WHERE ' . ( $p_show_disabled ? '' : ( 'p.enabled = ' . \Core\Database::param() . ' AND ' ) ) . '
+								( p.view_state=' . \Core\Database::param() . '
+								    OR (p.view_state=' . \Core\Database::param() . '
 									    AND
-								        u.user_id=' . \Flickerbox\Database::param() . ' )
+								        u.user_id=' . \Core\Database::param() . ' )
 								) ORDER BY p.name';
-			$t_result = \Flickerbox\Database::query( $t_query, ( $p_show_disabled ? array( $p_user_id, $t_public, $t_private, $p_user_id ) : array( $p_user_id, true, $t_public, $t_private, $p_user_id ) ) );
+			$t_result = \Core\Database::query( $t_query, ( $p_show_disabled ? array( $p_user_id, $t_public, $t_private, $p_user_id ) : array( $p_user_id, true, $t_public, $t_private, $p_user_id ) ) );
 	
 			$t_projects = array();
 	
-			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 				$t_projects[(int)$t_row['id']] = ( $t_row['parent_id'] === null ) ? 0 : (int)$t_row['parent_id'];
 			}
 	
@@ -988,7 +988,7 @@ class User
 			$t_projects = array_keys( $t_projects );
 		}
 	
-		if( \Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
+		if( \Core\Auth::get_current_user_id() == $p_user_id ) {
 			$g_user_accessible_projects_cache = $t_projects;
 		}
 	
@@ -1005,7 +1005,7 @@ class User
 	static function get_accessible_subprojects( $p_user_id, $p_project_id, $p_show_disabled = false ) {
 		global $g_user_accessible_subprojects_cache;
 	
-		if( null !== $g_user_accessible_subprojects_cache && \Flickerbox\Auth::get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
+		if( null !== $g_user_accessible_subprojects_cache && \Core\Auth::get_current_user_id() == $p_user_id && false == $p_show_disabled ) {
 			if( isset( $g_user_accessible_subprojects_cache[$p_project_id] ) ) {
 				return $g_user_accessible_subprojects_cache[$p_project_id];
 			} else {
@@ -1013,10 +1013,10 @@ class User
 			}
 		}
 	
-		\Flickerbox\Database::param_push();
+		\Core\Database::param_push();
 	
-		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'private_project_threshold' ), $p_user_id ) ) {
-			$t_enabled_clause = $p_show_disabled ? '' : 'p.enabled = ' . \Flickerbox\Database::param() . ' AND';
+		if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'private_project_threshold' ), $p_user_id ) ) {
+			$t_enabled_clause = $p_show_disabled ? '' : 'p.enabled = ' . \Core\Database::param() . ' AND';
 			$t_query = 'SELECT DISTINCT p.id, p.name, ph.parent_id
 						  FROM {project} p
 						  LEFT JOIN {project_hierarchy} ph
@@ -1024,20 +1024,20 @@ class User
 						  WHERE ' . $t_enabled_clause . '
 						  	 ph.parent_id IS NOT NULL
 						  ORDER BY p.name';
-			$t_result = \Flickerbox\Database::query( $t_query, ( $p_show_disabled ? array() : array( true ) ) );
+			$t_result = \Core\Database::query( $t_query, ( $p_show_disabled ? array() : array( true ) ) );
 		} else {
 			$t_query = 'SELECT DISTINCT p.id, p.name, ph.parent_id
 						  FROM {project} p
 						  LEFT JOIN {project_user_list} u
-						    ON p.id = u.project_id AND u.user_id=' . \Flickerbox\Database::param() . '
+						    ON p.id = u.project_id AND u.user_id=' . \Core\Database::param() . '
 						  LEFT JOIN {project_hierarchy} ph
 						    ON ph.child_id = p.id
-						  WHERE ' . ( $p_show_disabled ? '' : ( 'p.enabled = ' . \Flickerbox\Database::param() . ' AND ' ) ) . '
+						  WHERE ' . ( $p_show_disabled ? '' : ( 'p.enabled = ' . \Core\Database::param() . ' AND ' ) ) . '
 						  	ph.parent_id IS NOT NULL AND
-							( p.view_state=' . \Flickerbox\Database::param() . '
-							    OR (p.view_state=' . \Flickerbox\Database::param() . '
+							( p.view_state=' . \Core\Database::param() . '
+							    OR (p.view_state=' . \Core\Database::param() . '
 								    AND
-							        u.user_id=' . \Flickerbox\Database::param() . ' )
+							        u.user_id=' . \Core\Database::param() . ' )
 							)
 						  ORDER BY p.name';
 			$t_param = array( $p_user_id, VS_PUBLIC, VS_PRIVATE, $p_user_id );
@@ -1045,12 +1045,12 @@ class User
 				# Insert enabled flag value in 2nd position of parameter array
 				array_splice( $t_param, 1, 0, true );
 			}
-			$t_result = \Flickerbox\Database::query( $t_query, $t_param );
+			$t_result = \Core\Database::query( $t_query, $t_param );
 		}
 	
 		$t_projects = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			if( !isset( $t_projects[(int)$t_row['parent_id']] ) ) {
 				$t_projects[(int)$t_row['parent_id']] = array();
 			}
@@ -1058,7 +1058,7 @@ class User
 			array_push( $t_projects[(int)$t_row['parent_id']], (int)$t_row['id'] );
 		}
 	
-		if( \Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
+		if( \Core\Auth::get_current_user_id() == $p_user_id ) {
 			$g_user_accessible_subprojects_cache = $t_projects;
 		}
 	
@@ -1078,14 +1078,14 @@ class User
 	static function get_all_accessible_subprojects( $p_user_id, $p_project_id ) {
 		# @todo (thraxisp) Should all top level projects be a sub-project of ALL_PROJECTS implicitly?
 		# affects how news and some summaries are generated
-		$t_todo = \Flickerbox\User::get_accessible_subprojects( $p_user_id, $p_project_id );
+		$t_todo = \Core\User::get_accessible_subprojects( $p_user_id, $p_project_id );
 		$t_subprojects = array();
 	
 		while( $t_todo ) {
 			$t_elem = (int)array_shift( $t_todo );
 			if( !in_array( $t_elem, $t_subprojects ) ) {
 				array_push( $t_subprojects, $t_elem );
-				$t_todo = array_merge( $t_todo, \Flickerbox\User::get_accessible_subprojects( $p_user_id, $t_elem ) );
+				$t_todo = array_merge( $t_todo, \Core\User::get_accessible_subprojects( $p_user_id, $t_elem ) );
 			}
 		}
 	
@@ -1100,7 +1100,7 @@ class User
 	 */
 	static function get_all_accessible_projects( $p_user_id, $p_project_id ) {
 		if( ALL_PROJECTS == $p_project_id ) {
-			$t_topprojects = \Flickerbox\User::get_accessible_projects( $p_user_id );
+			$t_topprojects = \Core\User::get_accessible_projects( $p_user_id );
 	
 			# Cover the case for PHP < 5.4 where array_combine() returns
 			# false and triggers warning if arrays are empty (see #16187)
@@ -1113,14 +1113,14 @@ class User
 	
 			# Add all subprojects user has access to
 			foreach( $t_topprojects as $t_project ) {
-				$t_subprojects_ids = \Flickerbox\User::get_all_accessible_subprojects( $p_user_id, $t_project );
+				$t_subprojects_ids = \Core\User::get_all_accessible_subprojects( $p_user_id, $t_project );
 				foreach( $t_subprojects_ids as $t_id ) {
 					$t_project_ids[$t_id] = $t_id;
 				}
 			}
 		} else {
-			\Flickerbox\Access::ensure_project_level( VIEWER, $p_project_id );
-			$t_project_ids = \Flickerbox\User::get_all_accessible_subprojects( $p_user_id, $p_project_id );
+			\Core\Access::ensure_project_level( VIEWER, $p_project_id );
+			$t_project_ids = \Core\User::get_all_accessible_subprojects( $p_user_id, $p_project_id );
 			array_unshift( $t_project_ids, $p_project_id );
 		}
 	
@@ -1139,11 +1139,11 @@ class User
 					LEFT JOIN {project_user_list} u
 					ON p.id=u.project_id
 					WHERE p.enabled = \'1\' AND
-						u.user_id=' . \Flickerbox\Database::param() . '
+						u.user_id=' . \Core\Database::param() . '
 					ORDER BY p.name';
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+		$t_result = \Core\Database::query( $t_query, array( $p_user_id ) );
 		$t_projects = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_project_id = $t_row['id'];
 			$t_projects[$t_project_id] = $t_row;
 		}
@@ -1159,31 +1159,31 @@ class User
 	 */
 	static function get_unassigned_by_project_id( $p_project_id = null ) {
 		if( null === $p_project_id ) {
-			$p_project_id = \Flickerbox\Helper::get_current_project();
+			$p_project_id = \Core\Helper::get_current_project();
 		}
 	
-		$t_adm = \Flickerbox\Config::get_global( 'admin_site_threshold' );
+		$t_adm = \Core\Config::get_global( 'admin_site_threshold' );
 		$t_query = 'SELECT DISTINCT u.id, u.username, u.realname
 					FROM {user} u
 					LEFT JOIN {project_user_list} p
-					ON p.user_id=u.id AND p.project_id=' . \Flickerbox\Database::param() . '
-					WHERE u.access_level<' . \Flickerbox\Database::param() . ' AND
-						u.enabled = ' . \Flickerbox\Database::param() . ' AND
+					ON p.user_id=u.id AND p.project_id=' . \Core\Database::param() . '
+					WHERE u.access_level<' . \Core\Database::param() . ' AND
+						u.enabled = ' . \Core\Database::param() . ' AND
 						p.user_id IS NULL
 					ORDER BY u.realname, u.username';
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_project_id, $t_adm, true ) );
+		$t_result = \Core\Database::query( $t_query, array( $p_project_id, $t_adm, true ) );
 		$t_display = array();
 		$t_sort = array();
 		$t_users = array();
-		$t_show_realname = ( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) );
-		$t_sort_by_last_name = ( ON == \Flickerbox\Config::mantis_get( 'sort_by_last_name' ) );
+		$t_show_realname = ( ON == \Core\Config::mantis_get( 'show_realname' ) );
+		$t_sort_by_last_name = ( ON == \Core\Config::mantis_get( 'sort_by_last_name' ) );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_users[] = $t_row['id'];
-			$t_user_name = \Flickerbox\String::attribute( $t_row['username'] );
+			$t_user_name = \Core\String::attribute( $t_row['username'] );
 			$t_sort_name = $t_user_name;
 			if( ( isset( $t_row['realname'] ) ) && ( $t_row['realname'] <> '' ) && $t_show_realname ) {
-				$t_user_name = \Flickerbox\String::attribute( $t_row['realname'] );
+				$t_user_name = \Core\String::attribute( $t_row['realname'] );
 				if( $t_sort_by_last_name ) {
 					$t_sort_name_bits = explode( ' ', utf8_strtolower( $t_user_name ), 2 );
 					$t_sort_name = ( isset( $t_sort_name_bits[1] ) ? $t_sort_name_bits[1] . ', ' : '' ) . $t_sort_name_bits[0];
@@ -1211,18 +1211,18 @@ class User
 	 * @return integer
 	 */
 	static function get_assigned_open_bug_count( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-		$t_where_prj = \Flickerbox\Helper::project_specific_where( $p_project_id, $p_user_id ) . ' AND';
+		$t_where_prj = \Core\Helper::project_specific_where( $p_project_id, $p_user_id ) . ' AND';
 	
-		$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+		$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
 	
 		$t_query = 'SELECT COUNT(*)
 					  FROM {bug}
 					  WHERE ' . $t_where_prj . '
-							status<' . \Flickerbox\Database::param() . ' AND
-							handler_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $t_resolved, $p_user_id ) );
+							status<' . \Core\Database::param() . ' AND
+							handler_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $t_resolved, $p_user_id ) );
 	
-		return \Flickerbox\Database::result( $t_result );
+		return \Core\Database::result( $t_result );
 	}
 	
 	/**
@@ -1233,17 +1233,17 @@ class User
 	 * @return integer
 	 */
 	static function get_reported_open_bug_count( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-		$t_where_prj = \Flickerbox\Helper::project_specific_where( $p_project_id, $p_user_id ) . ' AND';
+		$t_where_prj = \Core\Helper::project_specific_where( $p_project_id, $p_user_id ) . ' AND';
 	
-		$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+		$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
 	
 		$t_query = 'SELECT COUNT(*) FROM {bug}
 					  WHERE ' . $t_where_prj . '
-							  status<' . \Flickerbox\Database::param() . ' AND
-							  reporter_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $t_resolved, $p_user_id ) );
+							  status<' . \Core\Database::param() . ' AND
+							  reporter_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $t_resolved, $p_user_id ) );
 	
-		return \Flickerbox\Database::result( $t_result );
+		return \Core\Database::result( $t_result );
 	}
 	
 	/**
@@ -1255,11 +1255,11 @@ class User
 	 */
 	static function get_profile_row( $p_user_id, $p_profile_id ) {
 		$t_query = 'SELECT * FROM {user_profile}
-					  WHERE id=' . \Flickerbox\Database::param() . ' AND
-							user_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
+					  WHERE id=' . \Core\Database::param() . ' AND
+							user_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			trigger_error( ERROR_USER_PROFILE_NOT_FOUND, ERROR );
@@ -1275,8 +1275,8 @@ class User
 	 * @return boolean
 	 */
 	static function is_login_request_allowed( $p_user_id ) {
-		$t_max_failed_login_count = \Flickerbox\Config::mantis_get( 'max_failed_login_count' );
-		$t_failed_login_count = \Flickerbox\User::get_field( $p_user_id, 'failed_login_count' );
+		$t_max_failed_login_count = \Core\Config::mantis_get( 'max_failed_login_count' );
+		$t_failed_login_count = \Core\User::get_field( $p_user_id, 'failed_login_count' );
 		return( $t_failed_login_count < $t_max_failed_login_count || OFF == $t_max_failed_login_count );
 	}
 	
@@ -1287,11 +1287,11 @@ class User
 	 * @return boolean
 	 */
 	static function is_lost_password_request_allowed( $p_user_id ) {
-		if( OFF == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ) {
+		if( OFF == \Core\Config::mantis_get( 'lost_password_feature' ) ) {
 			return false;
 		}
-		$t_max_lost_password_in_progress_count = \Flickerbox\Config::mantis_get( 'max_lost_password_in_progress_count' );
-		$t_lost_password_in_progress_count = \Flickerbox\User::get_field( $p_user_id, 'lost_password_request_count' );
+		$t_max_lost_password_in_progress_count = \Core\Config::mantis_get( 'max_lost_password_in_progress_count' );
+		$t_lost_password_in_progress_count = \Core\User::get_field( $p_user_id, 'lost_password_request_count' );
 		return( $t_lost_password_in_progress_count < $t_max_lost_password_in_progress_count || OFF == $t_max_lost_password_in_progress_count );
 	}
 	
@@ -1304,22 +1304,22 @@ class User
 	 */
 	static function get_bug_filter( $p_user_id, $p_project_id = null ) {
 		if( null === $p_project_id ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = $p_project_id;
 		}
 	
-		$t_view_all_cookie_id = \Flickerbox\Filter::db_get_project_current( $t_project_id, $p_user_id );
-		$t_view_all_cookie = \Flickerbox\Filter::db_get_filter( $t_view_all_cookie_id, $p_user_id );
+		$t_view_all_cookie_id = \Core\Filter::db_get_project_current( $t_project_id, $p_user_id );
+		$t_view_all_cookie = \Core\Filter::db_get_filter( $t_view_all_cookie_id, $p_user_id );
 		$t_cookie_detail = explode( '#', $t_view_all_cookie, 2 );
 	
 		if( !isset( $t_cookie_detail[1] ) ) {
-			return \Flickerbox\Filter::get_default();
+			return \Core\Filter::get_default();
 		}
 	
 		$t_filter = json_decode( $t_cookie_detail[1], true );
 	
-		$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
+		$t_filter = \Core\Filter::ensure_valid_filter( $t_filter );
 	
 		return $t_filter;
 	}
@@ -1332,13 +1332,13 @@ class User
 	 */
 	static function update_last_visit( $p_user_id ) {
 		$c_user_id = (int)$p_user_id;
-		$c_value = \Flickerbox\Database::now();
+		$c_value = \Core\Database::now();
 	
-		$t_query = 'UPDATE {user} SET last_visit=' . \Flickerbox\Database::param() . ' WHERE id=' . \Flickerbox\Database::param();
+		$t_query = 'UPDATE {user} SET last_visit=' . \Core\Database::param() . ' WHERE id=' . \Core\Database::param();
 	
-		\Flickerbox\Database::query( $t_query, array( $c_value, $c_user_id ) );
+		\Core\Database::query( $t_query, array( $c_value, $c_user_id ) );
 	
-		\Flickerbox\User::update_cache( $c_user_id, 'last_visit', $c_value );
+		\Core\User::update_cache( $c_user_id, 'last_visit', $c_value );
 	
 		return true;
 	}
@@ -1351,11 +1351,11 @@ class User
 	 * @return boolean always true
 	 */
 	static function increment_login_count( $p_user_id ) {
-		$t_query = 'UPDATE {user} SET login_count=login_count+1 WHERE id=' . \Flickerbox\Database::param();
+		$t_query = 'UPDATE {user} SET login_count=login_count+1 WHERE id=' . \Core\Database::param();
 	
-		\Flickerbox\Database::query( $t_query, array( (int)$p_user_id ) );
+		\Core\Database::query( $t_query, array( (int)$p_user_id ) );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		return true;
 	}
@@ -1367,10 +1367,10 @@ class User
 	 * @return boolean always true
 	 */
 	static function reset_failed_login_count_to_zero( $p_user_id ) {
-		$t_query = 'UPDATE {user} SET failed_login_count=0 WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_user_id ) );
+		$t_query = 'UPDATE {user} SET failed_login_count=0 WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_user_id ) );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		return true;
 	}
@@ -1382,10 +1382,10 @@ class User
 	 * @return boolean always true
 	 */
 	static function increment_failed_login_count( $p_user_id ) {
-		$t_query = 'UPDATE {user} SET failed_login_count=failed_login_count+1 WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+		$t_query = 'UPDATE {user} SET failed_login_count=failed_login_count+1 WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_user_id ) );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		return true;
 	}
@@ -1397,10 +1397,10 @@ class User
 	 * @return boolean always true
 	 */
 	static function reset_lost_password_in_progress_count_to_zero( $p_user_id ) {
-		$t_query = 'UPDATE {user} SET lost_password_request_count=0 WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+		$t_query = 'UPDATE {user} SET lost_password_request_count=0 WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_user_id ) );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		return true;
 	}
@@ -1414,10 +1414,10 @@ class User
 	static function increment_lost_password_in_progress_count( $p_user_id ) {
 		$t_query = 'UPDATE {user}
 					SET lost_password_request_count=lost_password_request_count+1
-					WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+					WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_user_id ) );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	
 		return true;
 	}
@@ -1431,30 +1431,30 @@ class User
 	 */
 	static function set_fields( $p_user_id, array $p_fields ) {
 		if( !array_key_exists( 'protected', $p_fields ) ) {
-			\Flickerbox\User::ensure_unprotected( $p_user_id );
+			\Core\User::ensure_unprotected( $p_user_id );
 		}
 	
 		$t_query = 'UPDATE {user}';
 		$t_parameters = array();
 	
 		foreach ( $p_fields as $t_field_name => $t_field_value ) {
-			$c_field_name = \Flickerbox\Database::prepare_string( $t_field_name );
+			$c_field_name = \Core\Database::prepare_string( $t_field_name );
 	
 			if( count( $t_parameters ) == 0 ) {
-				$t_query .= ' SET '. $c_field_name. '=' . \Flickerbox\Database::param();
+				$t_query .= ' SET '. $c_field_name. '=' . \Core\Database::param();
 			} else {
-				$t_query .= ' , ' . $c_field_name. '=' . \Flickerbox\Database::param();
+				$t_query .= ' , ' . $c_field_name. '=' . \Core\Database::param();
 			}
 	
 			array_push( $t_parameters, $t_field_value );
 		}
 	
-		$t_query .= ' WHERE id=' . \Flickerbox\Database::param();
+		$t_query .= ' WHERE id=' . \Core\Database::param();
 		array_push( $t_parameters, (int)$p_user_id );
 	
-		\Flickerbox\Database::query( $t_query, $t_parameters );
+		\Core\Database::query( $t_query, $t_parameters );
 	
-		\Flickerbox\User::clear_cache( $p_user_id );
+		\Core\User::clear_cache( $p_user_id );
 	}
 	
 	/**
@@ -1466,7 +1466,7 @@ class User
 	 * @return boolean always true
 	 */
 	static function set_field( $p_user_id, $p_field_name, $p_field_value ) {
-		\Flickerbox\User::set_fields( $p_user_id, array ( $p_field_name => $p_field_value ) );
+		\Core\User::set_fields( $p_user_id, array ( $p_field_name => $p_field_value ) );
 	
 		return true;
 	}
@@ -1478,7 +1478,7 @@ class User
 	 * @return void
 	 */
 	static function set_default_project( $p_user_id, $p_project_id ) {
-		\Flickerbox\User\Pref::set_pref( $p_user_id, 'default_project', (int)$p_project_id );
+		\Core\User\Pref::set_pref( $p_user_id, 'default_project', (int)$p_project_id );
 	}
 	
 	/**
@@ -1491,19 +1491,19 @@ class User
 	 */
 	static function set_password( $p_user_id, $p_password, $p_allow_protected = false ) {
 		if( !$p_allow_protected ) {
-			\Flickerbox\User::ensure_unprotected( $p_user_id );
+			\Core\User::ensure_unprotected( $p_user_id );
 		}
 	
 		# When the password is changed, invalidate the cookie to expire sessions that
 		# may be active on all browsers.
-		$c_cookie_string = \Flickerbox\Auth::generate_unique_cookie_string();
+		$c_cookie_string = \Core\Auth::generate_unique_cookie_string();
 	
-		$c_password = \Flickerbox\Auth::process_plain_password( $p_password );
+		$c_password = \Core\Auth::process_plain_password( $p_password );
 	
 		$t_query = 'UPDATE {user}
-					  SET password=' . \Flickerbox\Database::param() . ', cookie_string=' . \Flickerbox\Database::param() . '
-					  WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_password, $c_cookie_string, (int)$p_user_id ) );
+					  SET password=' . \Core\Database::param() . ', cookie_string=' . \Core\Database::param() . '
+					  WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_password, $c_cookie_string, (int)$p_user_id ) );
 	
 		return true;
 	}
@@ -1515,9 +1515,9 @@ class User
 	 * @return boolean
 	 */
 	static function set_email( $p_user_id, $p_email ) {
-		\Flickerbox\Email::ensure_valid( $p_email );
+		\Core\Email::ensure_valid( $p_email );
 	
-		return \Flickerbox\User::set_field( $p_user_id, 'email', $p_email );
+		return \Core\User::set_field( $p_user_id, 'email', $p_email );
 	}
 	
 	/**
@@ -1527,7 +1527,7 @@ class User
 	 * @return boolean
 	 */
 	static function set_realname( $p_user_id, $p_realname ) {
-		return \Flickerbox\User::set_field( $p_user_id, 'realname', $p_realname );
+		return \Core\User::set_field( $p_user_id, 'realname', $p_realname );
 	}
 	
 	/**
@@ -1537,10 +1537,10 @@ class User
 	 * @return boolean
 	 */
 	static function set_name( $p_user_id, $p_username ) {
-		\Flickerbox\User::ensure_name_valid( $p_username );
-		\Flickerbox\User::ensure_name_unique( $p_username );
+		\Core\User::ensure_name_valid( $p_username );
+		\Core\User::ensure_name_unique( $p_username );
 	
-		return \Flickerbox\User::set_field( $p_user_id, 'username', $p_username );
+		return \Core\User::set_field( $p_user_id, 'username', $p_username );
 	}
 	
 	/**
@@ -1557,7 +1557,7 @@ class User
 	 * @return boolean
 	 */
 	static function reset_password( $p_user_id, $p_send_email = true ) {
-		$t_protected = \Flickerbox\User::get_field( $p_user_id, 'protected' );
+		$t_protected = \Core\User::get_field( $p_user_id, 'protected' );
 	
 		# Go with random password and email it to the user
 		if( ON == $t_protected ) {
@@ -1568,31 +1568,31 @@ class User
 		#      email notifications are turned off?
 		#     How would we indicate that we had done this with a return value?
 		#     Should we just have two functions? (user_reset_password_random()
-		#     and \Flickerbox\User::reset_password() )?
-		if( ( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
-			$t_email = \Flickerbox\User::get_field( $p_user_id, 'email' );
-			if( \Flickerbox\Utility::is_blank( $t_email ) ) {
+		#     and \Core\User::reset_password() )?
+		if( ( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Core\Config::mantis_get( 'enable_email_notification' ) ) ) {
+			$t_email = \Core\User::get_field( $p_user_id, 'email' );
+			if( \Core\Utility::is_blank( $t_email ) ) {
 				trigger_error( ERROR_LOST_PASSWORD_NO_EMAIL_SPECIFIED, ERROR );
 			}
 	
 			# Create random password
-			$t_password = \Flickerbox\Auth::generate_random_password();
-			$t_password2 = \Flickerbox\Auth::process_plain_password( $t_password );
+			$t_password = \Core\Auth::generate_random_password();
+			$t_password2 = \Core\Auth::process_plain_password( $t_password );
 	
-			\Flickerbox\User::set_field( $p_user_id, 'password', $t_password2 );
+			\Core\User::set_field( $p_user_id, 'password', $t_password2 );
 	
 			# Send notification email
 			if( $p_send_email ) {
-				$t_confirm_hash = \Flickerbox\Auth::generate_confirm_hash( $p_user_id );
-				\Flickerbox\Email::send_confirm_hash_url( $p_user_id, $t_confirm_hash );
+				$t_confirm_hash = \Core\Auth::generate_confirm_hash( $p_user_id );
+				\Core\Email::send_confirm_hash_url( $p_user_id, $t_confirm_hash );
 			}
 		} else {
 			# use blank password, no emailing
-			$t_password = \Flickerbox\Auth::process_plain_password( '' );
-			\Flickerbox\User::set_field( $p_user_id, 'password', $t_password );
+			$t_password = \Core\Auth::process_plain_password( '' );
+			\Core\User::set_field( $p_user_id, 'password', $t_password );
 	
 			# reset the failed login count because in this mode there is no emailing
-			\Flickerbox\User::reset_failed_login_count_to_zero( $p_user_id );
+			\Core\User::reset_failed_login_count_to_zero( $p_user_id );
 		}
 	
 		return true;

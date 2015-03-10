@@ -33,15 +33,15 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_entrypoint = \Flickerbox\GPC::get_string( 'entrypoint' );
+$f_entrypoint = \Core\GPC::get_string( 'entrypoint' );
 
 $t_function = 'xmlhttprequest_' . $f_entrypoint;
 if( function_exists( $t_function ) ) {
-	\Flickerbox\Log::event( LOG_AJAX, 'Calling {' . $t_function . '}...' );
+	\Core\Log::event( LOG_AJAX, 'Calling {' . $t_function . '}...' );
 	call_user_func( $t_function );
 } else {
-	\Flickerbox\Log::event( LOG_AJAX, 'Unknown function for entry point = ' . $t_function );
+	\Core\Log::event( LOG_AJAX, 'Unknown function for entry point = ' . $t_function );
 	echo 'unknown entry point';
 }

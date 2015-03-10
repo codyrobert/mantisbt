@@ -34,24 +34,24 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_user_proj_add' );
+\Core\Form::security_validate( 'manage_user_proj_add' );
 
 auth_reauthenticate();
 
-$f_user_id		= \Flickerbox\GPC::get_int( 'user_id' );
-$f_access_level	= \Flickerbox\GPC::get_int( 'access_level' );
-$f_project_id	= \Flickerbox\GPC::get_int_array( 'project_id', array() );
-$t_manage_user_threshold = \Flickerbox\Config::mantis_get( 'manage_user_threshold' );
+$f_user_id		= \Core\GPC::get_int( 'user_id' );
+$f_access_level	= \Core\GPC::get_int( 'access_level' );
+$f_project_id	= \Core\GPC::get_int_array( 'project_id', array() );
+$t_manage_user_threshold = \Core\Config::mantis_get( 'manage_user_threshold' );
 
-\Flickerbox\User::ensure_exists( $f_user_id );
+\Core\User::ensure_exists( $f_user_id );
 
 foreach ( $f_project_id as $t_proj_id ) {
-	if( \Flickerbox\Access::has_project_level( $t_manage_user_threshold, $t_proj_id ) &&
-		\Flickerbox\Access::has_project_level( $f_access_level, $t_proj_id ) ) {
-		\Flickerbox\Project::add_user( $t_proj_id, $f_user_id, $f_access_level );
+	if( \Core\Access::has_project_level( $t_manage_user_threshold, $t_proj_id ) &&
+		\Core\Access::has_project_level( $f_access_level, $t_proj_id ) ) {
+		\Core\Project::add_user( $t_proj_id, $f_user_id, $f_access_level );
 	}
 }
 
-\Flickerbox\Form::security_purge( 'manage_user_proj_add' );
+\Core\Form::security_purge( 'manage_user_proj_add' );
 
-\Flickerbox\Print_Util::header_redirect( 'manage_user_edit_page.php?user_id=' . $f_user_id );
+\Core\Print_Util::header_redirect( 'manage_user_edit_page.php?user_id=' . $f_user_id );

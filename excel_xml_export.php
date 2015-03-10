@@ -41,28 +41,28 @@ require_once( 'core.php' );
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'print_all_bug_options_inc.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_export = \Flickerbox\GPC::get_string( 'export', '' );
+$f_export = \Core\GPC::get_string( 'export', '' );
 
-\Flickerbox\Helper::begin_long_process();
+\Core\Helper::begin_long_process();
 
 $t_export_title = excel_get_default_filename();
 
-$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
+$t_short_date_format = \Core\Config::mantis_get( 'short_date_format' );
 
 # This is where we used to do the entire actual filter ourselves
-$t_page_number = \Flickerbox\GPC::get_int( 'page_number', 1 );
+$t_page_number = \Core\GPC::get_int( 'page_number', 1 );
 $t_per_page = 100;
 
-$t_result = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_result = \Core\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 if( $t_result === false ) {
-	\Flickerbox\Print_Util::header_redirect( 'view_all_set.php?type=0&print=1' );
+	\Core\Print_Util::header_redirect( 'view_all_set.php?type=0&print=1' );
 }
 
 header( 'Content-Type: application/vnd.ms-excel; charset=UTF-8' );
 header( 'Pragma: public' );
-header( 'Content-Disposition: attachment; filename="' . urlencode( \Flickerbox\File::clean_name( $t_export_title ) ) . '.xml"' ) ;
+header( 'Content-Disposition: attachment; filename="' . urlencode( \Core\File::clean_name( $t_export_title ) ) . '.xml"' ) ;
 
 echo excel_get_header( $t_export_title );
 echo excel_get_titles_row();
@@ -73,17 +73,17 @@ $t_columns = excel_get_columns();
 
 do {
 	# pre-cache custom column data
-	\Flickerbox\Columns::plugin_cache_issue_data( $t_result );
+	\Core\Columns::plugin_cache_issue_data( $t_result );
 
 	foreach( $t_result as $t_row ) {
-		if( \Flickerbox\Utility::is_blank( $f_export ) || in_array( $t_row->id, $f_bug_arr ) ) {
+		if( \Core\Utility::is_blank( $f_export ) || in_array( $t_row->id, $f_bug_arr ) ) {
 			echo excel_get_start_row();
 
 			foreach ( $t_columns as $t_column ) {
-				$t_custom_field = \Flickerbox\Columns::column_get_custom_field_name( $t_column );
+				$t_custom_field = \Core\Columns::column_get_custom_field_name( $t_column );
 				if( $t_custom_field !== null ) {
 					echo excel_format_custom_field( $t_row->id, $t_row->project_id, $t_custom_field );
-				} else if( \Flickerbox\Columns::column_is_plugin_column( $t_column ) ) {
+				} else if( \Core\Columns::column_is_plugin_column( $t_column ) ) {
 					echo excel_format_plugin_column_value( $t_column, $t_row );
 				} else {
 					$t_function = 'excel_format_' . $t_column;
@@ -101,7 +101,7 @@ do {
 	$t_more = ( $t_page_number < $t_page_count );
 	if( $t_more ) {
 		$t_page_number++;
-		$t_result = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+		$t_result = \Core\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 	}
 } while( $t_more );
 

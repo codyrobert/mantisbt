@@ -40,43 +40,43 @@ require_once( 'core.php' );
 
 auth_reauthenticate();
 
-$f_category_id		= \Flickerbox\GPC::get_int( 'id' );
-$f_project_id		= \Flickerbox\GPC::get_int( 'project_id' );
+$f_category_id		= \Core\GPC::get_int( 'id' );
+$f_project_id		= \Core\GPC::get_int( 'project_id' );
 
-$t_row = \Flickerbox\Category::get_row( $f_category_id );
+$t_row = \Core\Category::get_row( $f_category_id );
 $t_assigned_to = (int)$t_row['user_id'];
 $t_project_id = (int)$t_row['project_id'];
 $t_name = $t_row['name'];
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_project_id );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-\Flickerbox\HTML::print_manage_menu( 'manage_proj_cat_edit_page.php' ); ?>
+\Core\HTML::print_manage_menu( 'manage_proj_cat_edit_page.php' ); ?>
 
 <div id="manage-proj-category-update-div" class="form-container">
 	<form id="manage-proj-category-update-form" method="post" action="manage_proj_cat_update.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'edit_project_category_title' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_cat_update' ) ?>
+			<legend><span><?php echo \Core\Lang::get( 'edit_project_category_title' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'manage_proj_cat_update' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>"/>
-			<input type="hidden" name="category_id" value="<?php echo \Flickerbox\String::attribute( $f_category_id ) ?>" />
+			<input type="hidden" name="category_id" value="<?php echo \Core\String::attribute( $f_category_id ) ?>" />
 			<div class="field-container">
-				<label for="proj-category-name"><span><?php echo \Flickerbox\Lang::get( 'category' ) ?></span></label>
-				<span class="input"><input type="text" id="proj-category-name" name="name" size="32" maxlength="128" value="<?php echo \Flickerbox\String::attribute( $t_name ) ?>" /></span>
+				<label for="proj-category-name"><span><?php echo \Core\Lang::get( 'category' ) ?></span></label>
+				<span class="input"><input type="text" id="proj-category-name" name="name" size="32" maxlength="128" value="<?php echo \Core\String::attribute( $t_name ) ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="proj-category-assigned-to"><span><?php echo \Flickerbox\Lang::get( 'assigned_to' ) ?></span></label>
+				<label for="proj-category-assigned-to"><span><?php echo \Core\Lang::get( 'assigned_to' ) ?></span></label>
 				<span class="select">
 					<select id="proj-category-assigned-to" name="assigned_to">
 						<option value="0"></option>
-						<?php \Flickerbox\Print_Util::assign_to_option_list( $t_assigned_to, $t_project_id ) ?>
+						<?php \Core\Print_Util::assign_to_option_list( $t_assigned_to, $t_project_id ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_category_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_category_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -84,12 +84,12 @@ $t_name = $t_row['name'];
 <div class="form-container">
 	<form method="post" action="manage_proj_cat_delete.php" class="action-button">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_cat_delete' ) ?>
-			<input type="hidden" name="id" value="<?php echo \Flickerbox\String::attribute( $f_category_id ) ?>" />
-			<input type="hidden" name="project_id" value="<?php echo \Flickerbox\String::attribute( $f_project_id ) ?>" />
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'delete_category_button' ) ?>" /></span>
+			<?php echo \Core\Form::security_field( 'manage_proj_cat_delete' ) ?>
+			<input type="hidden" name="id" value="<?php echo \Core\String::attribute( $f_category_id ) ?>" />
+			<input type="hidden" name="project_id" value="<?php echo \Core\String::attribute( $f_project_id ) ?>" />
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'delete_category_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div><?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

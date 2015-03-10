@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -46,7 +46,7 @@ class Last_Visited
 	 * @access public
 	 */
 	static function enabled() {
-		return !( 0 == \Flickerbox\Config::mantis_get( 'recently_visited_count' ) || \Flickerbox\Current_User::is_anonymous() );
+		return !( 0 == \Core\Config::mantis_get( 'recently_visited_count' ) || \Core\Current_User::is_anonymous() );
 	}
 	
 	/**
@@ -59,21 +59,21 @@ class Last_Visited
 	 * @return void
 	 */
 	static function issue( $p_issue_id, $p_user_id = null ) {
-		if( !\Flickerbox\Last_Visited::enabled() ) {
+		if( !\Core\Last_Visited::enabled() ) {
 			return;
 		}
 	
-		$t_value = \Flickerbox\Token::get_value( TOKEN_LAST_VISITED, $p_user_id );
+		$t_value = \Core\Token::get_value( TOKEN_LAST_VISITED, $p_user_id );
 		if( is_null( $t_value ) ) {
 			$t_value = $p_issue_id;
 		} else {
 			$t_ids = explode( ',', $p_issue_id . ',' . $t_value );
 			$t_ids = array_unique( $t_ids );
-			$t_ids = array_slice( $t_ids, 0, \Flickerbox\Config::mantis_get( 'recently_visited_count' ) );
+			$t_ids = array_slice( $t_ids, 0, \Core\Config::mantis_get( 'recently_visited_count' ) );
 			$t_value = implode( ',', $t_ids );
 		}
 	
-		\Flickerbox\Token::set( TOKEN_LAST_VISITED, $t_value, TOKEN_EXPIRY_LAST_VISITED, $p_user_id );
+		\Core\Token::set( TOKEN_LAST_VISITED, $t_value, TOKEN_EXPIRY_LAST_VISITED, $p_user_id );
 	}
 	
 	/**
@@ -85,11 +85,11 @@ class Last_Visited
 	 * @access public
 	 */
 	static function get_array( $p_user_id = null ) {
-		if( !\Flickerbox\Last_Visited::enabled() ) {
+		if( !\Core\Last_Visited::enabled() ) {
 			return array();
 		}
 	
-		$t_value = \Flickerbox\Token::get_value( TOKEN_LAST_VISITED, $p_user_id );
+		$t_value = \Core\Token::get_value( TOKEN_LAST_VISITED, $p_user_id );
 	
 		if( is_null( $t_value ) ) {
 			return array();
@@ -99,7 +99,7 @@ class Last_Visited
 		# visited to track, then he/she will get the extra entries until visiting an issue.
 		$t_ids = explode( ',', $t_value );
 	
-		\Flickerbox\Bug::cache_array_rows( $t_ids );
+		\Core\Bug::cache_array_rows( $t_ids );
 		return $t_ids;
 	}
 

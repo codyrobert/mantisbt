@@ -33,7 +33,7 @@ require_once( 'core.php' );
  * @return void
  */
 function print_translation( $p_lang_key ) {
-	echo "translations['" . $p_lang_key . "'] = '" . addslashes( \Flickerbox\Lang::get( $p_lang_key ) ) . "';\n";
+	echo "translations['" . $p_lang_key . "'] = '" . addslashes( \Core\Lang::get( $p_lang_key ) ) . "';\n";
 }
 
 # Send correct MIME Content-Type header for JavaScript content.

@@ -32,20 +32,20 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_config_columns_reset' );
+\Core\Form::security_validate( 'manage_config_columns_reset' );
 
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
-\Flickerbox\Config::delete_for_user( 'view_issues_page_columns', $t_user_id );
-\Flickerbox\Config::delete_for_user( 'print_issues_page_columns', $t_user_id );
-\Flickerbox\Config::delete_for_user( 'csv_columns', $t_user_id );
-\Flickerbox\Config::delete_for_user( 'excel_columns', $t_user_id );
+\Core\Config::delete_for_user( 'view_issues_page_columns', $t_user_id );
+\Core\Config::delete_for_user( 'print_issues_page_columns', $t_user_id );
+\Core\Config::delete_for_user( 'csv_columns', $t_user_id );
+\Core\Config::delete_for_user( 'excel_columns', $t_user_id );
 
-\Flickerbox\Form::security_purge( 'manage_config_columns_reset' );
+\Core\Form::security_purge( 'manage_config_columns_reset' );
 
 $t_redirect_url = 'account_manage_columns_page.php';
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_email_config' ), $t_redirect_url );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_email_config' ), $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

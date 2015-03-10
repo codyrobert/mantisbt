@@ -24,23 +24,23 @@
  */
 
 require_once( 'core.php' );
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 ?>
 <br />
 <?php
 
-\Flickerbox\HTML::print_summary_menu( 'summary_jpgraph_page.php' );
+\Core\HTML::print_summary_menu( 'summary_jpgraph_page.php' );
 
 $t_graphs = array( 'summary_graph_cumulative_bydate', 'summary_graph_bydeveloper', 'summary_graph_byreporter',
 		'summary_graph_byseverity', 'summary_graph_bystatus', 'summary_graph_byresolution',
 		'summary_graph_bycategory', 'summary_graph_bypriority' );
-$t_wide = \Flickerbox\Plugin::config_get( 'summary_graphs_per_row' );
-$t_width = \Flickerbox\Plugin::config_get( 'window_width' );
+$t_wide = \Core\Plugin::config_get( 'summary_graphs_per_row' );
+$t_width = \Core\Plugin::config_get( 'window_width' );
 $t_graph_width = (int)( ( $t_width - 50 ) / $t_wide );
 
-\Flickerbox\Token::delete( TOKEN_GRAPH );
+\Core\Token::delete( TOKEN_GRAPH );
 
 ?>
 
@@ -48,7 +48,7 @@ $t_graph_width = (int)( ( $t_width - 50 ) / $t_wide );
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
-		<?php echo \Flickerbox\Lang::get( 'summary_title' ) ?>
+		<?php echo \Core\Lang::get( 'summary_title' ) ?>
 	</td>
 </tr>
 <?php
@@ -58,7 +58,7 @@ $t_graph_width = (int)( ( $t_width - 50 ) / $t_wide );
 			print( "<tr>\n" );
 		}
 		echo '<td>';
-		printf( '<img src="%s.php&amp;width=%d" alt="" />', \Flickerbox\Plugin::page( $t_graphs[$t_pos] ), $t_graph_width );
+		printf( '<img src="%s.php&amp;width=%d" alt="" />', \Core\Plugin::page( $t_graphs[$t_pos] ), $t_graph_width );
 		echo '</td>';
 		if( ( $t_wide - 1 ) == ( $t_pos % $t_wide ) ) {
 			print( "</tr>\n" );
@@ -68,4 +68,4 @@ $t_graph_width = (int)( ( $t_width - 50 ) / $t_wide );
 </table>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -81,12 +81,12 @@ class Filter
 		if( is_null( $s_field_array ) ) {
 			$s_field_array = array();
 	
-			$t_all_plugin_filters = \Flickerbox\Event::signal( 'EVENT_FILTER_FIELDS' );
+			$t_all_plugin_filters = \Core\Event::signal( 'EVENT_FILTER_FIELDS' );
 			foreach( $t_all_plugin_filters as $t_plugin => $t_plugin_filters ) {
 				foreach( $t_plugin_filters as $t_callback => $t_plugin_filter_array ) {
 					if( is_array( $t_plugin_filter_array ) ) {
 						foreach( $t_plugin_filter_array as $t_filter_class ) {
-							if( class_exists( $t_filter_class ) && is_subclass_of( $t_filter_class, '\\Flickerbox\\MantisFilter' ) ) {
+							if( class_exists( $t_filter_class ) && is_subclass_of( $t_filter_class, '\\Core\\MantisFilter' ) ) {
 								$t_filter_object = new $t_filter_class();
 								$t_field_name = $t_plugin . '_' . $t_filter_object->field;
 								$s_field_array[$t_field_name] = $t_filter_object;
@@ -110,190 +110,190 @@ class Filter
 	static function get_url( array $p_custom_filter ) {
 		$t_query = array();
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_PROJECT_ID] ) ) {
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_PROJECT_ID] ) ) {
 			$t_project_id = $p_custom_filter[FILTER_PROPERTY_PROJECT_ID];
 	
 			if( count( $t_project_id ) == 1 && $t_project_id[0] == META_FILTER_CURRENT ) {
 				$t_project_id = array(
-					\Flickerbox\Helper::get_current_project(),
+					\Core\Helper::get_current_project(),
 				);
 			}
 	
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_PROJECT_ID, $t_project_id );
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_PROJECT_ID, $t_project_id );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SEARCH] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_SEARCH, $p_custom_filter[FILTER_PROPERTY_SEARCH] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SEARCH] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_SEARCH, $p_custom_filter[FILTER_PROPERTY_SEARCH] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_CATEGORY_ID] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_CATEGORY_ID, $p_custom_filter[FILTER_PROPERTY_CATEGORY_ID] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_CATEGORY_ID] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_CATEGORY_ID, $p_custom_filter[FILTER_PROPERTY_CATEGORY_ID] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_REPORTER_ID] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_REPORTER_ID, $p_custom_filter[FILTER_PROPERTY_REPORTER_ID] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_REPORTER_ID] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_REPORTER_ID, $p_custom_filter[FILTER_PROPERTY_REPORTER_ID] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_STATUS] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_STATUS, $p_custom_filter[FILTER_PROPERTY_STATUS] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_STATUS] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_STATUS, $p_custom_filter[FILTER_PROPERTY_STATUS] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_MONITOR_USER_ID] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_MONITOR_USER_ID, $p_custom_filter[FILTER_PROPERTY_MONITOR_USER_ID] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_MONITOR_USER_ID] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_MONITOR_USER_ID, $p_custom_filter[FILTER_PROPERTY_MONITOR_USER_ID] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_HANDLER_ID] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_HANDLER_ID, $p_custom_filter[FILTER_PROPERTY_HANDLER_ID] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_HANDLER_ID] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_HANDLER_ID, $p_custom_filter[FILTER_PROPERTY_HANDLER_ID] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_NOTE_USER_ID] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_NOTE_USER_ID, $p_custom_filter[FILTER_PROPERTY_NOTE_USER_ID] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_NOTE_USER_ID] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_NOTE_USER_ID, $p_custom_filter[FILTER_PROPERTY_NOTE_USER_ID] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SEVERITY] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_SEVERITY, $p_custom_filter[FILTER_PROPERTY_SEVERITY] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SEVERITY] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_SEVERITY, $p_custom_filter[FILTER_PROPERTY_SEVERITY] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_RESOLUTION] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_RESOLUTION, $p_custom_filter[FILTER_PROPERTY_RESOLUTION] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_RESOLUTION] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_RESOLUTION, $p_custom_filter[FILTER_PROPERTY_RESOLUTION] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_PRIORITY] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_PRIORITY, $p_custom_filter[FILTER_PROPERTY_PRIORITY] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_PRIORITY] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_PRIORITY, $p_custom_filter[FILTER_PROPERTY_PRIORITY] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_VIEW_STATE] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_VIEW_STATE, $p_custom_filter[FILTER_PROPERTY_VIEW_STATE] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_VIEW_STATE] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_VIEW_STATE, $p_custom_filter[FILTER_PROPERTY_VIEW_STATE] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_STICKY] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value(
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_STICKY] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value(
 				FILTER_PROPERTY_STICKY,
 				$p_custom_filter[FILTER_PROPERTY_STICKY] ? 'on' : 'off' );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_VERSION] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_VERSION, $p_custom_filter[FILTER_PROPERTY_VERSION] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_VERSION] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_VERSION, $p_custom_filter[FILTER_PROPERTY_VERSION] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_BUILD] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_BUILD, $p_custom_filter[FILTER_PROPERTY_BUILD] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_BUILD] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_BUILD, $p_custom_filter[FILTER_PROPERTY_BUILD] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_FIXED_IN_VERSION] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_FIXED_IN_VERSION, $p_custom_filter[FILTER_PROPERTY_FIXED_IN_VERSION] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_FIXED_IN_VERSION] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_FIXED_IN_VERSION, $p_custom_filter[FILTER_PROPERTY_FIXED_IN_VERSION] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_TARGET_VERSION] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_TARGET_VERSION, $p_custom_filter[FILTER_PROPERTY_TARGET_VERSION] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_TARGET_VERSION] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_TARGET_VERSION, $p_custom_filter[FILTER_PROPERTY_TARGET_VERSION] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SORT_FIELD_NAME] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_SORT_FIELD_NAME, $p_custom_filter[FILTER_PROPERTY_SORT_FIELD_NAME] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SORT_FIELD_NAME] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_SORT_FIELD_NAME, $p_custom_filter[FILTER_PROPERTY_SORT_FIELD_NAME] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SORT_DIRECTION] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_SORT_DIRECTION, $p_custom_filter[FILTER_PROPERTY_SORT_DIRECTION] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_SORT_DIRECTION] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_SORT_DIRECTION, $p_custom_filter[FILTER_PROPERTY_SORT_DIRECTION] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] ) ) {
-			if( $p_custom_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] != \Flickerbox\Config::mantis_get( 'default_limit_view' ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_ISSUES_PER_PAGE, $p_custom_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] ) ) {
+			if( $p_custom_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] != \Core\Config::mantis_get( 'default_limit_view' ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_ISSUES_PER_PAGE, $p_custom_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] );
 			}
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] ) ) {
-			if( $p_custom_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] != \Flickerbox\Config::mantis_get( 'default_show_changed' ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_HIGHLIGHT_CHANGED, $p_custom_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] ) ) {
+			if( $p_custom_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] != \Core\Config::mantis_get( 'default_show_changed' ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_HIGHLIGHT_CHANGED, $p_custom_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] );
 			}
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_HIDE_STATUS] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_HIDE_STATUS, $p_custom_filter[FILTER_PROPERTY_HIDE_STATUS] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_HIDE_STATUS] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_HIDE_STATUS, $p_custom_filter[FILTER_PROPERTY_HIDE_STATUS] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_FILTER_BY_DATE] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value(
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_FILTER_BY_DATE] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value(
 				FILTER_PROPERTY_FILTER_BY_DATE,
 				$p_custom_filter[FILTER_PROPERTY_FILTER_BY_DATE] ? 'on' : 'off' );
 	
 			# The start and end dates are only applicable if filter by date is set.
-			if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_START_DAY] ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_START_DAY, $p_custom_filter[FILTER_PROPERTY_START_DAY] );
+			if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_START_DAY] ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_START_DAY, $p_custom_filter[FILTER_PROPERTY_START_DAY] );
 			}
 	
-			if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_END_DAY] ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_END_DAY, $p_custom_filter[FILTER_PROPERTY_END_DAY] );
+			if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_END_DAY] ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_END_DAY, $p_custom_filter[FILTER_PROPERTY_END_DAY] );
 			}
 	
-			if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_START_MONTH] ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_START_MONTH, $p_custom_filter[FILTER_PROPERTY_START_MONTH] );
+			if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_START_MONTH] ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_START_MONTH, $p_custom_filter[FILTER_PROPERTY_START_MONTH] );
 			}
 	
-			if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_END_MONTH] ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_END_MONTH, $p_custom_filter[FILTER_PROPERTY_END_MONTH] );
+			if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_END_MONTH] ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_END_MONTH, $p_custom_filter[FILTER_PROPERTY_END_MONTH] );
 			}
 	
-			if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_START_YEAR] ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_START_YEAR, $p_custom_filter[FILTER_PROPERTY_START_YEAR] );
+			if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_START_YEAR] ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_START_YEAR, $p_custom_filter[FILTER_PROPERTY_START_YEAR] );
 			}
 	
-			if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_END_YEAR] ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_END_YEAR, $p_custom_filter[FILTER_PROPERTY_END_YEAR] );
+			if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_END_YEAR] ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_END_YEAR, $p_custom_filter[FILTER_PROPERTY_END_YEAR] );
 			}
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] ) ) {
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] ) ) {
 			if( $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] != -1 ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_RELATIONSHIP_TYPE, $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] );
+				$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_RELATIONSHIP_TYPE, $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] );
 			}
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_BUG] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_RELATIONSHIP_BUG, $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_BUG] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_BUG] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_RELATIONSHIP_BUG, $p_custom_filter[FILTER_PROPERTY_RELATIONSHIP_BUG] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_PLATFORM] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_PLATFORM, $p_custom_filter[FILTER_PROPERTY_PLATFORM] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_PLATFORM] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_PLATFORM, $p_custom_filter[FILTER_PROPERTY_PLATFORM] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_OS] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_OS, $p_custom_filter[FILTER_PROPERTY_OS] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_OS] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_OS, $p_custom_filter[FILTER_PROPERTY_OS] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_OS_BUILD] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_OS_BUILD, $p_custom_filter[FILTER_PROPERTY_OS_BUILD] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_OS_BUILD] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_OS_BUILD, $p_custom_filter[FILTER_PROPERTY_OS_BUILD] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_TAG_STRING] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_TAG_STRING, $p_custom_filter[FILTER_PROPERTY_TAG_STRING] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_TAG_STRING] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_TAG_STRING, $p_custom_filter[FILTER_PROPERTY_TAG_STRING] );
 		}
 	
-		if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
-			$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_TAG_SELECT, $p_custom_filter[FILTER_PROPERTY_TAG_SELECT] );
+		if( !\Core\Filter::field_is_any( $p_custom_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
+			$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_TAG_SELECT, $p_custom_filter[FILTER_PROPERTY_TAG_SELECT] );
 		}
 	
-		$t_query[] = \Flickerbox\Filter::encode_field_and_value( FILTER_PROPERTY_MATCH_TYPE, $p_custom_filter[FILTER_PROPERTY_MATCH_TYPE] );
+		$t_query[] = \Core\Filter::encode_field_and_value( FILTER_PROPERTY_MATCH_TYPE, $p_custom_filter[FILTER_PROPERTY_MATCH_TYPE] );
 	
 		if( isset( $p_custom_filter['custom_fields'] ) ) {
 			foreach( $p_custom_filter['custom_fields'] as $t_custom_field_id => $t_custom_field_values ) {
-				if( !\Flickerbox\Filter::field_is_any( $t_custom_field_values ) ) {
-					$t_query[] = \Flickerbox\Filter::encode_field_and_value( 'custom_field_' . $t_custom_field_id, $t_custom_field_values );
+				if( !\Core\Filter::field_is_any( $t_custom_field_values ) ) {
+					$t_query[] = \Core\Filter::encode_field_and_value( 'custom_field_' . $t_custom_field_id, $t_custom_field_values );
 				}
 			}
 		}
 	
 		# Allow plugins to add filter fields
-		$t_plugin_filter_array = \Flickerbox\Filter::get_plugin_filters();
+		$t_plugin_filter_array = \Core\Filter::get_plugin_filters();
 		foreach( $t_plugin_filter_array as $t_field_name => $t_filter_object ) {
-			if( !\Flickerbox\Filter::field_is_any( $p_custom_filter[$t_field_name] ) ) {
-				$t_query[] = \Flickerbox\Filter::encode_field_and_value( $t_field_name, $p_custom_filter[$t_field_name], $t_filter_object->type );
+			if( !\Core\Filter::field_is_any( $p_custom_filter[$t_field_name] ) ) {
+				$t_query[] = \Core\Filter::encode_field_and_value( $t_field_name, $p_custom_filter[$t_field_name], $t_filter_object->type );
 			}
 		}
 	
 		if( count( $t_query ) > 0 ) {
 			$t_query_str = implode( $t_query, '&' );
-			$t_url = \Flickerbox\Config::mantis_get( 'path' ) . 'search.php?' . $t_query_str;
+			$t_url = \Core\Config::mantis_get( 'path' ) . 'search.php?' . $t_query_str;
 		} else {
 			$t_url = '';
 		}
@@ -343,7 +343,7 @@ class Filter
 				}
 			}
 		} else {
-			if( is_string( $p_field_value ) && \Flickerbox\Utility::is_blank( $p_field_value ) ) {
+			if( is_string( $p_field_value ) && \Core\Utility::is_blank( $p_field_value ) ) {
 				return true;
 			}
 	
@@ -373,7 +373,7 @@ class Filter
 				}
 			}
 		} else {
-			if( is_string( $p_field_value ) && \Flickerbox\Utility::is_blank( $p_field_value ) ) {
+			if( is_string( $p_field_value ) && \Core\Utility::is_blank( $p_field_value ) ) {
 				return false;
 			}
 	
@@ -469,16 +469,16 @@ class Filter
 			$p_filter_arr['_version'] = FILTER_VERSION;
 		}
 		if( !isset( $p_filter_arr['_view_type'] ) ) {
-			$p_filter_arr['_view_type'] = \Flickerbox\GPC::get_string( 'view_type', 'simple' );
+			$p_filter_arr['_view_type'] = \Core\GPC::get_string( 'view_type', 'simple' );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_ISSUES_PER_PAGE] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_ISSUES_PER_PAGE] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_ISSUES_PER_PAGE, \Flickerbox\Config::mantis_get( 'default_limit_view' ) );
+			$p_filter_arr[FILTER_PROPERTY_ISSUES_PER_PAGE] = \Core\GPC::get_int( FILTER_PROPERTY_ISSUES_PER_PAGE, \Core\Config::mantis_get( 'default_limit_view' ) );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_HIGHLIGHT_CHANGED] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_HIGHLIGHT_CHANGED] = \Flickerbox\Config::mantis_get( 'default_show_changed' );
+			$p_filter_arr[FILTER_PROPERTY_HIGHLIGHT_CHANGED] = \Core\Config::mantis_get( 'default_show_changed' );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_STICKY] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_STICKY] = \Flickerbox\GPC::string_to_bool( \Flickerbox\Config::mantis_get( 'show_sticky_issues' ) );
+			$p_filter_arr[FILTER_PROPERTY_STICKY] = \Core\GPC::string_to_bool( \Core\Config::mantis_get( 'show_sticky_issues' ) );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_SORT_FIELD_NAME] ) ) {
 			$p_filter_arr[FILTER_PROPERTY_SORT_FIELD_NAME] = 'last_updated';
@@ -512,76 +512,76 @@ class Filter
 		}
 	
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_START_MONTH] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_START_MONTH] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_START_MONTH, date( 'm' ) );
+			$p_filter_arr[FILTER_PROPERTY_START_MONTH] = \Core\GPC::get_string( FILTER_PROPERTY_START_MONTH, date( 'm' ) );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_START_DAY] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_START_DAY] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_START_DAY, 1 );
+			$p_filter_arr[FILTER_PROPERTY_START_DAY] = \Core\GPC::get_string( FILTER_PROPERTY_START_DAY, 1 );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_START_YEAR] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_START_YEAR] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_START_YEAR, date( 'Y' ) );
+			$p_filter_arr[FILTER_PROPERTY_START_YEAR] = \Core\GPC::get_string( FILTER_PROPERTY_START_YEAR, date( 'Y' ) );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_END_MONTH] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_END_MONTH] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_END_MONTH, date( 'm' ) );
+			$p_filter_arr[FILTER_PROPERTY_END_MONTH] = \Core\GPC::get_string( FILTER_PROPERTY_END_MONTH, date( 'm' ) );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_END_DAY] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_END_DAY] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_END_DAY, date( 'd' ) );
+			$p_filter_arr[FILTER_PROPERTY_END_DAY] = \Core\GPC::get_string( FILTER_PROPERTY_END_DAY, date( 'd' ) );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_END_YEAR] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_END_YEAR] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_END_YEAR, date( 'Y' ) );
+			$p_filter_arr[FILTER_PROPERTY_END_YEAR] = \Core\GPC::get_string( FILTER_PROPERTY_END_YEAR, date( 'Y' ) );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_SEARCH] ) ) {
 			$p_filter_arr[FILTER_PROPERTY_SEARCH] = '';
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_FILTER_BY_DATE] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_FILTER_BY_DATE] = \Flickerbox\GPC::get_bool( FILTER_PROPERTY_FILTER_BY_DATE, false );
+			$p_filter_arr[FILTER_PROPERTY_FILTER_BY_DATE] = \Core\GPC::get_bool( FILTER_PROPERTY_FILTER_BY_DATE, false );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_VIEW_STATE] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_VIEW_STATE] = \Flickerbox\GPC::get( FILTER_PROPERTY_VIEW_STATE, META_FILTER_ANY );
-		} else if( \Flickerbox\Filter::field_is_any( $p_filter_arr[FILTER_PROPERTY_VIEW_STATE] ) ) {
+			$p_filter_arr[FILTER_PROPERTY_VIEW_STATE] = \Core\GPC::get( FILTER_PROPERTY_VIEW_STATE, META_FILTER_ANY );
+		} else if( \Core\Filter::field_is_any( $p_filter_arr[FILTER_PROPERTY_VIEW_STATE] ) ) {
 			$p_filter_arr[FILTER_PROPERTY_VIEW_STATE] = META_FILTER_ANY;
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_RELATIONSHIP_TYPE] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_RELATIONSHIP_TYPE] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_TYPE, -1 );
+			$p_filter_arr[FILTER_PROPERTY_RELATIONSHIP_TYPE] = \Core\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_TYPE, -1 );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_RELATIONSHIP_BUG] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_RELATIONSHIP_BUG] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_BUG, 0 );
+			$p_filter_arr[FILTER_PROPERTY_RELATIONSHIP_BUG] = \Core\GPC::get_int( FILTER_PROPERTY_RELATIONSHIP_BUG, 0 );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_TARGET_VERSION] ) ) {
 			$p_filter_arr[FILTER_PROPERTY_TARGET_VERSION] = (string)META_FILTER_ANY;
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_TAG_STRING] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_TAG_STRING] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_TAG_STRING, '' );
+			$p_filter_arr[FILTER_PROPERTY_TAG_STRING] = \Core\GPC::get_string( FILTER_PROPERTY_TAG_STRING, '' );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_TAG_SELECT] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_TAG_SELECT] = \Flickerbox\GPC::get_string( FILTER_PROPERTY_TAG_SELECT, '' );
+			$p_filter_arr[FILTER_PROPERTY_TAG_SELECT] = \Core\GPC::get_string( FILTER_PROPERTY_TAG_SELECT, '' );
 		}
 		if( !isset( $p_filter_arr[FILTER_PROPERTY_MATCH_TYPE] ) ) {
-			$p_filter_arr[FILTER_PROPERTY_MATCH_TYPE] = \Flickerbox\GPC::get_int( FILTER_PROPERTY_MATCH_TYPE, FILTER_MATCH_ALL );
+			$p_filter_arr[FILTER_PROPERTY_MATCH_TYPE] = \Core\GPC::get_int( FILTER_PROPERTY_MATCH_TYPE, FILTER_MATCH_ALL );
 		}
 	
 		# initialize plugin filters
-		$t_plugin_filters = \Flickerbox\Filter::get_plugin_filters();
+		$t_plugin_filters = \Core\Filter::get_plugin_filters();
 		foreach( $t_plugin_filters as $t_field_name => $t_filter_object ) {
 			if( !isset( $p_filter_arr[$t_field_name] ) ) {
 				switch( $t_filter_object->type ) {
 					case FILTER_TYPE_STRING:
-						$p_filter_arr[$t_field_name] = \Flickerbox\GPC::get_string( $t_field_name, $t_filter_object->default );
+						$p_filter_arr[$t_field_name] = \Core\GPC::get_string( $t_field_name, $t_filter_object->default );
 						break;
 	
 					case FILTER_TYPE_INT:
-						$p_filter_arr[$t_field_name] = \Flickerbox\GPC::get_int( $t_field_name, (int)$t_filter_object->default );
+						$p_filter_arr[$t_field_name] = \Core\GPC::get_int( $t_field_name, (int)$t_filter_object->default );
 						break;
 	
 					case FILTER_TYPE_BOOLEAN:
-						$p_filter_arr[$t_field_name] = \Flickerbox\GPC::get_bool( $t_field_name, (bool)$t_filter_object->default );
+						$p_filter_arr[$t_field_name] = \Core\GPC::get_bool( $t_field_name, (bool)$t_filter_object->default );
 						break;
 	
 					case FILTER_TYPE_MULTI_STRING:
-						$p_filter_arr[$t_field_name] = \Flickerbox\GPC::get_string_array( $t_field_name, array( 0 => (string)META_FILTER_ANY ) );
+						$p_filter_arr[$t_field_name] = \Core\GPC::get_string_array( $t_field_name, array( 0 => (string)META_FILTER_ANY ) );
 						break;
 	
 					case FILTER_TYPE_MULTI_INT:
-						$p_filter_arr[$t_field_name] = \Flickerbox\GPC::get_int_array( $t_field_name, array( 0 => META_FILTER_ANY ) );
+						$p_filter_arr[$t_field_name] = \Core\GPC::get_int_array( $t_field_name, array( 0 => META_FILTER_ANY ) );
 						break;
 	
 					default:
@@ -600,10 +600,10 @@ class Filter
 		$f_custom_fields_data = array();
 		if( is_array( $t_custom_fields ) && ( count( $t_custom_fields ) > 0 ) ) {
 			foreach( $t_custom_fields as $t_cfid ) {
-				if( is_array( \Flickerbox\GPC::get( 'custom_field_' . $t_cfid, null ) ) ) {
-					$f_custom_fields_data[$t_cfid] = \Flickerbox\GPC::get_string_array( 'custom_field_' . $t_cfid, array( META_FILTER_ANY ) );
+				if( is_array( \Core\GPC::get( 'custom_field_' . $t_cfid, null ) ) ) {
+					$f_custom_fields_data[$t_cfid] = \Core\GPC::get_string_array( 'custom_field_' . $t_cfid, array( META_FILTER_ANY ) );
 				} else {
-					$f_custom_fields_data[$t_cfid] = \Flickerbox\GPC::get_string( 'custom_field_' . $t_cfid, (string)META_FILTER_ANY );
+					$f_custom_fields_data[$t_cfid] = \Core\GPC::get_string( 'custom_field_' . $t_cfid, (string)META_FILTER_ANY );
 					$f_custom_fields_data[$t_cfid] = array(
 						$f_custom_fields_data[$t_cfid],
 					);
@@ -612,7 +612,7 @@ class Filter
 		}
 	
 		# validate sorting
-		$t_fields = \Flickerbox\Helper::get_columns_to_view();
+		$t_fields = \Core\Helper::get_columns_to_view();
 		$t_n_fields = count( $t_fields );
 		for( $i = 0;$i < $t_n_fields;$i++ ) {
 			if( isset( $t_fields[$i] ) && in_array( $t_fields[$i], array( 'selection', 'edit', 'bugnotes_count', 'attachment_count' ) ) ) {
@@ -685,7 +685,7 @@ class Filter
 			if( !isset( $p_filter_arr[$t_multi_field_name] ) ) {
 				if( FILTER_PROPERTY_HIDE_STATUS == $t_multi_field_name ) {
 					$p_filter_arr[$t_multi_field_name] = array(
-						\Flickerbox\Config::mantis_get( 'hide_status_default' ),
+						\Core\Config::mantis_get( 'hide_status_default' ),
 					);
 				} else if( 'custom_fields' == $t_multi_field_name ) {
 					$p_filter_arr[$t_multi_field_name] = array(
@@ -759,8 +759,8 @@ class Filter
 	 * @return mixed
 	 */
 	static function get_default() {
-		$t_hide_status_default = \Flickerbox\Config::mantis_get( 'hide_status_default' );
-		$t_default_show_changed = \Flickerbox\Config::mantis_get( 'default_show_changed' );
+		$t_hide_status_default = \Core\Config::mantis_get( 'hide_status_default' );
+		$t_default_show_changed = \Core\Config::mantis_get( 'default_show_changed' );
 	
 		$t_filter = array(
 			FILTER_PROPERTY_CATEGORY_ID => array(
@@ -799,11 +799,11 @@ class Filter
 			),
 			FILTER_PROPERTY_SORT_FIELD_NAME => 'last_updated',
 			FILTER_PROPERTY_SORT_DIRECTION => 'DESC',
-			FILTER_PROPERTY_ISSUES_PER_PAGE => \Flickerbox\Config::mantis_get( 'default_limit_view' ),
+			FILTER_PROPERTY_ISSUES_PER_PAGE => \Core\Config::mantis_get( 'default_limit_view' ),
 			FILTER_PROPERTY_MATCH_TYPE => FILTER_MATCH_ALL
 		);
 	
-		return \Flickerbox\Filter::ensure_valid_filter( $t_filter );
+		return \Core\Filter::ensure_valid_filter( $t_filter );
 	}
 	
 	/**
@@ -813,7 +813,7 @@ class Filter
 	 * @see filter_ensure_valid_filter
 	 */
 	static function deserialize( $p_serialized_filter ) {
-		if( \Flickerbox\Utility::is_blank( $p_serialized_filter ) ) {
+		if( \Core\Utility::is_blank( $p_serialized_filter ) ) {
 			return false;
 		}
 	
@@ -834,7 +834,7 @@ class Filter
 		}
 		if( $t_filter_array['_version'] != FILTER_VERSION ) {
 			# if the version is not new enough, update it using defaults
-			return \Flickerbox\Filter::ensure_valid_filter( $t_filter_array );
+			return \Core\Filter::ensure_valid_filter( $t_filter_array );
 		}
 	
 		return $t_filter_array;
@@ -845,11 +845,11 @@ class Filter
 	 * @return boolean
 	 */
 	static function is_cookie_valid() {
-		$t_view_all_cookie_id = \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), '' );
-		$t_view_all_cookie = \Flickerbox\Filter::db_get_filter( $t_view_all_cookie_id );
+		$t_view_all_cookie_id = \Core\GPC::get_cookie( \Core\Config::mantis_get( 'view_all_cookie' ), '' );
+		$t_view_all_cookie = \Core\Filter::db_get_filter( $t_view_all_cookie_id );
 	
 		# check to see if the cookie does not exist
-		if( \Flickerbox\Utility::is_blank( $t_view_all_cookie ) ) {
+		if( \Core\Utility::is_blank( $t_view_all_cookie ) ) {
 			return false;
 		}
 	
@@ -881,7 +881,7 @@ class Filter
 	 * @return array a filter row
 	 */
 	static function get_row( $p_filter_id ) {
-		return \Flickerbox\Filter::cache_row( $p_filter_id );
+		return \Core\Filter::cache_row( $p_filter_id );
 	}
 	
 	/**
@@ -891,12 +891,12 @@ class Filter
 	 * @return string
 	 */
 	static function get_field( $p_filter_id, $p_field_name ) {
-		$t_row = \Flickerbox\Filter::get_row( $p_filter_id );
+		$t_row = \Core\Filter::get_row( $p_filter_id );
 	
 		if( isset( $t_row[$p_field_name] ) ) {
 			return $t_row[$p_field_name];
 		} else {
-			\Flickerbox\Error::parameters( $p_field_name );
+			\Core\Error::parameters( $p_field_name );
 			trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 			return '';
 		}
@@ -913,7 +913,7 @@ class Filter
 		# if sort is blank then default the sort and direction.  This is to fix the
 		# symptoms of #3953.  Note that even if the main problem is fixed, we may
 		# have to keep this code for a while to handle filters saved with this blank field.
-		if( \Flickerbox\Utility::is_blank( $p_filter[FILTER_PROPERTY_SORT_FIELD_NAME] ) ) {
+		if( \Core\Utility::is_blank( $p_filter[FILTER_PROPERTY_SORT_FIELD_NAME] ) ) {
 			$p_filter[FILTER_PROPERTY_SORT_FIELD_NAME] = 'last_updated';
 			$p_filter[FILTER_PROPERTY_SORT_DIRECTION] = 'DESC';
 		}
@@ -922,9 +922,9 @@ class Filter
 		$t_sort_fields = explode( ',', $p_filter[FILTER_PROPERTY_SORT_FIELD_NAME] );
 		$t_dir_fields = explode( ',', $p_filter[FILTER_PROPERTY_SORT_DIRECTION] );
 	
-		$t_plugin_columns = \Flickerbox\Columns::get_plugin_columns();
+		$t_plugin_columns = \Core\Columns::get_plugin_columns();
 	
-		if( \Flickerbox\GPC::string_to_bool( $p_filter[FILTER_PROPERTY_STICKY] ) && ( null !== $p_show_sticky ) ) {
+		if( \Core\GPC::string_to_bool( $p_filter[FILTER_PROPERTY_STICKY] ) && ( null !== $p_show_sticky ) ) {
 			$p_query_clauses['order'][] = '{bug}.sticky DESC';
 		}
 	
@@ -1019,7 +1019,7 @@ class Filter
 	 * @return integer
 	 */
 	static function get_bug_count( array $p_query_clauses ) {
-		$p_query_clauses = \Flickerbox\Filter::unique_query_clauses( $p_query_clauses );
+		$p_query_clauses = \Core\Filter::unique_query_clauses( $p_query_clauses );
 		$t_select_string = 'SELECT Count( DISTINCT {bug}.id ) as idcnt ';
 		$t_from_string = ' FROM ' . implode( ', ', $p_query_clauses['from'] );
 		$t_join_string = (( count( $p_query_clauses['join'] ) > 0 ) ? implode( ' ', $p_query_clauses['join'] ) : '' );
@@ -1029,8 +1029,8 @@ class Filter
 			$t_where_string .= implode( $p_query_clauses['operator'], $p_query_clauses['where'] );
 			$t_where_string .= ' ) ';
 		}
-		$t_result = \Flickerbox\Database::query( $t_select_string . ' ' . $t_from_string . ' ' . $t_join_string . ' ' . $t_where_string, $p_query_clauses['where_values'] );
-		return \Flickerbox\Database::result( $t_result );
+		$t_result = \Core\Database::query( $t_select_string . ' ' . $t_from_string . ' ' . $t_join_string . ' ' . $t_where_string, $p_query_clauses['where_values'] );
+		return \Core\Database::result( $t_result );
 	}
 	
 	/**
@@ -1052,13 +1052,13 @@ class Filter
 	 * @return boolean|array
 	 */
 	static function get_bug_rows( &$p_page_number, &$p_per_page, &$p_page_count, &$p_bug_count, $p_custom_filter = null, $p_project_id = null, $p_user_id = null, $p_show_sticky = null ) {
-		\Flickerbox\Log::event( LOG_FILTERING, 'START NEW FILTER QUERY' );
+		\Core\Log::event( LOG_FILTERING, 'START NEW FILTER QUERY' );
 	
-		$t_limit_reporters = \Flickerbox\Config::mantis_get( 'limit_reporters' );
-		$t_report_bug_threshold = \Flickerbox\Config::mantis_get( 'report_bug_threshold' );
+		$t_limit_reporters = \Core\Config::mantis_get( 'limit_reporters' );
+		$t_report_bug_threshold = \Core\Config::mantis_get( 'report_bug_threshold' );
 		$t_where_param_count = 0;
 	
-		$t_current_user_id = \Flickerbox\Auth::get_current_user_id();
+		$t_current_user_id = \Core\Auth::get_current_user_id();
 	
 		if( $p_user_id === null || $p_user_id === 0 ) {
 			$t_user_id = $t_current_user_id;
@@ -1070,18 +1070,18 @@ class Filter
 	
 		if( null === $p_project_id ) {
 			# @@@ If project_id is not specified, then use the project id(s) in the filter if set, otherwise, use current project.
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = $p_project_id;
 		}
 	
 		if( $p_custom_filter === null ) {
-			# Prefer \Flickerbox\Current_User::get_bug_filter() over user_get_filter() when applicable since it supports
+			# Prefer \Core\Current_User::get_bug_filter() over user_get_filter() when applicable since it supports
 			# cookies set by previous version of the code.
 			if( $t_user_id == $t_current_user_id ) {
-				$t_filter = \Flickerbox\Current_User::get_bug_filter();
+				$t_filter = \Core\Current_User::get_bug_filter();
 			} else {
-				$t_filter = \Flickerbox\User::get_bug_filter( $t_user_id, $t_project_id );
+				$t_filter = \Core\User::get_bug_filter( $t_user_id, $t_project_id );
 			}
 		} else {
 			$t_filter = $p_custom_filter;
@@ -1092,7 +1092,7 @@ class Filter
 			$t_filter = array();
 		}
 	
-		$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
+		$t_filter = \Core\Filter::ensure_valid_filter( $t_filter );
 	
 		$t_view_type = $t_filter['_view_type'];
 	
@@ -1100,7 +1100,7 @@ class Filter
 		# clauses are requested by the user ( all matching -> AND, any matching -> OR )
 		$t_where_clauses = array();
 	
-		$t_project_where_clauses =  array( '{project}.enabled = ' . \Flickerbox\Database::param() );
+		$t_project_where_clauses =  array( '{project}.enabled = ' . \Core\Database::param() );
 		$t_where_params = array(
 			1,
 		);
@@ -1118,13 +1118,13 @@ class Filter
 	
 		# normalize the project filtering into an array $t_project_ids
 		if( 'simple' == $t_view_type ) {
-			\Flickerbox\Log::event( LOG_FILTERING, 'Simple Filter' );
+			\Core\Log::event( LOG_FILTERING, 'Simple Filter' );
 			$t_project_ids = array(
 				$t_project_id,
 			);
 			$t_include_sub_projects = true;
 		} else {
-			\Flickerbox\Log::event( LOG_FILTERING, 'Advanced Filter' );
+			\Core\Log::event( LOG_FILTERING, 'Advanced Filter' );
 			if( !is_array( $t_filter[FILTER_PROPERTY_PROJECT_ID] ) ) {
 				$t_project_ids = array(
 					(int)$t_filter[FILTER_PROPERTY_PROJECT_ID],
@@ -1136,8 +1136,8 @@ class Filter
 			$t_include_sub_projects = (( count( $t_project_ids ) == 1 ) && ( ( $t_project_ids[0] == META_FILTER_CURRENT ) || ( $t_project_ids[0] == ALL_PROJECTS ) ) );
 		}
 	
-		\Flickerbox\Log::event( LOG_FILTERING, 'project_ids = @P' . implode( ', @P', $t_project_ids ) );
-		\Flickerbox\Log::event( LOG_FILTERING, 'include sub-projects = ' . ( $t_include_sub_projects ? '1' : '0' ) );
+		\Core\Log::event( LOG_FILTERING, 'project_ids = @P' . implode( ', @P', $t_project_ids ) );
+		\Core\Log::event( LOG_FILTERING, 'include sub-projects = ' . ( $t_include_sub_projects ? '1' : '0' ) );
 	
 		# if the array has ALL_PROJECTS, then reset the array to only contain ALL_PROJECTS.
 		# replace META_FILTER_CURRENT with the actualy current project id.
@@ -1150,13 +1150,13 @@ class Filter
 	
 			if( $t_pid == ALL_PROJECTS ) {
 				$t_all_projects_found = true;
-				\Flickerbox\Log::event( LOG_FILTERING, 'all projects selected' );
+				\Core\Log::event( LOG_FILTERING, 'all projects selected' );
 				break;
 			}
 	
 			# filter out inaccessible projects.
-			if( !\Flickerbox\Project::exists( $t_pid ) || !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, $t_user_id, $t_pid ), $t_pid, $t_user_id ) ) {
-				\Flickerbox\Log::event( LOG_FILTERING, 'Invalid or inaccessible project: ' . $t_pid );
+			if( !\Core\Project::exists( $t_pid ) || !\Core\Access::has_project_level( \Core\Config::mantis_get( 'view_bug_threshold', null, $t_user_id, $t_pid ), $t_pid, $t_user_id ) ) {
+				\Core\Log::event( LOG_FILTERING, 'Invalid or inaccessible project: ' . $t_pid );
 				continue;
 			}
 	
@@ -1165,11 +1165,11 @@ class Filter
 	
 		$t_projects_query_required = true;
 		if( $t_all_projects_found ) {
-			if( \Flickerbox\User::is_administrator( $t_user_id ) ) {
-				\Flickerbox\Log::event( LOG_FILTERING, 'all projects + administrator, hence no project filter.' );
+			if( \Core\User::is_administrator( $t_user_id ) ) {
+				\Core\Log::event( LOG_FILTERING, 'all projects + administrator, hence no project filter.' );
 				$t_projects_query_required = false;
 			} else {
-				$t_project_ids = \Flickerbox\User::get_accessible_projects( $t_user_id );
+				$t_project_ids = \Core\User::get_accessible_projects( $t_user_id );
 			}
 		} else {
 			$t_project_ids = $t_new_project_ids;
@@ -1181,8 +1181,8 @@ class Filter
 				$t_top_project_ids = $t_project_ids;
 	
 				foreach( $t_top_project_ids as $t_pid ) {
-					\Flickerbox\Log::event( LOG_FILTERING, 'Getting sub-projects for project id @P' . $t_pid );
-					$t_subproject_ids = \Flickerbox\User::get_all_accessible_subprojects( $t_user_id, $t_pid );
+					\Core\Log::event( LOG_FILTERING, 'Getting sub-projects for project id @P' . $t_pid );
+					$t_subproject_ids = \Core\User::get_all_accessible_subprojects( $t_user_id, $t_pid );
 					if( !$t_subproject_ids ) {
 						continue;
 					}
@@ -1194,11 +1194,11 @@ class Filter
 	
 			# if no projects are accessible, then return an empty array.
 			if( count( $t_project_ids ) == 0 ) {
-				\Flickerbox\Log::event( LOG_FILTERING, 'no accessible projects' );
+				\Core\Log::event( LOG_FILTERING, 'no accessible projects' );
 				return array();
 			}
 	
-			\Flickerbox\Log::event( LOG_FILTERING, 'project_ids after including sub-projects = @P' . implode( ', @P', $t_project_ids ) );
+			\Core\Log::event( LOG_FILTERING, 'project_ids after including sub-projects = @P' . implode( ', @P', $t_project_ids ) );
 	
 			# this array is to be populated with project ids for which we only want to show public issues.  This is due to the limited
 			# access of the current user.
@@ -1210,11 +1210,11 @@ class Filter
 	
 			foreach( $t_project_ids as $t_pid ) {
 				# limit reporters to visible projects
-				if( ( ON === $t_limit_reporters ) && ( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_pid ) + 1, $t_pid, $t_user_id ) ) ) {
+				if( ( ON === $t_limit_reporters ) && ( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_pid ) + 1, $t_pid, $t_user_id ) ) ) {
 					array_push( $t_limited_projects, '({bug}.project_id=' . $t_pid . ' AND ({bug}.reporter_id=' . $t_user_id . ') )' );
 				} else {
-					$t_access_required_to_view_private_bugs = \Flickerbox\Config::mantis_get( 'private_bug_threshold', null, null, $t_pid );
-					if( \Flickerbox\Access::has_project_level( $t_access_required_to_view_private_bugs, $t_pid, $t_user_id ) ) {
+					$t_access_required_to_view_private_bugs = \Core\Config::mantis_get( 'private_bug_threshold', null, null, $t_pid );
+					if( \Core\Access::has_project_level( $t_access_required_to_view_private_bugs, $t_pid, $t_user_id ) ) {
 						$t_private_and_public_project_ids[] = $t_pid;
 					} else {
 						$t_public_only_project_ids[] = $t_pid;
@@ -1222,8 +1222,8 @@ class Filter
 				}
 			}
 	
-			\Flickerbox\Log::event( LOG_FILTERING, 'project_ids (with public/private access) = @P' . implode( ', @P', $t_private_and_public_project_ids ) );
-			\Flickerbox\Log::event( LOG_FILTERING, 'project_ids (with public access) = @P' . implode( ', @P', $t_public_only_project_ids ) );
+			\Core\Log::event( LOG_FILTERING, 'project_ids (with public/private access) = @P' . implode( ', @P', $t_private_and_public_project_ids ) );
+			\Core\Log::event( LOG_FILTERING, 'project_ids (with public access) = @P' . implode( ', @P', $t_public_only_project_ids ) );
 	
 			$t_count_private_and_public_project_ids = count( $t_private_and_public_project_ids );
 			if( $t_count_private_and_public_project_ids == 1 ) {
@@ -1263,7 +1263,7 @@ class Filter
 					}
 				}
 			}
-			\Flickerbox\Log::event( LOG_FILTERING, 'project query = ' . $t_project_query );
+			\Core\Log::event( LOG_FILTERING, 'project query = ' . $t_project_query );
 			array_push( $t_project_where_clauses, $t_project_query );
 		}
 	
@@ -1275,30 +1275,30 @@ class Filter
 	
 			$t_where_params[] = strtotime( $t_start_string );
 			$t_where_params[] = strtotime( $t_end_string );
-			array_push( $t_project_where_clauses, '({bug}.date_submitted BETWEEN ' . \Flickerbox\Database::param() . ' AND ' . \Flickerbox\Database::param() . ' )' );
+			array_push( $t_project_where_clauses, '({bug}.date_submitted BETWEEN ' . \Core\Database::param() . ' AND ' . \Core\Database::param() . ' )' );
 		}
 	
 		# view state
 		$t_view_state = (int)$t_filter[FILTER_PROPERTY_VIEW_STATE];
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_VIEW_STATE] ) ) {
-			$t_view_state_query = '({bug}.view_state=' . \Flickerbox\Database::param() . ')';
-			\Flickerbox\Log::event( LOG_FILTERING, 'view_state query = ' . $t_view_state_query );
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_VIEW_STATE] ) ) {
+			$t_view_state_query = '({bug}.view_state=' . \Core\Database::param() . ')';
+			\Core\Log::event( LOG_FILTERING, 'view_state query = ' . $t_view_state_query );
 			$t_where_params[] = $t_view_state;
 			array_push( $t_where_clauses, $t_view_state_query );
 		} else {
-			\Flickerbox\Log::event( LOG_FILTERING, 'no view_state query' );
+			\Core\Log::event( LOG_FILTERING, 'no view_state query' );
 		}
 	
 		# reporter
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_REPORTER_ID] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_REPORTER_ID] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_REPORTER_ID] as $t_filter_member ) {
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '0' );
 				} else {
 					$c_reporter_id = (int)$t_filter_member;
-					if( \Flickerbox\Filter::field_is_myself( $c_reporter_id ) ) {
+					if( \Core\Filter::field_is_myself( $c_reporter_id ) ) {
 						array_push( $t_clauses, $c_user_id );
 					} else {
 						array_push( $t_clauses, $c_reporter_id );
@@ -1312,22 +1312,22 @@ class Filter
 				$t_reporter_query = '( {bug}.reporter_id=' . $t_clauses[0] . ' )';
 			}
 	
-			\Flickerbox\Log::event( LOG_FILTERING, 'reporter query = ' . $t_reporter_query );
+			\Core\Log::event( LOG_FILTERING, 'reporter query = ' . $t_reporter_query );
 			array_push( $t_where_clauses, $t_reporter_query );
 		} else {
-			\Flickerbox\Log::event( LOG_FILTERING, 'no reporter query' );
+			\Core\Log::event( LOG_FILTERING, 'no reporter query' );
 		}
 	
 		# handler
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_HANDLER_ID] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_HANDLER_ID] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_HANDLER_ID] as $t_filter_member ) {
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, 0 );
 				} else {
 					$c_handler_id = (int)$t_filter_member;
-					if( \Flickerbox\Filter::field_is_myself( $c_handler_id ) ) {
+					if( \Core\Filter::field_is_myself( $c_handler_id ) ) {
 						array_push( $t_clauses, $c_user_id );
 					} else {
 						array_push( $t_clauses, $c_handler_id );
@@ -1341,18 +1341,18 @@ class Filter
 				$t_handler_query = '( {bug}.handler_id=' . $t_clauses[0] . ' )';
 			}
 	
-			\Flickerbox\Log::event( LOG_FILTERING, 'handler query = ' . $t_handler_query );
+			\Core\Log::event( LOG_FILTERING, 'handler query = ' . $t_handler_query );
 			array_push( $t_where_clauses, $t_handler_query );
 		} else {
-			\Flickerbox\Log::event( LOG_FILTERING, 'no handler query' );
+			\Core\Log::event( LOG_FILTERING, 'no handler query' );
 		}
 	
 		# category
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_CATEGORY_ID] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_CATEGORY_ID] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_CATEGORY_ID] as $t_filter_member ) {
-				if( !\Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( !\Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, $t_filter_member );
 				}
 			}
@@ -1360,18 +1360,18 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.category_id in ( SELECT id FROM {category} WHERE name in (' . implode( ', ', $t_where_tmp ) . ') ) )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.category_id in ( SELECT id FROM {category} WHERE name=' . \Flickerbox\Database::param() . ') )' );
+				array_push( $t_where_clauses, '( {bug}.category_id in ( SELECT id FROM {category} WHERE name=' . \Core\Database::param() . ') )' );
 			}
 		}
 	
 		# severity
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_SEVERITY] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_SEVERITY] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_SEVERITY] as $t_filter_member ) {
@@ -1381,13 +1381,13 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.severity in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.severity=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.severity=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
@@ -1395,7 +1395,7 @@ class Filter
 		# take a list of all available statuses then remove the ones that we want hidden, then make sure
 		# the ones we want shown are still available
 		$t_desired_statuses = array();
-		$t_available_statuses = \Flickerbox\MantisEnum::getValues( \Flickerbox\Config::mantis_get( 'status_enum_string' ) );
+		$t_available_statuses = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 	
 		if( 'simple' == $t_filter['_view_type'] ) {
 			# simple filtering: if showing any, restrict by the hide status value, otherwise ignore the hide
@@ -1404,7 +1404,7 @@ class Filter
 				? $t_filter[FILTER_PROPERTY_HIDE_STATUS][0]
 				: null;
 	
-			if( \Flickerbox\Filter::field_is_any( $t_this_status ) ) {
+			if( \Core\Filter::field_is_any( $t_this_status ) ) {
 				foreach( $t_available_statuses as $t_this_available_status ) {
 					if( $t_this_hide_status > $t_this_available_status ) {
 						$t_desired_statuses[] = $t_this_available_status;
@@ -1415,7 +1415,7 @@ class Filter
 			}
 		} else {
 			# advanced filtering: ignore the hide
-			if( \Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_STATUS] ) ) {
+			if( \Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_STATUS] ) ) {
 				$t_desired_statuses = array();
 			} else {
 				foreach( $t_filter[FILTER_PROPERTY_STATUS] as $t_this_status ) {
@@ -1434,18 +1434,18 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.status in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.status=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.status=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# resolution
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_RESOLUTION] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_RESOLUTION] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_RESOLUTION] as $t_filter_member ) {
@@ -1455,18 +1455,18 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.resolution in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.resolution=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.resolution=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# priority
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_PRIORITY] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_PRIORITY] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_PRIORITY] as $t_filter_member ) {
@@ -1476,23 +1476,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.priority in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.priority=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.priority=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# product build
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_BUILD] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_BUILD] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_BUILD] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '' );
 				} else {
 					$c_show_build = $t_filter_member;
@@ -1502,23 +1502,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.build in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.build=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.build=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# product version
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_VERSION] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_VERSION] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_VERSION] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '' );
 				} else {
 					$c_show_version = $t_filter_member;
@@ -1529,23 +1529,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.version in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.version=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.version=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# profile
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_PROFILE_ID] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_PROFILE_ID] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_PROFILE_ID] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '0' );
 				} else {
 					$c_show_profile = (int)$t_filter_member;
@@ -1555,23 +1555,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.profile_id in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.profile_id=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.profile_id=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# platform
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_PLATFORM] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_PLATFORM] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_PLATFORM] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '' );
 				} else {
 					$c_platform = $t_filter_member;
@@ -1582,23 +1582,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.platform in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.platform = ' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.platform = ' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# Operating System (os)
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_OS] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_OS] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_OS] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '' );
 				} else {
 					$c_os = $t_filter_member;
@@ -1609,23 +1609,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.os in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.os = ' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.os = ' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# Operating System Build (os_build)
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_OS_BUILD] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_OS_BUILD] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_OS_BUILD] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '' );
 				} else {
 					$c_os_build = $t_filter_member;
@@ -1636,23 +1636,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.os_build in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.os_build = ' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.os_build = ' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# fixed in version
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_FIXED_IN_VERSION] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_FIXED_IN_VERSION] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_FIXED_IN_VERSION] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '' );
 				} else {
 					$c_fixed_in_version = $t_filter_member;
@@ -1662,23 +1662,23 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.fixed_in_version in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.fixed_in_version=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.fixed_in_version=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# target version
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_TARGET_VERSION] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_TARGET_VERSION] ) ) {
 			$t_clauses = array();
 	
 			foreach( $t_filter[FILTER_PROPERTY_TARGET_VERSION] as $t_filter_member ) {
 				$t_filter_member = stripslashes( $t_filter_member );
-				if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+				if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 					array_push( $t_clauses, '' );
 				} else {
 					$c_target_version = $t_filter_member;
@@ -1690,25 +1690,25 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( {bug}.target_version in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( {bug}.target_version=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( {bug}.target_version=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# users monitoring a bug
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_MONITOR_USER_ID] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_MONITOR_USER_ID] ) ) {
 			$t_clauses = array();
 			$t_table_name = 'user_monitor';
 			array_push( $t_join_clauses, 'LEFT JOIN {bug_monitor} ' . $t_table_name . ' ON ' . $t_table_name . '.bug_id = {bug}.id' );
 	
 			foreach( $t_filter[FILTER_PROPERTY_MONITOR_USER_ID] as $t_filter_member ) {
 				$c_user_monitor = (int)$t_filter_member;
-				if( \Flickerbox\Filter::field_is_myself( $c_user_monitor ) ) {
+				if( \Core\Filter::field_is_myself( $c_user_monitor ) ) {
 					array_push( $t_clauses, $c_user_id );
 				} else {
 					array_push( $t_clauses, $c_user_monitor );
@@ -1717,13 +1717,13 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( ' . $t_table_name . '.user_id in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( ' . $t_table_name . '.user_id=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( ' . $t_table_name . '.user_id=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
@@ -1736,7 +1736,7 @@ class Filter
 		}
 		if( !$t_any_found ) {
 			# use the complementary type
-			$t_comp_type = \Flickerbox\Relationship::get_complementary_type( $c_rel_type );
+			$t_comp_type = \Core\Relationship::get_complementary_type( $c_rel_type );
 			$t_clauses = array();
 			$t_table_dst = 'rel_dst';
 			$t_table_src = 'rel_src';
@@ -1748,21 +1748,21 @@ class Filter
 			$t_where_params[] = $c_rel_bug;
 			$t_where_params[] = $c_rel_type;
 			$t_where_params[] = $c_rel_bug;
-			array_push( $t_clauses, '(' . $t_table_dst . '.relationship_type=' . \Flickerbox\Database::param() . ' AND ' . $t_table_dst . '.source_bug_id=' . \Flickerbox\Database::param() . ')' );
-			array_push( $t_clauses, '(' . $t_table_src . '.relationship_type=' . \Flickerbox\Database::param() . ' AND ' . $t_table_src . '.destination_bug_id=' . \Flickerbox\Database::param() . ')' );
+			array_push( $t_clauses, '(' . $t_table_dst . '.relationship_type=' . \Core\Database::param() . ' AND ' . $t_table_dst . '.source_bug_id=' . \Core\Database::param() . ')' );
+			array_push( $t_clauses, '(' . $t_table_src . '.relationship_type=' . \Core\Database::param() . ' AND ' . $t_table_src . '.destination_bug_id=' . \Core\Database::param() . ')' );
 			array_push( $t_where_clauses, '(' . implode( ' OR ', $t_clauses ) . ')' );
 		}
 	
 		# tags
 		$c_tag_string = trim( $t_filter[FILTER_PROPERTY_TAG_STRING] );
 		$c_tag_select = trim( $t_filter[FILTER_PROPERTY_TAG_SELECT] );
-		if( \Flickerbox\Utility::is_blank( $c_tag_string ) && !\Flickerbox\Utility::is_blank( $c_tag_select ) && $c_tag_select != 0 ) {
-			$t_tag = \Flickerbox\Tag::get( $c_tag_select );
+		if( \Core\Utility::is_blank( $c_tag_string ) && !\Core\Utility::is_blank( $c_tag_select ) && $c_tag_select != 0 ) {
+			$t_tag = \Core\Tag::get( $c_tag_select );
 			$c_tag_string = $t_tag['name'];
 		}
 	
-		if( !\Flickerbox\Utility::is_blank( $c_tag_string ) ) {
-			$t_tags = \Flickerbox\Tag::parse_filters( $c_tag_string );
+		if( !\Core\Utility::is_blank( $c_tag_string ) ) {
+			$t_tags = \Core\Tag::parse_filters( $c_tag_string );
 	
 			if( count( $t_tags ) ) {
 	
@@ -1784,8 +1784,8 @@ class Filter
 					}
 				}
 	
-				if( 0 < $t_filter[FILTER_PROPERTY_TAG_SELECT] && \Flickerbox\Tag::exists( $t_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
-					$t_tags_any[] = \Flickerbox\Tag::get( $t_filter[FILTER_PROPERTY_TAG_SELECT] );
+				if( 0 < $t_filter[FILTER_PROPERTY_TAG_SELECT] && \Core\Tag::exists( $t_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
+					$t_tags_any[] = \Core\Tag::get( $t_filter[FILTER_PROPERTY_TAG_SELECT] );
 				}
 	
 				if( count( $t_tags_all ) ) {
@@ -1815,14 +1815,14 @@ class Filter
 		}
 	
 		# note user id
-		if( !\Flickerbox\Filter::field_is_any( $t_filter[FILTER_PROPERTY_NOTE_USER_ID] ) ) {
+		if( !\Core\Filter::field_is_any( $t_filter[FILTER_PROPERTY_NOTE_USER_ID] ) ) {
 			$t_bugnote_table_alias = 'mbnt';
 			$t_clauses = array();
 			array_push( $t_join_clauses, 'LEFT JOIN {bugnote} ' . $t_bugnote_table_alias . ' ON {bug}.id = ' . $t_bugnote_table_alias . '.bug_id' );
 	
 			foreach( $t_filter[FILTER_PROPERTY_NOTE_USER_ID] as $t_filter_member ) {
 				$c_note_user_id = (int)$t_filter_member;
-				if( \Flickerbox\Filter::field_is_myself( $c_note_user_id ) ) {
+				if( \Core\Filter::field_is_myself( $c_note_user_id ) ) {
 					array_push( $t_clauses, $c_user_id );
 				} else {
 					array_push( $t_clauses, $c_note_user_id );
@@ -1831,20 +1831,20 @@ class Filter
 			if( 1 < count( $t_clauses ) ) {
 				$t_where_tmp = array();
 				foreach( $t_clauses as $t_clause ) {
-					$t_where_tmp[] = \Flickerbox\Database::param();
+					$t_where_tmp[] = \Core\Database::param();
 					$t_where_params[] = $t_clause;
 				}
 				array_push( $t_where_clauses, '( ' . $t_bugnote_table_alias . '.reporter_id in (' . implode( ', ', $t_where_tmp ) . ') )' );
 			} else {
 				$t_where_params[] = $t_clauses[0];
-				array_push( $t_where_clauses, '( ' . $t_bugnote_table_alias . '.reporter_id=' . \Flickerbox\Database::param() . ' )' );
+				array_push( $t_where_clauses, '( ' . $t_bugnote_table_alias . '.reporter_id=' . \Core\Database::param() . ' )' );
 			}
 		}
 	
 		# plugin filters
-		$t_plugin_filters = \Flickerbox\Filter::get_plugin_filters();
+		$t_plugin_filters = \Core\Filter::get_plugin_filters();
 		foreach( $t_plugin_filters as $t_field_name => $t_filter_object ) {
-			if( !\Flickerbox\Filter::field_is_any( $t_filter[$t_field_name] ) || $t_filter_object->type == FILTER_TYPE_BOOLEAN ) {
+			if( !\Core\Filter::field_is_any( $t_filter[$t_field_name] ) || $t_filter_object->type == FILTER_TYPE_BOOLEAN ) {
 				$t_filter_query = $t_filter_object->query( $t_filter[$t_field_name] );
 				if( is_array( $t_filter_query ) ) {
 					if( isset( $t_filter_query['join'] ) ) {
@@ -1861,7 +1861,7 @@ class Filter
 		}
 	
 		# custom field filters
-		if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
+		if( ON == \Core\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 			# custom field filtering
 			# @@@ At the moment this gets the linked fields relating to the current project
 			#     It should get the ones relating to the project in the filter or all projects
@@ -1880,7 +1880,7 @@ class Filter
 				$t_custom_where_clause = '';
 	
 				# Ignore all custom filters that are not set, or that are set to '' or "any"
-				if( !\Flickerbox\Filter::field_is_any( $t_field ) ) {
+				if( !\Core\Filter::field_is_any( $t_field ) ) {
 					$t_def = custom_field_get_definition( $t_cfid );
 					$t_table_name = '{custom_field_string}_' . $t_cfid;
 	
@@ -1920,7 +1920,7 @@ class Filter
 						$t_filter_array = array();
 						foreach( $t_field as $t_filter_member ) {
 							$t_filter_member = stripslashes( $t_filter_member );
-							if( \Flickerbox\Filter::field_is_none( $t_filter_member ) ) {
+							if( \Core\Filter::field_is_none( $t_filter_member ) ) {
 								# coerce filter value if selecting META_FILTER_NONE so it will match empty fields
 								$t_filter_member = '';
 	
@@ -1932,20 +1932,20 @@ class Filter
 								case CUSTOM_FIELD_TYPE_CHECKBOX:
 								case CUSTOM_FIELD_TYPE_MULTILIST:
 									$t_where_params[] = '%|' . $t_filter_member . '|%';
-									array_push( $t_filter_array, \Flickerbox\Database::helper_like( $t_table_name . '.value' ) );
+									array_push( $t_filter_array, \Core\Database::helper_like( $t_table_name . '.value' ) );
 									break;
 								case CUSTOM_FIELD_TYPE_TEXTAREA:
 									$t_where_params[] = '%' . $t_filter_member . '%';
-									array_push( $t_filter_array, \Flickerbox\Database::helper_like( $t_table_name . '.text' ) );
+									array_push( $t_filter_array, \Core\Database::helper_like( $t_table_name . '.text' ) );
 									break;
 								default:
 									$t_where_params[] = $t_filter_member;
-									array_push( $t_filter_array, $t_table_name . '.value = ' . \Flickerbox\Database::param() );
+									array_push( $t_filter_array, $t_table_name . '.value = ' . \Core\Database::param() );
 							}
 						}
 						$t_custom_where_clause .= '(' . implode( ' OR ', $t_filter_array );
 					}
-					if( !\Flickerbox\Utility::is_blank( $t_custom_where_clause ) ) {
+					if( !\Core\Utility::is_blank( $t_custom_where_clause ) ) {
 						array_push( $t_where_clauses, $t_custom_where_clause . ')' );
 					}
 				}
@@ -1953,7 +1953,7 @@ class Filter
 		}
 	
 		# Text search
-		if( !\Flickerbox\Utility::is_blank( $t_filter[FILTER_PROPERTY_SEARCH] ) ) {
+		if( !\Core\Utility::is_blank( $t_filter[FILTER_PROPERTY_SEARCH] ) ) {
 			# break up search terms by spacing or quoting
 			preg_match_all( "/-?([^'\"\s]+|\"[^\"]+\"|'[^']+')/", $t_filter[FILTER_PROPERTY_SEARCH], $t_matches, PREG_SET_ORDER );
 	
@@ -1976,11 +1976,11 @@ class Filter
 				}
 	
 				$c_search = '%' . $t_search_term . '%';
-				$t_textsearch_where_clause .= '( ' . \Flickerbox\Database::helper_like( '{bug}.summary' ) .
-					' OR ' . \Flickerbox\Database::helper_like( '{bug_text}.description' ) .
-					' OR ' . \Flickerbox\Database::helper_like( '{bug_text}.steps_to_reproduce' ) .
-					' OR ' . \Flickerbox\Database::helper_like( '{bug_text}.additional_information' ) .
-					' OR ' . \Flickerbox\Database::helper_like( '{bugnote_text}.note' );
+				$t_textsearch_where_clause .= '( ' . \Core\Database::helper_like( '{bug}.summary' ) .
+					' OR ' . \Core\Database::helper_like( '{bug_text}.description' ) .
+					' OR ' . \Core\Database::helper_like( '{bug_text}.steps_to_reproduce' ) .
+					' OR ' . \Core\Database::helper_like( '{bug_text}.additional_information' ) .
+					' OR ' . \Core\Database::helper_like( '{bugnote_text}.note' );
 	
 				$t_where_params[] = $c_search;
 				$t_where_params[] = $c_search;
@@ -1990,7 +1990,7 @@ class Filter
 	
 				if( is_numeric( $t_search_term ) ) {
 					# PostgreSQL on 64-bit OS hack (see #14014)
-					if( PHP_INT_MAX > 0x7FFFFFFF && \Flickerbox\Database::is_pgsql() ) {
+					if( PHP_INT_MAX > 0x7FFFFFFF && \Core\Database::is_pgsql() ) {
 						$t_search_max = 0x7FFFFFFF;
 					} else {
 						$t_search_max = PHP_INT_MAX;
@@ -1998,8 +1998,8 @@ class Filter
 					# Note: no need to test negative values, '-' sign has been removed
 					if( $t_search_term <= $t_search_max ) {
 						$c_search_int = (int)$t_search_term;
-						$t_textsearch_where_clause .= ' OR {bug}.id = ' . \Flickerbox\Database::param();
-						$t_textsearch_where_clause .= ' OR {bugnote}.id = ' . \Flickerbox\Database::param();
+						$t_textsearch_where_clause .= ' OR {bug}.id = ' . \Core\Database::param();
+						$t_textsearch_where_clause .= ' OR {bugnote}.id = ' . \Core\Database::param();
 						$t_where_params[] = $c_search_int;
 						$t_where_params[] = $c_search_int;
 					}
@@ -2029,7 +2029,7 @@ class Filter
 			$t_join_operator = ' AND ';
 		}
 	
-		\Flickerbox\Log::event( LOG_FILTERING, 'Join operator : ' . $t_join_operator );
+		\Core\Log::event( LOG_FILTERING, 'Join operator : ' . $t_join_operator );
 	
 		$t_query_clauses['select'] = $t_select_clauses;
 		$t_query_clauses['from'] = $t_from_clauses;
@@ -2038,19 +2038,19 @@ class Filter
 		$t_query_clauses['where_values'] = $t_where_params;
 		$t_query_clauses['project_where'] = $t_project_where_clauses;
 		$t_query_clauses['operator'] = $t_join_operator;
-		$t_query_clauses = \Flickerbox\Filter::get_query_sort_data( $t_filter, $p_show_sticky, $t_query_clauses );
+		$t_query_clauses = \Core\Filter::get_query_sort_data( $t_filter, $p_show_sticky, $t_query_clauses );
 	
 		# assigning to $p_* for this function writes the values back in case the caller wants to know
 		# Get the total number of bugs that meet the criteria.
-		$p_bug_count = \Flickerbox\Filter::get_bug_count( $t_query_clauses );
+		$p_bug_count = \Core\Filter::get_bug_count( $t_query_clauses );
 		if( 0 == $p_bug_count ) {
 			return array();
 		}
-		$p_per_page = \Flickerbox\Filter::per_page( $t_filter, $p_bug_count, $p_per_page );
-		$p_page_count = \Flickerbox\Filter::page_count( $p_bug_count, $p_per_page );
-		$p_page_number = \Flickerbox\Filter::valid_page_number( $p_page_number, $p_page_count );
-		$t_offset = \Flickerbox\Filter::offset( $p_page_number, $p_per_page );
-		$t_query_clauses = \Flickerbox\Filter::unique_query_clauses( $t_query_clauses );
+		$p_per_page = \Core\Filter::per_page( $t_filter, $p_bug_count, $p_per_page );
+		$p_page_count = \Core\Filter::page_count( $p_bug_count, $p_per_page );
+		$p_page_number = \Core\Filter::valid_page_number( $p_page_number, $p_page_count );
+		$t_offset = \Core\Filter::offset( $p_page_number, $p_per_page );
+		$t_query_clauses = \Core\Filter::unique_query_clauses( $t_query_clauses );
 		$t_select_string = 'SELECT DISTINCT ' . implode( ', ', $t_query_clauses['select'] );
 		$t_from_string = ' FROM ' . implode( ', ', $t_query_clauses['from'] );
 		$t_order_string = ' ORDER BY ' . implode( ', ', $t_query_clauses['order'] );
@@ -2062,15 +2062,15 @@ class Filter
 			$t_where_string .= ' ) ';
 		}
 	
-		$t_result = \Flickerbox\Database::query( $t_select_string . $t_from_string . $t_join_string . $t_where_string . $t_order_string, $t_query_clauses['where_values'], $p_per_page, $t_offset );
+		$t_result = \Core\Database::query( $t_select_string . $t_from_string . $t_join_string . $t_where_string . $t_order_string, $t_query_clauses['where_values'], $p_per_page, $t_offset );
 	
 		$t_id_array_lastmod = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_id_array_lastmod[] = (int)$t_row['id'];
 			$t_rows[] = $t_row;
 		}
 	
-		return \Flickerbox\Filter::cache_result( $t_rows, $t_id_array_lastmod );
+		return \Core\Filter::cache_result( $t_rows, $t_id_array_lastmod );
 	}
 	
 	/**
@@ -2085,25 +2085,25 @@ class Filter
 		$t_query = 'SELECT DISTINCT bug_id,MAX(last_modified) as last_modified, COUNT(last_modified) as count FROM {bugnote} ' . $t_where_string . ' GROUP BY bug_id';
 	
 		# perform query
-		$t_result = \Flickerbox\Database::query( $t_query );
-		$t_row_count = \Flickerbox\Database::num_rows( $t_result );
-		while ( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		$t_result = \Core\Database::query( $t_query );
+		$t_row_count = \Core\Database::num_rows( $t_result );
+		while ( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_stats[$t_row['bug_id']] = $t_row;
 		}
 	
 		$t_rows = array();
 		foreach( $p_rows as $t_row ) {
 			if( !isset( $t_stats[$t_row['id']] ) ) {
-				$t_rows[] = \Flickerbox\Bug::row_to_object( \Flickerbox\Bug::cache_database_result( $t_row ) );
+				$t_rows[] = \Core\Bug::row_to_object( \Core\Bug::cache_database_result( $t_row ) );
 			} else {
-				$t_rows[] = \Flickerbox\Bug::row_to_object( \Flickerbox\Bug::cache_database_result( $t_row, $t_stats[$t_row['id']] ) );
+				$t_rows[] = \Core\Bug::row_to_object( \Core\Bug::cache_database_result( $t_row, $t_stats[$t_row['id']] ) );
 			}
 		}
 		return $t_rows;
 	}
 	
 	/**
-	 * Mainly based on \Flickerbox\Filter::draw_selection_area2() but adds the support for the collapsible
+	 * Mainly based on \Core\Filter::draw_selection_area2() but adds the support for the collapsible
 	 * filter display.
 	 * @param integer $p_page_number Page number.
 	 * @param boolean $p_for_screen  Whether output is for screen view.
@@ -2111,11 +2111,11 @@ class Filter
 	 * @see filter_draw_selection_area2
 	 */
 	static function draw_selection_area( $p_page_number, $p_for_screen = true ) {
-		\Flickerbox\Collapse::open( 'filter' );
-		\Flickerbox\Filter::draw_selection_area2( $p_page_number, $p_for_screen, true );
-		\Flickerbox\Collapse::closed( 'filter' );
-		\Flickerbox\Filter::draw_selection_area2( $p_page_number, $p_for_screen, false );
-		\Flickerbox\Collapse::end( 'filter' );
+		\Core\Collapse::open( 'filter' );
+		\Core\Filter::draw_selection_area2( $p_page_number, $p_for_screen, true );
+		\Core\Collapse::closed( 'filter' );
+		\Core\Filter::draw_selection_area2( $p_page_number, $p_for_screen, false );
+		\Core\Collapse::end( 'filter' );
 	}
 	
 	/**
@@ -2130,9 +2130,9 @@ class Filter
 	static function draw_selection_area2( $p_page_number, $p_for_screen = true, $p_expanded = true ) {
 		$t_form_name_suffix = $p_expanded ? '_open' : '_closed';
 	
-		$t_filter = \Flickerbox\Current_User::get_bug_filter();
-		$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter === false ? array() : $t_filter );
-		$t_project_id = \Flickerbox\Helper::get_current_project();
+		$t_filter = \Core\Current_User::get_bug_filter();
+		$t_filter = \Core\Filter::ensure_valid_filter( $t_filter === false ? array() : $t_filter );
+		$t_project_id = \Core\Helper::get_current_project();
 		$t_page_number = (int)$p_page_number;
 	
 		$t_view_type = $t_filter['_view_type'];
@@ -2161,21 +2161,21 @@ class Filter
 			<input type="hidden" name="page_number" value="<?php echo $t_page_number?>" />
 			<input type="hidden" name="view_type" value="<?php echo $t_view_type?>" />
 			<?php
-			$t_filter_cols = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
+			$t_filter_cols = \Core\Config::mantis_get( 'filter_custom_fields_per_row' );
 		if( $p_expanded ) {
 			?>
 			<table width="100%" cellspacing="1">
 			<?php
 			$t_custom_cols = $t_filter_cols;
 	
-			$t_current_user_access_level = \Flickerbox\Current_User::get_access_level();
+			$t_current_user_access_level = \Core\Current_User::get_access_level();
 			$t_accessible_custom_fields_ids = array();
 			$t_accessible_custom_fields_names = array();
 			$t_accessible_custom_fields_values = array();
 			$t_num_custom_rows = 0;
 			$t_per_row = 0;
 	
-			if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
+			if( ON == \Core\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 				$t_custom_fields = custom_field_get_linked_ids( $t_project_id );
 	
 				foreach( $t_custom_fields as $t_cfid ) {
@@ -2189,7 +2189,7 @@ class Filter
 				}
 	
 				if( count( $t_accessible_custom_fields_ids ) > 0 ) {
-					$t_per_row = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
+					$t_per_row = \Core\Config::mantis_get( 'filter_custom_fields_per_row' );
 					$t_num_custom_rows = ceil( count( $t_accessible_custom_fields_ids ) / $t_per_row );
 				}
 			}
@@ -2200,41 +2200,41 @@ class Filter
 			}
 			$t_filters_url = $t_filters_url . '&amp;target_field=';
 	
-			$t_show_product_version =  \Flickerbox\Version::should_show_product_version( $t_project_id );
-			$t_show_build = $t_show_product_version && ( \Flickerbox\Config::mantis_get( 'enable_product_build' ) == ON );
+			$t_show_product_version =  \Core\Version::should_show_product_version( $t_project_id );
+			$t_show_build = $t_show_product_version && ( \Core\Config::mantis_get( 'enable_product_build' ) == ON );
 	
 			# overload handler_id setting if user isn't supposed to see them (ref #6189)
-			if( !\Flickerbox\Access::has_any_project( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ) ) ) {
+			if( !\Core\Access::has_any_project( \Core\Config::mantis_get( 'view_handler_threshold' ) ) ) {
 				$t_filter[FILTER_PROPERTY_HANDLER_ID] = array(
 					META_FILTER_ANY,
 				);
 			}
 	
-			$t_dynamic_filter_expander_class = ( \Flickerbox\Config::mantis_get( 'use_dynamic_filters' ) ) ? ' class="dynamic-filter-expander"' : '';
+			$t_dynamic_filter_expander_class = ( \Core\Config::mantis_get( 'use_dynamic_filters' ) ) ? ' class="dynamic-filter-expander"' : '';
 			?>
 	
 			<tr <?php echo 'class="' . $t_trclass . '"';?>>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_REPORTER_ID . '[]';?>" id="reporter_id_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'reporter_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_REPORTER_ID . '[]';?>" id="reporter_id_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'reporter_label' )?></a>
 				</td>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_MONITOR_USER_ID . '[]';?>" id="user_monitor_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'monitored_by_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_MONITOR_USER_ID . '[]';?>" id="user_monitor_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'monitored_by_label' )?></a>
 				</td>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_HANDLER_ID . '[]';?>" id="handler_id_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'assigned_to_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_HANDLER_ID . '[]';?>" id="handler_id_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'assigned_to_label' )?></a>
 				</td>
 				<td colspan="2" class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_CATEGORY_ID . '[]';?>" id="show_category_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'category_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_CATEGORY_ID . '[]';?>" id="show_category_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'category_label' )?></a>
 				</td>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_SEVERITY . '[]';?>" id="show_severity_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'severity_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_SEVERITY . '[]';?>" id="show_severity_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'severity_label' )?></a>
 				</td>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_RESOLUTION . '[]';?>" id="show_resolution_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'resolution_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_RESOLUTION . '[]';?>" id="show_resolution_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'resolution_label' )?></a>
 				</td>
 				<td class="small-caption">
-					<?php if( ON == \Flickerbox\Config::mantis_get( 'enable_profiles' ) ) { ?>
-						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_PROFILE_ID . '[]';?>" id="show_profile_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'profile_label' )?></a>
+					<?php if( ON == \Core\Config::mantis_get( 'enable_profiles' ) ) { ?>
+						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_PROFILE_ID . '[]';?>" id="show_profile_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'profile_label' )?></a>
 					<?php } ?>
 				</td>
 				<?php if( $t_filter_cols > 8 ) {
@@ -2248,34 +2248,34 @@ class Filter
 									$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_REPORTER_ID] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_REPORTER_ID] as $t_current ) {
 					$t_this_name = '';
-					echo '<input type="hidden" name="', FILTER_PROPERTY_REPORTER_ID, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					echo '<input type="hidden" name="', FILTER_PROPERTY_REPORTER_ID, '[]" value="', \Core\String::attribute( $t_current ), '" />';
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
-					} else if( \Flickerbox\Filter::field_is_myself( $t_current ) ) {
-						if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ) ) ) {
-							$t_this_name = '[' . \Flickerbox\Lang::get( 'myself' ) . ']';
+					} else if( \Core\Filter::field_is_myself( $t_current ) ) {
+						if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'report_bug_threshold' ) ) ) {
+							$t_this_name = '[' . \Core\Lang::get( 'myself' ) . ']';
 						} else {
 							$t_any_found = true;
 						}
-					} else if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-						$t_this_name = \Flickerbox\Lang::get( 'none' );
+					} else if( \Core\Filter::field_is_none( $t_current ) ) {
+						$t_this_name = \Core\Lang::get( 'none' );
 					} else {
-						$t_this_name = \Flickerbox\User::get_name( $t_current );
+						$t_this_name = \Core\User::get_name( $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_name );
+					$t_output = $t_output . \Core\String::display_line( $t_this_name );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -2287,34 +2287,34 @@ class Filter
 			$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_MONITOR_USER_ID] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_MONITOR_USER_ID] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_MONITOR_USER_ID, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_MONITOR_USER_ID, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_name = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
-					} else if( \Flickerbox\Filter::field_is_myself( $t_current ) ) {
-						if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' ) ) ) {
-							$t_this_name = '[' . \Flickerbox\Lang::get( 'myself' ) . ']';
+					} else if( \Core\Filter::field_is_myself( $t_current ) ) {
+						if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'monitor_bug_threshold' ) ) ) {
+							$t_this_name = '[' . \Core\Lang::get( 'myself' ) . ']';
 						} else {
 							$t_any_found = true;
 						}
 					} else {
-						$t_this_name = \Flickerbox\User::get_name( $t_current );
+						$t_this_name = \Core\User::get_name( $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_name );
+					$t_output = $t_output . \Core\String::display_line( $t_this_name );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
-					echo \Flickerbox\String::display( $t_output );
+					echo \Core\String::display( $t_output );
 				}
 			}
 			?>
@@ -2324,36 +2324,36 @@ class Filter
 									$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_HANDLER_ID] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_HANDLER_ID] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_HANDLER_ID, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_HANDLER_ID, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_name = '';
-					if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-						$t_this_name = \Flickerbox\Lang::get( 'none' );
-					} else if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_none( $t_current ) ) {
+						$t_this_name = \Core\Lang::get( 'none' );
+					} else if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
-					} else if( \Flickerbox\Filter::field_is_myself( $t_current ) ) {
-						if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
-							$t_this_name = '[' . \Flickerbox\Lang::get( 'myself' ) . ']';
+					} else if( \Core\Filter::field_is_myself( $t_current ) ) {
+						if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
+							$t_this_name = '[' . \Core\Lang::get( 'myself' ) . ']';
 						} else {
 							$t_any_found = true;
 						}
 					} else {
-						$t_this_name = \Flickerbox\User::get_name( $t_current );
+						$t_this_name = \Core\User::get_name( $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_name );
+					$t_output = $t_output . \Core\String::display_line( $t_this_name );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
-					echo \Flickerbox\String::display( $t_output );
+					echo \Core\String::display( $t_output );
 				}
 			}
 			?>
@@ -2363,13 +2363,13 @@ class Filter
 			$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_CATEGORY_ID] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_CATEGORY_ID] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_CATEGORY_ID, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_CATEGORY_ID, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_string = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
 						$t_this_string = $t_current;
@@ -2379,10 +2379,10 @@ class Filter
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+					$t_output = $t_output . \Core\String::display_line( $t_this_string );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -2394,26 +2394,26 @@ class Filter
 			$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_SEVERITY] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_SEVERITY] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_SEVERITY, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_SEVERITY, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_string = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = \Flickerbox\Helper::get_enum_element( 'severity', $t_current );
+						$t_this_string = \Core\Helper::get_enum_element( 'severity', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+					$t_output = $t_output . \Core\String::display_line( $t_this_string );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -2425,48 +2425,48 @@ class Filter
 			$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_RESOLUTION] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_RESOLUTION] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_RESOLUTION, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_RESOLUTION, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_string = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = \Flickerbox\Helper::get_enum_element( 'resolution', $t_current );
+						$t_this_string = \Core\Helper::get_enum_element( 'resolution', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+					$t_output = $t_output . \Core\String::display_line( $t_this_string );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
 			}
 			?>
 				</td>
-				<?php if( ON == \Flickerbox\Config::mantis_get( 'enable_profiles' ) ) { ?>
+				<?php if( ON == \Core\Config::mantis_get( 'enable_profiles' ) ) { ?>
 				<td class="small-caption" id="show_profile_filter_target">
 			<?php
 			$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_PROFILE_ID] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_PROFILE_ID] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_PROFILE_ID, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_PROFILE_ID, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_string = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_profile = \Flickerbox\Profile::get_row_direct( $t_current );
+						$t_profile = \Core\Profile::get_row_direct( $t_current );
 						$t_this_string = $t_profile['platform'] . ' ' . $t_profile['os'] . ' ' . $t_profile['os_build'];
 					}
 					if( $t_first_flag != true ) {
@@ -2474,10 +2474,10 @@ class Filter
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+					$t_output = $t_output . \Core\String::display_line( $t_this_string );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -2493,24 +2493,24 @@ class Filter
 			</tr>
 			<tr <?php echo 'class="' . $t_trclass . '"';?>>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_STATUS . '[]';?>" id="show_status_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'status_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_STATUS . '[]';?>" id="show_status_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'status_label' )?></a>
 				</td>
 				<td class="small-caption">
 					<?php if( 'simple' == $t_view_type ) {?>
-						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_HIDE_STATUS . '[]';?>" id="hide_status_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'hide_status_label' )?></a>
+						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_HIDE_STATUS . '[]';?>" id="hide_status_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'hide_status_label' )?></a>
 					<?php } ?>
 				</td>
 				<td class="small-caption">
 				<?php if( $t_show_build ) { ?>
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_BUILD . '[]';?>" id="show_build_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'product_build_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_BUILD . '[]';?>" id="show_build_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'product_build_label' )?></a>
 				<?php } ?>
 				</td>
 				<?php if( $t_show_product_version ) {?>
 				<td colspan="2" class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_VERSION . '[]';?>" id="show_version_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'product_version_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_VERSION . '[]';?>" id="show_version_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'product_version_label' )?></a>
 				</td>
 				<td colspan="1" class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_FIXED_IN_VERSION . '[]';?>" id="show_fixed_in_version_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'fixed_in_version_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_FIXED_IN_VERSION . '[]';?>" id="show_fixed_in_version_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'fixed_in_version_label' )?></a>
 				</td>
 				<?php } else {?>
 				<td colspan="2" class="small-caption">
@@ -2521,11 +2521,11 @@ class Filter
 				</td>
 				<?php } ?>
 				<td colspan="1" class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_PRIORITY . '[]';?>" id="show_priority_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'priority_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_PRIORITY . '[]';?>" id="show_priority_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'priority_label' )?></a>
 				</td>
 				<?php if( $t_show_product_version ) {?>
 				<td colspan="1" class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_TARGET_VERSION . '[]';?>" id="show_target_version_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'target_version_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_TARGET_VERSION . '[]';?>" id="show_target_version_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'target_version_label' )?></a>
 				</td>
 				<?php
 				} else {?>
@@ -2545,26 +2545,26 @@ class Filter
 			$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_STATUS] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_STATUS] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_STATUS, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_STATUS, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_string = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = \Flickerbox\Helper::get_enum_element( 'status', $t_current );
+						$t_this_string = \Core\Helper::get_enum_element( 'status', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+					$t_output = $t_output . \Core\String::display_line( $t_this_string );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -2577,32 +2577,32 @@ class Filter
 				$t_output = '';
 				$t_none_found = false;
 				if( count( $t_filter[FILTER_PROPERTY_HIDE_STATUS] ) == 0 ) {
-					echo \Flickerbox\Lang::get( 'none' );
+					echo \Core\Lang::get( 'none' );
 				} else {
 					$t_first_flag = true;
 					foreach( $t_filter[FILTER_PROPERTY_HIDE_STATUS] as $t_current ) {
-						echo '<input type="hidden" name="', FILTER_PROPERTY_HIDE_STATUS, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+						echo '<input type="hidden" name="', FILTER_PROPERTY_HIDE_STATUS, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 						$t_this_string = '';
-						if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
+						if( \Core\Filter::field_is_none( $t_current ) ) {
 							$t_none_found = true;
 						} else {
-							$t_this_string = \Flickerbox\Helper::get_enum_element( 'status', $t_current );
+							$t_this_string = \Core\Helper::get_enum_element( 'status', $t_current );
 						}
 						if( $t_first_flag != true ) {
 							$t_output = $t_output . '<br />';
 						} else {
 							$t_first_flag = false;
 						}
-						$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+						$t_output = $t_output . \Core\String::display_line( $t_this_string );
 					}
 					$t_hide_status_post = '';
 					if( count( $t_filter[FILTER_PROPERTY_HIDE_STATUS] ) == 1 ) {
-						$t_hide_status_post = ' (' . \Flickerbox\Lang::get( 'and_above' ) . ')';
+						$t_hide_status_post = ' (' . \Core\Lang::get( 'and_above' ) . ')';
 					}
 					if( true == $t_none_found ) {
-						echo \Flickerbox\Lang::get( 'none' );
+						echo \Core\Lang::get( 'none' );
 					} else {
-						echo $t_output . \Flickerbox\String::display_line( $t_hide_status_post );
+						echo $t_output . \Core\String::display_line( $t_hide_status_post );
 					}
 				}
 			}
@@ -2616,17 +2616,17 @@ class Filter
 				$t_output = '';
 				$t_any_found = false;
 				if( count( $t_filter[FILTER_PROPERTY_BUILD] ) == 0 ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					$t_first_flag = true;
 					foreach( $t_filter[FILTER_PROPERTY_BUILD] as $t_current ) {
 						$t_current = stripslashes( $t_current );
-						echo '<input type="hidden" name="', FILTER_PROPERTY_BUILD, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+						echo '<input type="hidden" name="', FILTER_PROPERTY_BUILD, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 						$t_this_string = '';
-						if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+						if( \Core\Filter::field_is_any( $t_current ) ) {
 							$t_any_found = true;
-						} else if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-							$t_this_string = \Flickerbox\Lang::get( 'none' );
+						} else if( \Core\Filter::field_is_none( $t_current ) ) {
+							$t_this_string = \Core\Lang::get( 'none' );
 						} else {
 							$t_this_string = $t_current;
 						}
@@ -2635,10 +2635,10 @@ class Filter
 						} else {
 							$t_first_flag = false;
 						}
-						$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+						$t_output = $t_output . \Core\String::display_line( $t_this_string );
 					}
 					if( true == $t_any_found ) {
-						echo \Flickerbox\Lang::get( 'any' );
+						echo \Core\Lang::get( 'any' );
 					} else {
 						echo $t_output;
 					}
@@ -2655,17 +2655,17 @@ class Filter
 									$t_output = '';
 				$t_any_found = false;
 				if( count( $t_filter[FILTER_PROPERTY_VERSION] ) == 0 ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					$t_first_flag = true;
 					foreach( $t_filter[FILTER_PROPERTY_VERSION] as $t_current ) {
 						$t_current = stripslashes( $t_current );
-						echo '<input type="hidden" name="', FILTER_PROPERTY_VERSION, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+						echo '<input type="hidden" name="', FILTER_PROPERTY_VERSION, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 						$t_this_string = '';
-						if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+						if( \Core\Filter::field_is_any( $t_current ) ) {
 							$t_any_found = true;
-						} else if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-							$t_this_string = \Flickerbox\Lang::get( 'none' );
+						} else if( \Core\Filter::field_is_none( $t_current ) ) {
+							$t_this_string = \Core\Lang::get( 'none' );
 						} else {
 							$t_this_string = $t_current;
 						}
@@ -2674,10 +2674,10 @@ class Filter
 						} else {
 							$t_first_flag = false;
 						}
-						$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+						$t_output = $t_output . \Core\String::display_line( $t_this_string );
 					}
 					if( true == $t_any_found ) {
-						echo \Flickerbox\Lang::get( 'any' );
+						echo \Core\Lang::get( 'any' );
 					} else {
 						echo $t_output;
 					}
@@ -2689,17 +2689,17 @@ class Filter
 									$t_output = '';
 				$t_any_found = false;
 				if( count( $t_filter[FILTER_PROPERTY_FIXED_IN_VERSION] ) == 0 ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					$t_first_flag = true;
 					foreach( $t_filter[FILTER_PROPERTY_FIXED_IN_VERSION] as $t_current ) {
 						$t_current = stripslashes( $t_current );
-						echo '<input type="hidden" name="', FILTER_PROPERTY_FIXED_IN_VERSION, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+						echo '<input type="hidden" name="', FILTER_PROPERTY_FIXED_IN_VERSION, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 						$t_this_string = '';
-						if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+						if( \Core\Filter::field_is_any( $t_current ) ) {
 							$t_any_found = true;
-						} else if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-							$t_this_string = \Flickerbox\Lang::get( 'none' );
+						} else if( \Core\Filter::field_is_none( $t_current ) ) {
+							$t_this_string = \Core\Lang::get( 'none' );
 						} else {
 							$t_this_string = $t_current;
 						}
@@ -2708,10 +2708,10 @@ class Filter
 						} else {
 							$t_first_flag = false;
 						}
-						$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+						$t_output = $t_output . \Core\String::display_line( $t_this_string );
 					}
 					if( true == $t_any_found ) {
-						echo \Flickerbox\Lang::get( 'any' );
+						echo \Core\Lang::get( 'any' );
 					} else {
 						echo $t_output;
 					}
@@ -2731,26 +2731,26 @@ class Filter
 			$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_PRIORITY] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_PRIORITY] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_PRIORITY, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_PRIORITY, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_string = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
 					} else {
-						$t_this_string = \Flickerbox\Helper::get_enum_element( 'priority', $t_current );
+						$t_this_string = \Core\Helper::get_enum_element( 'priority', $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+					$t_output = $t_output . \Core\String::display_line( $t_this_string );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -2763,17 +2763,17 @@ class Filter
 									$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_TARGET_VERSION] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_TARGET_VERSION] as $t_current ) {
 					$t_current = stripslashes( $t_current );
-					echo '<input type="hidden" name="', FILTER_PROPERTY_TARGET_VERSION, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_TARGET_VERSION, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_string = '';
-					if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
-					} else if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-						$t_this_string = \Flickerbox\Lang::get( 'none' );
+					} else if( \Core\Filter::field_is_none( $t_current ) ) {
+						$t_this_string = \Core\Lang::get( 'none' );
 					} else {
 						$t_this_string = $t_current;
 					}
@@ -2782,10 +2782,10 @@ class Filter
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
+					$t_output = $t_output . \Core\String::display_line( $t_this_string );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -2806,21 +2806,21 @@ class Filter
 	
 			<tr <?php echo 'class="' . $t_trclass . '"';?>>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_ISSUES_PER_PAGE;?>" id="per_page_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'show_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_ISSUES_PER_PAGE;?>" id="per_page_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'show_label' )?></a>
 				</td>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_VIEW_STATE;?>" id="view_state_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'view_status_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_VIEW_STATE;?>" id="view_state_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'view_status_label' )?></a>
 				</td>
 				<td class="small-caption">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_STICKY;?>" id="sticky_issues_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'sticky_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_STICKY;?>" id="sticky_issues_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'sticky_label' )?></a>
 				</td>
 				<td class="small-caption" colspan="2">
 				</td>
 				<td class="small-caption" >
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_FILTER_BY_DATE;?>" id="do_filter_by_date_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'use_date_filters_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_FILTER_BY_DATE;?>" id="do_filter_by_date_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'use_date_filters_label' )?></a>
 				</td>
 				<td class="small-caption" colspan="2">
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_RELATIONSHIP_TYPE;?>" id="relationship_type_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'bug_relationships_label' )?></a>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_RELATIONSHIP_TYPE;?>" id="relationship_type_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'bug_relationships_label' )?></a>
 				</td>
 				<?php if( $t_filter_cols > 8 ) {
 				echo '<td class="small-caption" colspan="' . ( $t_filter_cols - 8 ) . '">&#160;</td>';
@@ -2829,27 +2829,27 @@ class Filter
 			<tr class="row-1">
 				<td class="small-caption" id="per_page_filter_target">
 					<?php
-						echo( $t_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] == 0 ) ? \Flickerbox\Lang::get( 'all' ) : \Flickerbox\String::display_line( $t_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] );
-			echo '<input type="hidden" name="', FILTER_PROPERTY_ISSUES_PER_PAGE, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] ), '" />';
+						echo( $t_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] == 0 ) ? \Core\Lang::get( 'all' ) : \Core\String::display_line( $t_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] );
+			echo '<input type="hidden" name="', FILTER_PROPERTY_ISSUES_PER_PAGE, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_ISSUES_PER_PAGE] ), '" />';
 			?>
 				</td>
 				<td class="small-caption" id="view_state_filter_target">
 					<?php
 					if( VS_PUBLIC === $t_filter[FILTER_PROPERTY_VIEW_STATE] ) {
-				echo \Flickerbox\Lang::get( 'public' );
+				echo \Core\Lang::get( 'public' );
 			} else if( VS_PRIVATE === $t_filter[FILTER_PROPERTY_VIEW_STATE] ) {
-				echo \Flickerbox\Lang::get( 'private' );
+				echo \Core\Lang::get( 'private' );
 			} else {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 				$t_filter[FILTER_PROPERTY_VIEW_STATE] = META_FILTER_ANY;
 			}
-			echo '<input type="hidden" name="', FILTER_PROPERTY_VIEW_STATE, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_VIEW_STATE] ), '" />';
+			echo '<input type="hidden" name="', FILTER_PROPERTY_VIEW_STATE, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_VIEW_STATE] ), '" />';
 			?>
 				</td>
 				<td class="small-caption" id="sticky_issues_filter_target">
 					<?php
-						$t_sticky_filter_state = \Flickerbox\GPC::string_to_bool( $t_filter[FILTER_PROPERTY_STICKY] );
-						print( $t_sticky_filter_state ? \Flickerbox\Lang::get( 'yes' ) : \Flickerbox\Lang::get( 'no' ) );
+						$t_sticky_filter_state = \Core\GPC::string_to_bool( $t_filter[FILTER_PROPERTY_STICKY] );
+						print( $t_sticky_filter_state ? \Core\Lang::get( 'yes' ) : \Core\Lang::get( 'no' ) );
 					?>
 					<input type="hidden" name="<?php
 						echo FILTER_PROPERTY_STICKY; ?>" value="<?php
@@ -2860,15 +2860,15 @@ class Filter
 				<td class="small-caption" id="do_filter_by_date_filter_target">
 			<?php
 			if( 'on' == $t_filter[FILTER_PROPERTY_FILTER_BY_DATE] ) {
-				echo '<input type="hidden" name="', FILTER_PROPERTY_FILTER_BY_DATE, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_FILTER_BY_DATE] ), '" />';
-				echo '<input type="hidden" name="', FILTER_PROPERTY_START_MONTH, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_START_MONTH] ), '" />';
-				echo '<input type="hidden" name="', FILTER_PROPERTY_START_DAY, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_START_DAY] ), '" />';
-				echo '<input type="hidden" name="', FILTER_PROPERTY_START_YEAR, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_START_YEAR] ), '" />';
-				echo '<input type="hidden" name="', FILTER_PROPERTY_END_MONTH, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_END_MONTH] ), '" />';
-				echo '<input type="hidden" name="', FILTER_PROPERTY_END_DAY, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_END_DAY] ), '" />';
-				echo '<input type="hidden" name="', FILTER_PROPERTY_END_YEAR, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_END_YEAR] ), '" />';
+				echo '<input type="hidden" name="', FILTER_PROPERTY_FILTER_BY_DATE, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_FILTER_BY_DATE] ), '" />';
+				echo '<input type="hidden" name="', FILTER_PROPERTY_START_MONTH, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_START_MONTH] ), '" />';
+				echo '<input type="hidden" name="', FILTER_PROPERTY_START_DAY, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_START_DAY] ), '" />';
+				echo '<input type="hidden" name="', FILTER_PROPERTY_START_YEAR, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_START_YEAR] ), '" />';
+				echo '<input type="hidden" name="', FILTER_PROPERTY_END_MONTH, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_END_MONTH] ), '" />';
+				echo '<input type="hidden" name="', FILTER_PROPERTY_END_DAY, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_END_DAY] ), '" />';
+				echo '<input type="hidden" name="', FILTER_PROPERTY_END_YEAR, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_END_YEAR] ), '" />';
 	
-				$t_chars = preg_split( '//', \Flickerbox\Config::mantis_get( 'short_date_format' ), -1, PREG_SPLIT_NO_EMPTY );
+				$t_chars = preg_split( '//', \Core\Config::mantis_get( 'short_date_format' ), -1, PREG_SPLIT_NO_EMPTY );
 				$t_time = mktime( 0, 0, 0, $t_filter[FILTER_PROPERTY_START_MONTH], $t_filter[FILTER_PROPERTY_START_DAY], $t_filter[FILTER_PROPERTY_START_YEAR] );
 				foreach( $t_chars as $t_char ) {
 					if( strcasecmp( $t_char, 'M' ) == 0 ) {
@@ -2903,21 +2903,21 @@ class Filter
 					}
 				}
 			} else {
-				echo \Flickerbox\Lang::get( 'no' );
+				echo \Core\Lang::get( 'no' );
 			}
 			?>
 				</td>
 	
 				<td class="small-caption" colspan="2" id="relationship_type_filter_target">
 			<?php
-			echo '<input type="hidden" name="', FILTER_PROPERTY_RELATIONSHIP_TYPE, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] ), '" />';
-			echo '<input type="hidden" name="', FILTER_PROPERTY_RELATIONSHIP_BUG, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_RELATIONSHIP_BUG] ), '" />';
+			echo '<input type="hidden" name="', FILTER_PROPERTY_RELATIONSHIP_TYPE, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE] ), '" />';
+			echo '<input type="hidden" name="', FILTER_PROPERTY_RELATIONSHIP_BUG, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_RELATIONSHIP_BUG] ), '" />';
 			$c_rel_type = $t_filter[FILTER_PROPERTY_RELATIONSHIP_TYPE];
 			$c_rel_bug = $t_filter[FILTER_PROPERTY_RELATIONSHIP_BUG];
 			if( -1 == $c_rel_type || 0 == $c_rel_bug ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
-				echo \Flickerbox\Relationship::get_description_for_history( $c_rel_type ) . ' ' . $c_rel_bug;
+				echo \Core\Relationship::get_description_for_history( $c_rel_type ) . ' ' . $c_rel_bug;
 			}
 	
 			?>
@@ -2928,23 +2928,23 @@ class Filter
 			</tr>
 			<tr <?php echo 'class="' . $t_trclass . '"';?>>
 				<td class="small-caption">
-					<?php if( ON == \Flickerbox\Config::mantis_get( 'enable_profiles' ) ) { ?>
-						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_PLATFORM;?>" id="platform_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'platform_label' )?></a>
+					<?php if( ON == \Core\Config::mantis_get( 'enable_profiles' ) ) { ?>
+						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_PLATFORM;?>" id="platform_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'platform_label' )?></a>
 					<?php } ?>
 				</td>
 				<td class="small-caption">
-					<?php if( ON == \Flickerbox\Config::mantis_get( 'enable_profiles' ) ) { ?>
-						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_OS;?>" id="os_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'os_label' )?></a>
+					<?php if( ON == \Core\Config::mantis_get( 'enable_profiles' ) ) { ?>
+						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_OS;?>" id="os_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'os_label' )?></a>
 					<?php } ?>
 				</td>
 				<td class="small-caption">
-					<?php if( ON == \Flickerbox\Config::mantis_get( 'enable_profiles' ) ) { ?>
-						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_OS_BUILD;?>" id="os_build_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'os_version_label' )?></a>
+					<?php if( ON == \Core\Config::mantis_get( 'enable_profiles' ) ) { ?>
+						<a href="<?php echo $t_filters_url . FILTER_PROPERTY_OS_BUILD;?>" id="os_build_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'os_version_label' )?></a>
 					<?php } ?>
 				</td>
 				<td class="small-caption" colspan="5">
-					<?php if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_view_threshold' ) ) ) { ?>
-					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_TAG_STRING;?>" id="tag_string_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Flickerbox\Lang::get( 'tags_label' )?></a>
+					<?php if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_view_threshold' ) ) ) { ?>
+					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_TAG_STRING;?>" id="tag_string_filter"<?php echo $t_dynamic_filter_expander_class ?>><?php echo \Core\Lang::get( 'tags_label' )?></a>
 					<?php } ?>
 				</td>
 				<?php if( $t_filter_cols > 8 ) {
@@ -2952,15 +2952,15 @@ class Filter
 			}?>
 			</tr>
 			<tr class="row-1">
-				<?php if( ON == \Flickerbox\Config::mantis_get( 'enable_profiles' ) ) { ?>
+				<?php if( ON == \Core\Config::mantis_get( 'enable_profiles' ) ) { ?>
 				<td class="small-caption" id="platform_filter_target">
-					<?php \Flickerbox\Filter::print_multivalue_field( FILTER_PROPERTY_PLATFORM, $t_filter[FILTER_PROPERTY_PLATFORM] ); ?>
+					<?php \Core\Filter::print_multivalue_field( FILTER_PROPERTY_PLATFORM, $t_filter[FILTER_PROPERTY_PLATFORM] ); ?>
 				</td>
 				<td class="small-caption" id="os_filter_target">
-					<?php \Flickerbox\Filter::print_multivalue_field( FILTER_PROPERTY_OS, $t_filter[FILTER_PROPERTY_OS] ); ?>
+					<?php \Core\Filter::print_multivalue_field( FILTER_PROPERTY_OS, $t_filter[FILTER_PROPERTY_OS] ); ?>
 				</td>
 				<td class="small-caption" id="os_build_filter_target">
-					<?php \Flickerbox\Filter::print_multivalue_field( FILTER_PROPERTY_OS_BUILD, $t_filter[FILTER_PROPERTY_OS_BUILD] ); ?>
+					<?php \Core\Filter::print_multivalue_field( FILTER_PROPERTY_OS_BUILD, $t_filter[FILTER_PROPERTY_OS_BUILD] ); ?>
 				</td>
 				<?php } else {?>
 					<td colspan="3">&#160;</td>
@@ -2969,19 +2969,19 @@ class Filter
 				<td class="small-caption" id="tag_string_filter_target" colspan="5">
 					<?php
 						$t_tag_string = $t_filter[FILTER_PROPERTY_TAG_STRING];
-			if( $t_filter[FILTER_PROPERTY_TAG_SELECT] != 0 && \Flickerbox\Tag::exists( $t_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
-				$t_tag_string .= ( \Flickerbox\Utility::is_blank( $t_tag_string ) ? '' : \Flickerbox\Config::mantis_get( 'tag_separator' ) );
-				$t_tag_string .= \Flickerbox\Tag::get_field( $t_filter[FILTER_PROPERTY_TAG_SELECT], 'name' );
+			if( $t_filter[FILTER_PROPERTY_TAG_SELECT] != 0 && \Core\Tag::exists( $t_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
+				$t_tag_string .= ( \Core\Utility::is_blank( $t_tag_string ) ? '' : \Core\Config::mantis_get( 'tag_separator' ) );
+				$t_tag_string .= \Core\Tag::get_field( $t_filter[FILTER_PROPERTY_TAG_SELECT], 'name' );
 			}
-			echo \Flickerbox\String::html_entities( $t_tag_string );
-			echo '<input type="hidden" name="', FILTER_PROPERTY_TAG_STRING, '" value="', \Flickerbox\String::attribute( $t_tag_string ), '" />';
+			echo \Core\String::html_entities( $t_tag_string );
+			echo '<input type="hidden" name="', FILTER_PROPERTY_TAG_STRING, '" value="', \Core\String::attribute( $t_tag_string ), '" />';
 			?>
 				</td>
 			</tr>
 			<?php
 	
 			# get plugin filters
-			$t_plugin_filters = \Flickerbox\Filter::get_plugin_filters();
+			$t_plugin_filters = \Core\Filter::get_plugin_filters();
 			$t_plugin_filter_links = array();
 			$t_plugin_filter_fields = array();
 			$t_column_count_by_row = array();
@@ -3026,27 +3026,27 @@ class Filter
 					}
 				}
 				$t_colspan_attr = ( $t_colspan > 1 ? 'colspan="' . $t_colspan . '" ' : '' );
-				$t_plugin_filter_links[$t_assigned_row][] = '<td ' . $t_colspan_attr . 'class="small-caption"> <a href="' . $t_filters_url . \Flickerbox\String::attribute( $t_field_name ) .
-					'" id="' . \Flickerbox\String::attribute( $t_field_name ) . '_filter">' . \Flickerbox\String::display_line( $t_filter_object->title ) . '</a> </td>';
-				$t_values = '<td ' . $t_colspan_attr . 'class="small-caption" id="' . \Flickerbox\String::attribute( $t_field_name ) . '_filter_target"> ';
+				$t_plugin_filter_links[$t_assigned_row][] = '<td ' . $t_colspan_attr . 'class="small-caption"> <a href="' . $t_filters_url . \Core\String::attribute( $t_field_name ) .
+					'" id="' . \Core\String::attribute( $t_field_name ) . '_filter">' . \Core\String::display_line( $t_filter_object->title ) . '</a> </td>';
+				$t_values = '<td ' . $t_colspan_attr . 'class="small-caption" id="' . \Core\String::attribute( $t_field_name ) . '_filter_target"> ';
 	
 				if( !isset( $t_filter[$t_field_name] ) ) {
-					$t_values .= \Flickerbox\Lang::get( 'any' );
+					$t_values .= \Core\Lang::get( 'any' );
 				} else {
 					switch( $t_filter_object->type ) {
 						case FILTER_TYPE_STRING:
 						case FILTER_TYPE_INT:
-							if( \Flickerbox\Filter::field_is_any( $t_filter[$t_field_name] ) ) {
-								$t_values .= \Flickerbox\Lang::get( 'any' );
+							if( \Core\Filter::field_is_any( $t_filter[$t_field_name] ) ) {
+								$t_values .= \Core\Lang::get( 'any' );
 							} else {
-								$t_values .= \Flickerbox\String::display_line( $t_filter[$t_field_name] );
+								$t_values .= \Core\String::display_line( $t_filter[$t_field_name] );
 							}
-							$t_values .= '<input type="hidden" name="' . \Flickerbox\String::attribute( $t_field_name ) . '" value="' . \Flickerbox\String::attribute( $t_filter[$t_field_name] ) . '"/>';
+							$t_values .= '<input type="hidden" name="' . \Core\String::attribute( $t_field_name ) . '" value="' . \Core\String::attribute( $t_filter[$t_field_name] ) . '"/>';
 							break;
 	
 						case FILTER_TYPE_BOOLEAN:
-							$t_values .= \Flickerbox\String::display_line( $t_filter_object->display( (bool)$t_filter[$t_field_name] ) );
-							$t_values .= '<input type="hidden" name="' . \Flickerbox\String::attribute( $t_field_name ) . '" value="' . (bool)$t_filter[$t_field_name] . '"/>';
+							$t_values .= \Core\String::display_line( $t_filter_object->display( (bool)$t_filter[$t_field_name] ) );
+							$t_values .= '<input type="hidden" name="' . \Core\String::attribute( $t_field_name ) . '" value="' . (bool)$t_filter[$t_field_name] . '"/>';
 							break;
 	
 						case FILTER_TYPE_MULTI_STRING:
@@ -3059,13 +3059,13 @@ class Filter
 							}
 	
 							foreach( $t_filter[$t_field_name] as $t_current ) {
-								if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
-									$t_output .= \Flickerbox\Lang::get( 'any' );
+								if( \Core\Filter::field_is_any( $t_current ) ) {
+									$t_output .= \Core\Lang::get( 'any' );
 								} else {
-									$t_output .= ( $t_first ? '' : '<br/>' ) . \Flickerbox\String::display_line( $t_filter_object->display( $t_current ) );
+									$t_output .= ( $t_first ? '' : '<br/>' ) . \Core\String::display_line( $t_filter_object->display( $t_current ) );
 									$t_first = false;
 								}
-								$t_values .= '<input type="hidden" name="' . \Flickerbox\String::attribute( $t_field_name ) . '[]" value="' . \Flickerbox\String::attribute( $t_current ) . '"/>';
+								$t_values .= '<input type="hidden" name="' . \Core\String::attribute( $t_field_name ) . '[]" value="' . \Core\String::attribute( $t_current ) . '"/>';
 							}
 	
 							$t_values .= $t_output;
@@ -3090,12 +3090,12 @@ class Filter
 				echo "\n\t" . '<tr class="row-1">', $t_values_row, "\n\t</tr>\n\t";
 			}
 	
-			if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
+			if( ON == \Core\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 	
 				# -- Custom Field Searching --
 	
 				if( count( $t_accessible_custom_fields_ids ) > 0 ) {
-					$t_per_row = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
+					$t_per_row = \Core\Config::mantis_get( 'filter_custom_fields_per_row' );
 					$t_num_fields = count( $t_accessible_custom_fields_ids );
 					$t_row_idx = 0;
 					$t_col_idx = 0;
@@ -3112,7 +3112,7 @@ class Filter
 						if( isset( $t_accessible_custom_fields_names[$i] ) ) {
 							$t_fields .= '<td class="small-caption"> ';
 							$t_fields .= '<a href="' . $t_filters_url . 'custom_field_' . $t_accessible_custom_fields_ids[$i] . '[]" id="custom_field_' . $t_accessible_custom_fields_ids[$i] . '_filter"' . $t_dynamic_filter_expander_class . '>';
-							$t_fields .= \Flickerbox\String::display_line( \Flickerbox\Lang::get_defaulted( $t_accessible_custom_fields_names[$i] ) );
+							$t_fields .= \Core\String::display_line( \Core\Lang::get_defaulted( $t_accessible_custom_fields_names[$i] ) );
 							$t_fields .= '</a> </td> ';
 						}
 						$t_output = '';
@@ -3120,10 +3120,10 @@ class Filter
 	
 						$t_values .= '<td class="small-caption" id="custom_field_' . $t_accessible_custom_fields_ids[$i] . '_filter_target"> ';
 						if( !isset( $t_filter['custom_fields'][$t_accessible_custom_fields_ids[$i]] ) ) {
-							$t_values .= \Flickerbox\Lang::get( 'any' );
+							$t_values .= \Core\Lang::get( 'any' );
 						} else {
 							if( $t_accessible_custom_fields_types[$i] == CUSTOM_FIELD_TYPE_DATE ) {
-								$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
+								$t_short_date_format = \Core\Config::mantis_get( 'short_date_format' );
 								if( !isset( $t_filter['custom_fields'][$t_accessible_custom_fields_ids[$i]][1] ) ) {
 									$t_filter['custom_fields'][$t_accessible_custom_fields_ids[$i]][1] = 0;
 								}
@@ -3135,33 +3135,33 @@ class Filter
 								$t_end = date( $t_short_date_format, $t_filter['custom_fields'][$t_accessible_custom_fields_ids[$i]][2] );
 								switch( $t_filter['custom_fields'][$t_accessible_custom_fields_ids[$i]][0] ) {
 									case CUSTOM_FIELD_DATE_ANY:
-										$t_values .= \Flickerbox\Lang::get( 'any' );
+										$t_values .= \Core\Lang::get( 'any' );
 										break;
 									case CUSTOM_FIELD_DATE_NONE:
-										$t_values .= \Flickerbox\Lang::get( 'none' );
+										$t_values .= \Core\Lang::get( 'none' );
 										break;
 									case CUSTOM_FIELD_DATE_BETWEEN:
-										$t_values .= \Flickerbox\Lang::get( 'between_date' ) . '<br />';
+										$t_values .= \Core\Lang::get( 'between_date' ) . '<br />';
 										$t_values .= $t_start . '<br />' . $t_end;
 										break;
 									case CUSTOM_FIELD_DATE_ONORBEFORE:
-										$t_values .= \Flickerbox\Lang::get( 'on_or_before_date' ) . '<br />';
+										$t_values .= \Core\Lang::get( 'on_or_before_date' ) . '<br />';
 										$t_values .= $t_end;
 										break;
 									case CUSTOM_FIELD_DATE_BEFORE:
-										$t_values .= \Flickerbox\Lang::get( 'before_date' ) . '<br />';
+										$t_values .= \Core\Lang::get( 'before_date' ) . '<br />';
 										$t_values .= $t_end;
 										break;
 									case CUSTOM_FIELD_DATE_ON:
-										$t_values .= \Flickerbox\Lang::get( 'on_date' ) . '<br />';
+										$t_values .= \Core\Lang::get( 'on_date' ) . '<br />';
 										$t_values .= $t_start;
 										break;
 									case CUSTOM_FIELD_DATE_AFTER:
-										$t_values .= \Flickerbox\Lang::get( 'after_date' ) . '<br />';
+										$t_values .= \Core\Lang::get( 'after_date' ) . '<br />';
 										$t_values .= $t_start;
 										break;
 									case CUSTOM_FIELD_DATE_ONORAFTER:
-										$t_values .= \Flickerbox\Lang::get( 'on_or_after_date' ) . '<br />';
+										$t_values .= \Core\Lang::get( 'on_or_after_date' ) . '<br />';
 										$t_values .= $t_start;
 										break;
 								}
@@ -3170,10 +3170,10 @@ class Filter
 								foreach( $t_filter['custom_fields'][$t_accessible_custom_fields_ids[$i]] as $t_current ) {
 									$t_current = stripslashes( $t_current );
 									$t_this_string = '';
-									if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+									if( \Core\Filter::field_is_any( $t_current ) ) {
 										$t_any_found = true;
-									} else if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-										$t_this_string = \Flickerbox\Lang::get( 'none' );
+									} else if( \Core\Filter::field_is_none( $t_current ) ) {
+										$t_this_string = \Core\Lang::get( 'none' );
 									} else {
 										$t_this_string = $t_current;
 									}
@@ -3184,13 +3184,13 @@ class Filter
 										$t_first_flag = false;
 									}
 	
-									$t_output = $t_output . \Flickerbox\String::display_line( $t_this_string );
-									$t_values .= '<input type="hidden" name="custom_field_' . $t_accessible_custom_fields_ids[$i] . '[]" value="' . \Flickerbox\String::attribute( $t_current ) . '" />';
+									$t_output = $t_output . \Core\String::display_line( $t_this_string );
+									$t_values .= '<input type="hidden" name="custom_field_' . $t_accessible_custom_fields_ids[$i] . '[]" value="' . \Core\String::attribute( $t_current ) . '" />';
 								}
 							}
 	
 							if( true == $t_any_found ) {
-								$t_values .= \Flickerbox\Lang::get( 'any' );
+								$t_values .= \Core\Lang::get( 'any' );
 							} else {
 								$t_values .= $t_output;
 							}
@@ -3239,7 +3239,7 @@ class Filter
 			<tr class="row-1">
 				<td class="small-caption category2">
 					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_NOTE_USER_ID;?>" id="note_user_id_filter"<?php echo $t_dynamic_filter_expander_class ?>>
-						<?php echo \Flickerbox\Lang::get( 'note_user_id_label' )?>
+						<?php echo \Core\Lang::get( 'note_user_id_label' )?>
 					</a>
 				</td>
 				<td class="small-caption" id="note_user_id_filter_target">
@@ -3247,34 +3247,34 @@ class Filter
 						$t_output = '';
 			$t_any_found = false;
 			if( count( $t_filter[FILTER_PROPERTY_NOTE_USER_ID] ) == 0 ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				$t_first_flag = true;
 				foreach( $t_filter[FILTER_PROPERTY_NOTE_USER_ID] as $t_current ) {
-					echo '<input type="hidden" name="', FILTER_PROPERTY_NOTE_USER_ID, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_NOTE_USER_ID, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 					$t_this_name = '';
-					if( \Flickerbox\Filter::field_is_none( $t_current ) ) {
-						$t_this_name = \Flickerbox\Lang::get( 'none' );
-					} else if( \Flickerbox\Filter::field_is_any( $t_current ) ) {
+					if( \Core\Filter::field_is_none( $t_current ) ) {
+						$t_this_name = \Core\Lang::get( 'none' );
+					} else if( \Core\Filter::field_is_any( $t_current ) ) {
 						$t_any_found = true;
-					} else if( \Flickerbox\Filter::field_is_myself( $t_current ) ) {
-						if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
-							$t_this_name = '[' . \Flickerbox\Lang::get( 'myself' ) . ']';
+					} else if( \Core\Filter::field_is_myself( $t_current ) ) {
+						if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
+							$t_this_name = '[' . \Core\Lang::get( 'myself' ) . ']';
 						} else {
 							$t_any_found = true;
 						}
 					} else {
-						$t_this_name = \Flickerbox\User::get_name( $t_current );
+						$t_this_name = \Core\User::get_name( $t_current );
 					}
 					if( $t_first_flag != true ) {
 						$t_output = $t_output . '<br />';
 					} else {
 						$t_first_flag = false;
 					}
-					$t_output = $t_output . \Flickerbox\String::display_line( $t_this_name );
+					$t_output = $t_output . \Core\String::display_line( $t_this_name );
 				}
 				if( true == $t_any_found ) {
-					echo \Flickerbox\Lang::get( 'any' );
+					echo \Core\Lang::get( 'any' );
 				} else {
 					echo $t_output;
 				}
@@ -3285,7 +3285,7 @@ class Filter
 				<!-- Sort by -->
 				<td class="small-caption category2">
 					<a href="<?php echo $t_filters_url . 'show_sort';?>" id="show_sort_filter"<?php echo $t_dynamic_filter_expander_class ?>>
-						<?php echo \Flickerbox\Lang::get( 'sort_label' )?>
+						<?php echo \Core\Lang::get( 'sort_label' )?>
 					</a>
 				</td>
 				<td class="small-caption" id="show_sort_filter_target">
@@ -3300,14 +3300,14 @@ class Filter
 					}
 					$t_sort = $t_sort_fields[$i];
 					if( strpos( $t_sort, 'custom_' ) === 0 ) {
-						$t_field_name = \Flickerbox\String::display( \Flickerbox\Lang::get_defaulted( utf8_substr( $t_sort, utf8_strlen( 'custom_' ) ) ) );
+						$t_field_name = \Core\String::display( \Core\Lang::get_defaulted( utf8_substr( $t_sort, utf8_strlen( 'custom_' ) ) ) );
 					} else {
-						$t_field_name = \Flickerbox\String::get_field_name( $t_sort );
+						$t_field_name = \Core\String::get_field_name( $t_sort );
 					}
 	
-					echo $t_field_name . ' ' . \Flickerbox\Lang::get( 'bugnote_order_' . utf8_strtolower( $t_dir_fields[$i] ) );
-					echo '<input type="hidden" name="', FILTER_PROPERTY_SORT_FIELD_NAME, '_', $i, '" value="', \Flickerbox\String::attribute( $t_sort_fields[$i] ), '" />';
-					echo '<input type="hidden" name="', FILTER_PROPERTY_SORT_DIRECTION, '_', $i, '" value="', \Flickerbox\String::attribute( $t_dir_fields[$i] ), '" />';
+					echo $t_field_name . ' ' . \Core\Lang::get( 'bugnote_order_' . utf8_strtolower( $t_dir_fields[$i] ) );
+					echo '<input type="hidden" name="', FILTER_PROPERTY_SORT_FIELD_NAME, '_', $i, '" value="', \Core\String::attribute( $t_sort_fields[$i] ), '" />';
+					echo '<input type="hidden" name="', FILTER_PROPERTY_SORT_DIRECTION, '_', $i, '" value="', \Core\String::attribute( $t_dir_fields[$i] ), '" />';
 				}
 			}
 	?>
@@ -3318,7 +3318,7 @@ class Filter
 				<!-- Project -->
 				<td class="small-caption category2" colspan="2">
 					<a href="<?php echo $t_filters_url . FILTER_PROPERTY_PROJECT_ID;?>" id="project_id_filter"<?php echo $t_dynamic_filter_expander_class ?>>
-						<?php echo \Flickerbox\Lang::get( 'email_project_label' )?>
+						<?php echo \Core\Lang::get( 'email_project_label' )?>
 					</a>
 				</td>
 				<td class="small-caption" id="project_id_filter_target">
@@ -3330,23 +3330,23 @@ class Filter
 					);
 				}
 				if( count( $t_filter[FILTER_PROPERTY_PROJECT_ID] ) == 0 ) {
-					echo \Flickerbox\Lang::get( 'current' );
+					echo \Core\Lang::get( 'current' );
 				} else {
 					$t_first_flag = true;
 					foreach( $t_filter[FILTER_PROPERTY_PROJECT_ID] as $t_current ) {
-						echo '<input type="hidden" name="', FILTER_PROPERTY_PROJECT_ID, '[]" value="', \Flickerbox\String::attribute( $t_current ), '" />';
+						echo '<input type="hidden" name="', FILTER_PROPERTY_PROJECT_ID, '[]" value="', \Core\String::attribute( $t_current ), '" />';
 						$t_this_name = '';
 						if( META_FILTER_CURRENT == $t_current ) {
-							$t_this_name = '[' . \Flickerbox\Lang::get( 'current' ) . ']';
+							$t_this_name = '[' . \Core\Lang::get( 'current' ) . ']';
 						} else {
-							$t_this_name = \Flickerbox\Project::get_name( $t_current, false );
+							$t_this_name = \Core\Project::get_name( $t_current, false );
 						}
 						if( $t_first_flag != true ) {
 							$t_output = $t_output . '<br />';
 						} else {
 							$t_first_flag = false;
 						}
-						$t_output = $t_output . \Flickerbox\String::display_line( $t_this_name );
+						$t_output = $t_output . \Core\String::display_line( $t_this_name );
 					}
 					echo $t_output;
 				}
@@ -3366,16 +3366,16 @@ class Filter
 	
 			<!-- Match Type -->
 			<tr class="row-1">
-				<td class="small-caption category2"><a href="<?php echo $t_filters_url . FILTER_PROPERTY_MATCH_TYPE;?>" id="match_type_filter"><?php echo \Flickerbox\Lang::get( 'filter_match_type' )?>:</a></td>
+				<td class="small-caption category2"><a href="<?php echo $t_filters_url . FILTER_PROPERTY_MATCH_TYPE;?>" id="match_type_filter"><?php echo \Core\Lang::get( 'filter_match_type' )?>:</a></td>
 				<td class="small-caption" id="match_type_filter_target">
 				<?php
 					switch( $t_filter[FILTER_PROPERTY_MATCH_TYPE] ) {
 						case FILTER_MATCH_ANY:
-							echo \Flickerbox\Lang::get( 'filter_match_any' );
+							echo \Core\Lang::get( 'filter_match_any' );
 							break;
 						case FILTER_MATCH_ALL:
 						default:
-							echo \Flickerbox\Lang::get( 'filter_match_all' );
+							echo \Core\Lang::get( 'filter_match_all' );
 							break;
 					}
 				?>
@@ -3386,14 +3386,14 @@ class Filter
 					<a id="highlight_changed_filter"
 						href="<?php echo $t_filters_url . FILTER_PROPERTY_HIGHLIGHT_CHANGED; ?>"
 						<?php #echo $t_dynamic_filter_expander_class; ?>>
-						<?php echo \Flickerbox\Lang::get( 'changed_label' )?>
+						<?php echo \Core\Lang::get( 'changed_label' )?>
 					</a>
 				</td>
 				<td class="small-caption" valign="top" id="highlight_changed_filter_target">
 					<?php echo $t_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED]; ?>
 					<input type="hidden"
 						name="<?php echo FILTER_PROPERTY_HIGHLIGHT_CHANGED; ?>"
-						value="<?php echo \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] ); ?>"
+						value="<?php echo \Core\String::attribute( $t_filter[FILTER_PROPERTY_HIGHLIGHT_CHANGED] ); ?>"
 					/>
 				</td>
 	
@@ -3404,24 +3404,24 @@ class Filter
 		}
 	
 		# expanded
-		\Flickerbox\Collapse::icon( 'filter' );
+		\Core\Collapse::icon( 'filter' );
 		echo '<div class="search-box">';
 		echo '<label>';
-		echo \Flickerbox\Lang::get( 'search' ) . '&#160;';
-		echo '<input type="text" size="16" name="', FILTER_PROPERTY_SEARCH, '" value="', \Flickerbox\String::attribute( $t_filter[FILTER_PROPERTY_SEARCH] ), '" />';
+		echo \Core\Lang::get( 'search' ) . '&#160;';
+		echo '<input type="text" size="16" name="', FILTER_PROPERTY_SEARCH, '" value="', \Core\String::attribute( $t_filter[FILTER_PROPERTY_SEARCH] ), '" />';
 		echo '</label>';
 		echo '</div>';
 		?>
-		<div class="submit-query"><input type="submit" name="filter" value="<?php echo \Flickerbox\Lang::get( 'filter_button' )?>" /></div>
+		<div class="submit-query"><input type="submit" name="filter" value="<?php echo \Core\Lang::get( 'filter_button' )?>" /></div>
 		</form>
 		<?php
-		$t_stored_queries_arr = \Flickerbox\Filter::db_get_available_queries();
+		$t_stored_queries_arr = \Core\Filter::db_get_available_queries();
 	
-		if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_create_threshold' ) ) ) { ?>
+		if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'stored_query_create_threshold' ) ) ) { ?>
 		<div class="save-query">
 			<form method="post" name="save_query" action="query_store_page.php">
 				<?php # CSRF protection not required here - form does not result in modifications ?>
-				<input type="submit" name="save_query_button" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'save_query' )?>" />
+				<input type="submit" name="save_query_button" class="button-small" value="<?php echo \Core\Lang::get( 'save_query' )?>" />
 			</form>
 		</div><?php
 		}
@@ -3429,7 +3429,7 @@ class Filter
 		<div class="manage-queries">
 			<form method="post" name="open_queries" action="query_view_page.php">
 				<?php # CSRF protection not required here - form does not result in modifications ?>
-				<input type="submit" name="switch_to_query_button" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'open_queries' )?>" />
+				<input type="submit" name="switch_to_query_button" class="button-small" value="<?php echo \Core\Lang::get( 'open_queries' )?>" />
 			</form>
 		</div>
 		<div class="stored-queries">
@@ -3437,18 +3437,18 @@ class Filter
 				<?php # CSRF protection not required here - form does not result in modifications ?>
 				<input type="hidden" name="type" value="3" />
 				<select name="source_query_id">
-					<option value="-1"><?php echo '[' . \Flickerbox\Lang::get( 'reset_query' ) . ']'?></option>
+					<option value="-1"><?php echo '[' . \Core\Lang::get( 'reset_query' ) . ']'?></option>
 					<option value="-1"></option>
 					<?php
 					$t_source_query_id = isset( $t_filter['_source_query_id'] ) ? (int)$t_filter['_source_query_id'] : -1;
 					foreach( $t_stored_queries_arr as $t_query_id => $t_query_name ) {
 						echo '<option value="' . $t_query_id . '" ';
-						\Flickerbox\Helper::check_selected( $t_query_id, $t_source_query_id );
-						echo '>' . \Flickerbox\String::display_line( $t_query_name ) . '</option>';
+						\Core\Helper::check_selected( $t_query_id, $t_source_query_id );
+						echo '>' . \Core\String::display_line( $t_query_name ) . '</option>';
 					}
 					?>
 				</select>
-				<input type="submit" name="switch_to_query_button" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'use_query' )?>" />
+				<input type="submit" name="switch_to_query_button" class="button-small" value="<?php echo \Core\Lang::get( 'use_query' )?>" />
 			</form>
 		</div> <?php
 		} else { ?>
@@ -3457,7 +3457,7 @@ class Filter
 				<?php # CSRF protection not required here - form does not result in modifications ?>
 				<input type="hidden" name="type" value="3" />
 				<input type="hidden" name="source_query_id" value="-1" />
-				<input type="submit" name="reset_query_button" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'reset_query' )?>" />
+				<input type="submit" name="reset_query_button" class="button-small" value="<?php echo \Core\Lang::get( 'reset_query' )?>" />
 			</form>
 		</div><?php
 		}
@@ -3465,24 +3465,24 @@ class Filter
 	
 		<div class="filter-links">
 			<?php
-			if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'create_permalink_threshold' ) ) ) {
+			if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'create_permalink_threshold' ) ) ) {
 				?>
 				<form method="get" action="permalink_page.php">
 					<?php # CSRF protection not required here - form does not result in modifications ?>
-					<input type="hidden" name="url" value="<?php echo urlencode( \Flickerbox\Filter::get_url( $t_filter ) ) ?>" />
-					<input type="submit" name="reset_query_button" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'create_filter_link' ) ?>" />
+					<input type="hidden" name="url" value="<?php echo urlencode( \Core\Filter::get_url( $t_filter ) ) ?>" />
+					<input type="submit" name="reset_query_button" class="button-small" value="<?php echo \Core\Lang::get( 'create_filter_link' ) ?>" />
 				</form>
 				<?php
 			}
 	
-			$t_view_filters = \Flickerbox\Config::mantis_get( 'view_filters' );
+			$t_view_filters = \Core\Config::mantis_get( 'view_filters' );
 			if( ( SIMPLE_ONLY != $t_view_filters ) && ( ADVANCED_ONLY != $t_view_filters ) ) {
 				?>
 				<form method="get" action="view_all_set.php">
 					<?php # CSRF protection not required here - form does not result in modifications ?>
-					<input type="hidden" name="type" value="<?php echo \Flickerbox\Config::mantis_get( 'use_dynamic_filters' ) ? '6' : '' ?>" />
+					<input type="hidden" name="type" value="<?php echo \Core\Config::mantis_get( 'use_dynamic_filters' ) ? '6' : '' ?>" />
 					<input type="hidden" name="view_type" value="<?php echo 'advanced' == $t_view_type ? 'simple' : 'advanced' ?>" />
-					<input type="submit" name="reset_query_button" class="button-small" value="<?php echo 'advanced' == $t_view_type ? \Flickerbox\Lang::get( 'simple_filters' ) : \Flickerbox\Lang::get( 'advanced_filters' ) ?>" />
+					<input type="submit" name="reset_query_button" class="button-small" value="<?php echo 'advanced' == $t_view_type ? \Core\Lang::get( 'simple_filters' ) : \Core\Lang::get( 'advanced_filters' ) ?>" />
 				</form>
 				<?php
 			}
@@ -3525,25 +3525,25 @@ class Filter
 		# @@@ thraxisp - access_has_project_level checks greater than or equal to,
 		#   this assumed that there aren't any holes above REPORTER where the limit would apply
 		#
-		if( ( ON === \Flickerbox\Config::mantis_get( 'limit_reporters' ) ) && ( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ) + 1 ) ) ) {
-			$t_id = \Flickerbox\Auth::get_current_user_id();
-			$t_username = \Flickerbox\User::get_field( $t_id, 'username' );
-			$t_realname = \Flickerbox\User::get_field( $t_id, 'realname' );
-			$t_display_name = \Flickerbox\String::attribute( $t_username );
-			if( ( isset( $t_realname ) ) && ( $t_realname > '' ) && ( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) ) ) {
-				$t_display_name = \Flickerbox\String::attribute( $t_realname );
+		if( ( ON === \Core\Config::mantis_get( 'limit_reporters' ) ) && ( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'report_bug_threshold' ) + 1 ) ) ) {
+			$t_id = \Core\Auth::get_current_user_id();
+			$t_username = \Core\User::get_field( $t_id, 'username' );
+			$t_realname = \Core\User::get_field( $t_id, 'realname' );
+			$t_display_name = \Core\String::attribute( $t_username );
+			if( ( isset( $t_realname ) ) && ( $t_realname > '' ) && ( ON == \Core\Config::mantis_get( 'show_realname' ) ) ) {
+				$t_display_name = \Core\String::attribute( $t_realname );
 			}
 			echo '<option value="' . $t_id . '" selected="selected">' . $t_display_name . '</option>';
 		} else {
 			?>
-			<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+			<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
 			<?php
-				if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'report_bug_threshold' ) ) ) {
+				if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'report_bug_threshold' ) ) ) {
 					echo '<option value="' . META_FILTER_MYSELF . '" ';
-					\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_MYSELF );
-					echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
+					\Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_REPORTER_ID], META_FILTER_MYSELF );
+					echo '>[' . \Core\Lang::get( 'myself' ) . ']</option>';
 				}
-			\Flickerbox\Print_Util::reporter_option_list( $g_filter[FILTER_PROPERTY_REPORTER_ID] );
+			\Core\Print_Util::reporter_option_list( $g_filter[FILTER_PROPERTY_REPORTER_ID] );
 		}?>
 			</select>
 			<?php
@@ -3558,18 +3558,18 @@ class Filter
 		?>
 		<!-- Monitored by -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_MONITOR_USER_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
 				<?php
-					if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' ) ) ) {
+					if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'monitor_bug_threshold' ) ) ) {
 			echo '<option value="' . META_FILTER_MYSELF . '" ';
-			\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_MYSELF );
-			echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
+			\Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID], META_FILTER_MYSELF );
+			echo '>[' . \Core\Lang::get( 'myself' ) . ']</option>';
 		}
-		$t_threshold = \Flickerbox\Config::mantis_get( 'show_monitor_list_threshold' );
-		$t_has_project_level = \Flickerbox\Access::has_project_level( $t_threshold );
+		$t_threshold = \Core\Config::mantis_get( 'show_monitor_list_threshold' );
+		$t_has_project_level = \Core\Access::has_project_level( $t_threshold );
 	
 		if( $t_has_project_level ) {
-			\Flickerbox\Print_Util::reporter_option_list( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID] );
+			\Core\Print_Util::reporter_option_list( $g_filter[FILTER_PROPERTY_MONITOR_USER_ID] );
 		}
 		?>
 			</select>
@@ -3585,17 +3585,17 @@ class Filter
 		?>
 			<!-- Handler -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_HANDLER_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<?php if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ) ) ) {?>
-				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<?php if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'view_handler_threshold' ) ) ) {?>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_NONE );?>>[<?php echo \Core\Lang::get( 'none' )?>]</option>
 				<?php
-					if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
+					if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
 				echo '<option value="' . META_FILTER_MYSELF . '" ';
-				\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_MYSELF );
-				echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
+				\Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_HANDLER_ID], META_FILTER_MYSELF );
+				echo '>[' . \Core\Lang::get( 'myself' ) . ']</option>';
 			}
 	
-			\Flickerbox\Print_Util::assign_to_option_list( $g_filter[FILTER_PROPERTY_HANDLER_ID] );
+			\Core\Print_Util::assign_to_option_list( $g_filter[FILTER_PROPERTY_HANDLER_ID] );
 		}?>
 			</select>
 			<?php
@@ -3610,8 +3610,8 @@ class Filter
 		?>
 			<!-- Category -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_CATEGORY_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_CATEGORY_ID], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<?php \Flickerbox\Print_Util::category_filter_option_list( $g_filter[FILTER_PROPERTY_CATEGORY_ID] )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_CATEGORY_ID], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<?php \Core\Print_Util::category_filter_option_list( $g_filter[FILTER_PROPERTY_CATEGORY_ID] )?>
 			</select>
 			<?php
 	}
@@ -3626,10 +3626,10 @@ class Filter
 		?>
 			<!-- Platform -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PLATFORM;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PLATFORM], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_PLATFORM], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
 				<?php
-					\Flickerbox\Log::event( LOG_FILTERING, 'Platform = ' . var_export( $g_filter[FILTER_PROPERTY_PLATFORM], true ) );
-		\Flickerbox\Print_Util::platform_option_list( $g_filter[FILTER_PROPERTY_PLATFORM] );
+					\Core\Log::event( LOG_FILTERING, 'Platform = ' . var_export( $g_filter[FILTER_PROPERTY_PLATFORM], true ) );
+		\Core\Print_Util::platform_option_list( $g_filter[FILTER_PROPERTY_PLATFORM] );
 		?>
 			</select>
 			<?php
@@ -3645,8 +3645,8 @@ class Filter
 		?>
 			<!-- OS -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_OS;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_OS], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<?php \Flickerbox\Print_Util::os_option_list( $g_filter[FILTER_PROPERTY_OS] )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_OS], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<?php \Core\Print_Util::os_option_list( $g_filter[FILTER_PROPERTY_OS] )?>
 			</select>
 			<?php
 	}
@@ -3661,8 +3661,8 @@ class Filter
 		?>
 			<!-- OS Build -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_OS_BUILD;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_OS_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<?php \Flickerbox\Print_Util::os_build_option_list( $g_filter[FILTER_PROPERTY_OS_BUILD] )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_OS_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<?php \Core\Print_Util::os_build_option_list( $g_filter[FILTER_PROPERTY_OS_BUILD] )?>
 			</select>
 			<?php
 	}
@@ -3675,8 +3675,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Severity -->
 				<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_SEVERITY;?>[]">
-					<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_SEVERITY], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-					<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity', $g_filter[FILTER_PROPERTY_SEVERITY] )?>
+					<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_SEVERITY], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+					<?php \Core\Print_Util::enum_string_option_list( 'severity', $g_filter[FILTER_PROPERTY_SEVERITY] )?>
 				</select>
 			<?php
 	}
@@ -3689,8 +3689,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Resolution -->
 				<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_RESOLUTION;?>[]">
-					<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_RESOLUTION], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-					<?php \Flickerbox\Print_Util::enum_string_option_list( 'resolution', $g_filter[FILTER_PROPERTY_RESOLUTION] )?>
+					<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_RESOLUTION], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+					<?php \Core\Print_Util::enum_string_option_list( 'resolution', $g_filter[FILTER_PROPERTY_RESOLUTION] )?>
 				</select>
 			<?php
 	}
@@ -3703,8 +3703,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?>	<!-- Status -->
 				<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_STATUS;?>[]">
-					<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_STATUS], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-					<?php \Flickerbox\Print_Util::enum_string_option_list( 'status', $g_filter[FILTER_PROPERTY_STATUS] )?>
+					<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_STATUS], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+					<?php \Core\Print_Util::enum_string_option_list( 'status', $g_filter[FILTER_PROPERTY_STATUS] )?>
 				</select>
 			<?php
 	}
@@ -3717,8 +3717,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Hide Status -->
 				<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_HIDE_STATUS;?>[]">
-					<option value="<?php echo META_FILTER_NONE?>">[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
-					<?php \Flickerbox\Print_Util::enum_string_option_list( 'status', $g_filter[FILTER_PROPERTY_HIDE_STATUS] )?>
+					<option value="<?php echo META_FILTER_NONE?>">[<?php echo \Core\Lang::get( 'none' )?>]</option>
+					<?php \Core\Print_Util::enum_string_option_list( 'status', $g_filter[FILTER_PROPERTY_HIDE_STATUS] )?>
 				</select>
 			<?php
 	}
@@ -3731,9 +3731,9 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Build -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_BUILD;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
-				<?php \Flickerbox\Print_Util::build_option_list( $g_filter[FILTER_PROPERTY_BUILD] )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_BUILD], (string)META_FILTER_NONE );?>>[<?php echo \Core\Lang::get( 'none' )?>]</option>
+				<?php \Core\Print_Util::build_option_list( $g_filter[FILTER_PROPERTY_BUILD] )?>
 			</select>
 			<?php
 	}
@@ -3746,9 +3746,9 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Version -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_VERSION;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
-				<?php \Flickerbox\Print_Util::version_option_list( $g_filter[FILTER_PROPERTY_VERSION], null, VERSION_ALL, false, true )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Core\Lang::get( 'none' )?>]</option>
+				<?php \Core\Print_Util::version_option_list( $g_filter[FILTER_PROPERTY_VERSION], null, VERSION_ALL, false, true )?>
 			</select>
 			<?php
 	}
@@ -3761,9 +3761,9 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Fixed in Version -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_FIXED_IN_VERSION;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
-				<?php \Flickerbox\Print_Util::version_option_list( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], null, VERSION_ALL, false, true )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Core\Lang::get( 'none' )?>]</option>
+				<?php \Core\Print_Util::version_option_list( $g_filter[FILTER_PROPERTY_FIXED_IN_VERSION], null, VERSION_ALL, false, true )?>
 			</select>
 			<?php
 	}
@@ -3776,9 +3776,9 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Fixed in Version -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_TARGET_VERSION;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
-				<?php \Flickerbox\Print_Util::version_option_list( $g_filter[FILTER_PROPERTY_TARGET_VERSION], null, VERSION_ALL, false, true )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<option value="<?php echo META_FILTER_NONE?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_TARGET_VERSION], (string)META_FILTER_NONE );?>>[<?php echo \Core\Lang::get( 'none' )?>]</option>
+				<?php \Core\Print_Util::version_option_list( $g_filter[FILTER_PROPERTY_TARGET_VERSION], null, VERSION_ALL, false, true )?>
 			</select>
 			<?php
 	}
@@ -3791,8 +3791,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Priority -->
 		<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PRIORITY;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PRIORITY], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<?php \Flickerbox\Print_Util::enum_string_option_list( 'priority', $g_filter[FILTER_PROPERTY_PRIORITY] )?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_PRIORITY], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<?php \Core\Print_Util::enum_string_option_list( 'priority', $g_filter[FILTER_PROPERTY_PRIORITY] )?>
 		</select>
 			<?php
 	}
@@ -3805,8 +3805,8 @@ class Filter
 		global $g_select_modifier, $g_filter;
 		?><!-- Profile -->
 			<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PROFILE_ID;?>[]">
-				<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PROFILE_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-				<?php \Flickerbox\Print_Util::profile_option_list_for_project( \Flickerbox\Helper::get_current_project(), $g_filter[FILTER_PROPERTY_PROFILE_ID] );?>
+				<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_PROFILE_ID], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+				<?php \Core\Print_Util::profile_option_list_for_project( \Core\Helper::get_current_project(), $g_filter[FILTER_PROPERTY_PROFILE_ID] );?>
 			</select>
 			<?php
 	}
@@ -3832,14 +3832,14 @@ class Filter
 			<select name="<?php echo FILTER_PROPERTY_VIEW_STATE;?>">
 				<?php
 				echo '<option value="' . META_FILTER_ANY . '"';
-		\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], META_FILTER_ANY );
-		echo '>[' . \Flickerbox\Lang::get( 'any' ) . ']</option>';
+		\Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], META_FILTER_ANY );
+		echo '>[' . \Core\Lang::get( 'any' ) . ']</option>';
 		echo '<option value="' . VS_PUBLIC . '"';
-		\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PUBLIC );
-		echo '>' . \Flickerbox\Lang::get( 'public' ) . '</option>';
+		\Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PUBLIC );
+		echo '>' . \Core\Lang::get( 'public' ) . '</option>';
 		echo '<option value="' . VS_PRIVATE . '"';
-		\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PRIVATE );
-		echo '>' . \Flickerbox\Lang::get( 'private' ) . '</option>';
+		\Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_VIEW_STATE], VS_PRIVATE );
+		echo '>' . \Core\Lang::get( 'private' ) . '</option>';
 		?>
 			</select>
 			<?php
@@ -3852,7 +3852,7 @@ class Filter
 	static function print_filter_sticky_issues() {
 		global $g_filter;
 		?><!-- Show or hide sticky bugs -->
-				<input type="checkbox" name="<?php echo FILTER_PROPERTY_STICKY;?>"<?php \Flickerbox\Helper::check_checked( \Flickerbox\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_STICKY] ), true );?> />
+				<input type="checkbox" name="<?php echo FILTER_PROPERTY_STICKY;?>"<?php \Core\Helper::check_checked( \Core\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_STICKY] ), true );?> />
 			<?php
 	}
 	
@@ -3884,8 +3884,8 @@ class Filter
 					<label>
 						<input type="checkbox" id="use_date_filters" name="<?php
 							echo FILTER_PROPERTY_FILTER_BY_DATE ?>"<?php
-							\Flickerbox\Helper::check_checked( \Flickerbox\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_FILTER_BY_DATE] ), true ) ?> />
-						<?php echo \Flickerbox\Lang::get( 'use_date_filters' )?>
+							\Core\Helper::check_checked( \Core\GPC::string_to_bool( $g_filter[FILTER_PROPERTY_FILTER_BY_DATE] ), true ) ?> />
+						<?php echo \Core\Lang::get( 'use_date_filters' )?>
 					</label>
 				</td>
 			</tr>
@@ -3901,25 +3901,25 @@ class Filter
 			<!-- Start date -->
 			<tr>
 				<td>
-				<?php echo \Flickerbox\Lang::get( 'start_date_label' )?>
+				<?php echo \Core\Lang::get( 'start_date_label' )?>
 				</td>
 				<td class="nowrap">
 				<?php
-				$t_chars = preg_split( '//', \Flickerbox\Config::mantis_get( 'short_date_format' ), -1, PREG_SPLIT_NO_EMPTY );
+				$t_chars = preg_split( '//', \Core\Config::mantis_get( 'short_date_format' ), -1, PREG_SPLIT_NO_EMPTY );
 		foreach( $t_chars as $t_char ) {
 			if( strcasecmp( $t_char, 'M' ) == 0 ) {
 				echo '<select name="', FILTER_PROPERTY_START_MONTH, '"', $t_menu_disabled, '>';
-				\Flickerbox\Date::print_month_option_list( $g_filter[FILTER_PROPERTY_START_MONTH] );
+				\Core\Date::print_month_option_list( $g_filter[FILTER_PROPERTY_START_MONTH] );
 				print "</select>\n";
 			}
 			if( strcasecmp( $t_char, 'D' ) == 0 ) {
 				echo '<select name="', FILTER_PROPERTY_START_DAY, '"', $t_menu_disabled, '>';
-				\Flickerbox\Date::print_day_option_list( $g_filter[FILTER_PROPERTY_START_DAY] );
+				\Core\Date::print_day_option_list( $g_filter[FILTER_PROPERTY_START_DAY] );
 				print "</select>\n";
 			}
 			if( strcasecmp( $t_char, 'Y' ) == 0 ) {
 				echo '<select name="', FILTER_PROPERTY_START_YEAR, '"', $t_menu_disabled, '>';
-				\Flickerbox\Date::print_year_option_list( $g_filter[FILTER_PROPERTY_START_YEAR] );
+				\Core\Date::print_year_option_list( $g_filter[FILTER_PROPERTY_START_YEAR] );
 				print "</select>\n";
 			}
 		}
@@ -3929,25 +3929,25 @@ class Filter
 			<!-- End date -->
 			<tr>
 				<td>
-				<?php echo \Flickerbox\Lang::get( 'end_date_label' )?>
+				<?php echo \Core\Lang::get( 'end_date_label' )?>
 				</td>
 				<td>
 				<?php
-				$t_chars = preg_split( '//', \Flickerbox\Config::mantis_get( 'short_date_format' ), -1, PREG_SPLIT_NO_EMPTY );
+				$t_chars = preg_split( '//', \Core\Config::mantis_get( 'short_date_format' ), -1, PREG_SPLIT_NO_EMPTY );
 		foreach( $t_chars as $t_char ) {
 			if( strcasecmp( $t_char, 'M' ) == 0 ) {
 				echo '<select name="', FILTER_PROPERTY_END_MONTH, '"', $t_menu_disabled, '>';
-				\Flickerbox\Date::print_month_option_list( $g_filter[FILTER_PROPERTY_END_MONTH] );
+				\Core\Date::print_month_option_list( $g_filter[FILTER_PROPERTY_END_MONTH] );
 				print "</select>\n";
 			}
 			if( strcasecmp( $t_char, 'D' ) == 0 ) {
 				echo '<select name="', FILTER_PROPERTY_END_DAY, '"', $t_menu_disabled, '>';
-				\Flickerbox\Date::print_day_option_list( $g_filter[FILTER_PROPERTY_END_DAY] );
+				\Core\Date::print_day_option_list( $g_filter[FILTER_PROPERTY_END_DAY] );
 				print "</select>\n";
 			}
 			if( strcasecmp( $t_char, 'Y' ) == 0 ) {
 				echo '<select name="', FILTER_PROPERTY_END_YEAR, '"', $t_menu_disabled, '>';
-				\Flickerbox\Date::print_year_option_list( $g_filter[FILTER_PROPERTY_END_YEAR] );
+				\Core\Date::print_year_option_list( $g_filter[FILTER_PROPERTY_END_YEAR] );
 				print "</select>\n";
 			}
 		}
@@ -3968,7 +3968,7 @@ class Filter
 		if( !$c_reltype_value ) {
 			$c_reltype_value = -1;
 		}
-		\Flickerbox\Relationship::list_box( $c_reltype_value, 'relationship_type', true );
+		\Core\Relationship::list_box( $c_reltype_value, 'relationship_type', true );
 		echo '<input type="text" name="', FILTER_PROPERTY_RELATIONSHIP_BUG, '" size="5" maxlength="10" value="', $g_filter[FILTER_PROPERTY_RELATIONSHIP_BUG], '" />';
 	}
 	
@@ -3977,21 +3977,21 @@ class Filter
 	 * @return void
 	 */
 	static function print_filter_tag_string() {
-		if( !\Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_view_threshold' ) ) ) {
+		if( !\Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_view_threshold' ) ) ) {
 			return;
 		}
 	
 		global $g_filter;
 		$t_tag_string = $g_filter[FILTER_PROPERTY_TAG_STRING];
-		if( $g_filter[FILTER_PROPERTY_TAG_SELECT] != 0 && \Flickerbox\Tag::exists( $g_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
-			$t_tag_string .= ( \Flickerbox\Utility::is_blank( $t_tag_string ) ? '' : \Flickerbox\Config::mantis_get( 'tag_separator' ) );
-			$t_tag_string .= \Flickerbox\Tag::get_field( $g_filter[FILTER_PROPERTY_TAG_SELECT], 'name' );
+		if( $g_filter[FILTER_PROPERTY_TAG_SELECT] != 0 && \Core\Tag::exists( $g_filter[FILTER_PROPERTY_TAG_SELECT] ) ) {
+			$t_tag_string .= ( \Core\Utility::is_blank( $t_tag_string ) ? '' : \Core\Config::mantis_get( 'tag_separator' ) );
+			$t_tag_string .= \Core\Tag::get_field( $g_filter[FILTER_PROPERTY_TAG_SELECT], 'name' );
 		}
 		?>
-			<input type="hidden" id="tag_separator" value="<?php echo \Flickerbox\Config::mantis_get( 'tag_separator' )?>" />
-			<input type="text" name="<?php echo FILTER_PROPERTY_TAG_STRING;?>" id="<?php echo FILTER_PROPERTY_TAG_STRING;?>" size="40" value="<?php echo \Flickerbox\String::attribute( $t_tag_string )?>" />
-			<select <?php echo \Flickerbox\Helper::get_tab_index()?> name="<?php echo FILTER_PROPERTY_TAG_SELECT;?>" id="<?php echo FILTER_PROPERTY_TAG_SELECT;?>">
-				<?php \Flickerbox\Print_Util::tag_option_list();?>
+			<input type="hidden" id="tag_separator" value="<?php echo \Core\Config::mantis_get( 'tag_separator' )?>" />
+			<input type="text" name="<?php echo FILTER_PROPERTY_TAG_STRING;?>" id="<?php echo FILTER_PROPERTY_TAG_STRING;?>" size="40" value="<?php echo \Core\String::attribute( $t_tag_string )?>" />
+			<select <?php echo \Core\Helper::get_tab_index()?> name="<?php echo FILTER_PROPERTY_TAG_SELECT;?>" id="<?php echo FILTER_PROPERTY_TAG_SELECT;?>">
+				<?php \Core\Print_Util::tag_option_list();?>
 			</select>
 			<?php
 	}
@@ -4005,17 +4005,17 @@ class Filter
 		?>
 		<!-- BUGNOTE REPORTER -->
 		<select<?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_NOTE_USER_ID;?>[]">
-			<option value="<?php echo META_FILTER_ANY?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'any' )?>]</option>
-			<?php if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ) ) ) {?>
-			<option value="<?php echo META_FILTER_NONE?>"<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_NONE );?>>[<?php echo \Flickerbox\Lang::get( 'none' )?>]</option>
+			<option value="<?php echo META_FILTER_ANY?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_ANY );?>>[<?php echo \Core\Lang::get( 'any' )?>]</option>
+			<?php if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'view_handler_threshold' ) ) ) {?>
+			<option value="<?php echo META_FILTER_NONE?>"<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_NONE );?>>[<?php echo \Core\Lang::get( 'none' )?>]</option>
 			<?php
-				if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
+				if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'handle_bug_threshold' ) ) ) {
 					echo '<option value="' . META_FILTER_MYSELF . '"';
-					\Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_MYSELF );
-					echo '>[' . \Flickerbox\Lang::get( 'myself' ) . ']</option>';
+					\Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_NOTE_USER_ID], META_FILTER_MYSELF );
+					echo '>[' . \Core\Lang::get( 'myself' ) . ']</option>';
 				}
 	
-				\Flickerbox\Print_Util::note_option_list( $g_filter[FILTER_PROPERTY_NOTE_USER_ID] );
+				\Core\Print_Util::note_option_list( $g_filter[FILTER_PROPERTY_NOTE_USER_ID] );
 			}
 		?>
 		</select>
@@ -4036,31 +4036,31 @@ class Filter
 	
 		switch( $p_filter_object->type ) {
 			case FILTER_TYPE_STRING:
-				echo '<input name="', \Flickerbox\String::attribute( $p_field_name ), '"',
+				echo '<input name="', \Core\String::attribute( $p_field_name ), '"',
 					( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), ' value="',
-					\Flickerbox\String::attribute( $g_filter[$p_field_name] ), '"/>';
+					\Core\String::attribute( $g_filter[$p_field_name] ), '"/>';
 				break;
 	
 			case FILTER_TYPE_INT:
-				echo '<input name="', \Flickerbox\String::attribute( $p_field_name ), '"',
+				echo '<input name="', \Core\String::attribute( $p_field_name ), '"',
 					( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), ' value="',
 					(int)$g_filter[$p_field_name], '"/>';
 				break;
 	
 			case FILTER_TYPE_BOOLEAN:
-				echo '<input name="', \Flickerbox\String::attribute( $p_field_name ), '" type="checkbox"',
-					( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), \Flickerbox\Helper::check_checked( (bool)$g_filter[$p_field_name] ) , '"/>';
+				echo '<input name="', \Core\String::attribute( $p_field_name ), '" type="checkbox"',
+					( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), \Core\Helper::check_checked( (bool)$g_filter[$p_field_name] ) , '"/>';
 				break;
 	
 			case FILTER_TYPE_MULTI_STRING:
 				echo '<select', $g_select_modifier, ( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), ' name="',
-					\Flickerbox\String::attribute( $p_field_name ), '[]">', '<option value="', META_FILTER_ANY, '"',
-					\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Flickerbox\Lang::get( 'any' ), ']</option>';
+					\Core\String::attribute( $p_field_name ), '[]">', '<option value="', META_FILTER_ANY, '"',
+					\Core\Helper::check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Core\Lang::get( 'any' ), ']</option>';
 	
 				foreach( $p_filter_object->options() as $t_option_value => $t_option_name ) {
-					echo '<option value="', \Flickerbox\String::attribute( $t_option_value ), '" ',
-						\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], $t_option_value ), '>',
-						\Flickerbox\String::display_line( $t_option_name ), '</option>';
+					echo '<option value="', \Core\String::attribute( $t_option_value ), '" ',
+						\Core\Helper::check_selected( $g_filter[$p_field_name], $t_option_value ), '>',
+						\Core\String::display_line( $t_option_name ), '</option>';
 				}
 	
 				echo '</select>';
@@ -4068,13 +4068,13 @@ class Filter
 	
 			case FILTER_TYPE_MULTI_INT:
 				echo '<select', $g_select_modifier, ( $t_size > 0 ? ' size="' . $t_size . '"' : '' ), ' name="',
-					\Flickerbox\String::attribute( $p_field_name ), '[]">', '<option value="', META_FILTER_ANY, '"',
-					\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Flickerbox\Lang::get( 'any' ), ']</option>';
+					\Core\String::attribute( $p_field_name ), '[]">', '<option value="', META_FILTER_ANY, '"',
+					\Core\Helper::check_selected( $g_filter[$p_field_name], META_FILTER_ANY ), '>[', \Core\Lang::get( 'any' ), ']</option>';
 	
 				foreach( $p_filter_object->options() as $t_option_value => $t_option_name ) {
 					echo '<option value="', (int)$t_option_value, '" ',
-						\Flickerbox\Helper::check_selected( $g_filter[$p_field_name], (int)$t_option_value ), '>',
-						\Flickerbox\String::display_line( $t_option_name ), '</option>';
+						\Core\Helper::check_selected( $g_filter[$p_field_name], (int)$t_option_value ), '>',
+						\Core\String::display_line( $t_option_name ), '</option>';
 				}
 	
 				echo '</select>';
@@ -4106,24 +4106,24 @@ class Filter
 			} else {
 				echo '<select' . $g_select_modifier . ' name="custom_field_' . $p_field_id . '[]">';
 				echo '<option value="' . META_FILTER_ANY . '"';
-				\Flickerbox\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_ANY );
-				echo '>[' . \Flickerbox\Lang::get( 'any' ) . ']</option>';
+				\Core\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_ANY );
+				echo '>[' . \Core\Lang::get( 'any' ) . ']</option>';
 	
 				# don't show META_FILTER_NONE for enumerated types as it's not possible for them to be blank
 				if( !in_array( $t_accessible_custom_fields_types[$j], array( CUSTOM_FIELD_TYPE_ENUM, CUSTOM_FIELD_TYPE_LIST, CUSTOM_FIELD_TYPE_MULTILIST ) ) ) {
 					echo '<option value="' . META_FILTER_NONE . '"';
-					\Flickerbox\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_NONE );
-					echo '>[' . \Flickerbox\Lang::get( 'none' ) . ']</option>';
+					\Core\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], (string)META_FILTER_NONE );
+					echo '>[' . \Core\Lang::get( 'none' ) . ']</option>';
 				}
 				if( is_array( $t_accessible_custom_fields_values[$j] ) ) {
-					$t_max_length = \Flickerbox\Config::mantis_get( 'max_dropdown_length' );
+					$t_max_length = \Core\Config::mantis_get( 'max_dropdown_length' );
 					foreach( $t_accessible_custom_fields_values[$j] as $t_item ) {
 						if( ( strtolower( $t_item ) !== META_FILTER_ANY ) && ( strtolower( $t_item ) !== META_FILTER_NONE ) ) {
-							echo '<option value="' . \Flickerbox\String::attribute( $t_item ) . '"';
+							echo '<option value="' . \Core\String::attribute( $t_item ) . '"';
 							if( isset( $g_filter['custom_fields'][$p_field_id] ) ) {
-								\Flickerbox\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], $t_item );
+								\Core\Helper::check_selected( $g_filter['custom_fields'][$p_field_id], $t_item );
 							}
-							echo '>' . \Flickerbox\String::attribute( \Flickerbox\String::shorten( $t_item, $t_max_length ) ) . '</option>' . "\n";
+							echo '>' . \Core\String::attribute( \Core\String::shorten( $t_item, $t_max_length ) ) . '</option>' . "\n";
 						}
 					}
 				}
@@ -4141,22 +4141,22 @@ class Filter
 	
 		# get all of the displayed fields for sort, then drop ones that
 		#  are not appropriate and translate the rest
-		$t_fields = \Flickerbox\Helper::get_columns_to_view();
+		$t_fields = \Core\Helper::get_columns_to_view();
 		$t_n_fields = count( $t_fields );
 		$t_shown_fields[''] = '';
 		for( $i = 0;$i < $t_n_fields;$i++ ) {
 			if( !in_array( $t_fields[$i], array( 'selection', 'edit', 'bugnotes_count', 'attachment_count' ) ) ) {
 				if( strpos( $t_fields[$i], 'custom_' ) === 0 ) {
-					$t_field_name = \Flickerbox\String::display( \Flickerbox\Lang::get_defaulted( utf8_substr( $t_fields[$i], utf8_strlen( 'custom_' ) ) ) );
+					$t_field_name = \Core\String::display( \Core\Lang::get_defaulted( utf8_substr( $t_fields[$i], utf8_strlen( 'custom_' ) ) ) );
 				} else {
-					$t_field_name = \Flickerbox\String::get_field_name( $t_fields[$i] );
+					$t_field_name = \Core\String::get_field_name( $t_fields[$i] );
 				}
 				$t_shown_fields[$t_fields[$i]] = $t_field_name;
 			}
 		}
 		$t_shown_dirs[''] = '';
-		$t_shown_dirs['ASC'] = \Flickerbox\Lang::get( 'bugnote_order_asc' );
-		$t_shown_dirs['DESC'] = \Flickerbox\Lang::get( 'bugnote_order_desc' );
+		$t_shown_dirs['ASC'] = \Core\Lang::get( 'bugnote_order_asc' );
+		$t_shown_dirs['DESC'] = \Core\Lang::get( 'bugnote_order_desc' );
 	
 		# get default values from filter structure
 		$t_sort_fields = explode( ',', $g_filter[FILTER_PROPERTY_SORT_FIELD_NAME] );
@@ -4172,7 +4172,7 @@ class Filter
 			echo '<select name="', FILTER_PROPERTY_SORT_FIELD_NAME, '_0">';
 			foreach( $t_shown_fields as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				\Flickerbox\Helper::check_selected( $t_key, $t_sort_fields[0] );
+				\Core\Helper::check_selected( $t_key, $t_sort_fields[0] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
@@ -4180,7 +4180,7 @@ class Filter
 			echo '<select name="', FILTER_PROPERTY_SORT_DIRECTION, '_0">';
 			foreach( $t_shown_dirs as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				\Flickerbox\Helper::check_selected( $t_key, $t_dir_fields[0] );
+				\Core\Helper::check_selected( $t_key, $t_dir_fields[0] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
@@ -4191,19 +4191,19 @@ class Filter
 			echo '<select name="', FILTER_PROPERTY_SORT_FIELD_NAME, '_1">';
 			foreach( $t_shown_fields as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				\Flickerbox\Helper::check_selected( $t_key, $t_sort_fields[1] );
+				\Core\Helper::check_selected( $t_key, $t_sort_fields[1] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
 			echo '<select name="', FILTER_PROPERTY_SORT_DIRECTION, '_1">';
 			foreach( $t_shown_dirs as $t_key => $t_val ) {
 				echo '<option value="' . $t_key . '"';
-				\Flickerbox\Helper::check_selected( $t_key, $t_dir_fields[1] );
+				\Core\Helper::check_selected( $t_key, $t_dir_fields[1] );
 				echo '>' . $t_val . '</option>';
 			}
 			echo '</select>';
 		} else {
-			echo \Flickerbox\Lang::get_defaulted( 'last_updated' ) . \Flickerbox\Lang::get( 'bugnote_order_desc' );
+			echo \Core\Lang::get_defaulted( 'last_updated' ) . \Core\Lang::get( 'bugnote_order_desc' );
 			echo '<input type="hidden" name="', FILTER_PROPERTY_SORT_FIELD_NAME, '_1" value="last_updated" />';
 			echo '<input type="hidden" name="', FILTER_PROPERTY_SORT_DIRECTION, '_1" value="DESC" />';
 		}
@@ -4283,36 +4283,36 @@ class Filter
 		echo '<table cellspacing="0" cellpadding="0"><tr><td>' . "\n";
 		echo '<select size="1" name="custom_field_' . $p_field_id . '_control">' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ANY . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ANY );
-		echo '>' . \Flickerbox\Lang::get( 'any' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ANY );
+		echo '>' . \Core\Lang::get( 'any' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_NONE . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_NONE );
-		echo '>' . \Flickerbox\Lang::get( 'none' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_NONE );
+		echo '>' . \Core\Lang::get( 'none' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_BETWEEN . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BETWEEN );
-		echo '>' . \Flickerbox\Lang::get( 'between_date' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BETWEEN );
+		echo '>' . \Core\Lang::get( 'between_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ONORBEFORE . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORBEFORE );
-		echo '>' . \Flickerbox\Lang::get( 'on_or_before_date' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORBEFORE );
+		echo '>' . \Core\Lang::get( 'on_or_before_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_BEFORE . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BEFORE );
-		echo '>' . \Flickerbox\Lang::get( 'before_date' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_BEFORE );
+		echo '>' . \Core\Lang::get( 'before_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ON . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ON );
-		echo '>' . \Flickerbox\Lang::get( 'on_date' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ON );
+		echo '>' . \Core\Lang::get( 'on_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_AFTER . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_AFTER );
-		echo '>' . \Flickerbox\Lang::get( 'after_date' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_AFTER );
+		echo '>' . \Core\Lang::get( 'after_date' ) . '</option>' . "\n";
 		echo '<option value="' . CUSTOM_FIELD_DATE_ONORAFTER . '"';
-		\Flickerbox\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORAFTER );
-		echo '>' . \Flickerbox\Lang::get( 'on_or_after_date' ) . '</option>' . "\n";
+		\Core\Helper::check_selected( (int)$g_filter['custom_fields'][$p_field_id][0], CUSTOM_FIELD_DATE_ONORAFTER );
+		echo '>' . \Core\Lang::get( 'on_or_after_date' ) . '</option>' . "\n";
 		echo '</select>' . "\n";
 	
 		echo "</td></tr>\n<tr><td>";
 	
-		\Flickerbox\Date::print_date_selection_set( 'custom_field_' . $p_field_id . '_start', \Flickerbox\Config::mantis_get( 'short_date_format' ), $t_start, $t_start_disable, false, $t_sel_start_year, $t_sel_end_year );
+		\Core\Date::print_date_selection_set( 'custom_field_' . $p_field_id . '_start', \Core\Config::mantis_get( 'short_date_format' ), $t_start, $t_start_disable, false, $t_sel_start_year, $t_sel_end_year );
 		print "</td></tr>\n<tr><td>";
-		\Flickerbox\Date::print_date_selection_set( 'custom_field_' . $p_field_id . '_end', \Flickerbox\Config::mantis_get( 'short_date_format' ), $t_end, $t_end_disable, false, $t_sel_start_year, $t_sel_end_year );
+		\Core\Date::print_date_selection_set( 'custom_field_' . $p_field_id . '_end', \Core\Config::mantis_get( 'short_date_format' ), $t_end, $t_end_disable, false, $t_sel_start_year, $t_sel_end_year );
 		print "</td></tr>\n</table>";
 	}
 	
@@ -4326,10 +4326,10 @@ class Filter
 			<!-- Project -->
 			<select <?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_PROJECT_ID;?>[]">
 				<option value="<?php echo META_FILTER_CURRENT ?>"
-					<?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_PROJECT_ID], META_FILTER_CURRENT );?>>
-					[<?php echo \Flickerbox\Lang::get( 'current' )?>]
+					<?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_PROJECT_ID], META_FILTER_CURRENT );?>>
+					[<?php echo \Core\Lang::get( 'current' )?>]
 				</option>
-				<?php \Flickerbox\Print_Util::project_option_list( $g_filter[FILTER_PROPERTY_PROJECT_ID] )?>
+				<?php \Core\Print_Util::project_option_list( $g_filter[FILTER_PROPERTY_PROJECT_ID] )?>
 			</select>
 			<?php
 	}
@@ -4343,8 +4343,8 @@ class Filter
 	?>
 			<!-- Project -->
 			<select <?php echo $g_select_modifier;?> name="<?php echo FILTER_PROPERTY_MATCH_TYPE;?>">
-				<option value="<?php echo FILTER_MATCH_ALL?>" <?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ALL );?>>[<?php echo \Flickerbox\Lang::get( 'filter_match_all' )?>]</option>
-				<option value="<?php echo FILTER_MATCH_ANY?>" <?php \Flickerbox\Helper::check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ANY );?>>[<?php echo \Flickerbox\Lang::get( 'filter_match_any' )?>]</option>
+				<option value="<?php echo FILTER_MATCH_ALL?>" <?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ALL );?>>[<?php echo \Core\Lang::get( 'filter_match_all' )?>]</option>
+				<option value="<?php echo FILTER_MATCH_ANY?>" <?php \Core\Helper::check_selected( $g_filter[FILTER_PROPERTY_MATCH_TYPE], FILTER_MATCH_ANY );?>>[<?php echo \Core\Lang::get( 'filter_match_any' )?>]</option>
 			</select>
 			<?php
 	}
@@ -4360,7 +4360,7 @@ class Filter
 		$t_any_found = false;
 	
 		if( count( $p_field_value ) == 0 ) {
-			echo \Flickerbox\Lang::get( 'any' );
+			echo \Core\Lang::get( 'any' );
 		} else {
 			$t_first_flag = true;
 	
@@ -4369,14 +4369,14 @@ class Filter
 			foreach( $t_field_value as $t_current ) {
 				$t_current = stripslashes( $t_current );
 				?>
-					<input type="hidden" name="<?php echo \Flickerbox\String::attribute( $p_field_name )?>[]" value="<?php echo \Flickerbox\String::attribute( $t_current );?>" />
+					<input type="hidden" name="<?php echo \Core\String::attribute( $p_field_name )?>[]" value="<?php echo \Core\String::attribute( $t_current );?>" />
 					<?php
 					$t_this_string = '';
 	
-				if( ( ( $t_current == META_FILTER_ANY ) && ( is_numeric( $t_current ) ) ) || ( \Flickerbox\Utility::is_blank( $t_current ) ) ) {
+				if( ( ( $t_current == META_FILTER_ANY ) && ( is_numeric( $t_current ) ) ) || ( \Core\Utility::is_blank( $t_current ) ) ) {
 					$t_any_found = true;
 				} else {
-					$t_this_string = \Flickerbox\String::display( $t_current );
+					$t_this_string = \Core\String::display( $t_current );
 				}
 	
 				if( $t_first_flag != true ) {
@@ -4389,7 +4389,7 @@ class Filter
 			}
 	
 			if( true == $t_any_found ) {
-				echo \Flickerbox\Lang::get( 'any' );
+				echo \Core\Lang::get( 'any' );
 			} else {
 				echo $t_output;
 			}
@@ -4412,14 +4412,14 @@ class Filter
 			return $g_cache_filter[$p_filter_id];
 		}
 	
-		$t_query = 'SELECT * FROM {filters} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_filter_id ) );
+		$t_query = 'SELECT * FROM {filters} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_filter_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			if( $p_trigger_errors ) {
-				\Flickerbox\Error::parameters( $p_filter_id );
+				\Core\Error::parameters( $p_filter_id );
 				trigger_error( ERROR_FILTER_NOT_FOUND, ERROR );
 			} else {
 				return false;
@@ -4457,51 +4457,51 @@ class Filter
 	 * @return integer
 	 */
 	static function db_set_for_current_user( $p_project_id, $p_is_public, $p_name, $p_filter_string ) {
-		$t_user_id = \Flickerbox\Auth::get_current_user_id();
+		$t_user_id = \Core\Auth::get_current_user_id();
 		$c_project_id = (int)$p_project_id;
 	
 		# check that the user can save non current filters (if required)
-		if( ( ALL_PROJECTS <= $c_project_id ) && ( !\Flickerbox\Utility::is_blank( $p_name ) ) && ( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_create_threshold' ) ) ) ) {
+		if( ( ALL_PROJECTS <= $c_project_id ) && ( !\Core\Utility::is_blank( $p_name ) ) && ( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'stored_query_create_threshold' ) ) ) ) {
 			return -1;
 		}
 	
 		# ensure that we're not making this filter public if we're not allowed
-		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_create_shared_threshold' ) ) ) {
+		if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'stored_query_create_shared_threshold' ) ) ) {
 			$p_is_public = false;
 		}
 	
 		# Do I need to update or insert this value?
 		$t_query = 'SELECT id FROM {filters}
-						WHERE user_id=' . \Flickerbox\Database::param() . '
-						AND project_id=' . \Flickerbox\Database::param() . '
-						AND name=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $t_user_id, $c_project_id, $p_name ) );
+						WHERE user_id=' . \Core\Database::param() . '
+						AND project_id=' . \Core\Database::param() . '
+						AND name=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $t_user_id, $c_project_id, $p_name ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( $t_row ) {
 			$t_query = 'UPDATE {filters}
-						  SET is_public=' . \Flickerbox\Database::param() . ',
-							filter_string=' . \Flickerbox\Database::param() . '
-						  WHERE id=' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_query, array( $p_is_public, $p_filter_string, $t_row['id'] ) );
+						  SET is_public=' . \Core\Database::param() . ',
+							filter_string=' . \Core\Database::param() . '
+						  WHERE id=' . \Core\Database::param();
+			\Core\Database::query( $t_query, array( $p_is_public, $p_filter_string, $t_row['id'] ) );
 	
 			return $t_row['id'];
 		} else {
 			$t_query = 'INSERT INTO {filters}
 							( user_id, project_id, is_public, name, filter_string )
 						  VALUES
-							( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-			\Flickerbox\Database::query( $t_query, array( $t_user_id, $c_project_id, $p_is_public, $p_name, $p_filter_string ) );
+							( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+			\Core\Database::query( $t_query, array( $t_user_id, $c_project_id, $p_is_public, $p_name, $p_filter_string ) );
 	
 			# Recall the query, we want the filter ID
 			$t_query = 'SELECT id
 							FROM {filters}
-							WHERE user_id=' . \Flickerbox\Database::param() . '
-							AND project_id=' . \Flickerbox\Database::param() . '
-							AND name=' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $t_user_id, $c_project_id, $p_name ) );
+							WHERE user_id=' . \Core\Database::param() . '
+							AND project_id=' . \Core\Database::param() . '
+							AND name=' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $t_user_id, $c_project_id, $p_name ) );
 	
-			if( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			if( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 				return $t_row['id'];
 			}
 	
@@ -4528,15 +4528,15 @@ class Filter
 		}
 	
 		if( null === $p_user_id ) {
-			$t_user_id = \Flickerbox\Auth::get_current_user_id();
+			$t_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$t_user_id = $p_user_id;
 		}
 	
-		$t_query = 'SELECT * FROM {filters} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_filter_id ) );
+		$t_query = 'SELECT * FROM {filters} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_filter_id ) );
 	
-		if( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		if( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			if( $t_row['user_id'] != $t_user_id ) {
 				if( $t_row['is_public'] != true ) {
 					return null;
@@ -4544,7 +4544,7 @@ class Filter
 			}
 	
 			# check that the user has access to non current filters
-			if( ( ALL_PROJECTS <= $t_row['project_id'] ) && ( !\Flickerbox\Utility::is_blank( $t_row['name'] ) ) && ( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_use_threshold', null, $t_user_id, $t_row['project_id'] ) ) ) ) {
+			if( ( ALL_PROJECTS <= $t_row['project_id'] ) && ( !\Core\Utility::is_blank( $t_row['name'] ) ) && ( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'stored_query_use_threshold', null, $t_user_id, $t_row['project_id'] ) ) ) ) {
 				return null;
 			}
 	
@@ -4567,7 +4567,7 @@ class Filter
 		$c_project_id = $c_project_id * -1;
 	
 		if( null === $p_user_id ) {
-			$c_user_id = \Flickerbox\Auth::get_current_user_id();
+			$c_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$c_user_id = (int)$p_user_id;
 		}
@@ -4575,12 +4575,12 @@ class Filter
 		# we store current filters for each project with a special project index
 		$t_query = 'SELECT *
 					  FROM {filters}
-					  WHERE user_id=' . \Flickerbox\Database::param() . '
-						AND project_id=' . \Flickerbox\Database::param() . '
-						AND name=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_user_id, $c_project_id, '' ) );
+					  WHERE user_id=' . \Core\Database::param() . '
+						AND project_id=' . \Core\Database::param() . '
+						AND name=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_user_id, $c_project_id, '' ) );
 	
-		if( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		if( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			return $t_row['id'];
 		}
 	
@@ -4595,11 +4595,11 @@ class Filter
 	static function db_get_name( $p_filter_id ) {
 		$c_filter_id = (int)$p_filter_id;
 	
-		$t_query = 'SELECT * FROM {filters} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_filter_id ) );
+		$t_query = 'SELECT * FROM {filters} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_filter_id ) );
 	
-		if( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			if( $t_row['user_id'] != \Flickerbox\Auth::get_current_user_id() ) {
+		if( $t_row = \Core\Database::fetch_array( $t_result ) ) {
+			if( $t_row['user_id'] != \Core\Auth::get_current_user_id() ) {
 				if( $t_row['is_public'] != true ) {
 					return null;
 				}
@@ -4618,22 +4618,22 @@ class Filter
 	 */
 	static function db_can_delete_filter( $p_filter_id ) {
 		$c_filter_id = (int)$p_filter_id;
-		$t_user_id = \Flickerbox\Auth::get_current_user_id();
+		$t_user_id = \Core\Auth::get_current_user_id();
 	
 		# Administrators can delete any filter
-		if( \Flickerbox\User::is_administrator( $t_user_id ) ) {
+		if( \Core\User::is_administrator( $t_user_id ) ) {
 			return true;
 		}
 	
 		$t_query = 'SELECT id
 					  FROM {filters}
-					  WHERE id=' . \Flickerbox\Database::param() . '
-					  AND user_id=' . \Flickerbox\Database::param() . '
-					  AND project_id!=' . \Flickerbox\Database::param();
+					  WHERE id=' . \Core\Database::param() . '
+					  AND user_id=' . \Core\Database::param() . '
+					  AND project_id!=' . \Core\Database::param();
 	
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_filter_id, $t_user_id, -1 ) );
+		$t_result = \Core\Database::query( $t_query, array( $c_filter_id, $t_user_id, -1 ) );
 	
-		if( \Flickerbox\Database::result( $t_result ) > 0 ) {
+		if( \Core\Database::result( $t_result ) > 0 ) {
 			return true;
 		}
 	
@@ -4648,12 +4648,12 @@ class Filter
 	static function db_delete_filter( $p_filter_id ) {
 		$c_filter_id = (int)$p_filter_id;
 	
-		if( !\Flickerbox\Filter::db_can_delete_filter( $c_filter_id ) ) {
+		if( !\Core\Filter::db_can_delete_filter( $c_filter_id ) ) {
 			return false;
 		}
 	
-		$t_query = 'DELETE FROM {filters} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $c_filter_id ) );
+		$t_query = 'DELETE FROM {filters} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $c_filter_id ) );
 	
 		return true;
 	}
@@ -4665,8 +4665,8 @@ class Filter
 	static function db_delete_current_filters() {
 		$t_all_id = ALL_PROJECTS;
 	
-		$t_query = 'DELETE FROM {filters} WHERE project_id<=' . \Flickerbox\Database::param() . ' AND name=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $t_all_id, '' ) );
+		$t_query = 'DELETE FROM {filters} WHERE project_id<=' . \Core\Database::param() . ' AND name=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $t_all_id, '' ) );
 	}
 	
 	/**
@@ -4680,19 +4680,19 @@ class Filter
 		$t_overall_query_arr = array();
 	
 		if( null === $p_project_id ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = (int)$p_project_id;
 		}
 	
 		if( null === $p_user_id ) {
-			$t_user_id = \Flickerbox\Auth::get_current_user_id();
+			$t_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$t_user_id = (int)$p_user_id;
 		}
 	
 		# If the user doesn't have access rights to stored queries, just return
-		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'stored_query_use_threshold' ) ) ) {
+		if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'stored_query_use_threshold' ) ) ) {
 			return $t_overall_query_arr;
 		}
 	
@@ -4700,15 +4700,15 @@ class Filter
 		# first, we can override any query that has the same name as a private query
 		# with that private one
 		$t_query = 'SELECT * FROM {filters}
-						WHERE (project_id=' . \Flickerbox\Database::param() . '
+						WHERE (project_id=' . \Core\Database::param() . '
 							OR project_id=0)
 						AND name!=\'\'
-						AND (is_public = ' . \Flickerbox\Database::param() . '
-							OR user_id = ' . \Flickerbox\Database::param() . ')
+						AND (is_public = ' . \Core\Database::param() . '
+							OR user_id = ' . \Core\Database::param() . ')
 						ORDER BY is_public DESC, name ASC';
-		$t_result = \Flickerbox\Database::query( $t_query, array( $t_project_id, true, $t_user_id ) );
+		$t_result = \Core\Database::query( $t_query, array( $t_project_id, true, $t_user_id ) );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_overall_query_arr[$t_row['id']] = $t_row['name'];
 		}
 	
@@ -4740,7 +4740,7 @@ class Filter
 	 * @return mixed valid filter.
 	 */
 	static function create_assigned_to_unresolved( $p_project_id, $p_user_id ) {
-		$t_filter = \Flickerbox\Filter::get_default();
+		$t_filter = \Core\Filter::get_default();
 	
 		if( $p_user_id == 0 ) {
 			$t_filter[FILTER_PROPERTY_HANDLER_ID] = array( '0' => META_FILTER_NONE );
@@ -4748,14 +4748,14 @@ class Filter
 			$t_filter[FILTER_PROPERTY_HANDLER_ID] = array( '0' => $p_user_id );
 		}
 	
-		$t_bug_resolved_status_threshold = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold', null, $p_user_id, $p_project_id );
+		$t_bug_resolved_status_threshold = \Core\Config::mantis_get( 'bug_resolved_status_threshold', null, $p_user_id, $p_project_id );
 		$t_filter[FILTER_PROPERTY_HIDE_STATUS] = array( '0' => $t_bug_resolved_status_threshold );
 	
 		if( $p_project_id != ALL_PROJECTS ) {
 			$t_filter[FILTER_PROPERTY_PROJECT_ID] = array( '0' => $p_project_id );
 		}
 	
-		return \Flickerbox\Filter::ensure_valid_filter( $t_filter );
+		return \Core\Filter::ensure_valid_filter( $t_filter );
 	}
 	
 	/**
@@ -4765,14 +4765,14 @@ class Filter
 	 * @return array a valid filter.
 	 */
 	static function create_reported_by( $p_project_id, $p_user_id ) {
-		$t_filter = \Flickerbox\Filter::get_default();
+		$t_filter = \Core\Filter::get_default();
 		$t_filter[FILTER_PROPERTY_REPORTER_ID] = array( '0' => $p_user_id );
 	
 		if( $p_project_id != ALL_PROJECTS ) {
 			$t_filter[FILTER_PROPERTY_PROJECT_ID] = array( '0' => $p_project_id );
 		}
 	
-		return \Flickerbox\Filter::ensure_valid_filter( $t_filter );
+		return \Core\Filter::ensure_valid_filter( $t_filter );
 	}
 	
 	/**
@@ -4782,7 +4782,7 @@ class Filter
 	 * @return array a valid filter.
 	 */
 	static function create_monitored_by( $p_project_id, $p_user_id ) {
-		$t_filter = \Flickerbox\Filter::get_default();
+		$t_filter = \Core\Filter::get_default();
 	
 		if( $p_user_id == 0 ) {
 			$t_filter[FILTER_PROPERTY_MONITOR_USER_ID] = array( '0' => META_FILTER_NONE );
@@ -4794,7 +4794,7 @@ class Filter
 			$t_filter[FILTER_PROPERTY_PROJECT_ID] = array( '0' => $p_project_id );
 		}
 	
-		return \Flickerbox\Filter::ensure_valid_filter( $t_filter );
+		return \Core\Filter::ensure_valid_filter( $t_filter );
 	}
 
 }

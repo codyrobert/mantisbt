@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -31,6 +31,28 @@ namespace Flickerbox;
  
 class URL
 {
+
+	protected static $base = null;
+
+	static function base()
+	{
+		if (!self::$base)
+		{
+			self::$base = '//'.$_SERVER['HTTP_HOST'].substr($_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['SCRIPT_NAME'], '/'));
+		}
+		
+		return self::$base;
+	}
+	
+	static function home()
+	{
+		return self::base();
+	}
+	
+	static function get($path = null)
+	{
+		return rtrim(self::base().'/'.trim($path, '/'), '/');
+	}
 	
 	/**
 	 * Retrieve the contents of a remote URL.
@@ -39,9 +61,9 @@ class URL
 	 * @param string $p_url The URL to fetch.
 	 * @return null|string URL contents (NULL in case of errors)
 	 */
-	static function get( $p_url ) {
+	static function mantis_get( $p_url ) {
 		# Generic PHP call
-		if( \Flickerbox\Utility::ini_get_bool( 'allow_url_fopen' ) ) {
+		if( \Core\Utility::ini_get_bool( 'allow_url_fopen' ) ) {
 			$t_data = @file_get_contents( $p_url );
 	
 			if( $t_data !== false ) {

@@ -170,7 +170,7 @@ class ImportXML {
 		$t_imported_issues = $this->itemsMap_->getall( 'issue' );
 		printf( 'Processing cross-references for %s issues...', count( $t_imported_issues ) );
 		foreach( $t_imported_issues as $t_old_id => $t_new_id ) {
-			$t_bug = \Flickerbox\Bug::get( $t_new_id, true );
+			$t_bug = \Core\Bug::get( $t_new_id, true );
 
 			# Using bitwise 'or' here to ensure the all replacements are made
 			# regardless of outcome of the previous one(s)
@@ -230,7 +230,7 @@ class ImportXML {
 	 * @return string
 	 */
 	private function getReplacementString( $p_oldLinkTag, $p_oldId ) {
-		$t_link_tag = \Flickerbox\Config::mantis_get( 'bug_link_tag' );
+		$t_link_tag = \Core\Config::mantis_get( 'bug_link_tag' );
 
 		$t_replacement = '';
 		switch( $this->strategy_ ) {

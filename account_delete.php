@@ -53,49 +53,49 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'account_delete' );
+\Core\Form::security_validate( 'account_delete' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
 # Only allow users to delete their own accounts if allow_account_delete = ON or
 # the user has permission to manage user accounts.
-if( OFF == \Flickerbox\Config::mantis_get( 'allow_account_delete' ) &&
-	 !\Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) ) {
-	\Flickerbox\Print_Util::header_redirect( 'account_page.php' );
+if( OFF == \Core\Config::mantis_get( 'allow_account_delete' ) &&
+	 !\Core\Access::has_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) ) ) {
+	\Core\Print_Util::header_redirect( 'account_page.php' );
 }
 
 # check that we are not deleting the last administrator account
-$t_admin_threshold = \Flickerbox\Config::get_global( 'admin_site_threshold' );
-if( \Flickerbox\Current_User::is_administrator() &&
-	 \Flickerbox\User::count_level( $t_admin_threshold ) <= 1 ) {
+$t_admin_threshold = \Core\Config::get_global( 'admin_site_threshold' );
+if( \Core\Current_User::is_administrator() &&
+	 \Core\User::count_level( $t_admin_threshold ) <= 1 ) {
 	trigger_error( ERROR_USER_CHANGE_LAST_ADMIN, ERROR );
 }
 
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_delete_msg' ),
-						 \Flickerbox\Lang::get( 'delete_account_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'confirm_delete_msg' ),
+						 \Core\Lang::get( 'delete_account_button' ) );
 
-\Flickerbox\Form::security_purge( 'account_delete' );
+\Core\Form::security_purge( 'account_delete' );
 
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
 auth_logout();
 
-\Flickerbox\User::delete( $t_user_id );
+\Core\User::delete( $t_user_id );
 
-\Flickerbox\HTML::page_top1();
-\Flickerbox\HTML::page_top2a();
+\Core\HTML::page_top1();
+\Core\HTML::page_top2a();
 
 ?>
 
 <br />
 <div>
 <?php
-echo \Flickerbox\Lang::get( 'account_removed_msg' ) . '<br />';
-\Flickerbox\Print_Util::bracket_link( \Flickerbox\Config::mantis_get( 'logout_redirect_page' ), \Flickerbox\Lang::get( 'proceed' ) );
+echo \Core\Lang::get( 'account_removed_msg' ) . '<br />';
+\Core\Print_Util::bracket_link( \Core\Config::mantis_get( 'logout_redirect_page' ), \Core\Lang::get( 'proceed' ) );
 ?>
 </div>
 
 <?php
-	\Flickerbox\HTML::page_bottom1a();
+	\Core\HTML::page_bottom1a();

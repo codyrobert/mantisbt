@@ -34,8 +34,8 @@ require_once( 'core.php' );
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/print_all_bug_options_inc.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 edit_printing_prefs();
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

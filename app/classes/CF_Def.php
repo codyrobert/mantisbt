@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 /**
@@ -60,7 +60,7 @@ class CF_Def
 	 */
 	static function prepare_date_value_for_email( $p_value ) {
 		if( $p_value != null ) {
-			return date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_value ) ;
+			return date( \Core\Config::mantis_get( 'short_date_format' ), $p_value ) ;
 		}
 	}
 	
@@ -72,7 +72,7 @@ class CF_Def
 	 * @return string The calculated default date value if $p_value starts with '=', otherwise, returns $p_value.
 	 */
 	static function prepare_date_default( $p_value ) {
-		if( \Flickerbox\Utility::is_blank( $p_value ) ) {
+		if( \Core\Utility::is_blank( $p_value ) ) {
 			return '';
 		}
 	
@@ -101,7 +101,7 @@ class CF_Def
 	 */
 	static function prepare_list_value( $p_value ) {
 		# strip start and end markers before converting markers to commas
-		return \Flickerbox\String::display_line( str_replace( '|', ', ', utf8_substr( str_replace( '||', '|', '|' . $p_value . '|' ), 1, -1 ) ) );
+		return \Core\String::display_line( str_replace( '|', ', ', utf8_substr( str_replace( '||', '|', '|' . $p_value . '|' ), 1, -1 ) ) );
 	}
 	
 	/**
@@ -110,7 +110,7 @@ class CF_Def
 	 * @return string
 	 */
 	static function prepare_email_value( $p_value ) {
-		return '<a href="mailto:' . \Flickerbox\String::attribute( $p_value ) . '">' . \Flickerbox\String::display_line( $p_value ) . '</a>';
+		return '<a href="mailto:' . \Core\String::attribute( $p_value ) . '">' . \Core\String::display_line( $p_value ) . '</a>';
 	}
 	
 	/**
@@ -120,7 +120,7 @@ class CF_Def
 	 */
 	static function prepare_date_value( $p_value ) {
 		if( $p_value != null ) {
-			return date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_value );
+			return date( \Core\Config::mantis_get( 'short_date_format' ), $p_value );
 		}
 	}
 	
@@ -143,17 +143,17 @@ class CF_Def
 		}
 	
 		if( $p_field_def['type'] == CUSTOM_FIELD_TYPE_MULTILIST ) {
-			echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '[]" size="' . $t_list_size . '" multiple="multiple">';
+			echo '<select ' . \Core\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '[]" size="' . $t_list_size . '" multiple="multiple">';
 		} else {
-			echo '<select ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="' . $t_list_size . '">';
+			echo '<select ' . \Core\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="' . $t_list_size . '">';
 		}
 	
 		$t_selected_values = explode( '|', $p_custom_field_value );
 		foreach( $t_values as $t_option ) {
 			if( in_array( $t_option, $t_selected_values, true ) ) {
-				echo '<option value="' . \Flickerbox\String::attribute( $t_option ) . '" selected="selected"> ' . \Flickerbox\String::display_line( $t_option ) . '</option>';
+				echo '<option value="' . \Core\String::attribute( $t_option ) . '" selected="selected"> ' . \Core\String::display_line( $t_option ) . '</option>';
 			} else {
-				echo '<option value="' . \Flickerbox\String::attribute( $t_option ) . '">' . \Flickerbox\String::display_line( $t_option ) . '</option>';
+				echo '<option value="' . \Core\String::attribute( $t_option ) . '">' . \Core\String::display_line( $t_option ) . '</option>';
 			}
 		}
 		echo '</select>';
@@ -171,10 +171,10 @@ class CF_Def
 		for( $i = 0; $i < count( $t_values ); $i++ ) {
 			$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
 			$t_input_name = 'custom_field_' . $p_field_def['id'] . '[]';
-			echo '<input id="$t_input_id" ' . \Flickerbox\Helper::get_tab_index() . ' type="checkbox" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
-			\Flickerbox\Helper::check_checked( $t_checked_values, $t_values[$i] );
+			echo '<input id="$t_input_id" ' . \Core\Helper::get_tab_index() . ' type="checkbox" name="' . $t_input_name . '" value="' . \Core\String::attribute( $t_values[$i] ) . '"';
+			\Core\Helper::check_checked( $t_checked_values, $t_values[$i] );
 			echo " />\n";
-			echo '<label for="' . $t_input_id . '">"' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
+			echo '<label for="' . $t_input_id . '">"' . \Core\String::display_line( $t_values[$i] ) . '</label>' . "\n";
 		}
 	}
 	
@@ -197,10 +197,10 @@ class CF_Def
 		for( $i = 0; $i < count( $t_values ); $i++ ) {
 			$t_input_id = 'custom_field_' . $p_field_def['id'] . '_value_' . $i;
 			$t_input_name = 'custom_field_' . $p_field_def['id'];
-			echo '<input id="' . $t_input_id . '" ' . \Flickerbox\Helper::get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . \Flickerbox\String::attribute( $t_values[$i] ) . '"';
-			\Flickerbox\Helper::check_checked( $t_checked_value, $t_values[$i] );
+			echo '<input id="' . $t_input_id . '" ' . \Core\Helper::get_tab_index() . ' type="radio" name="' . $t_input_name . '" value="' . \Core\String::attribute( $t_values[$i] ) . '"';
+			\Core\Helper::check_checked( $t_checked_value, $t_values[$i] );
 			echo " />\n";
-			echo '<label for="' . $t_input_id . '">' . \Flickerbox\String::display_line( $t_values[$i] ) . '</label>' . "\n";
+			echo '<label for="' . $t_input_id . '">' . \Core\String::display_line( $t_values[$i] ) . '</label>' . "\n";
 		}
 	}
 	
@@ -211,13 +211,13 @@ class CF_Def
 	 * @return void
 	 */
 	static function input_textbox( array $p_field_def, $p_custom_field_value ) {
-		echo '<input ' . \Flickerbox\Helper::get_tab_index() . ' type="text" id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="80"';
+		echo '<input ' . \Core\Helper::get_tab_index() . ' type="text" id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '" size="80"';
 		if( 0 < $p_field_def['length_max'] ) {
 			echo ' maxlength="' . $p_field_def['length_max'] . '"';
 		} else {
 			echo ' maxlength="255"';
 		}
-		echo ' value="' . \Flickerbox\String::attribute( $p_custom_field_value ) .'"></input>';
+		echo ' value="' . \Core\String::attribute( $p_custom_field_value ) .'"></input>';
 	}
 	
 	/**
@@ -227,7 +227,7 @@ class CF_Def
 	 * @return void
 	 */
 	static function input_textarea( array $p_field_def, $p_custom_field_value ) {
-		echo '<textarea ' . \Flickerbox\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '"';
+		echo '<textarea ' . \Core\Helper::get_tab_index() . ' id="custom_field_' . $p_field_def['id'] . '" name="custom_field_' . $p_field_def['id'] . '"';
 		echo ' cols="70" rows="8">' . $p_custom_field_value .'</textarea>';
 	}
 	
@@ -239,7 +239,7 @@ class CF_Def
 	 * @return void
 	 */
 	static function input_date( $p_field_def, $p_custom_field_value ) {
-		\Flickerbox\Date::print_date_selection_set( 'custom_field_' . $p_field_def['id'], \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_custom_field_value, false, true );
+		\Core\Date::print_date_selection_set( 'custom_field_' . $p_field_def['id'], \Core\Config::mantis_get( 'short_date_format' ), $p_custom_field_value, false, true );
 	}
 	
 	/**
@@ -261,10 +261,10 @@ class CF_Def
 	 * @return array|boolean
 	 */
 	static function prepare_list_distinct_values( array $p_field_def ) {
-		$t_query = 'SELECT possible_values FROM {custom_field} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_field_def['id'] ) );
+		$t_query = 'SELECT possible_values FROM {custom_field} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_field_def['id'] ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( !$t_row ) {
 			return false;
 		}

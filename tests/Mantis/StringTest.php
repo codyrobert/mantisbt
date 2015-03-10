@@ -39,7 +39,7 @@ require_mantis_core();
 class Mantis_StringTest extends PHPUnit_Framework_TestCase {
 
 	/**
-	 * Tests \Flickerbox\String::sanitize_url()
+	 * Tests \Core\String::sanitize_url()
 	 *
 	 * @dataProvider provider
 	 * @param string $p_in  Input.
@@ -47,15 +47,15 @@ class Mantis_StringTest extends PHPUnit_Framework_TestCase {
 	 * @return void
 	 */
 	public function testStringSanitize( $p_in, $p_out ) {
-		$t_a = \Flickerbox\String::sanitize_url( $p_in, false );
+		$t_a = \Core\String::sanitize_url( $p_in, false );
 		$this->assertEquals( $p_out, $t_a );
 
 		# Since unit tests are run from command-line, with a default MantisBT
 		# config $g_short_path will be that of the phpunit binary. We also
 		# need to cover the case of Mantis being installed at the server's
 		# root (i.e. $g_short_path = '/')
-		\Flickerbox\Config::set_global('short_path', '/');
-		$t_a = \Flickerbox\String::sanitize_url($p_in, false);
+		\Core\Config::set_global('short_path', '/');
+		$t_a = \Core\String::sanitize_url($p_in, false);
 		$this->assertEquals( $p_out, $t_a );
 	}
 

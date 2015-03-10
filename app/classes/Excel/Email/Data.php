@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox\Email;
+namespace Core\Email;
 
 
 /**

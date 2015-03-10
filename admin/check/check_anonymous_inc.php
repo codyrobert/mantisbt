@@ -36,7 +36,7 @@ require_once( 'check_api.php' );
 
 check_print_section_header_row( 'Anonymous access' );
 
-$t_anonymous_access_enabled = \Flickerbox\Config::get_global( 'allow_anonymous_login' );
+$t_anonymous_access_enabled = \Core\Config::get_global( 'allow_anonymous_login' );
 check_print_info_row(
 	'Anonymous access is enabled',
 	$t_anonymous_access_enabled ? 'Yes' : 'No'
@@ -46,7 +46,7 @@ if( !$t_anonymous_access_enabled ) {
 	return;
 }
 
-$t_anonymous_account = \Flickerbox\Config::get_global( 'anonymous_account' );
+$t_anonymous_account = \Core\Config::get_global( 'anonymous_account' );
 check_print_test_row(
 	'anonymous_account configuration option is specified',
 	$t_anonymous_account !== '',
@@ -60,7 +60,7 @@ if( $t_anonymous_account === '' ) {
 	return;
 }
 
-$t_anonymous_user_id = \Flickerbox\User::get_id_by_name( $t_anonymous_account );
+$t_anonymous_user_id = \Core\User::get_id_by_name( $t_anonymous_account );
 check_print_test_row(
 	'anonymous_account is a valid user account',
 	$t_anonymous_user_id !== false,
@@ -69,21 +69,21 @@ check_print_test_row(
 
 check_print_test_row(
 	'anonymous_account user has the enabled flag set',
-	\Flickerbox\User::is_enabled( $t_anonymous_user_id ),
+	\Core\User::is_enabled( $t_anonymous_user_id ),
 	array( false => 'The anonymous user account must be enabled before it can be used.' )
 );
 
 check_print_test_row(
 	'anonymous_account user has the protected flag set',
-	\Flickerbox\User::get_field( $t_anonymous_user_id, 'protected' ),
+	\Core\User::get_field( $t_anonymous_user_id, 'protected' ),
 	array( false => 'The anonymous user account needs to have the protected flag set to prevent anonymous users modifying the account.' )
 );
 
 check_print_test_row(
 	'anonymous_account user does not have administrator permissions',
-	!\Flickerbox\User::is_administrator( $t_anonymous_user_id ),
+	!\Core\User::is_administrator( $t_anonymous_user_id ),
 	array(
-		true => 'The anonymous user account currently has an access level of: ' . htmlentities( \Flickerbox\Helper::get_enum_element( 'access_levels', \Flickerbox\User::get_access_level( $t_anonymous_user_id ) ) ),
+		true => 'The anonymous user account currently has an access level of: ' . htmlentities( \Core\Helper::get_enum_element( 'access_levels', \Core\User::get_access_level( $t_anonymous_user_id ) ) ),
 		false => 'The anonymous user account should not have administrator level permissions.'
 	)
 );

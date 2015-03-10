@@ -44,35 +44,35 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Compress::enable();
+\Core\Compress::enable();
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-$t_filter = \Flickerbox\Current_User::get_bug_filter();
-\Flickerbox\Filter::init( $t_filter );
+$t_filter = \Core\Current_User::get_bug_filter();
+\Core\Filter::init( $t_filter );
 
-$t_target_field = rtrim( \Flickerbox\GPC::get_string( 'target_field', '' ), '[]' );
+$t_target_field = rtrim( \Core\GPC::get_string( 'target_field', '' ), '[]' );
 if( !isset( $t_filter[$t_target_field] ) ) {
 	$t_target_field = '';
 }
 
 # @todo thraxisp - could this be replaced by a call to filter_draw_selection_area2
 
-$t_project_id = \Flickerbox\Helper::get_current_project();
+$t_project_id = \Core\Helper::get_current_project();
 
-$t_current_user_access_level = \Flickerbox\Current_User::get_access_level();
+$t_current_user_access_level = \Core\Current_User::get_access_level();
 $t_accessible_custom_fields_ids = array();
 $t_accessible_custom_fields_names = array();
 $t_accessible_custom_fields_type = array() ;
 $t_accessible_custom_fields_values = array();
-$t_filter_cols = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
+$t_filter_cols = \Core\Config::mantis_get( 'filter_custom_fields_per_row' );
 $t_custom_cols = 1;
 $t_custom_rows = 0;
 
 #get valid target fields
-$t_fields = \Flickerbox\Helper::get_columns_to_view();
+$t_fields = \Core\Helper::get_columns_to_view();
 $t_n_fields = count( $t_fields );
 for( $i=0; $i < $t_n_fields; $i++ ) {
 	if( in_array( $t_fields[$i], array( 'selection', 'edit', 'bugnotes_count', 'attachment_count' ) ) ) {
@@ -80,7 +80,7 @@ for( $i=0; $i < $t_n_fields; $i++ ) {
 	}
 }
 
-if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
+if( ON == \Core\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 	$t_custom_cols = $t_filter_cols;
 	$t_custom_fields = custom_field_get_linked_ids( $t_project_id );
 
@@ -96,7 +96,7 @@ if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 	}
 
 	if( count( $t_accessible_custom_fields_ids ) > 0 ) {
-		$t_per_row = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
+		$t_per_row = \Core\Config::mantis_get( 'filter_custom_fields_per_row' );
 		$t_custom_rows = ceil( count( $t_accessible_custom_fields_ids ) / $t_per_row );
 	}
 }
@@ -105,7 +105,7 @@ if( !in_array( $t_target_field, $t_fields ) ) {
 	$t_target_field = '';
 }
 
-$f_for_screen = \Flickerbox\GPC::get_bool( 'for_screen', true );
+$f_for_screen = \Core\GPC::get_bool( 'for_screen', true );
 
 $t_action  = 'view_all_set.php?f=3';
 
@@ -114,15 +114,15 @@ if( $f_for_screen == false ) {
 }
 
 $f_default_view_type = 'simple';
-if( ADVANCED_DEFAULT == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
+if( ADVANCED_DEFAULT == \Core\Config::mantis_get( 'view_filters' ) ) {
 	$f_default_view_type = 'advanced';
 }
 
-$f_view_type = \Flickerbox\GPC::get_string( 'view_type', $f_default_view_type );
-if( ADVANCED_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
+$f_view_type = \Core\GPC::get_string( 'view_type', $f_default_view_type );
+if( ADVANCED_ONLY == \Core\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'advanced';
 }
-if( SIMPLE_ONLY == \Flickerbox\Config::mantis_get( 'view_filters' ) ) {
+if( SIMPLE_ONLY == \Core\Config::mantis_get( 'view_filters' ) ) {
 	$f_view_type = 'simple';
 }
 if( !in_array( $f_view_type, array( 'simple', 'advanced' ) ) ) {
@@ -134,10 +134,10 @@ if( 'advanced' == $f_view_type ) {
 	$g_select_modifier = ' multiple="multiple" size="10"';
 }
 
-$t_show_product_version = \Flickerbox\Version::should_show_product_version( $t_project_id );
-$t_show_build = $t_show_product_version && ( \Flickerbox\Config::mantis_get( 'enable_product_build' ) == ON );
+$t_show_product_version = \Core\Version::should_show_product_version( $t_project_id );
+$t_show_build = $t_show_product_version && ( \Core\Config::mantis_get( 'enable_product_build' ) == ON );
 
-$t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_view_threshold' ) );
+$t_show_tags = \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_view_threshold' ) );
 ?>
 <div class="filter-box">
 
@@ -160,11 +160,11 @@ $t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_
 	<?php
 		$f_switch_view_link = 'view_filters_page.php?target_field=' . $t_target_field . '&view_type=';
 
-		if( ( SIMPLE_ONLY != \Flickerbox\Config::mantis_get( 'view_filters' ) ) && ( ADVANCED_ONLY != \Flickerbox\Config::mantis_get( 'view_filters' ) ) ) {
+		if( ( SIMPLE_ONLY != \Core\Config::mantis_get( 'view_filters' ) ) && ( ADVANCED_ONLY != \Core\Config::mantis_get( 'view_filters' ) ) ) {
 			if( 'advanced' == $f_view_type ) {
-				\Flickerbox\Print_Util::bracket_link( $f_switch_view_link . 'simple', \Flickerbox\Lang::get( 'simple_filters' ) );
+				\Core\Print_Util::bracket_link( $f_switch_view_link . 'simple', \Core\Lang::get( 'simple_filters' ) );
 			} else {
-				\Flickerbox\Print_Util::bracket_link( $f_switch_view_link . 'advanced', \Flickerbox\Lang::get( 'advanced_filters' ) );
+				\Core\Print_Util::bracket_link( $f_switch_view_link . 'advanced', \Core\Lang::get( 'advanced_filters' ) );
 			}
 		}
 	?>
@@ -174,70 +174,70 @@ $t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_
 <!-- Filter row 1 -->
 
 <tr class="row-category2">
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'reporter' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'monitored_by' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'assigned_to' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 2 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'category' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'severity' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'resolution' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( ( $t_filter_cols - 7 ) * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'profile' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'reporter' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'monitored_by' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'assigned_to' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 2 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'category' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'severity' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'resolution' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( ( $t_filter_cols - 7 ) * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'profile' ) ?></th>
 </tr>
 <tr class="row-1">
 	<!-- Reporter -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::\Flickerbox\Filter::\Flickerbox\Filter::print_filter_user_monitor(); ?>
+		<?php \Core\Filter::\Core\Filter::\Core\Filter::print_filter_user_monitor(); ?>
 	</td>
 	<!-- Monitored by -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::\Flickerbox\Filter::print_filter_user_monitor(); ?>
+		<?php \Core\Filter::\Core\Filter::print_filter_user_monitor(); ?>
 	</td>
 	<!-- Handler -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_handler_id(); ?>
+		<?php \Core\Filter::print_filter_handler_id(); ?>
 	</td>
 	<!-- Category -->
 	<td colspan="<?php echo ( 2 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_show_category(); ?>
+		<?php \Core\Filter::print_filter_show_category(); ?>
 	</td>
 	<!-- Severity -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_show_severity(); ?>
+		<?php \Core\Filter::print_filter_show_severity(); ?>
 	</td>
 	<!-- Resolution -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_show_resolution(); ?>
+		<?php \Core\Filter::print_filter_show_resolution(); ?>
 	</td>
 	<!-- Profile -->
 	<td colspan="<?php echo ( ( $t_filter_cols - 7 ) * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_show_profile(); ?>
+		<?php \Core\Filter::print_filter_show_profile(); ?>
 	</td>
 </tr>
 
 <!-- Filter row 2 -->
 
 <tr class="row-category2">
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'status' ) ?></td>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'status' ) ?></td>
 	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php echo ( 'simple' == $f_view_type ) ? \Flickerbox\Lang::get( 'hide_status' ) : '&#160;'; ?>
+		<?php echo ( 'simple' == $f_view_type ) ? \Core\Lang::get( 'hide_status' ) : '&#160;'; ?>
 	</th>
 <?php if( $t_show_build ) { ?>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'product_build' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'product_build' ) ?></th>
 <?php } else { ?>
 	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">&#160;</th>
 <?php } ?>
 
 <?php if( $t_show_product_version ) { ?>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'product_version' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'fixed_in_version' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'product_version' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'fixed_in_version' ) ?></th>
 <?php } else { ?>
 	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">&#160;</th>
 	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">&#160;</th>
 <?php } ?>
 
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'priority' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'priority' ) ?></th>
 
 <?php if( $t_show_product_version ) { ?>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'target_version' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'target_version' ) ?></th>
 <?php } else { ?>
 	<th class="small-caption" colspan="<?php echo ( ( $t_filter_cols - 8 ) * $t_custom_cols ); ?>">&#160;</th>
 <?php } ?>
@@ -245,13 +245,13 @@ $t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_
 <tr class="row-2">
 	<!-- Status -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_show_status(); ?>
+		<?php \Core\Filter::print_filter_show_status(); ?>
 	</td>
 	<!-- Hide Status -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
 	<?php
 	if( 'simple' == $f_view_type ) {
-		\Flickerbox\Filter::print_filter_hide_status();
+		\Core\Filter::print_filter_hide_status();
 	} else {
 		echo '&#160;';
 	}
@@ -260,13 +260,13 @@ $t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_
 	<!-- Build -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
 		<?php if( $t_show_build ) {
-			\Flickerbox\Filter::print_filter_show_build();
+			\Core\Filter::print_filter_show_build();
 		} ?>
 	</td>
 	<!-- Version -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
 		<?php if( $t_show_product_version ) {
-			\Flickerbox\Filter::print_filter_show_version();
+			\Core\Filter::print_filter_show_version();
 		} else {
 			echo '&#160;';
 		} ?>
@@ -281,12 +281,12 @@ $t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_
 	</td>
 	<!-- Priority -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_show_priority(); ?>
+		<?php \Core\Filter::print_filter_show_priority(); ?>
 	</td>
 	<!-- Target Version -->
 	<td colspan="<?php echo ( ( $t_filter_cols - 8 ) * $t_custom_cols ); ?>">
 		<?php if( $t_show_product_version ) {
-			\Flickerbox\Filter::print_filter_show_target_version();
+			\Core\Filter::print_filter_show_target_version();
 		} else {
 			echo '&#160;';
 		} ?>
@@ -296,20 +296,20 @@ $t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_
 <!-- Filter row 3 -->
 
 <tr class="row-category2">
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'show' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></th>
-	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'sticky' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'show' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'view_status' ) ?></th>
+	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'sticky' ) ?></th>
 	<th class="small-caption" colspan="<?php echo ( 3 * $t_custom_cols ); ?>">
 		<label>
 			<input type="checkbox" id="use_date_filters"
 				name="<?php echo FILTER_PROPERTY_FILTER_BY_DATE ?>"
-				<?php \Flickerbox\Helper::check_checked( $t_filter['filter_by_date'], true ) ?>
+				<?php \Core\Helper::check_checked( $t_filter['filter_by_date'], true ) ?>
 			/>
-			<?php echo \Flickerbox\Lang::get( 'use_date_filters' )?>
+			<?php echo \Core\Lang::get( 'use_date_filters' )?>
 		</label>
 	</th>
 	<th class="small-caption" colspan="<?php echo ( ( $t_filter_cols -8 ) * $t_custom_cols ); ?>">
-		<?php echo \Flickerbox\Lang::get( 'bug_relationships' ) ?>
+		<?php echo \Core\Lang::get( 'bug_relationships' ) ?>
 	</th>
 </tr>
 <tr class="row-1">
@@ -319,30 +319,30 @@ $t_show_tags = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_
 	</td>
 	<!-- View Status -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_view_state(); ?>
+		<?php \Core\Filter::print_filter_view_state(); ?>
 	</td>
 	<!-- Show Sticky bugs -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_sticky_issues(); ?>
+		<?php \Core\Filter::print_filter_sticky_issues(); ?>
 	</td>
 	<!-- Date filters -->
 	<td class="left" colspan="<?php echo ( 3 * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_do_filter_by_date( true ); # hide checkbox as it's already been shown ?>
+		<?php \Core\Filter::print_filter_do_filter_by_date( true ); # hide checkbox as it's already been shown ?>
 	</td>
 	<!-- Relationships -->
 	<td colspan="<?php echo ( ( $t_filter_cols - 8 ) * $t_custom_cols ); ?>">
-		<?php \Flickerbox\Filter::print_filter_relationship_type(); ?>
+		<?php \Core\Filter::print_filter_relationship_type(); ?>
 	</td>
 </tr>
 
 <!-- Filter row 4 (custom fields) -->
 
 <?php
-if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
+if( ON == \Core\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 
 	# -- Custom Field Searching --
 	if( count( $t_accessible_custom_fields_ids ) > 0 ) {
-		$t_per_row = \Flickerbox\Config::mantis_get( 'filter_custom_fields_per_row' );
+		$t_per_row = \Core\Config::mantis_get( 'filter_custom_fields_per_row' );
 		$t_num_rows = ceil( count( $t_accessible_custom_fields_ids ) / $t_per_row );
 		$t_base = 0;
 
@@ -353,7 +353,7 @@ if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 			for( $j = 0; $j < $t_per_row; $j++ ) {
 				echo '<th class="small-caption" colspan="' . ( 1 * $t_filter_cols ) . '">';
 				if( isset( $t_accessible_custom_fields_names[$t_base + $j] ) ) {
-					echo \Flickerbox\String::display( \Flickerbox\Lang::get_defaulted( $t_accessible_custom_fields_names[$t_base + $j] ) );
+					echo \Core\String::display( \Core\Lang::get_defaulted( $t_accessible_custom_fields_names[$t_base + $j] ) );
 				} else {
 					echo '&#160;';
 				}
@@ -366,7 +366,7 @@ if( ON == \Flickerbox\Config::mantis_get( 'filter_by_custom_fields' ) ) {
 			for( $j = 0; $j < $t_per_row; $j++ ) {
 				echo '<td colspan="' . ( 1 * $t_filter_cols ) . '">';
 				if( isset( $t_accessible_custom_fields_ids[$t_base + $j] ) ) {
-					\Flickerbox\Filter::print_filter_custom_field( $t_accessible_custom_fields_ids[$t_base + $j] );
+					\Core\Filter::print_filter_custom_field( $t_accessible_custom_fields_ids[$t_base + $j] );
 				} else {
 					echo '&#160;';
 				}
@@ -391,18 +391,18 @@ if( 'simple' == $f_view_type ) {
 <tr class="row-1">
 	<!-- Sort by -->
 	<th class="small-caption category2" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php echo \Flickerbox\Lang::get( 'sort_label' ) ?>
+		<?php echo \Core\Lang::get( 'sort_label' ) ?>
 	</th>
 	<td colspan="<?php echo ( 2 * $t_custom_cols ); ?>">
 		<?php
-			\Flickerbox\Filter::print_filter_show_sort();
+			\Core\Filter::print_filter_show_sort();
 		?>
 	</td>
 
 	<!-- Highlight changed bugs -->
-	<th class="small-caption category2" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Flickerbox\Lang::get( 'changed' ) ?></th>
+	<th class="small-caption category2" colspan="<?php echo ( 1 * $t_custom_cols ); ?>"><?php echo \Core\Lang::get( 'changed' ) ?></th>
 	<td colspan="<?php echo ( $t_filter_cols - 4 - $t_project_cols ) * $t_custom_cols; ?>">
-		<?php \Flickerbox\Filter::print_filter_highlight_changed(); ?>
+		<?php \Core\Filter::print_filter_highlight_changed(); ?>
 	</td>
 
 	<?php
@@ -410,11 +410,11 @@ if( 'simple' == $f_view_type ) {
 	?>
 	<!-- Projects -->
 			<th class="small-caption category2" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-				<?php echo \Flickerbox\Lang::get( 'email_project_label' ) ?>
+				<?php echo \Core\Lang::get( 'email_project_label' ) ?>
 			</th>
 			<td colspan="<?php echo( 2 * $t_custom_cols ); ?>">
 				<?php
-					\Flickerbox\Filter::print_filter_project_id();
+					\Core\Filter::print_filter_project_id();
 				?>
 			</td>
 	<?php
@@ -425,14 +425,14 @@ if( 'simple' == $f_view_type ) {
 <?php
 
 # get plugin filters
-$t_plugin_filters = \Flickerbox\Filter::get_plugin_filters();
+$t_plugin_filters = \Core\Filter::get_plugin_filters();
 $t_column = 0;
 $t_fields = '';
 $t_row_filters = array();
 
 # output a filter form element for each plugin filter
 foreach( $t_plugin_filters as $t_field_name => $t_filter_object ) {
-	$t_fields .= '<td class="small-caption" colspan="' . $t_custom_cols . '"> ' . \Flickerbox\String::display_line( $t_filter_object->title ) . ' </td>';
+	$t_fields .= '<td class="small-caption" colspan="' . $t_custom_cols . '"> ' . \Core\String::display_line( $t_filter_object->title ) . ' </td>';
 	$t_row_filters[] = $t_field_name;
 
 	$t_column++;
@@ -443,7 +443,7 @@ foreach( $t_plugin_filters as $t_field_name => $t_filter_object ) {
 		echo '<tr class="row-1">';
 		foreach( $t_row_filters as $t_row_field_name ) {
 			echo '<td class="small-caption" colspan="' . $t_custom_cols . '"> ';
-			\Flickerbox\Filter::print_filter_plugin_field( $t_row_field_name, $t_plugin_filters[$t_row_field_name] );
+			\Core\Filter::print_filter_plugin_field( $t_row_field_name, $t_plugin_filters[$t_row_field_name] );
 			echo '</td>';
 		}
 		echo '</tr>';
@@ -463,7 +463,7 @@ if( $t_column > 0 ) {
 	echo '<tr class="row-1">';
 	foreach( $t_row_filters as $t_row_field_name ) {
 		echo '<td class="small-caption" colspan="' . $t_custom_cols . '"> ';
-		\Flickerbox\Filter::print_filter_plugin_field( $t_row_field_name, $t_plugin_filters[$t_row_field_name] );
+		\Core\Filter::print_filter_plugin_field( $t_row_field_name, $t_plugin_filters[$t_row_field_name] );
 		echo '</td>';
 	}
 
@@ -479,12 +479,12 @@ if( $t_column > 0 ) {
 <!-- Last Filter row (Search/tags) -->
 <tr class="row-category2">
 	<th class="small-caption" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php echo \Flickerbox\Lang::get( 'search' ) ?>
+		<?php echo \Core\Lang::get( 'search' ) ?>
 	</th>
 	<th class="small-caption" colspan="<?php echo ( ( $t_filter_cols - 2 ) * $t_custom_cols ); ?>">
 		<?php
 			if( $t_show_tags ) {
-				echo \Flickerbox\Lang::get( 'tags' );
+				echo \Core\Lang::get( 'tags' );
 			}
 		?>
 	</th>
@@ -494,20 +494,20 @@ if( $t_column > 0 ) {
 <tr class="row-1">
 	<!-- Search field -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<input type="text" size="16" name="search" value="<?php echo \Flickerbox\String::html_specialchars( $t_filter['search'] ); ?>" />
+		<input type="text" size="16" name="search" value="<?php echo \Core\String::html_specialchars( $t_filter['search'] ); ?>" />
 	</td>
 
 	<td class="small-caption" colspan="<?php echo ( ( $t_filter_cols - 2 ) * $t_custom_cols ); ?>">
 		<?php
 			if( $t_show_tags ) {
-				\Flickerbox\Filter::print_filter_tag_string();
+				\Core\Filter::print_filter_tag_string();
 			}
 		?>
 	</td>
 
 	<!-- Submit button -->
 	<td class="center" colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<input type="submit" name="filter" class="button" value="<?php echo \Flickerbox\Lang::get( 'filter_button' ) ?>" />
+		<input type="submit" name="filter" class="button" value="<?php echo \Core\Lang::get( 'filter_button' ) ?>" />
 	</td>
 </tr>
 
@@ -515,4 +515,4 @@ if( $t_column > 0 ) {
 </form>
 </div>
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

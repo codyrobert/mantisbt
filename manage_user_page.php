@@ -42,18 +42,18 @@ require_once( 'core.php' );
 
 auth_reauthenticate();
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
-$t_cookie_name = \Flickerbox\Config::mantis_get( 'manage_users_cookie' );
-$t_lock_image = '<img src="' . \Flickerbox\Config::mantis_get( 'icon_path' ) . 'protected.gif" width="8" height="15" border="0" alt="' . \Flickerbox\Lang::get( 'protected' ) . '" />';
+$t_cookie_name = \Core\Config::mantis_get( 'manage_users_cookie' );
+$t_lock_image = '<img src="' . \Core\Config::mantis_get( 'icon_path' ) . 'protected.gif" width="8" height="15" border="0" alt="' . \Core\Lang::get( 'protected' ) . '" />';
 $c_filter = '';
 
-$f_save          = \Flickerbox\GPC::get_bool( 'save' );
-$f_filter        = utf8_strtoupper( \Flickerbox\GPC::get_string( 'filter', \Flickerbox\Config::mantis_get( 'default_manage_user_prefix' ) ) );
-$f_page_number   = \Flickerbox\GPC::get_int( 'page_number', 1 );
+$f_save          = \Core\GPC::get_bool( 'save' );
+$f_filter        = utf8_strtoupper( \Core\GPC::get_string( 'filter', \Core\Config::mantis_get( 'default_manage_user_prefix' ) ) );
+$f_page_number   = \Core\GPC::get_int( 'page_number', 1 );
 
-if( !$f_save && !\Flickerbox\Utility::is_blank( \Flickerbox\GPC::get_cookie( $t_cookie_name, '' ) ) ) {
-	$t_manage_arr = explode( ':', \Flickerbox\GPC::get_cookie( $t_cookie_name ) );
+if( !$f_save && !\Core\Utility::is_blank( \Core\GPC::get_cookie( $t_cookie_name, '' ) ) ) {
+	$t_manage_arr = explode( ':', \Core\GPC::get_cookie( $t_cookie_name ) );
 
 	# Hide Inactive
 	$f_hide_inactive = (bool)$t_manage_arr[0];
@@ -77,14 +77,14 @@ if( !$f_save && !\Flickerbox\Utility::is_blank( \Flickerbox\GPC::get_cookie( $t_
 		$f_show_disabled = $t_manage_arr[3];
 	}
 } else {
-	$f_sort          = \Flickerbox\GPC::get_string( 'sort', 'username' );
-	$f_dir           = \Flickerbox\GPC::get_string( 'dir', 'ASC' );
-	$f_hide_inactive = \Flickerbox\GPC::get_bool( 'hideinactive' );
-	$f_show_disabled = \Flickerbox\GPC::get_bool( 'showdisabled' );
+	$f_sort          = \Core\GPC::get_string( 'sort', 'username' );
+	$f_dir           = \Core\GPC::get_string( 'dir', 'ASC' );
+	$f_hide_inactive = \Core\GPC::get_bool( 'hideinactive' );
+	$f_show_disabled = \Core\GPC::get_bool( 'showdisabled' );
 }
 
 # Clean up the form variables
-if( !\Flickerbox\Database::field_exists( $f_sort, \Flickerbox\Database::get_table( 'user' ) ) ) {
+if( !\Core\Database::field_exists( $f_sort, \Core\Database::get_table( 'user' ) ) ) {
 	$c_sort = 'username';
 } else {
 	$c_sort = addslashes( $f_sort );
@@ -103,35 +103,35 @@ $t_show_disabled_filter = '&amp;showdisabled=' . $c_show_disabled;
 # set cookie values for hide inactive, sort by, dir and show disabled
 if( $f_save ) {
 	$t_manage_string = $c_hide_inactive.':'.$c_sort.':'.$c_dir.':'.$c_show_disabled;
-	\Flickerbox\GPC::set_cookie( $t_cookie_name, $t_manage_string, true );
+	\Core\GPC::set_cookie( $t_cookie_name, $t_manage_string, true );
 }
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_users_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_users_link' ) );
 
-\Flickerbox\HTML::print_manage_menu( 'manage_user_page.php' );
+\Core\HTML::print_manage_menu( 'manage_user_page.php' );
 
 # New Accounts Form BEGIN
 
 $t_days_old = 7 * SECONDS_PER_DAY;
 $t_query = 'SELECT COUNT(*) AS new_user_count FROM {user}
-	WHERE ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '<=', 'date_created', $t_days_old );
-$t_result = \Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now() ) );
-$t_row = \Flickerbox\Database::fetch_array( $t_result );
+	WHERE ' . \Core\Database::helper_compare_time( \Core\Database::param(), '<=', 'date_created', $t_days_old );
+$t_result = \Core\Database::query( $t_query, array( \Core\Database::now() ) );
+$t_row = \Core\Database::fetch_array( $t_result );
 $t_new_user_count = $t_row['new_user_count'];
 
 # Never Logged In Form BEGIN
 
 $t_query = 'SELECT COUNT(*) AS unused_user_count FROM {user}
 	WHERE ( login_count = 0 ) AND ( date_created = last_visit )';
-$t_result = \Flickerbox\Database::query( $t_query );
-$t_row = \Flickerbox\Database::fetch_array( $t_result );
+$t_result = \Core\Database::query( $t_query );
+$t_row = \Core\Database::fetch_array( $t_result );
 $t_unused_user_count = $t_row['unused_user_count'];
 
 # Manage Form BEGIN
 
 $t_prefix_array = array();
 
-$t_prefix_array['ALL'] = \Flickerbox\Lang::get( 'show_all_users' );
+$t_prefix_array['ALL'] = \Core\Lang::get( 'show_all_users' );
 
 for( $i = 'A'; $i != 'AA'; $i++ ) {
 	$t_prefix_array[$i] = $i;
@@ -140,17 +140,17 @@ for( $i = 'A'; $i != 'AA'; $i++ ) {
 for( $i = 0; $i <= 9; $i++ ) {
 	$t_prefix_array[(string)$i] = (string)$i;
 }
-$t_prefix_array['UNUSED'] = \Flickerbox\Lang::get( 'users_unused' );
-$t_prefix_array['NEW'] = \Flickerbox\Lang::get( 'users_new' );
+$t_prefix_array['UNUSED'] = \Core\Lang::get( 'users_unused' );
+$t_prefix_array['NEW'] = \Core\Lang::get( 'users_new' );
 
 echo '<div id="manage-user-filter-menu">';
 echo '<ul class="menu">';
 foreach ( $t_prefix_array as $t_prefix => $t_caption ) {
 	echo '<li>';
 	if( $t_prefix === 'UNUSED' ) {
-		$t_title = ' title="[' . $t_unused_user_count . '] (' . \Flickerbox\Lang::get( 'never_logged_in_title' ) . ')"';
+		$t_title = ' title="[' . $t_unused_user_count . '] (' . \Core\Lang::get( 'never_logged_in_title' ) . ')"';
 	} else if( $t_prefix === 'NEW' ) {
-		$t_title = ' title="[' . $t_new_user_count . '] (' . \Flickerbox\Lang::get( '1_week_title' ) . ')"';
+		$t_title = ' title="[' . $t_new_user_count . '] (' . \Core\Lang::get( '1_week_title' ) . ')"';
 	} else {
 		$t_title = '';
 	}
@@ -158,7 +158,7 @@ foreach ( $t_prefix_array as $t_prefix => $t_caption ) {
 		$c_filter = $f_filter;
 		echo '<span class="current-filter">' . $t_caption . '</span>';
 	} else {
-		\Flickerbox\Print_Util::manage_user_sort_link( 'manage_user_page.php',
+		\Core\Print_Util::manage_user_sort_link( 'manage_user_page.php',
 			$t_caption,
 			$c_sort,
 			$c_dir, null, $c_hide_inactive, $t_prefix, $c_show_disabled );
@@ -174,11 +174,11 @@ if( $f_filter === 'ALL' ) {
 } else if( $f_filter === 'UNUSED' ) {
 	$t_where = '(login_count = 0) AND ( date_created = last_visit )';
 } else if( $f_filter === 'NEW' ) {
-	$t_where = \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '<=', 'date_created', $t_days_old );
-	$t_where_params[] = \Flickerbox\Database::now();
+	$t_where = \Core\Database::helper_compare_time( \Core\Database::param(), '<=', 'date_created', $t_days_old );
+	$t_where_params[] = \Core\Database::now();
 } else {
 	$t_where_params[] = $f_filter . '%';
-	$t_where = \Flickerbox\Database::helper_like( 'UPPER(username)' );
+	$t_where = \Core\Database::helper_like( 'UPPER(username)' );
 }
 
 $p_per_page = 50;
@@ -193,7 +193,7 @@ $t_result = '';
 if( 1 == $c_show_disabled ) {
 	$t_show_disabled_cond = '';
 } else {
-	$t_show_disabled_cond = ' AND enabled = ' . \Flickerbox\Database::param();
+	$t_show_disabled_cond = ' AND enabled = ' . \Core\Database::param();
 	$t_where_params[] = true;
 }
 
@@ -201,13 +201,13 @@ if( 0 == $c_hide_inactive ) {
 	$t_query = 'SELECT count(*) as user_count FROM {user} WHERE ' . $t_where . $t_show_disabled_cond;
 } else {
 	$t_query = 'SELECT count(*) as user_count FROM {user}
-			WHERE ' . $t_where . ' AND ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '<', 'last_visit', $t_days_old )
+			WHERE ' . $t_where . ' AND ' . \Core\Database::helper_compare_time( \Core\Database::param(), '<', 'last_visit', $t_days_old )
 			. $t_show_disabled_cond;
-	$t_where_params[] = \Flickerbox\Database::now();
+	$t_where_params[] = \Core\Database::now();
 }
 
-$t_result = \Flickerbox\Database::query_bound( $t_query, $t_where_params );
-$t_row = \Flickerbox\Database::fetch_array( $t_result );
+$t_result = \Core\Database::query_bound( $t_query, $t_where_params );
+$t_row = \Core\Database::fetch_array( $t_result );
 $t_total_user_count = $t_row['user_count'];
 
 $t_page_count = ceil( $t_total_user_count / $p_per_page );
@@ -228,28 +228,28 @@ if( $f_page_number < 1 ) {
 
 if( 0 == $c_hide_inactive ) {
 	$t_query = 'SELECT * FROM {user} WHERE ' . $t_where . ' ' . $t_show_disabled_cond . ' ORDER BY ' . $c_sort . ' ' . $c_dir;
-	$t_result = \Flickerbox\Database::query( $t_query, $t_where_params, $p_per_page, $t_offset );
+	$t_result = \Core\Database::query( $t_query, $t_where_params, $p_per_page, $t_offset );
 } else {
 	$t_query = 'SELECT * FROM {user}
-			WHERE ' . $t_where . ' AND ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '<', 'last_visit', $t_days_old ) . '
+			WHERE ' . $t_where . ' AND ' . \Core\Database::helper_compare_time( \Core\Database::param(), '<', 'last_visit', $t_days_old ) . '
 			' . $t_show_disabled_cond . ' ORDER BY ' . $c_sort . ' ' . $c_dir;
-	$t_where_params[] = \Flickerbox\Database::now();
-	$t_result = \Flickerbox\Database::query( $t_query, $t_where_params, $p_per_page, $t_offset );
+	$t_where_params[] = \Core\Database::now();
+	$t_result = \Core\Database::query( $t_query, $t_where_params, $p_per_page, $t_offset );
 }
 
 $t_users = array();
-while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 	$t_users[] = $t_row;
 }
 
 $t_user_count = count( $t_users );
 ?>
 <div id="manage-user-div" class="form-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'manage_accounts_title' ) ?></h2> [<?php echo $t_total_user_count ?>]
+	<h2><?php echo \Core\Lang::get( 'manage_accounts_title' ) ?></h2> [<?php echo $t_total_user_count ?>]
 	<?php
-		\Flickerbox\Print_Util::button( 'manage_user_create_page.php', \Flickerbox\Lang::get( 'create_new_account_link' ) );
+		\Core\Print_Util::button( 'manage_user_create_page.php', \Core\Lang::get( 'create_new_account_link' ) );
 		if( $f_filter === 'UNUSED' ) {
-			\Flickerbox\Print_Util::button( 'manage_user_prune.php', \Flickerbox\Lang::get( 'prune_accounts' ) );
+			\Core\Print_Util::button( 'manage_user_prune.php', \Core\Lang::get( 'prune_accounts' ) );
 		}
 	?>
 	<form id="manage-user-filter" method="post" action="manage_user_page.php">
@@ -259,9 +259,9 @@ $t_user_count = count( $t_users );
 			<input type="hidden" name="dir" value="<?php echo $c_dir ?>" />
 			<input type="hidden" name="save" value="1" />
 			<input type="hidden" name="filter" value="<?php echo $c_filter ?>" />
-			<input type="checkbox" name="hideinactive" value="1" <?php \Flickerbox\Helper::check_checked( (int)$c_hide_inactive, 1 ); ?> /> <?php echo \Flickerbox\Lang::get( 'hide_inactive' ) ?>
-			<input type="checkbox" name="showdisabled" value="1" <?php \Flickerbox\Helper::check_checked( (int)$c_show_disabled, 1 ); ?> /> <?php echo \Flickerbox\Lang::get( 'show_disabled' ) ?>
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'filter_button' ) ?>" />
+			<input type="checkbox" name="hideinactive" value="1" <?php \Core\Helper::check_checked( (int)$c_hide_inactive, 1 ); ?> /> <?php echo \Core\Lang::get( 'hide_inactive' ) ?>
+			<input type="checkbox" name="showdisabled" value="1" <?php \Core\Helper::check_checked( (int)$c_show_disabled, 1 ); ?> /> <?php echo \Core\Lang::get( 'show_disabled' ) ?>
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'filter_button' ) ?>" />
 		</fieldset>
 	</form>
 
@@ -277,11 +277,11 @@ $t_user_count = count( $t_users );
 
 	foreach( $t_columns as $t_col ) {
 		echo "\t<th>";
-		\Flickerbox\Print_Util::manage_user_sort_link( 'manage_user_page.php',
-			\Flickerbox\Lang::get( $t_col ),
+		\Core\Print_Util::manage_user_sort_link( 'manage_user_page.php',
+			\Core\Lang::get( $t_col ),
 			$t_col,
 			$c_dir, $c_sort, $c_hide_inactive, $c_filter, $c_show_disabled );
-		\Flickerbox\Icon::print_sort_icon( $c_dir, $c_sort, $t_col );
+		\Core\Icon::print_sort_icon( $c_dir, $c_sort, $t_col );
 		echo "</th>\n";
 	}
 ?>
@@ -290,7 +290,7 @@ $t_user_count = count( $t_users );
 
 		<tbody>
 <?php
-	$t_date_format = \Flickerbox\Config::mantis_get( 'normal_date_format' );
+	$t_date_format = \Core\Config::mantis_get( 'normal_date_format' );
 	$t_access_level = array();
 	for( $i=0; $i<$t_user_count; $i++ ) {
 		# prefix user data with u_
@@ -301,20 +301,20 @@ $t_user_count = count( $t_users );
 		$u_last_visit    = date( $t_date_format, $u_last_visit );
 
 		if( !isset( $t_access_level[$u_access_level] ) ) {
-			$t_access_level[$u_access_level] = \Flickerbox\Helper::get_enum_element( 'access_levels', $u_access_level );
+			$t_access_level[$u_access_level] = \Core\Helper::get_enum_element( 'access_levels', $u_access_level );
 		} ?>
 			<tr>
 				<td><?php
-					if( \Flickerbox\Access::has_global_level( $u_access_level ) ) { ?>
-						<a href="manage_user_edit_page.php?user_id=<?php echo $u_id ?>"><?php echo \Flickerbox\String::display_line( $u_username ) ?></a><?php
+					if( \Core\Access::has_global_level( $u_access_level ) ) { ?>
+						<a href="manage_user_edit_page.php?user_id=<?php echo $u_id ?>"><?php echo \Core\String::display_line( $u_username ) ?></a><?php
 					} else {
-						echo \Flickerbox\String::display_line( $u_username );
+						echo \Core\String::display_line( $u_username );
 					} ?>
 				</td>
-				<td><?php echo \Flickerbox\String::display_line( $u_realname ) ?></td>
-				<td><?php \Flickerbox\Print_Util::email_link( $u_email, $u_email ) ?></td>
+				<td><?php echo \Core\String::display_line( $u_realname ) ?></td>
+				<td><?php \Core\Print_Util::email_link( $u_email, $u_email ) ?></td>
 				<td><?php echo $t_access_level[$u_access_level] ?></td>
-				<td class="center"><?php echo \Flickerbox\Utility::trans_bool( $u_enabled ) ?></td>
+				<td class="center"><?php echo \Core\Utility::trans_bool( $u_enabled ) ?></td>
 				<td class="center"><?php
 					if( $u_protected ) {
 						echo ' ' . $t_lock_image;
@@ -334,20 +334,20 @@ $t_user_count = count( $t_users );
 	<div class="pager-links">
 		<?php
 		# @todo hack - pass in the hide inactive filter via cheating the actual filter value
-		\Flickerbox\Print_Util::page_links( 'manage_user_page.php', 1, $t_page_count, (int)$f_page_number, $c_filter . $t_hide_inactive_filter . $t_show_disabled_filter . '&amp;sort=' . $c_sort . '&amp;dir=' . $c_dir );
+		\Core\Print_Util::page_links( 'manage_user_page.php', 1, $t_page_count, (int)$f_page_number, $c_filter . $t_hide_inactive_filter . $t_show_disabled_filter . '&amp;sort=' . $c_sort . '&amp;dir=' . $c_dir );
 		?>
 	</div>
 <hr>
 <div id="manage-user-edit-div">
 	<form id="manage-user-edit-form" method="get" action="manage_user_edit_page.php"<?php # CSRF protection not required here - form does not result in modifications ?>>
 		<fieldset>
-			<label for="username"><?php echo \Flickerbox\Lang::get( 'search' ) ?></label>
+			<label for="username"><?php echo \Core\Lang::get( 'search' ) ?></label>
 			<input id="username" type="text" name="username" value="" />
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'manage_user' ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'manage_user' ) ?>" />
 		</fieldset>
 	</form>
 </div>
 
 </div>
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

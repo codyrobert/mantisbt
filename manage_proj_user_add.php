@@ -34,25 +34,25 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_user_add' );
+\Core\Form::security_validate( 'manage_proj_user_add' );
 
 auth_reauthenticate();
 
-$f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
-$f_user_id		= \Flickerbox\GPC::get_int_array( 'user_id', array() );
-$f_access_level	= \Flickerbox\GPC::get_int( 'access_level' );
+$f_project_id	= \Core\GPC::get_int( 'project_id' );
+$f_user_id		= \Core\GPC::get_int_array( 'user_id', array() );
+$f_access_level	= \Core\GPC::get_int( 'access_level' );
 
 # We should check both since we are in the project section and an
 #  admin might raise the first threshold and not realize they need
 #  to raise the second
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'project_user_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'project_user_threshold' ), $f_project_id );
 
 # Add user(s) to the current project
 foreach( $f_user_id as $t_user_id ) {
-	\Flickerbox\Project::add_user( $f_project_id, $t_user_id, $f_access_level );
+	\Core\Project::add_user( $f_project_id, $t_user_id, $f_access_level );
 }
 
-\Flickerbox\Form::security_purge( 'manage_proj_user_add' );
+\Core\Form::security_purge( 'manage_proj_user_add' );
 
-\Flickerbox\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );
+\Core\Print_Util::header_redirect( 'manage_proj_edit_page.php?project_id=' . $f_project_id );

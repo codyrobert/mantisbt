@@ -40,7 +40,7 @@
 
 require_once( 'core.php' );
 
-if( !\Flickerbox\Config::mantis_get( 'enable_profiles' ) ) {
+if( !\Core\Config::mantis_get( 'enable_profiles' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
 }
 
@@ -50,26 +50,26 @@ if( isset( $g_global_profiles ) ) {
 	$g_global_profiles = false;
 }
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
 if( $g_global_profiles ) {
-	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_global_profile_threshold' ) );
+	\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_global_profile_threshold' ) );
 } else {
-	\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'add_profile_threshold' ) );
+	\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'add_profile_threshold' ) );
 }
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_profiles_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_profiles_link' ) );
 
 if( $g_global_profiles ) {
-	\Flickerbox\HTML::print_manage_menu( 'manage_prof_menu_page.php' );
+	\Core\HTML::print_manage_menu( 'manage_prof_menu_page.php' );
 }
 
 if( $g_global_profiles ) {
 	$t_user_id = ALL_USERS;
 } else {
-	$t_user_id = \Flickerbox\Auth::get_current_user_id();
+	$t_user_id = \Core\Auth::get_current_user_id();
 }
 
 # Add Profile Form BEGIN
@@ -77,36 +77,36 @@ if( $g_global_profiles ) {
 <div id="account-profile-div" class="form-container">
 	<form id="account-profile-form" method="post" action="account_prof_update.php">
 		<fieldset class="has-required">
-			<legend><span><?php echo \Flickerbox\Lang::get( 'add_profile_title' ) ?></span></legend>
-			<?php  echo \Flickerbox\Form::security_field( 'profile_update' )?>
+			<legend><span><?php echo \Core\Lang::get( 'add_profile_title' ) ?></span></legend>
+			<?php  echo \Core\Form::security_field( 'profile_update' )?>
 			<input type="hidden" name="action" value="add" />
 			<input type="hidden" name="user_id" value="<?php echo $t_user_id ?>" />
 			<?php
 			if( !$g_global_profiles ) {
-				\Flickerbox\HTML::print_account_menu( 'account_prof_menu_page.php' );
+				\Core\HTML::print_account_menu( 'account_prof_menu_page.php' );
 			}
 			?>
 			<div class="field-container">
-				<label for="platform" class="required"><span><?php echo \Flickerbox\Lang::get( 'platform' ) ?></span></label>
+				<label for="platform" class="required"><span><?php echo \Core\Lang::get( 'platform' ) ?></span></label>
 				<span class="input"><input id="platform" type="text" name="platform" size="32" maxlength="32" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="os" class="required"><span><?php echo \Flickerbox\Lang::get( 'os' ) ?></span></label>
+				<label for="os" class="required"><span><?php echo \Core\Lang::get( 'os' ) ?></span></label>
 				<span class="input"><input id="os" type="text" name="os" size="32" maxlength="32" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="os-version" class="required"><span><?php echo \Flickerbox\Lang::get( 'os_version' ) ?></span></label>
+				<label for="os-version" class="required"><span><?php echo \Core\Lang::get( 'os_version' ) ?></span></label>
 				<span class="input"><input id="os-version" type="text" name="os_build" size="16" maxlength="16" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="description"><span><?php echo \Flickerbox\Lang::get( 'additional_description' ) ?></span></label>
+				<label for="description"><span><?php echo \Core\Lang::get( 'additional_description' ) ?></span></label>
 				<span class="textarea"><textarea id="description" name="description" cols="80" rows="8"></textarea></span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_profile_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_profile_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -114,17 +114,17 @@ if( $g_global_profiles ) {
 	# Add Profile Form END
 	# Edit or Delete Profile Form BEGIN
 
-	$t_profiles = \Flickerbox\Profile::get_all_for_user( $t_user_id );
+	$t_profiles = \Core\Profile::get_all_for_user( $t_user_id );
 	if( $t_profiles ) {
 ?>
 
 <div id="account-profile-update-div" class="form-container">
 	<form id="account-profile-update-form" method="post" action="account_prof_update.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'edit_or_delete_profiles_title' ) ?></span></legend>
-			<?php  echo \Flickerbox\Form::security_field( 'profile_update' )?>
+			<legend><span><?php echo \Core\Lang::get( 'edit_or_delete_profiles_title' ) ?></span></legend>
+			<?php  echo \Core\Form::security_field( 'profile_update' )?>
 			<div class="field-container">
-				<label for="action-edit"><span><?php echo \Flickerbox\Lang::get( 'edit_profile' ) ?></span></label>
+				<label for="action-edit"><span><?php echo \Core\Lang::get( 'edit_profile' ) ?></span></label>
 				<span class="input"><input id="action-edit" type="radio" name="action" value="edit" /></span>
 				<span class="label-style"></span>
 			</div>
@@ -132,7 +132,7 @@ if( $g_global_profiles ) {
 	if( !$g_global_profiles ) {
 ?>
 			<div class="field-container">
-				<label for="action-default"><span><?php echo \Flickerbox\Lang::get( 'make_default' ) ?></span></label>
+				<label for="action-default"><span><?php echo \Core\Lang::get( 'make_default' ) ?></span></label>
 				<span class="input"><input id="action-default" type="radio" name="action" value="make_default" /></span>
 				<span class="label-style"></span>
 			</div>
@@ -140,24 +140,24 @@ if( $g_global_profiles ) {
 	}
 ?>
 			<div class="field-container">
-				<label for="action-delete"><span><?php echo \Flickerbox\Lang::get( 'delete_profile' ) ?></span></label>
+				<label for="action-delete"><span><?php echo \Core\Lang::get( 'delete_profile' ) ?></span></label>
 				<span class="input"><input id="action-delete" type="radio" name="action" value="delete" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="select-profile"><span><?php echo \Flickerbox\Lang::get( 'select_profile' ) ?></span></label>
+				<label for="select-profile"><span><?php echo \Core\Lang::get( 'select_profile' ) ?></span></label>
 				<span class="input">
 					<select id="select-profile" name="profile_id">
-						<?php \Flickerbox\Print_Util::profile_option_list( $t_user_id, '', $t_profiles ) ?>
+						<?php \Core\Print_Util::profile_option_list( $t_user_id, '', $t_profiles ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'submit_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'submit_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 <?php
 } # Edit or Delete Profile Form END
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

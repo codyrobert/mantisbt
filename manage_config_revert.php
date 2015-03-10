@@ -40,42 +40,42 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_config_revert' );
+\Core\Form::security_validate( 'manage_config_revert' );
 
 auth_reauthenticate();
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project', 0 );
-$f_revert = \Flickerbox\GPC::get_string( 'revert', '' );
-$f_return = \Flickerbox\GPC::get_string( 'return' );
+$f_project_id = \Core\GPC::get_int( 'project', 0 );
+$f_revert = \Core\GPC::get_string( 'revert', '' );
+$f_return = \Core\GPC::get_string( 'return' );
 
 $t_access = true;
 $t_revert_vars = explode( ',', $f_revert );
 array_walk( $t_revert_vars, 'trim' );
 foreach ( $t_revert_vars as $t_revert ) {
-	$t_access &= \Flickerbox\Access::has_project_level( \Flickerbox\Config::get_access( $t_revert ), $f_project_id );
+	$t_access &= \Core\Access::has_project_level( \Core\Config::get_access( $t_revert ), $f_project_id );
 }
 
 if( !$t_access ) {
-	\Flickerbox\Access::denied();
+	\Core\Access::denied();
 }
 
 if( '' != $f_revert ) {
 	# Confirm with the user
-	\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'config_delete_sure' ) . \Flickerbox\Lang::get( 'word_separator' ) .
-		\Flickerbox\String::html_specialchars( implode( ', ', $t_revert_vars ) ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Lang::get( 'in_project' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\Project::get_name( $f_project_id ),
-		\Flickerbox\Lang::get( 'delete_config_button' ) );
+	\Core\Helper::ensure_confirmed( \Core\Lang::get( 'config_delete_sure' ) . \Core\Lang::get( 'word_separator' ) .
+		\Core\String::html_specialchars( implode( ', ', $t_revert_vars ) ) . \Core\Lang::get( 'word_separator' ) . \Core\Lang::get( 'in_project' ) . \Core\Lang::get( 'word_separator' ) . \Core\Project::get_name( $f_project_id ),
+		\Core\Lang::get( 'delete_config_button' ) );
 
 	foreach ( $t_revert_vars as $t_revert ) {
-		\Flickerbox\Config::delete( $t_revert, ALL_USERS, $f_project_id );
+		\Core\Config::delete( $t_revert, ALL_USERS, $f_project_id );
 	}
 }
 
-\Flickerbox\Form::security_purge( 'manage_config_revert' );
+\Core\Form::security_purge( 'manage_config_revert' );
 
 $t_redirect_url = $f_return;
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

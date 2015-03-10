@@ -40,42 +40,42 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_bug_threshold' ) );
 
-$f_offset = \Flickerbox\GPC::get_int( 'offset', 0 );
+$f_offset = \Core\GPC::get_int( 'offset', 0 );
 
-$t_project_id = \Flickerbox\Helper::get_current_project();
+$t_project_id = \Core\Helper::get_current_project();
 
-$t_rss_enabled = \Flickerbox\Config::mantis_get( 'rss_enabled' );
+$t_rss_enabled = \Core\Config::mantis_get( 'rss_enabled' );
 
-if( OFF != $t_rss_enabled && \Flickerbox\News::is_enabled() ) {
-	$t_rss_link = \Flickerbox\RSS::get_news_feed_url( $t_project_id );
-	\Flickerbox\HTML::set_rss_link( $t_rss_link );
+if( OFF != $t_rss_enabled && \Core\News::is_enabled() ) {
+	$t_rss_link = \Core\RSS::get_news_feed_url( $t_project_id );
+	\Core\HTML::set_rss_link( $t_rss_link );
 }
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'main_link' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'main_link' ) );
 
-if( !\Flickerbox\Current_User::is_anonymous() ) {
-	$t_current_user_id = \Flickerbox\Auth::get_current_user_id();
-	$t_hide_status = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
+if( !\Core\Current_User::is_anonymous() ) {
+	$t_current_user_id = \Core\Auth::get_current_user_id();
+	$t_hide_status = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
 	echo '<div class="quick-summary-left">';
-	echo \Flickerbox\Lang::get( 'open_and_assigned_to_me_label' ) . \Flickerbox\Lang::get( 'word_separator' );
-	\Flickerbox\Print_Util::link( 'view_all_set.php?type=1&handler_id=' . $t_current_user_id . '&hide_status=' . $t_hide_status, \Flickerbox\Current_User::get_assigned_open_bug_count(), false, 'subtle' );
+	echo \Core\Lang::get( 'open_and_assigned_to_me_label' ) . \Core\Lang::get( 'word_separator' );
+	\Core\Print_Util::link( 'view_all_set.php?type=1&handler_id=' . $t_current_user_id . '&hide_status=' . $t_hide_status, \Core\Current_User::get_assigned_open_bug_count(), false, 'subtle' );
 	echo '</div>';
 
 	echo '<div class="quick-summary-right">';
-	echo \Flickerbox\Lang::get( 'open_and_reported_to_me_label' ) . \Flickerbox\Lang::get( 'word_separator' );
-	\Flickerbox\Print_Util::link( 'view_all_set.php?type=1&reporter_id=' . $t_current_user_id . '&hide_status=' .$t_hide_status, \Flickerbox\Current_User::get_reported_open_bug_count(), false, 'subtle' );
+	echo \Core\Lang::get( 'open_and_reported_to_me_label' ) . \Core\Lang::get( 'word_separator' );
+	\Core\Print_Util::link( 'view_all_set.php?type=1&reporter_id=' . $t_current_user_id . '&hide_status=' .$t_hide_status, \Core\Current_User::get_reported_open_bug_count(), false, 'subtle' );
 	echo '</div>';
 
 	echo '<div class="quick-summary-left">';
-	echo \Flickerbox\Lang::get( 'last_visit_label' ) . \Flickerbox\Lang::get( 'word_separator' );
-	echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), \Flickerbox\Current_User::get_field( 'last_visit' ) );
+	echo \Core\Lang::get( 'last_visit_label' ) . \Core\Lang::get( 'word_separator' );
+	echo date( \Core\Config::mantis_get( 'normal_date_format' ), \Core\Current_User::get_field( 'last_visit' ) );
 	echo '</div>';
 }
 
-if( \Flickerbox\News::is_enabled() ) {
-	$t_news_rows = \Flickerbox\News::get_limited_rows( $f_offset, $t_project_id );
+if( \Core\News::is_enabled() ) {
+	$t_news_rows = \Core\News::get_limited_rows( $f_offset, $t_project_id );
 	$t_news_count = count( $t_news_rows );
 
 	if( $t_news_count ) {
@@ -86,35 +86,35 @@ if( \Flickerbox\News::is_enabled() ) {
 
 			# only show VS_PRIVATE posts to configured threshold and above
 			if( ( VS_PRIVATE == $t_row['view_state'] ) &&
-				 !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'private_news_threshold' ) ) ) {
+				 !\Core\Access::has_project_level( \Core\Config::mantis_get( 'private_news_threshold' ) ) ) {
 				continue;
 			}
 
-			\Flickerbox\Print_Util::news_entry_from_row( $t_row );
+			\Core\Print_Util::news_entry_from_row( $t_row );
 		}  # end for loop
 		echo '</div>';
 	}
 
 	echo '<div id="news-menu">';
 
-	\Flickerbox\Print_Util::bracket_link( 'news_list_page.php', \Flickerbox\Lang::get( 'archives' ) );
-	$t_news_view_limit = \Flickerbox\Config::mantis_get( 'news_view_limit' );
+	\Core\Print_Util::bracket_link( 'news_list_page.php', \Core\Lang::get( 'archives' ) );
+	$t_news_view_limit = \Core\Config::mantis_get( 'news_view_limit' );
 	$f_offset_next = $f_offset + $t_news_view_limit;
 	$f_offset_prev = $f_offset - $t_news_view_limit;
 
 	if( $f_offset_prev >= 0 ) {
-		\Flickerbox\Print_Util::bracket_link( 'main_page.php?offset=' . $f_offset_prev, \Flickerbox\Lang::get( 'newer_news_link' ) );
+		\Core\Print_Util::bracket_link( 'main_page.php?offset=' . $f_offset_prev, \Core\Lang::get( 'newer_news_link' ) );
 	}
 
 	if( $t_news_count == $t_news_view_limit ) {
-		\Flickerbox\Print_Util::bracket_link( 'main_page.php?offset=' . $f_offset_next, \Flickerbox\Lang::get( 'older_news_link' ) );
+		\Core\Print_Util::bracket_link( 'main_page.php?offset=' . $f_offset_next, \Core\Lang::get( 'older_news_link' ) );
 	}
 
 	if( OFF != $t_rss_enabled ) {
-		\Flickerbox\Print_Util::bracket_link( $t_rss_link, \Flickerbox\Lang::get( 'rss' ) );
+		\Core\Print_Util::bracket_link( $t_rss_link, \Core\Lang::get( 'rss' ) );
 	}
 
 	echo '</div>';
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

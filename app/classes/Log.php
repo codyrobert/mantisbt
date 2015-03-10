@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -49,7 +49,7 @@ class Log
 		global $g_log_levels;
 	
 		# check to see if logging is enabled
-		$t_sys_log = \Flickerbox\Config::get_global( 'log_level' );
+		$t_sys_log = \Core\Config::get_global( 'log_level' );
 	
 		if( 0 == ( $t_sys_log & $p_level ) ) {
 			return;
@@ -96,17 +96,17 @@ class Log
 			$t_caller .= ' ' . $_SERVER['SCRIPT_NAME'];
 		}
 	
-		$t_now = date( \Flickerbox\Config::get_global( 'complete_date_format' ) );
+		$t_now = date( \Core\Config::get_global( 'complete_date_format' ) );
 		$t_level = $g_log_levels[$p_level];
 	
 		$t_plugin_event = '[' . $t_level . '] ' . $t_msg;
 		if( function_exists( 'event_signal' ) ) {
-			\Flickerbox\Event::signal( 'EVENT_LOG', array( $t_plugin_event ) );
+			\Core\Event::signal( 'EVENT_LOG', array( $t_plugin_event ) );
 		}
 	
-		$t_log_destination = \Flickerbox\Config::get_global( 'log_destination' );
+		$t_log_destination = \Core\Config::get_global( 'log_destination' );
 	
-		if( \Flickerbox\Utility::is_blank( $t_log_destination ) ) {
+		if( \Core\Utility::is_blank( $t_log_destination ) ) {
 			$t_destination = '';
 		} else {
 			$t_result = explode( ':', $t_log_destination, 2 );
@@ -130,7 +130,7 @@ class Log
 				break;
 			case 'firebug':
 				if( !class_exists( 'FirePHP' ) ) {
-					if( file_exists( \Flickerbox\Config::get_global( 'library_path' ) . 'FirePHPCore/FirePHP.class.php' ) ) {
+					if( file_exists( \Core\Config::get_global( 'library_path' ) . 'FirePHPCore/FirePHP.class.php' ) ) {
 						require_lib( 'FirePHPCore/FirePHP.class.php' );
 					}
 				}
@@ -161,11 +161,11 @@ class Log
 	 * @return void
 	 */
 	static function print_to_page() {
-		if( \Flickerbox\Config::get_global( 'log_destination' ) === 'page' && auth_is_user_authenticated() && \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'show_log_threshold' ) ) ) {
+		if( \Core\Config::get_global( 'log_destination' ) === 'page' && auth_is_user_authenticated() && \Core\Access::has_global_level( \Core\Config::mantis_get( 'show_log_threshold' ) ) ) {
 			global $g_log_events, $g_log_levels, $g_email_stored;
 	
 			if( $g_email_stored ) {
-				\Flickerbox\Email::send_all();
+				\Core\Email::send_all();
 			}
 	
 			$t_unique_queries_count = 0;
@@ -185,10 +185,10 @@ class Log
 			echo "<table id=\"log-event-list\">\n";
 			echo "\t<thead>\n";
 			echo "\t\t<tr>\n";
-			echo "\t\t\t<th>" . \Flickerbox\Lang::get( 'log_page_number' ) . "</th>\n";
-			echo "\t\t\t<th>" . \Flickerbox\Lang::get( 'log_page_time' ) . "</th>\n";
-			echo "\t\t\t<th>" . \Flickerbox\Lang::get( 'log_page_caller' ) . "</th>\n";
-			echo "\t\t\t<th>" . \Flickerbox\Lang::get( 'log_page_event' ) . "</th>\n";
+			echo "\t\t\t<th>" . \Core\Lang::get( 'log_page_number' ) . "</th>\n";
+			echo "\t\t\t<th>" . \Core\Lang::get( 'log_page_time' ) . "</th>\n";
+			echo "\t\t\t<th>" . \Core\Lang::get( 'log_page_caller' ) . "</th>\n";
+			echo "\t\t\t<th>" . \Core\Lang::get( 'log_page_event' ) . "</th>\n";
 			echo "\t\t</tr>\n";
 			echo "\t</thead>\n";
 			echo "\t<tbody>\n";
@@ -221,24 +221,24 @@ class Log
 						if( $t_log_event[2][2] ) {
 							$t_query_duplicate_class = ' class="duplicate-query"';
 						}
-						echo "\t\t<tr " . $t_query_duplicate_class . '><td>' . $t_level . '-' . $t_count[$t_log_event[1]] . '</td><td>' . $t_log_event[2][1] . '</td><td>' . \Flickerbox\String::html_specialchars( $t_log_event[3] ) . '</td><td>' . \Flickerbox\String::html_specialchars( $t_log_event[2][0] ) . "</td></tr>\n";
+						echo "\t\t<tr " . $t_query_duplicate_class . '><td>' . $t_level . '-' . $t_count[$t_log_event[1]] . '</td><td>' . $t_log_event[2][1] . '</td><td>' . \Core\String::html_specialchars( $t_log_event[3] ) . '</td><td>' . \Core\String::html_specialchars( $t_log_event[2][0] ) . "</td></tr>\n";
 						break;
 					default:
-						echo "\t\t<tr><td>" . $t_level . '-' . $t_count[$t_log_event[1]] . '</td><td>' . $t_log_event[2][1] . '</td><td>' . \Flickerbox\String::html_specialchars( $t_log_event[3] ) . '</td><td>' . \Flickerbox\String::html_specialchars( $t_log_event[2][0] ) . "</td></tr>\n";
+						echo "\t\t<tr><td>" . $t_level . '-' . $t_count[$t_log_event[1]] . '</td><td>' . $t_log_event[2][1] . '</td><td>' . \Core\String::html_specialchars( $t_log_event[3] ) . '</td><td>' . \Core\String::html_specialchars( $t_log_event[2][0] ) . "</td></tr>\n";
 				}
 			}
 	
 			# output any summary data
 			if( $t_unique_queries_count != 0 ) {
-				$t_unique_queries_executed = sprintf( \Flickerbox\Lang::get( 'unique_queries_executed' ), $t_unique_queries_count );
+				$t_unique_queries_executed = sprintf( \Core\Lang::get( 'unique_queries_executed' ), $t_unique_queries_count );
 				echo "\t\t<tr><td>" . $g_log_levels[LOG_DATABASE] . '</td><td colspan="3">' . $t_unique_queries_executed . "</td></tr>\n";
 			}
 			if( $t_total_queries_count != 0 ) {
-				$t_total_queries_executed = sprintf( \Flickerbox\Lang::get( 'total_queries_executed' ), $t_total_queries_count );
+				$t_total_queries_executed = sprintf( \Core\Lang::get( 'total_queries_executed' ), $t_total_queries_count );
 				echo "\t\t<tr><td>" . $g_log_levels[LOG_DATABASE] . '</td><td colspan="3">' . $t_total_queries_executed . "</td></tr>\n";
 			}
 			if( $t_total_query_execution_time != 0 ) {
-				$t_total_query_time = sprintf( \Flickerbox\Lang::get( 'total_query_execution_time' ), $t_total_query_execution_time );
+				$t_total_query_time = sprintf( \Core\Lang::get( 'total_query_execution_time' ), $t_total_query_execution_time );
 				echo "\t\t<tr><td>" . $g_log_levels[LOG_DATABASE] . '</td><td colspan="3">' . $t_total_query_time . "</td></tr>\n";
 			}
 			echo "\t</tbody>\n\t</table>\n";

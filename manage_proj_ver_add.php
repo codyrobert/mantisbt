@@ -39,17 +39,17 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_ver_add' );
+\Core\Form::security_validate( 'manage_proj_ver_add' );
 
 auth_reauthenticate();
 
-$f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
-$f_version		= \Flickerbox\GPC::get_string( 'version' );
-$f_add_and_edit = \Flickerbox\GPC::get_bool( 'add_and_edit_version' );
+$f_project_id	= \Core\GPC::get_int( 'project_id' );
+$f_version		= \Core\GPC::get_string( 'version' );
+$f_add_and_edit = \Core\GPC::get_bool( 'add_and_edit_version' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
-if( \Flickerbox\Utility::is_blank( $f_version ) ) {
+if( \Core\Utility::is_blank( $f_version ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
@@ -62,13 +62,13 @@ $t_versions = array_reverse( explode( '|', $f_version ) );
 $t_version_count = count( $t_versions );
 
 foreach ( $t_versions as $t_version ) {
-	if( \Flickerbox\Utility::is_blank( $t_version ) ) {
+	if( \Core\Utility::is_blank( $t_version ) ) {
 		continue;
 	}
 
 	$t_version = trim( $t_version );
-	if( \Flickerbox\Version::is_unique( $t_version, $f_project_id ) ) {
-		$t_version_id = \Flickerbox\Version::add( $f_project_id, $t_version );
+	if( \Core\Version::is_unique( $t_version, $f_project_id ) ) {
+		$t_version_id = \Core\Version::add( $f_project_id, $t_version );
 	} else if( 1 == $t_version_count ) {
 		# We only error out on duplicates when a single value was
 		#  given.  If multiple values were given, we just add the
@@ -79,7 +79,7 @@ foreach ( $t_versions as $t_version ) {
 	}
 }
 
-\Flickerbox\Form::security_purge( 'manage_proj_ver_add' );
+\Core\Form::security_purge( 'manage_proj_ver_add' );
 
 if( true == $f_add_and_edit ) {
 	$t_redirect_url = 'manage_proj_ver_edit_page.php?version_id='.$t_version_id;
@@ -87,8 +87,8 @@ if( true == $f_add_and_edit ) {
 	$t_redirect_url = 'manage_proj_edit_page.php?project_id='  .$f_project_id;
 }
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

@@ -39,68 +39,68 @@ if( !defined( 'BUG_MONITOR_LIST_VIEW_INC_ALLOW' ) ) {
 }
 
 
-if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'show_monitor_list_threshold' ), $f_bug_id ) ) {
-	$t_users = \Flickerbox\Bug::get_monitors( $f_bug_id );
+if( \Core\Access::has_bug_level( \Core\Config::mantis_get( 'show_monitor_list_threshold' ), $f_bug_id ) ) {
+	$t_users = \Core\Bug::get_monitors( $f_bug_id );
 	$t_num_users = sizeof( $t_users );
 
 	echo '<a id="monitors"></a><br />';
 
-	\Flickerbox\Collapse::open( 'monitoring' );
+	\Core\Collapse::open( 'monitoring' );
 ?>
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title" colspan="2">
 <?php
-	\Flickerbox\Collapse::icon( 'monitoring' );
+	\Core\Collapse::icon( 'monitoring' );
 ?>
-		<?php echo \Flickerbox\Lang::get( 'users_monitoring_bug' ); ?>
+		<?php echo \Core\Lang::get( 'users_monitoring_bug' ); ?>
 	</td>
 </tr>
 <tr class="row-1">
 	<th class="category" width="15%">
-		<?php echo \Flickerbox\Lang::get( 'monitoring_user_list' ); ?>
+		<?php echo \Core\Lang::get( 'monitoring_user_list' ); ?>
 	</th>
 	<td>
 <?php
 		if( 0 == $t_num_users ) {
-			echo \Flickerbox\Lang::get( 'no_users_monitoring_bug' );
+			echo \Core\Lang::get( 'no_users_monitoring_bug' );
 		} else {
-			$t_can_delete_others = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
+			$t_can_delete_others = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'monitor_delete_others_bug_threshold' ), $f_bug_id );
 	 		for( $i = 0; $i < $t_num_users; $i++ ) {
 				echo ($i > 0) ? ', ' : '';
-				\Flickerbox\Print_Util::user( $t_users[$i] );
+				\Core\Print_Util::user( $t_users[$i] );
 				if( $t_can_delete_others ) {
-					echo ' [<a class="small" href="' . \Flickerbox\Helper::mantis_url( 'bug_monitor_delete.php' ) . '?bug_id=' . $f_bug_id . '&amp;user_id=' . $t_users[$i] . htmlspecialchars( \Flickerbox\Form::security_param( 'bug_monitor_delete' ) ) . '">' . \Flickerbox\Lang::get( 'delete_link' ) . '</a>]';
+					echo ' [<a class="small" href="' . \Core\Helper::mantis_url( 'bug_monitor_delete.php' ) . '?bug_id=' . $f_bug_id . '&amp;user_id=' . $t_users[$i] . htmlspecialchars( \Core\Form::security_param( 'bug_monitor_delete' ) ) . '">' . \Core\Lang::get( 'delete_link' ) . '</a>]';
 				}
 	 		}
 		}
 
-		if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'monitor_add_others_bug_threshold' ), $f_bug_id ) ) {
+		if( \Core\Access::has_bug_level( \Core\Config::mantis_get( 'monitor_add_others_bug_threshold' ), $f_bug_id ) ) {
 ?>
 		<br /><br />
 		<form method="get" action="bug_monitor_add.php">
-		<?php echo \Flickerbox\Form::security_field( 'bug_monitor_add' ) ?>
+		<?php echo \Core\Form::security_field( 'bug_monitor_add' ) ?>
 			<input type="hidden" name="bug_id" value="<?php echo (integer)$f_bug_id; ?>" />
-			<label for="bug_monitor_list_username"><?php echo \Flickerbox\Lang::get( 'username' ) ?></label>
+			<label for="bug_monitor_list_username"><?php echo \Core\Lang::get( 'username' ) ?></label>
 			<input type="text" id="bug_monitor_list_username" name="username" />
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_user_to_monitor' ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_user_to_monitor' ) ?>" />
 		</form>
 		<?php } ?>
 	</td>
 </tr>
 </table>
 <?php
-	\Flickerbox\Collapse::closed( 'monitoring' );
+	\Core\Collapse::closed( 'monitoring' );
 ?>
 <table class="width100" cellspacing="1">
 <tr>
-	<td class="form-title" colspan="2"><?php \Flickerbox\Collapse::icon( 'monitoring' ); ?>
-		<?php echo \Flickerbox\Lang::get( 'users_monitoring_bug' ); ?>
+	<td class="form-title" colspan="2"><?php \Core\Collapse::icon( 'monitoring' ); ?>
+		<?php echo \Core\Lang::get( 'users_monitoring_bug' ); ?>
 	</td>
 </tr>
 </table>
 <?php
-	\Flickerbox\Collapse::end( 'monitoring' );
+	\Core\Collapse::end( 'monitoring' );
 ?>
 
 <?php

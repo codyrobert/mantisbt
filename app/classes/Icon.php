@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -44,10 +44,10 @@ class Icon
 	 * @access public
 	 */
 	static function get_status_icon( $p_icon ) {
-		$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
-		$t_status_icon_arr = \Flickerbox\Config::mantis_get( 'status_icon_arr' );
-		$t_priotext = \Flickerbox\Helper::get_enum_element( 'priority', $p_icon );
-		if( isset( $t_status_icon_arr[$p_icon] ) && !\Flickerbox\Utility::is_blank( $t_status_icon_arr[$p_icon] ) ) {
+		$t_icon_path = \Core\Config::mantis_get( 'icon_path' );
+		$t_status_icon_arr = \Core\Config::mantis_get( 'status_icon_arr' );
+		$t_priotext = \Core\Helper::get_enum_element( 'priority', $p_icon );
+		if( isset( $t_status_icon_arr[$p_icon] ) && !\Core\Utility::is_blank( $t_status_icon_arr[$p_icon] ) ) {
 			return '<img src="' . $t_icon_path . $t_status_icon_arr[$p_icon] . '" alt="" title="' . $t_priotext . '" />';
 		} else {
 			return '&#160;';
@@ -61,7 +61,7 @@ class Icon
 	 * @access public
 	 */
 	static function print_status_icon( $p_icon ) {
-		echo \Flickerbox\Icon::get_status_icon( $p_icon );
+		echo \Core\Icon::get_status_icon( $p_icon );
 	}
 	
 	/**
@@ -79,9 +79,9 @@ class Icon
 	 * @access public
 	 */
 	static function print_sort_icon( $p_dir, $p_sort_by, $p_field ) {
-		$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
-		$t_sort_icon_arr = \Flickerbox\Config::mantis_get( 'sort_icon_arr' );
-		$t_status_icon_arr = \Flickerbox\Config::mantis_get( 'status_icon_arr' );
+		$t_icon_path = \Core\Config::mantis_get( 'icon_path' );
+		$t_sort_icon_arr = \Core\Config::mantis_get( 'sort_icon_arr' );
+		$t_status_icon_arr = \Core\Config::mantis_get( 'status_icon_arr' );
 	
 		if( $p_sort_by != $p_field ) {
 			return;
@@ -94,7 +94,7 @@ class Icon
 		}
 	
 		$t_none = NONE;
-		if( !\Flickerbox\Utility::is_blank( $t_sort_icon_arr[$t_dir] ) ) {
+		if( !\Core\Utility::is_blank( $t_sort_icon_arr[$t_dir] ) ) {
 			echo '<img src="' . $t_icon_path . $t_sort_icon_arr[$t_dir] . '" alt="" />';
 		} else {
 			echo '<img src="' . $t_icon_path . $t_status_icon_arr[$t_none] . '" alt="" />';

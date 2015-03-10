@@ -39,15 +39,15 @@ require_once( 'core.php' );
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/print_all_bug_options_inc.php' );
 
-\Flickerbox\Form::security_validate( 'print_all_bug_options_reset' );
+\Core\Form::security_validate( 'print_all_bug_options_reset' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
 # protected account check
-\Flickerbox\Current_User::ensure_unprotected();
+\Core\Current_User::ensure_unprotected();
 
 # get user id
-$t_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_user_id = \Core\Auth::get_current_user_id();
 
 # get the fields list
 $t_field_name_arr = get_field_names();
@@ -60,24 +60,24 @@ for( $i=0; $i<$t_field_name_count; $i++ ) {
 $t_default = implode( '', $t_default_arr );
 
 # reset to defaults
-$t_query = 'UPDATE {user_print_pref} SET print_pref=' . \Flickerbox\Database::param() . ' WHERE user_id=' . \Flickerbox\Database::param();
+$t_query = 'UPDATE {user_print_pref} SET print_pref=' . \Core\Database::param() . ' WHERE user_id=' . \Core\Database::param();
 
-$t_result = \Flickerbox\Database::query( $t_query, array( $t_default, $t_user_id ) );
+$t_result = \Core\Database::query( $t_query, array( $t_default, $t_user_id ) );
 
-\Flickerbox\Form::security_purge( 'print_all_bug_options_reset' );
+\Core\Form::security_purge( 'print_all_bug_options_reset' );
 
 $t_redirect_url = 'print_all_bug_options_page.php';
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
 
 if( $t_result ) {
-	\Flickerbox\HTML::operation_successful( $t_redirect_url );
+	\Core\HTML::operation_successful( $t_redirect_url );
 } else {
 	echo '<div class="failure-msg">';
-	echo \Flickerbox\Error::string( ERROR_GENERIC ) . '<br />';
-	\Flickerbox\Print_Util::bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+	echo \Core\Error::string( ERROR_GENERIC ) . '<br />';
+	\Core\Print_Util::bracket_link( $t_redirect_url, \Core\Lang::get( 'proceed' ) );
 	echo '</div>';
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

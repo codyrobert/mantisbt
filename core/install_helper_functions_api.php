@@ -115,7 +115,7 @@ function check_pgsql_bool_columns() {
 	# Generate SQL to check columns against schema
 	$t_where = '';
 	foreach( $t_bool_columns as $t_table_name => $t_columns ) {
-		$t_table = \Flickerbox\Database::get_table( $t_table_name );
+		$t_table = \Core\Database::get_table( $t_table_name );
 		$t_where .= 'table_name = \'' . $t_table . '\' AND column_name IN ( \''
 			. implode( $t_columns, '\', \'' )
 			. '\' ) OR ';
@@ -168,22 +168,22 @@ function install_category_migrate() {
 	$t_log_queries = install_set_log_queries();
 
 	$t_query = 'SELECT project_id, category, user_id FROM {project_category} ORDER BY project_id, category';
-	$t_category_result = \Flickerbox\Database::query( $t_query );
+	$t_category_result = \Core\Database::query( $t_query );
 
 	$t_query = 'SELECT project_id, category FROM {bug} ORDER BY project_id, category';
-	$t_bug_result = \Flickerbox\Database::query( $t_query );
+	$t_bug_result = \Core\Database::query( $t_query );
 
 	$t_data = array();
 
 	# Find categories specified by project
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_category_result ) ) {
+	while( $t_row = \Core\Database::fetch_array( $t_category_result ) ) {
 		$t_project_id = $t_row['project_id'];
 		$t_name = $t_row['category'];
 		$t_data[$t_project_id][$t_name] = $t_row['user_id'];
 	}
 
 	# Find orphaned categories from bugs
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_bug_result ) ) {
+	while( $t_row = \Core\Database::fetch_array( $t_bug_result ) ) {
 		$t_project_id = $t_row['project_id'];
 		$t_name = $t_row['category'];
 
@@ -199,17 +199,17 @@ function install_category_migrate() {
 			$t_lower_name = utf8_strtolower( trim( $t_name ) );
 			if( !isset( $t_inserted[$t_lower_name] ) ) {
 				$t_query = 'INSERT INTO {category} ( name, project_id, user_id ) VALUES ( ' .
-					\Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-				\Flickerbox\Database::query( $t_query, array( $t_name, $t_project_id, $t_user_id ) );
-				$t_category_id = \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'category' ) );
+					\Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+				\Core\Database::query( $t_query, array( $t_name, $t_project_id, $t_user_id ) );
+				$t_category_id = \Core\Database::insert_id( \Core\Database::get_table( 'category' ) );
 				$t_inserted[$t_lower_name] = $t_category_id;
 			} else {
 				$t_category_id = $t_inserted[$t_lower_name];
 			}
 
-			$t_query = 'UPDATE {bug} SET category_id=' . \Flickerbox\Database::param() . '
-						WHERE project_id=' . \Flickerbox\Database::param() . ' AND category=' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_query, array( $t_category_id, $t_project_id, $t_name ) );
+			$t_query = 'UPDATE {bug} SET category_id=' . \Core\Database::param() . '
+						WHERE project_id=' . \Core\Database::param() . ' AND category=' . \Core\Database::param();
+			\Core\Database::query( $t_query, array( $t_category_id, $t_project_id, $t_name ) );
 		}
 	}
 
@@ -264,22 +264,22 @@ function install_date_migrate( array $p_data ) {
 		$t_query = 'SELECT ' . $t_id_column . ', ' . $t_old_column . ' FROM ' . $t_table . ' WHERE ' . $t_new_column_name . ' = 1';
 	}
 
-	$t_result = \Flickerbox\Database::query( $t_query );
+	$t_result = \Core\Database::query( $t_query );
 
-	if( \Flickerbox\Database::num_rows( $t_result ) > 0 ) {
+	if( \Core\Database::num_rows( $t_result ) > 0 ) {
 		# Build the update query
 		if( $t_date_array ) {
 			$t_pairs = array();
 			foreach( $p_data[3] as $t_var ) {
-				array_push( $t_pairs, $t_var . '=' . \Flickerbox\Database::param() ) ;
+				array_push( $t_pairs, $t_var . '=' . \Core\Database::param() ) ;
 			}
 			$t_new_column = implode( ',', $t_pairs );
 		} else {
-			$t_new_column = $p_data[3] . '=' . \Flickerbox\Database::param();
+			$t_new_column = $p_data[3] . '=' . \Core\Database::param();
 		}
-		$t_query = 'UPDATE ' . $t_table . ' SET ' . $t_new_column . ' WHERE ' . $t_id_column . '=' . \Flickerbox\Database::param();
+		$t_query = 'UPDATE ' . $t_table . ' SET ' . $t_new_column . ' WHERE ' . $t_id_column . '=' . \Core\Database::param();
 
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_id = (int)$t_row[$t_id_column];
 
 			if( $t_date_array ) {
@@ -311,7 +311,7 @@ function install_date_migrate( array $p_data ) {
 				$t_values = array( $t_new_value, $t_id );
 			}
 
-			\Flickerbox\Database::query( $t_query, $t_values );
+			\Core\Database::query( $t_query, $t_values );
 		}
 	}
 
@@ -344,9 +344,9 @@ function install_correct_multiselect_custom_fields_db_format() {
 		WHERE (c.type = ' . CUSTOM_FIELD_TYPE_MULTILIST . ' OR c.type = ' . CUSTOM_FIELD_TYPE_CHECKBOX . ")
 			AND v.value != ''
 			AND v.value NOT LIKE '|%|'";
-	$t_result = \Flickerbox\Database::query( $t_query );
+	$t_result = \Core\Database::query( $t_query );
 
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		$c_field_id = (int)$t_row['field_id'];
 		$c_bug_id = (int)$t_row['bug_id'];
 		$c_value = '|' . rtrim( ltrim( $t_row['value'], '|' ), '|' ) . '|';
@@ -354,7 +354,7 @@ function install_correct_multiselect_custom_fields_db_format() {
 			SET value = \'' . $c_value . '\'
 			WHERE field_id = ' . $c_field_id . '
 				AND bug_id = ' . $c_bug_id;
-		\Flickerbox\Database::query( $t_update_query );
+		\Core\Database::query( $t_update_query );
 	}
 
 	# Remove vertical pipe | prefix and suffix from radio custom field values.
@@ -364,9 +364,9 @@ function install_correct_multiselect_custom_fields_db_format() {
 		WHERE c.type = ' . CUSTOM_FIELD_TYPE_RADIO . "
 			AND v.value != ''
 			AND v.value LIKE '|%|'";
-	$t_result = \Flickerbox\Database::query( $t_query );
+	$t_result = \Core\Database::query( $t_query );
 
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		$c_field_id = (int)$t_row['field_id'];
 		$c_bug_id = (int)$t_row['bug_id'];
 		$c_value = rtrim( ltrim( $t_row['value'], '|' ), '|' );
@@ -374,7 +374,7 @@ function install_correct_multiselect_custom_fields_db_format() {
 			SET value = \'' . $c_value . '\'
 			WHERE field_id = ' . $c_field_id . '
 				AND bug_id = ' . $c_bug_id;
-		\Flickerbox\Database::query( $t_update_query );
+		\Core\Database::query( $t_update_query );
 	}
 
 	# Re-enable query logging if we disabled it
@@ -430,8 +430,8 @@ function install_stored_filter_migrate() {
 	$t_filter_fields['sticky_issues'] = 'sticky';
 
 	$t_query = 'SELECT * FROM {filters}';
-	$t_result = \Flickerbox\Database::query( $t_query );
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	$t_result = \Core\Database::query( $t_query );
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		# Grab Filter Version and data into $t_setting_arr
 		$t_setting_arr = explode( '#', $t_row['filter_string'], 2 );
 
@@ -441,8 +441,8 @@ function install_stored_filter_migrate() {
 			case 'v2':
 			case 'v3':
 			case 'v4':
-				$t_delete_query = 'DELETE FROM {filters} WHERE id=' . \Flickerbox\Database::param();
-				$t_delete_result = \Flickerbox\Database::query( $t_delete_query, array( $t_row['id'] ) );
+				$t_delete_query = 'DELETE FROM {filters} WHERE id=' . \Core\Database::param();
+				$t_delete_result = \Core\Database::query( $t_delete_query, array( $t_row['id'] ) );
 				continue;
 		}
 
@@ -459,8 +459,8 @@ function install_stored_filter_migrate() {
 					$t_filter_arr = json_decode( $t_setting_arr[1], /* assoc array */ true );
 			}
 		} else {
-			$t_delete_query = 'DELETE FROM {filters} WHERE id=' . \Flickerbox\Database::param();
-			$t_delete_result = \Flickerbox\Database::query( $t_delete_query, array( $t_row['id'] ) );
+			$t_delete_query = 'DELETE FROM {filters} WHERE id=' . \Core\Database::param();
+			$t_delete_result = \Core\Database::query( $t_delete_query, array( $t_row['id'] ) );
 			continue;
 		}
 
@@ -473,7 +473,7 @@ function install_stored_filter_migrate() {
 		# Ff the filter version does not match the latest version, pass it through filter_ensure_valid_filter to do any updates
 		# This will set default values for filter fields
 		if( $t_filter_arr['_version'] != FILTER_VERSION ) {
-			$t_filter_arr = \Flickerbox\Filter::ensure_valid_filter( $t_filter_arr );
+			$t_filter_arr = \Core\Filter::ensure_valid_filter( $t_filter_arr );
 		}
 
 		# For any fields that are being renamed, we can now perform the rename and migrate existing data.
@@ -498,8 +498,8 @@ function install_stored_filter_migrate() {
 		$t_filter_serialized = json_encode( $t_filter_arr );
 		$t_filter_string = FILTER_VERSION . '#' . $t_filter_serialized;
 
-		$t_update_query = 'UPDATE {filters} SET filter_string=' . \Flickerbox\Database::param() . ' WHERE id=' . \Flickerbox\Database::param();
-		$t_update_result = \Flickerbox\Database::query( $t_update_query, array( $t_filter_string, $t_row['id'] ) );
+		$t_update_query = 'UPDATE {filters} SET filter_string=' . \Core\Database::param() . ' WHERE id=' . \Core\Database::param();
+		$t_update_result = \Core\Database::query( $t_update_query, array( $t_filter_string, $t_row['id'] ) );
 	}
 
 	# Re-enable query logging if we disabled it
@@ -536,8 +536,8 @@ function install_update_history_long_custom_fields() {
 
 	# Build list of custom field names longer than 32 chars for reference
 	$t_query = 'SELECT name FROM {custom_field}';
-	$t_result = \Flickerbox\Database::query( $t_query );
-	while( $t_field = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	$t_result = \Core\Database::query( $t_query );
+	while( $t_field = \Core\Database::fetch_array( $t_result ) ) {
 		if( utf8_strlen( $t_field['name'] ) > 32 ) {
 			$t_custom_fields[utf8_substr( $t_field['name'], 0, 32 )] = $t_field['name'];
 		}
@@ -551,7 +551,7 @@ function install_update_history_long_custom_fields() {
 	}
 
 	# Build list of standard fields to filter out from history
-	# This is as per result of \Flickerbox\Columns::get_standard() at the time of this schema update
+	# This is as per result of \Core\Columns::get_standard() at the time of this schema update
 	# Fields mapping: category_id is actually logged in history as 'category'
 	$t_standard_fields = array( 'id', 'project_id', 'reporter_id', 'handler_id', 'priority', 'severity', 'eta', 'os',
 								'reproducibility', 'status', 'resolution', 'projection', 'category', 'date_submitted',
@@ -570,18 +570,18 @@ function install_update_history_long_custom_fields() {
 		FROM {bug_history}
 		WHERE type = ' . NORMAL_TYPE . '
 		AND field_name NOT IN ( ' . $t_field_list . ' )';
-	$t_result = \Flickerbox\Database::query( $t_query );
+	$t_result = \Core\Database::query( $t_query );
 
 	# For each entry, update the truncated custom field name with its full name
 	# if a matching custom field exists
-	while( $t_field = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	while( $t_field = \Core\Database::fetch_array( $t_result ) ) {
 		# If field name's length is 32, then likely it was truncated so we try to match
 		if( utf8_strlen( $t_field['field_name'] ) == 32 && array_key_exists( $t_field['field_name'], $t_custom_fields ) ) {
 			# Match found, update all history records with this field name
 			$t_update_query = 'UPDATE {bug_history}
-				SET field_name = ' . \Flickerbox\Database::param() . '
-				WHERE field_name = ' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_update_query, array( $t_custom_fields[$t_field['field_name']], $t_field['field_name'] ) );
+				SET field_name = ' . \Core\Database::param() . '
+				WHERE field_name = ' . \Core\Database::param();
+			\Core\Database::query( $t_update_query, array( $t_custom_fields[$t_field['field_name']], $t_field['field_name'] ) );
 		}
 	}
 
@@ -598,26 +598,26 @@ function install_update_history_long_custom_fields() {
 function install_check_project_hierarchy() {
 	$t_query = 'SELECT count(child_id) as count, child_id, parent_id FROM {project_hierarchy} GROUP BY child_id, parent_id';
 
-	$t_result = \Flickerbox\Database::query( $t_query );
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	$t_result = \Core\Database::query( $t_query );
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		$t_count = (int)$t_row['count'];
 		$t_child_id = (int)$t_row['child_id'];
 		$t_parent_id = (int)$t_row['parent_id'];
 
 		if( $t_count > 1 ) {
-			$t_query = 'SELECT inherit_parent, child_id, parent_id FROM {project_hierarchy} WHERE child_id=' . \Flickerbox\Database::param() . ' AND parent_id=' . \Flickerbox\Database::param();
-			$t_result2 = \Flickerbox\Database::query( $t_query, array( $t_child_id, $t_parent_id ) );
+			$t_query = 'SELECT inherit_parent, child_id, parent_id FROM {project_hierarchy} WHERE child_id=' . \Core\Database::param() . ' AND parent_id=' . \Core\Database::param();
+			$t_result2 = \Core\Database::query( $t_query, array( $t_child_id, $t_parent_id ) );
 
 			# get first result for inherit_parent, discard the rest
-			$t_row2 = \Flickerbox\Database::fetch_array( $t_result2 );
+			$t_row2 = \Core\Database::fetch_array( $t_result2 );
 
 			$t_inherit = $t_row2['inherit_parent'];
 
-			$t_query_delete = 'DELETE FROM {project_hierarchy} WHERE child_id=' . \Flickerbox\Database::param() . ' AND parent_id=' . \Flickerbox\Database::param();
-			\Flickerbox\Database::query( $t_query_delete, array( $t_child_id, $t_parent_id ) );
+			$t_query_delete = 'DELETE FROM {project_hierarchy} WHERE child_id=' . \Core\Database::param() . ' AND parent_id=' . \Core\Database::param();
+			\Core\Database::query( $t_query_delete, array( $t_child_id, $t_parent_id ) );
 
-			$t_query_insert = 'INSERT INTO {project_hierarchy} (child_id, parent_id, inherit_parent) VALUES (' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
-			\Flickerbox\Database::query( $t_query_insert, array( $t_child_id, $t_parent_id, $t_inherit ) );
+			$t_query_insert = 'INSERT INTO {project_hierarchy} (child_id, parent_id, inherit_parent) VALUES (' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ')';
+			\Core\Database::query( $t_query_insert, array( $t_child_id, $t_parent_id, $t_inherit ) );
 		}
 	}
 
@@ -632,8 +632,8 @@ function install_check_project_hierarchy() {
 function install_check_config_serialization() {
 	$query = 'SELECT * FROM {config} WHERE type=3';
 
-	$t_result = \Flickerbox\Database::query( $query );
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	$t_result = \Core\Database::query( $query );
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		$config_id = $t_row['config_id'];
 		$project_id = (int)$t_row['project_id'];
 		$user_id = (int)$t_row['user_id'];
@@ -646,12 +646,12 @@ function install_check_config_serialization() {
 
 		$t_json_config = json_encode( $t_config );
 
-		$t_query = 'UPDATE {config} SET value=' .\Flickerbox\Database::param() . ' WHERE config_id=' .\Flickerbox\Database::param() . ' AND project_id=' .\Flickerbox\Database::param() . ' AND user_id=' .\Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $t_json_config, $config_id, $project_id, $user_id ) );
+		$t_query = 'UPDATE {config} SET value=' .\Core\Database::param() . ' WHERE config_id=' .\Core\Database::param() . ' AND project_id=' .\Core\Database::param() . ' AND user_id=' .\Core\Database::param();
+		\Core\Database::query( $t_query, array( $t_json_config, $config_id, $project_id, $user_id ) );
 	}
 
 	# flush config here as we've changed the format of the configuration table
-	\Flickerbox\Config::flush_cache();
+	\Core\Config::flush_cache();
 
 	# Return 2 because that's what ADOdb/DataDict does when things happen properly
 	return 2;
@@ -664,8 +664,8 @@ function install_check_config_serialization() {
 function install_check_token_serialization() {
 	$query = 'SELECT * FROM {tokens} WHERE type=1 or type=2 or type=5';
 
-	$t_result = \Flickerbox\Database::query( $query );
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	$t_result = \Core\Database::query( $query );
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		$t_id = $t_row['id'];
 		$t_value = $t_row['value'];
 
@@ -682,8 +682,8 @@ function install_check_token_serialization() {
 
 		$t_json_token = json_encode( $t_token );
 
-		$t_query = 'UPDATE {tokens} SET value=' .\Flickerbox\Database::param() . ' WHERE id=' .\Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $t_json_token, $t_id ) );
+		$t_query = 'UPDATE {tokens} SET value=' .\Core\Database::param() . ' WHERE id=' .\Core\Database::param();
+		\Core\Database::query( $t_query, array( $t_json_token, $t_id ) );
 	}
 
 	# Return 2 because that's what ADOdb/DataDict does when things happen properly

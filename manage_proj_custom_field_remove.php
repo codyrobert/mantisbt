@@ -39,26 +39,26 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_custom_field_remove' );
+\Core\Form::security_validate( 'manage_proj_custom_field_remove' );
 
 auth_reauthenticate();
 
-$f_field_id = \Flickerbox\GPC::get_int( 'field_id' );
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
-$f_return = \Flickerbox\GPC::get_string( 'return', '' );
+$f_field_id = \Core\GPC::get_int( 'field_id' );
+$f_project_id = \Core\GPC::get_int( 'project_id' );
+$f_return = \Core\GPC::get_string( 'return', '' );
 
 # We should check both since we are in the project section and an
 # admin might raise the first threshold and not realize they need
 # to raise the second
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'custom_field_link_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'custom_field_link_threshold' ), $f_project_id );
 
 $t_definition = custom_field_get_definition( $f_field_id );
 
 # Confirm with the user
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_custom_field_unlinking' ) .
-	'<br/>' . \Flickerbox\Lang::get( 'custom_field_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::attribute( $t_definition['name'] ),
-	\Flickerbox\Lang::get( 'field_remove_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'confirm_custom_field_unlinking' ) .
+	'<br/>' . \Core\Lang::get( 'custom_field_label' ) . \Core\Lang::get( 'word_separator' ) . \Core\String::attribute( $t_definition['name'] ),
+	\Core\Lang::get( 'field_remove_button' ) );
 
 if( $f_return == 'custom_field' ) {
 	$t_redirect_url = 'manage_custom_field_edit_page.php?field_id=' . $f_field_id;
@@ -68,10 +68,10 @@ if( $f_return == 'custom_field' ) {
 
 custom_field_unlink( $f_field_id, $f_project_id );
 
-\Flickerbox\Form::security_purge( 'manage_proj_custom_field_remove' );
+\Core\Form::security_purge( 'manage_proj_custom_field_remove' );
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

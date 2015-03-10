@@ -22,29 +22,29 @@
  * Process XML Import
  */
 
-$t_plugin_path = \Flickerbox\Config::mantis_get( 'plugin_path' );
+$t_plugin_path = \Core\Config::mantis_get( 'plugin_path' );
 require_once( $t_plugin_path . 'XmlImportExport/ImportXml.php' );
 
-\Flickerbox\Form::security_validate( 'plugin_xml_import_action' );
+\Core\Form::security_validate( 'plugin_xml_import_action' );
 
 auth_reauthenticate( );
 
 $f_file = gpc_get_file( 'file', -1 );
-$f_strategy = \Flickerbox\GPC::get_string( 'strategy' );
-$f_fallback = \Flickerbox\GPC::get_string( 'fallback' );
-$f_project = \Flickerbox\GPC::get_int( 'project_id' ); # not used, but ensures a project is selected
-$f_keepcategory = \Flickerbox\GPC::get_bool( 'keepcategory' );
-$f_defaultcategory = \Flickerbox\GPC::get_int( 'defaultcategory' );
+$f_strategy = \Core\GPC::get_string( 'strategy' );
+$f_fallback = \Core\GPC::get_string( 'fallback' );
+$f_project = \Core\GPC::get_int( 'project_id' ); # not used, but ensures a project is selected
+$f_keepcategory = \Core\GPC::get_bool( 'keepcategory' );
+$f_defaultcategory = \Core\GPC::get_int( 'defaultcategory' );
 
-\Flickerbox\File::ensure_uploaded( $f_file );
+\Core\File::ensure_uploaded( $f_file );
 
 $t_importer = new ImportXML( $f_file, $f_strategy, $f_fallback, $f_keepcategory, $f_defaultcategory );
 
-\Flickerbox\Form::security_purge( 'plugin_xml_import_action' );
+\Core\Form::security_purge( 'plugin_xml_import_action' );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Plugin::langget( 'import' ) );
+\Core\HTML::page_top( \Core\Plugin::langget( 'import' ) );
 
-\Flickerbox\HTML::print_manage_menu( 'manage_import_issues_page.php' );
+\Core\HTML::print_manage_menu( 'manage_import_issues_page.php' );
 
 ?>
 
@@ -59,4 +59,4 @@ $t_importer->import( );
 </pre>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

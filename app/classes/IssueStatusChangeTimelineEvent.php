@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -66,17 +66,17 @@ class IssueStatusChangeTimelineEvent extends TimelineEvent {
 	 * @return int One of the status change constants defined above
 	 */
 	private function change_type() {
-		$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
-		$t_closed = \Flickerbox\Config::mantis_get( 'bug_closed_status_threshold' );
+		$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
+		$t_closed = \Core\Config::mantis_get( 'bug_closed_status_threshold' );
 
 		if( $this->old_status < $t_closed && $this->new_status >= $t_closed ) {
-			return \Flickerbox\IssueStatusChangeTimelineEvent::CLOSED;
+			return \Core\IssueStatusChangeTimelineEvent::CLOSED;
 		} else if( $this->old_status < $t_resolved && $this->new_status >= $t_resolved ) {
-			return \Flickerbox\IssueStatusChangeTimelineEvent::RESOLVED;
+			return \Core\IssueStatusChangeTimelineEvent::RESOLVED;
 		} else if( $this->old_status >= $t_resolved && $this->new_status < $t_resolved ) {
-			return \Flickerbox\IssueStatusChangeTimelineEvent::REOPENED;
+			return \Core\IssueStatusChangeTimelineEvent::REOPENED;
 		} else {
-			return \Flickerbox\IssueStatusChangeTimelineEvent::IGNORED;
+			return \Core\IssueStatusChangeTimelineEvent::IGNORED;
 		}
 	}
 
@@ -86,7 +86,7 @@ class IssueStatusChangeTimelineEvent extends TimelineEvent {
 	 * @return boolean
 	 */
 	public function skip() {
-		return $this->type == \Flickerbox\IssueStatusChangeTimelineEvent::IGNORED;
+		return $this->type == \Core\IssueStatusChangeTimelineEvent::IGNORED;
 	}
 
 	/**
@@ -95,28 +95,28 @@ class IssueStatusChangeTimelineEvent extends TimelineEvent {
 	 */
 	public function html() {
 		switch( $this->type ) {
-			case \Flickerbox\IssueStatusChangeTimelineEvent::RESOLVED:
+			case \Core\IssueStatusChangeTimelineEvent::RESOLVED:
 				$t_string = sprintf(
-					\Flickerbox\Lang::get( 'timeline_issue_resolved' ),
-					\Flickerbox\User::get_name( $this->user_id ),
-					\Flickerbox\String::get_bug_view_link( $this->issue_id )
+					\Core\Lang::get( 'timeline_issue_resolved' ),
+					\Core\User::get_name( $this->user_id ),
+					\Core\String::get_bug_view_link( $this->issue_id )
 				);
 				break;
-			case \Flickerbox\IssueStatusChangeTimelineEvent::CLOSED:
+			case \Core\IssueStatusChangeTimelineEvent::CLOSED:
 				$t_string = sprintf(
-					\Flickerbox\Lang::get( 'timeline_issue_closed' ),
-					\Flickerbox\User::get_name( $this->user_id ),
-					\Flickerbox\String::get_bug_view_link( $this->issue_id )
+					\Core\Lang::get( 'timeline_issue_closed' ),
+					\Core\User::get_name( $this->user_id ),
+					\Core\String::get_bug_view_link( $this->issue_id )
 				);
 				break;
-			case \Flickerbox\IssueStatusChangeTimelineEvent::REOPENED:
+			case \Core\IssueStatusChangeTimelineEvent::REOPENED:
 				$t_string = sprintf(
-					\Flickerbox\Lang::get( 'timeline_issue_reopened' ),
-					\Flickerbox\User::get_name( $this->user_id ),
-					\Flickerbox\String::get_bug_view_link( $this->issue_id )
+					\Core\Lang::get( 'timeline_issue_reopened' ),
+					\Core\User::get_name( $this->user_id ),
+					\Core\String::get_bug_view_link( $this->issue_id )
 				);
 				break;
-			case \Flickerbox\IssueStatusChangeTimelineEvent::IGNORED:
+			case \Core\IssueStatusChangeTimelineEvent::IGNORED:
 				return '';
 			default:
 				# Unknown status change type

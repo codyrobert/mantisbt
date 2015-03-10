@@ -67,13 +67,13 @@ if( !$t_adodb_version_check_ok ) {
 	return;
 }
 
-$t_database_dsn = \Flickerbox\Config::get_global( 'dsn' );
+$t_database_dsn = \Core\Config::get_global( 'dsn' );
 check_print_info_row(
 	'Using a custom <a href="http://en.wikipedia.org/wiki/Database_Source_Name">Database Source Name</a> (DSN) for connecting to the database',
 	$t_database_dsn ? 'Yes' : 'No'
 );
 
-$t_database_type = \Flickerbox\Config::get_global( 'db_type' );
+$t_database_type = \Core\Config::get_global( 'db_type' );
 check_print_info_row(
 	'Database type',
 	htmlentities( $t_database_type )
@@ -81,12 +81,12 @@ check_print_info_row(
 
 check_print_test_row(
 	'Database type is supported by the version of PHP installed on this server',
-	\Flickerbox\Database::check_database_support( $t_database_type ),
+	\Core\Database::check_database_support( $t_database_type ),
 	array( false => 'The current database type is set to ' . htmlentities( $t_database_type )
 		. '. The version of PHP installed on this server does not have support for this database type.' )
 );
 
-if( \Flickerbox\Database::is_mysql() ) {
+if( \Core\Database::is_mysql() ) {
 	check_print_test_warn_row(
 		'PHP support for MySQL driver',
 		'mysql' != $t_database_type,
@@ -94,7 +94,7 @@ if( \Flickerbox\Database::is_mysql() ) {
 	);
 }
 
-if( \Flickerbox\Database::is_mssql() ) {
+if( \Core\Database::is_mssql() ) {
 
 	check_print_test_warn_row(
 		'PHP support for Microsoft SQL Server driver',
@@ -102,7 +102,7 @@ if( \Flickerbox\Database::is_mssql() ) {
 		array( false => "'mssql' driver is no longer supported in PHP >= 5.3, please use 'mssqlnative' instead" )
 	);
 
-	$t_mssql_textsize = \Flickerbox\Utility::ini_get_number( 'mssql.textsize' );
+	$t_mssql_textsize = \Core\Utility::ini_get_number( 'mssql.textsize' );
 	check_print_info_row(
 		'php.ini directive: mssql.textsize',
 		htmlentities( $t_mssql_textsize )
@@ -116,7 +116,7 @@ if( \Flickerbox\Database::is_mssql() ) {
 			. '. You should set this value to -1 to prevent large text fields being truncated upon being read from the database.' )
 	);
 
-	$t_mssql_textlimit = \Flickerbox\Utility::ini_get_number( 'mssql.textlimit' );
+	$t_mssql_textlimit = \Core\Utility::ini_get_number( 'mssql.textlimit' );
 	check_print_info_row(
 		'php.ini directive: mssql.textlimit',
 		htmlentities( $t_mssql_textlimit )
@@ -131,35 +131,35 @@ if( \Flickerbox\Database::is_mssql() ) {
 	);
 }
 
-$t_database_hostname = \Flickerbox\Config::get_global( 'hostname' );
+$t_database_hostname = \Core\Config::get_global( 'hostname' );
 check_print_info_row(
 	'Database hostname',
 	htmlentities( $t_database_hostname )
 );
 
-$t_database_username = \Flickerbox\Config::get_global( 'db_username' );
+$t_database_username = \Core\Config::get_global( 'db_username' );
 check_print_info_row(
 	'Database username',
 	htmlentities( $t_database_username )
 );
 
-$t_database_password = \Flickerbox\Config::get_global( 'db_password' );
+$t_database_password = \Core\Config::get_global( 'db_password' );
 
-$t_database_name = \Flickerbox\Config::get_global( 'database_name' );
+$t_database_name = \Core\Config::get_global( 'database_name' );
 check_print_info_row(
 	'Database name',
 	htmlentities( $t_database_name )
 );
 
-\Flickerbox\Database::connect( $t_database_dsn, $t_database_hostname, $t_database_username, $t_database_password, $t_database_name );
+\Core\Database::connect( $t_database_dsn, $t_database_hostname, $t_database_username, $t_database_password, $t_database_name );
 check_print_test_row(
 	'Can open connection to database <em>' . htmlentities( $t_database_name )
 	. '</em> on host <em>' . htmlentities( $t_database_hostname )
 	. '</em> with username <em>' . htmlentities( $t_database_username ) . '</em>',
-	\Flickerbox\Database::is_connected()
+	\Core\Database::is_connected()
 );
 
-if( !\Flickerbox\Database::is_connected() ) {
+if( !\Core\Database::is_connected() ) {
 	return;
 }
 
@@ -174,11 +174,11 @@ check_print_info_row(
 	htmlentities( $t_database_server_info['version'] )
 );
 
-if( \Flickerbox\Database::is_mysql() ) {
+if( \Core\Database::is_mysql() ) {
 	$t_db_min_version = DB_MIN_VERSION_MYSQL;
-} elseif( \Flickerbox\Database::is_pgsql() ) {
+} elseif( \Core\Database::is_pgsql() ) {
 	$t_db_min_version = DB_MIN_VERSION_PGSQL;
-} elseif( \Flickerbox\Database::is_mssql() ) {
+} elseif( \Core\Database::is_mssql() ) {
 	$t_db_min_version = DB_MIN_VERSION_MSSQL;
 } else {
 	$t_db_min_version = 0;
@@ -193,10 +193,10 @@ check_print_test_row(
 	)
 );
 
-$t_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
+$t_date_format = \Core\Config::mantis_get( 'short_date_format' );
 
 # MySQL support checking
-if( \Flickerbox\Database::is_mysql() ) {
+if( \Core\Database::is_mysql() ) {
 	# Note: the MySQL lifecycle page [1] is no longer available.
 	# The list below was built based on information found in [2].
 	# [1] http://www.mysql.com/about/legal/lifecycle/
@@ -273,7 +273,7 @@ if( \Flickerbox\Database::is_mysql() ) {
 					. '. You should upgrade to a newer version of MySQL which is still within its Premier support period to benefit from bug fixes and security patches.'
 			) );
 	}
-} else if( \Flickerbox\Database::is_pgsql() ) {
+} else if( \Core\Database::is_pgsql() ) {
 	# PostgreSQL support checking
 
 	# Version support information
@@ -324,19 +324,19 @@ if( \Flickerbox\Database::is_mysql() ) {
 		) );
 }
 
-$t_table_prefix = \Flickerbox\Config::get_global( 'db_table_prefix' );
+$t_table_prefix = \Core\Config::get_global( 'db_table_prefix' );
 check_print_info_row(
 	'Prefix added to each MantisBT table name',
 	htmlentities( $t_table_prefix )
 );
 
-$t_table_plugin_prefix = \Flickerbox\Config::get_global( 'db_table_plugin_prefix' );
+$t_table_plugin_prefix = \Core\Config::get_global( 'db_table_plugin_prefix' );
 check_print_info_row(
 	'Prefix added to each Plugin table name',
 	htmlentities( $t_table_plugin_prefix )
 );
 
-$t_table_suffix = \Flickerbox\Config::get_global( 'db_table_suffix' );
+$t_table_suffix = \Core\Config::get_global( 'db_table_suffix' );
 check_print_info_row(
 	'Suffix added to each MantisBT table name',
 	htmlentities( $t_table_suffix )
@@ -350,7 +350,7 @@ check_print_test_warn_row(
 	)
 );
 
-if( \Flickerbox\Database::is_mysql() ) {
+if( \Core\Database::is_mysql() ) {
 	$t_table_prefix_regex_safe = preg_quote( $t_table_prefix, '/' );
 	$t_table_suffix_regex_safe = preg_quote( $t_table_suffix, '/' );
 
@@ -374,8 +374,8 @@ if( \Flickerbox\Database::is_mysql() ) {
 			break;
 	}
 
-	$t_result = \Flickerbox\Database::query( 'SHOW TABLE STATUS' );
-	while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+	$t_result = \Core\Database::query( 'SHOW TABLE STATUS' );
+	while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 		if( $t_row[$t_field_comment] !== 'VIEW' &&
 		    preg_match( '/^' . $t_table_prefix_regex_safe . '.+?' . $t_table_suffix_regex_safe . '$/', $t_row[$t_field_name] )
 		) {
@@ -388,10 +388,10 @@ if( \Flickerbox\Database::is_mysql() ) {
 		}
 	}
 
-	foreach( \Flickerbox\Database::get_table_list() as $t_table ) {
+	foreach( \Core\Database::get_table_list() as $t_table ) {
 		if( preg_match( '/^' . $t_table_prefix_regex_safe . '.+?' . $t_table_suffix_regex_safe . '$/', $t_table ) ) {
-			$t_result = \Flickerbox\Database::query( 'SHOW FULL FIELDS FROM ' . $t_table );
-			while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+			$t_result = \Core\Database::query( 'SHOW FULL FIELDS FROM ' . $t_table );
+			while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 				if( $t_row[$t_field_collation] === null ) {
 					continue;
 				}

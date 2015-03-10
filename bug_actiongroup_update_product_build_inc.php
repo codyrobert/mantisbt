@@ -41,7 +41,7 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 function action_update_product_build_print_title() {
 	echo '<tr>';
 	echo '<td class="form-title" colspan="2">';
-	echo \Flickerbox\Lang::get( 'product_build' );
+	echo \Core\Lang::get( 'product_build' );
 	echo '</td></tr>';
 }
 
@@ -57,7 +57,7 @@ function action_update_product_build_print_fields() {
 	<tbody>
 		<tr class="row-1">
 			<th class="category">
-				<?php echo \Flickerbox\Lang::get( 'product_build' ); ?>
+				<?php echo \Core\Lang::get( 'product_build' ); ?>
 			</th>
 			<td>
 				<input type="text" name="build" size="32" maxlength="32" />
@@ -67,7 +67,7 @@ function action_update_product_build_print_fields() {
 	<tfoot>
 		<tr>
 			<td colspan="2" class="center">
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'actiongroup_menu_update_product_build' ); ?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'actiongroup_menu_update_product_build' ); ?>" />
 			</td>
 		</tr>
 	</tfoot>
@@ -83,12 +83,12 @@ function action_update_product_build_print_fields() {
 function action_update_product_build_validate( $p_bug_id ) {
 	$t_bug_id = (int)$p_bug_id;
 
-	if( \Flickerbox\Bug::is_readonly( $t_bug_id ) ) {
-		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
+	if( \Core\Bug::is_readonly( $t_bug_id ) ) {
+		return \Core\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
-	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $t_bug_id ) ) {
-		return \Flickerbox\Lang::get( 'access_denied' );
+	if( !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'update_bug_threshold' ), $t_bug_id ) ) {
+		return \Core\Lang::get( 'access_denied' );
 	}
 
 	return null;
@@ -101,8 +101,8 @@ function action_update_product_build_validate( $p_bug_id ) {
  * @return null Previous validation ensures that this function doesn't fail. Therefore we can always return null to indicate no errors occurred.
  */
 function action_update_product_build_process( $p_bug_id ) {
-	$t_build = \Flickerbox\GPC::get_string( 'build' );
+	$t_build = \Core\GPC::get_string( 'build' );
 
-	\Flickerbox\Bug::set_field( $p_bug_id, 'build', $t_build );
+	\Core\Bug::set_field( $p_bug_id, 'build', $t_build );
 	return null;
 }

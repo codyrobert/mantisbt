@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -95,7 +95,7 @@ class TimelineEvent {
 	 * @return string
 	 */
 	public function format_timestamp( $p_timestamp ) {
-		$t_normal_date_format = \Flickerbox\Config::mantis_get( 'normal_date_format' );
+		$t_normal_date_format = \Core\Config::mantis_get( 'normal_date_format' );
 		return date( $t_normal_date_format, $p_timestamp );
 	}
 
@@ -104,7 +104,7 @@ class TimelineEvent {
 	 * @return string
 	 */
 	public function html_start() {
-		$t_avatar = \Flickerbox\User::get_avatar( $this->user_id, 32 );
+		$t_avatar = \Core\User::get_avatar( $this->user_id, 32 );
 
 		# Avatar div
 		if( !empty( $t_avatar ) ) {

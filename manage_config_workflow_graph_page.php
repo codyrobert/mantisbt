@@ -41,21 +41,21 @@ require_once( 'core.php' );
 
 auth_reauthenticate();
 
-if( !\Flickerbox\Config::mantis_get( 'relationship_graph_enable' ) ) {
-	\Flickerbox\Access::denied();
+if( !\Core\Config::mantis_get( 'relationship_graph_enable' ) ) {
+	\Core\Access::denied();
 }
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_workflow_graph' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_workflow_graph' ) );
 
-\Flickerbox\HTML::print_manage_menu( 'adm_permissions_report.php' );
-\Flickerbox\HTML::print_manage_config_menu( 'manage_config_workflow_graph_page.php' );
+\Core\HTML::print_manage_menu( 'adm_permissions_report.php' );
+\Core\HTML::print_manage_config_menu( 'manage_config_workflow_graph_page.php' );
 
-$t_project = \Flickerbox\Helper::get_current_project();
+$t_project = \Core\Helper::get_current_project();
 
 if( $t_project == ALL_PROJECTS ) {
-	$t_project_title = \Flickerbox\Lang::get( 'config_all_projects' );
+	$t_project_title = \Core\Lang::get( 'config_all_projects' );
 } else {
-	$t_project_title = sprintf( \Flickerbox\Lang::get( 'config_project' ), \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project ) ) );
+	$t_project_title = sprintf( \Core\Lang::get( 'config_project' ), \Core\String::display( \Core\Project::get_name( $t_project ) ) );
 }
 ?>
 	<br />
@@ -66,4 +66,4 @@ if( $t_project == ALL_PROJECTS ) {
 		<img src="workflow_graph_img.php" />
 	</div>
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

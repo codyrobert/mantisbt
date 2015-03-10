@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -46,7 +46,7 @@ class JSON
 	 * @return mixed JSON class structure, false in case of non-existent member
 	 */
 	static function url( $p_url, $p_member = null ) {
-		$t_data = \Flickerbox\URL::get( $p_url );
+		$t_data = \Core\URL::mantis_get( $p_url );
 		$t_json = json_decode( utf8_encode( $t_data ) );
 	
 		if( is_null( $p_member ) ) {
@@ -69,11 +69,11 @@ class JSON
 	 * @param array   $p_context The active symbol table at the point the error occurred (optional).
 	 * @return void
 	 */
-	static function \Flickerbox\Error::handler( $p_type, $p_error, $p_file, $p_line, array $p_context ) {
+	static function \Core\Error::handler( $p_type, $p_error, $p_file, $p_line, array $p_context ) {
 		# flush any language overrides to return to user's natural default
 		if( function_exists( 'db_is_connected' ) ) {
-			if( \Flickerbox\Database::is_connected() ) {
-				\Flickerbox\Lang::push( \Flickerbox\Lang::get_default() );
+			if( \Core\Database::is_connected() ) {
+				\Core\Lang::push( \Core\Lang::get_default() );
 			}
 		}
 	
@@ -92,12 +92,12 @@ class JSON
 			case E_USER_ERROR:
 				$t_error_type = 'APPLICATION ERROR #' . $p_error;
 				$t_error_code = $p_error;
-				$t_error_description = \Flickerbox\Error::string( $p_error );
+				$t_error_description = \Core\Error::string( $p_error );
 				break;
 			case E_USER_WARNING:
 				$t_error_type = 'APPLICATION WARNING #' . $p_error;
 				$t_error_code = $p_error;
-				$t_error_description = \Flickerbox\Error::string( $p_error );
+				$t_error_description = \Core\Error::string( $p_error );
 				break;
 			case E_USER_NOTICE:
 				# used for debugging
@@ -110,7 +110,7 @@ class JSON
 				$t_error_description = $p_error;
 		}
 	
-		\Flickerbox\JSON::output_raw( array(
+		\Core\JSON::output_raw( array(
 			'status' => 'ERROR',
 			'error' => array(
 				'code' => $t_error_code,
@@ -128,7 +128,7 @@ class JSON
 	 * @return void
 	 */
 	static function output_response ( $p_contents = '' ) {
-		\Flickerbox\JSON::output_raw( array(
+		\Core\JSON::output_raw( array(
 			'status' => 'OK',
 			'contents' => $p_contents
 		) );

@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 /**
  * Mantis Database Parameters Count class
@@ -38,7 +38,7 @@ class MantisDbParam {
 
 	/**
 	 * Pops the previous value of param count from the stack
-	 * This function is called by {@see \Flickerbox\Database::query()} and should not need
+	 * This function is called by {@see \Core\Database::query()} and should not need
 	 * to be executed directly
 	 * @return void
 	 */
@@ -46,7 +46,7 @@ class MantisDbParam {
 		global $g_db;
 
 		$this->count = (int)array_pop( $this->stack );
-		if( \Flickerbox\Database::is_pgsql() ) {
+		if( \Core\Database::is_pgsql() ) {
 			# Manually reset the ADOdb param number to the value we just popped
 			$g_db->_pnum = $this->count;
 		}

@@ -34,45 +34,45 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-\Flickerbox\Helper::begin_long_process();
+\Core\Helper::begin_long_process();
 
 $t_page_number = 1;
 $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = null;
 
-$t_nl = \Flickerbox\CSV::get_newline();
+$t_nl = \Core\CSV::get_newline();
 $t_sep = csv_get_separator();
 
 # Get bug rows according to the current filter
-$t_rows = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_rows = \Core\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 if( $t_rows === false ) {
-	\Flickerbox\Print_Util::header_redirect( 'view_all_set.php?type=0' );
+	\Core\Print_Util::header_redirect( 'view_all_set.php?type=0' );
 }
 
 # pre-cache custom column data
-\Flickerbox\Columns::plugin_cache_issue_data( $t_rows );
+\Core\Columns::plugin_cache_issue_data( $t_rows );
 
-$t_filename = \Flickerbox\CSV::get_default_filename();
+$t_filename = \Core\CSV::get_default_filename();
 
 # Send headers to browser to activate mime loading
 
 # Make sure that IE can download the attachments under https.
 header( 'Pragma: public' );
 
-header( 'Content-Type: text/csv; name=' . urlencode( \Flickerbox\File::clean_name( $t_filename ) ) );
+header( 'Content-Type: text/csv; name=' . urlencode( \Core\File::clean_name( $t_filename ) ) );
 header( 'Content-Transfer-Encoding: BASE64;' );
 
 # Added Quotes (") around file name.
-header( 'Content-Disposition: attachment; filename="' . urlencode( \Flickerbox\File::clean_name( $t_filename ) ) . '"' );
+header( 'Content-Disposition: attachment; filename="' . urlencode( \Core\File::clean_name( $t_filename ) ) . '"' );
 
 # Get columns to be exported
-$t_columns = \Flickerbox\CSV::get_columns();
+$t_columns = \Core\CSV::get_columns();
 
 # export BOM
-if( \Flickerbox\Config::mantis_get( 'csv_add_bom' ) == ON ) {
+if( \Core\Config::mantis_get( 'csv_add_bom' ) == ON ) {
 	echo "\xEF\xBB\xBF";
 }
 
@@ -87,7 +87,7 @@ foreach ( $t_columns as $t_column ) {
 		$t_first_column = false;
 	}
 
-	echo \Flickerbox\Columns::column_get_title( $t_column );
+	echo \Core\Columns::column_get_title( $t_column );
 }
 
 echo $t_nl;
@@ -116,15 +116,15 @@ foreach ( $t_rows as $t_row ) {
 			$t_first_column = false;
 		}
 
-		if( \Flickerbox\Columns::column_get_custom_field_name( $t_column ) !== null || \Flickerbox\Columns::column_is_plugin_column( $t_column ) ) {
+		if( \Core\Columns::column_get_custom_field_name( $t_column ) !== null || \Core\Columns::column_is_plugin_column( $t_column ) ) {
 			ob_start();
 			$t_column_value_function = 'print_column_value';
-			\Flickerbox\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_CSV_PAGE ) );
+			\Core\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_CSV_PAGE ) );
 			$t_value = ob_get_clean();
 
-			echo \Flickerbox\CSV::escape_string( $t_value );
+			echo \Core\CSV::escape_string( $t_value );
 		} else {
-			$t_function = '\\Flickerbox\\CSV::format_' . $t_column;
+			$t_function = '\\Core\\CSV::format_' . $t_column;
 			echo $t_function( $t_row );
 		}
 	}

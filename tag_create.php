@@ -31,22 +31,22 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'tag_create' );
+\Core\Form::security_validate( 'tag_create' );
 
-$f_tag_name = \Flickerbox\GPC::get_string( 'name' );
-$f_tag_description = \Flickerbox\GPC::get_string( 'description' );
+$f_tag_name = \Core\GPC::get_string( 'name' );
+$f_tag_description = \Core\GPC::get_string( 'description' );
 
-$t_tag_user = \Flickerbox\Auth::get_current_user_id();
+$t_tag_user = \Core\Auth::get_current_user_id();
 
 if( !is_null( $f_tag_name ) ) {
-	$t_tags = \Flickerbox\Tag::parse_string( $f_tag_name );
+	$t_tags = \Core\Tag::parse_string( $f_tag_name );
 	foreach ( $t_tags as $t_tag_row ) {
 		if( -1 == $t_tag_row['id'] ) {
-			\Flickerbox\Tag::create( $t_tag_row['name'], $t_tag_user, $f_tag_description );
+			\Core\Tag::create( $t_tag_row['name'], $t_tag_user, $f_tag_description );
 		}
 	}
 }
 
-\Flickerbox\Form::security_purge( 'tag_create' );
-\Flickerbox\Print_Util::successful_redirect( 'manage_tags_page.php' );
+\Core\Form::security_purge( 'tag_create' );
+\Core\Print_Util::successful_redirect( 'manage_tags_page.php' );
 

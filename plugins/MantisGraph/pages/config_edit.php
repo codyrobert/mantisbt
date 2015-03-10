@@ -22,37 +22,37 @@
  * @link http://www.mantisbt.org
  */
 
-\Flickerbox\Form::security_validate( 'plugin_graph_config_edit' );
+\Core\Form::security_validate( 'plugin_graph_config_edit' );
 
 auth_reauthenticate( );
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_plugin_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
-$f_library = \Flickerbox\GPC::get_int( 'eczlibrary', ON );
+$f_library = \Core\GPC::get_int( 'eczlibrary', ON );
 
-$f_window_width = \Flickerbox\GPC::get_int( 'window_width', 800 );
-$f_bar_aspect = (float)\Flickerbox\GPC::get_string( 'bar_aspect', '0.9' );
-$f_summary_graphs_per_row = \Flickerbox\GPC::get_int( 'summary_graphs_per_row', 2 );
+$f_window_width = \Core\GPC::get_int( 'window_width', 800 );
+$f_bar_aspect = (float)\Core\GPC::get_string( 'bar_aspect', '0.9' );
+$f_summary_graphs_per_row = \Core\GPC::get_int( 'summary_graphs_per_row', 2 );
 
-$f_jpgraph_antialias = \Flickerbox\GPC::get_int( 'jpgraph_antialias', ON );
-$f_font = \Flickerbox\GPC::get_string( 'font', '' );
+$f_jpgraph_antialias = \Core\GPC::get_int( 'jpgraph_antialias', ON );
+$f_font = \Core\GPC::get_string( 'font', '' );
 
-if( \Flickerbox\Plugin::config_get( 'eczlibrary' ) != $f_library ) {
-	\Flickerbox\Plugin::config_set( 'eczlibrary', $f_library );
+if( \Core\Plugin::config_get( 'eczlibrary' ) != $f_library ) {
+	\Core\Plugin::config_set( 'eczlibrary', $f_library );
 }
 
-if( \Flickerbox\Plugin::config_get( 'window_width' ) != $f_window_width ) {
-	\Flickerbox\Plugin::config_set( 'window_width', $f_window_width );
+if( \Core\Plugin::config_get( 'window_width' ) != $f_window_width ) {
+	\Core\Plugin::config_set( 'window_width', $f_window_width );
 }
 
-if( \Flickerbox\Plugin::config_get( 'bar_aspect' ) != $f_bar_aspect ) {
-	\Flickerbox\Plugin::config_set( 'bar_aspect', $f_bar_aspect );
+if( \Core\Plugin::config_get( 'bar_aspect' ) != $f_bar_aspect ) {
+	\Core\Plugin::config_set( 'bar_aspect', $f_bar_aspect );
 }
 
-if( \Flickerbox\Plugin::config_get( 'summary_graphs_per_row' ) != $f_summary_graphs_per_row ) {
-	\Flickerbox\Plugin::config_set( 'summary_graphs_per_row', $f_summary_graphs_per_row );
+if( \Core\Plugin::config_get( 'summary_graphs_per_row' ) != $f_summary_graphs_per_row ) {
+	\Core\Plugin::config_set( 'summary_graphs_per_row', $f_summary_graphs_per_row );
 }
 
-if( \Flickerbox\Plugin::config_get( 'font' ) != $f_font ) {
+if( \Core\Plugin::config_get( 'font' ) != $f_font ) {
 	switch( $f_font ) {
 		case 'arial':
 		case 'verdana':
@@ -63,24 +63,24 @@ if( \Flickerbox\Plugin::config_get( 'font' ) != $f_font ) {
 		case 'veraserif':
 		case 'courier':
 		case 'veramono':
-			\Flickerbox\Plugin::config_set( 'font', $f_font );
+			\Core\Plugin::config_set( 'font', $f_font );
 			break;
 		default:
-			\Flickerbox\Plugin::config_set( 'font', 'arial' );
+			\Core\Plugin::config_set( 'font', 'arial' );
 	}
 }
 
-if( \Flickerbox\Current_User::is_administrator() ) {
-	$f_jpgraph_path = \Flickerbox\GPC::get_string( 'jpgraph_path', '' );
-	if( \Flickerbox\Plugin::config_get( 'jpgraph_path' ) != $f_jpgraph_path ) {
-		\Flickerbox\Plugin::config_set( 'jpgraph_path', $f_jpgraph_path );
+if( \Core\Current_User::is_administrator() ) {
+	$f_jpgraph_path = \Core\GPC::get_string( 'jpgraph_path', '' );
+	if( \Core\Plugin::config_get( 'jpgraph_path' ) != $f_jpgraph_path ) {
+		\Core\Plugin::config_set( 'jpgraph_path', $f_jpgraph_path );
 	}
 }
 
-if( \Flickerbox\Plugin::config_get( 'jpgraph_antialias' ) != $f_jpgraph_antialias ) {
-	\Flickerbox\Plugin::config_set( 'jpgraph_antialias', $f_jpgraph_antialias );
+if( \Core\Plugin::config_get( 'jpgraph_antialias' ) != $f_jpgraph_antialias ) {
+	\Core\Plugin::config_set( 'jpgraph_antialias', $f_jpgraph_antialias );
 }
 
-\Flickerbox\Form::security_purge( 'plugin_graph_config_edit' );
+\Core\Form::security_purge( 'plugin_graph_config_edit' );
 
-\Flickerbox\Print_Util::successful_redirect( \Flickerbox\Plugin::page( 'config', true ) );
+\Core\Print_Util::successful_redirect( \Core\Plugin::page( 'config', true ) );

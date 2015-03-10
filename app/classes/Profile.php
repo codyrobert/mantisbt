@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -54,24 +54,24 @@ class Profile
 		$p_user_id = (int)$p_user_id;
 	
 		if( ALL_USERS != $p_user_id ) {
-			\Flickerbox\User::ensure_unprotected( $p_user_id );
+			\Core\User::ensure_unprotected( $p_user_id );
 		}
 	
 		# platform cannot be blank
-		if( \Flickerbox\Utility::is_blank( $p_platform ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'platform' ) );
+		if( \Core\Utility::is_blank( $p_platform ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'platform' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# os cannot be blank
-		if( \Flickerbox\Utility::is_blank( $p_os ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'os' ) );
+		if( \Core\Utility::is_blank( $p_os ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'os' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# os_build cannot be blank
-		if( \Flickerbox\Utility::is_blank( $p_os_build ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'version' ) );
+		if( \Core\Utility::is_blank( $p_os_build ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'version' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
@@ -79,10 +79,10 @@ class Profile
 		$t_query = 'INSERT INTO {user_profile}
 					    ( user_id, platform, os, os_build, description )
 					  VALUES
-					    ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-		\Flickerbox\Database::query( $t_query, array( $p_user_id, $p_platform, $p_os, $p_os_build, $p_description ) );
+					    ( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+		\Core\Database::query( $t_query, array( $p_user_id, $p_platform, $p_os, $p_os_build, $p_description ) );
 	
-		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'user_profile' ) );
+		return \Core\Database::insert_id( \Core\Database::get_table( 'user_profile' ) );
 	}
 	
 	/**
@@ -97,12 +97,12 @@ class Profile
 	 */
 	static function delete( $p_user_id, $p_profile_id ) {
 		if( ALL_USERS != $p_user_id ) {
-			\Flickerbox\User::ensure_unprotected( $p_user_id );
+			\Core\User::ensure_unprotected( $p_user_id );
 		}
 	
 		# Delete the profile
-		$t_query = 'DELETE FROM {user_profile} WHERE id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
+		$t_query = 'DELETE FROM {user_profile} WHERE id=' . \Core\Database::param() . ' AND user_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
 	}
 	
 	/**
@@ -117,35 +117,35 @@ class Profile
 	 */
 	static function update( $p_user_id, $p_profile_id, $p_platform, $p_os, $p_os_build, $p_description ) {
 		if( ALL_USERS != $p_user_id ) {
-			\Flickerbox\User::ensure_unprotected( $p_user_id );
+			\Core\User::ensure_unprotected( $p_user_id );
 		}
 	
 		# platform cannot be blank
-		if( \Flickerbox\Utility::is_blank( $p_platform ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'platform' ) );
+		if( \Core\Utility::is_blank( $p_platform ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'platform' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# os cannot be blank
-		if( \Flickerbox\Utility::is_blank( $p_os ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'os' ) );
+		if( \Core\Utility::is_blank( $p_os ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'os' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# os_build cannot be blank
-		if( \Flickerbox\Utility::is_blank( $p_os_build ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'version' ) );
+		if( \Core\Utility::is_blank( $p_os_build ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'version' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# Add item
 		$t_query = 'UPDATE {user_profile}
-					  SET platform=' . \Flickerbox\Database::param() . ',
-					  	  os=' . \Flickerbox\Database::param() . ',
-						  os_build=' . \Flickerbox\Database::param() . ',
-						  description=' . \Flickerbox\Database::param() . '
-					  WHERE id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_platform, $p_os, $p_os_build, $p_description, $p_profile_id, $p_user_id ) );
+					  SET platform=' . \Core\Database::param() . ',
+					  	  os=' . \Core\Database::param() . ',
+						  os_build=' . \Core\Database::param() . ',
+						  description=' . \Core\Database::param() . '
+					  WHERE id=' . \Core\Database::param() . ' AND user_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_platform, $p_os, $p_os_build, $p_description, $p_profile_id, $p_user_id ) );
 	}
 	
 	/**
@@ -155,10 +155,10 @@ class Profile
 	 * @return array
 	 */
 	static function get_row( $p_user_id, $p_profile_id ) {
-		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . \Flickerbox\Database::param() . ' AND user_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
+		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . \Core\Database::param() . ' AND user_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_profile_id, $p_user_id ) );
 	
-		return \Flickerbox\Database::fetch_array( $t_result );
+		return \Core\Database::fetch_array( $t_result );
 	}
 	
 	/**
@@ -168,10 +168,10 @@ class Profile
 	 * @todo relationship of this function to profile_get_row?
 	 */
 	static function get_row_direct( $p_profile_id ) {
-		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_profile_id ) );
+		$t_query = 'SELECT * FROM {user_profile} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_profile_id ) );
 	
-		return \Flickerbox\Database::fetch_array( $t_result );
+		return \Core\Database::fetch_array( $t_result );
 	}
 	
 	/**
@@ -181,20 +181,20 @@ class Profile
 	 * @return array
 	 */
 	static function get_all_rows( $p_user_id, $p_all_users = false ) {
-		$t_query_where = 'user_id = ' . \Flickerbox\Database::param();
+		$t_query_where = 'user_id = ' . \Core\Database::param();
 		$t_param[] = (int)$p_user_id;
 	
 		if( $p_all_users && ALL_USERS != $p_user_id ) {
-			$t_query_where .= ' OR user_id = ' . \Flickerbox\Database::param();
+			$t_query_where .= ' OR user_id = ' . \Core\Database::param();
 			$t_param[] = ALL_USERS;
 		}
 	
 		$t_query = 'SELECT * FROM {user_profile} WHERE ' . $t_query_where . ' ORDER BY platform, os, os_build';
-		$t_result = \Flickerbox\Database::query( $t_query, $t_param );
+		$t_result = \Core\Database::query( $t_query, $t_param );
 	
 		$t_rows = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row );
 		}
 	
@@ -208,7 +208,7 @@ class Profile
 	 * @return array
 	 */
 	static function get_all_for_user( $p_user_id ) {
-		return \Flickerbox\Profile::get_all_rows( $p_user_id, $p_user_id != ALL_USERS );
+		return \Core\Profile::get_all_rows( $p_user_id, $p_user_id != ALL_USERS );
 	}
 	
 	/**
@@ -236,13 +236,13 @@ class Profile
 	
 		$t_query = 'SELECT DISTINCT ' . $c_field . '
 					  FROM {user_profile}
-					  WHERE ( user_id=' . \Flickerbox\Database::param() . ' ) OR ( user_id = 0 )
+					  WHERE ( user_id=' . \Core\Database::param() . ' ) OR ( user_id = 0 )
 					  ORDER BY ' . $c_field;
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_user_id ) );
+		$t_result = \Core\Database::query( $t_query, array( $c_user_id ) );
 	
 		$t_rows = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row[$c_field] );
 		}
 	
@@ -255,18 +255,18 @@ class Profile
 	 * @return array
 	 */
 	static function get_all_for_project( $p_project_id ) {
-		$t_project_where = \Flickerbox\Helper::project_specific_where( $p_project_id );
+		$t_project_where = \Core\Helper::project_specific_where( $p_project_id );
 	
 		$t_query = 'SELECT DISTINCT(up.id), up.user_id, up.platform, up.os, up.os_build
 					  FROM {user_profile} up, {bug} b
 					  WHERE ' . $t_project_where . '
 					  AND up.id = b.profile_id
 					  ORDER BY up.platform, up.os, up.os_build';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
 		$t_rows = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row );
 		}
 	
@@ -279,10 +279,10 @@ class Profile
 	 * @return string
 	 */
 	static function get_default( $p_user_id ) {
-		$t_query = 'SELECT default_profile FROM {user_pref} WHERE user_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+		$t_query = 'SELECT default_profile FROM {user_pref} WHERE user_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_user_id ) );
 	
-		$t_default_profile = (int)\Flickerbox\Database::result( $t_result, 0, 0 );
+		$t_default_profile = (int)\Core\Database::result( $t_result, 0, 0 );
 	
 		return $t_default_profile;
 	}
@@ -293,7 +293,7 @@ class Profile
 	 * @return boolean
 	 */
 	static function is_global( $p_profile_id ) {
-		$t_row = \Flickerbox\Profile::get_row( ALL_USERS, $p_profile_id );
+		$t_row = \Core\Profile::get_row( ALL_USERS, $p_profile_id );
 		return( $t_row !== false );
 	}
 

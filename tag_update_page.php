@@ -41,71 +41,71 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Compress::enable();
+\Core\Compress::enable();
 
-$f_tag_id = \Flickerbox\GPC::get_int( 'tag_id' );
-$t_tag_row = \Flickerbox\Tag::get( $f_tag_id );
+$f_tag_id = \Core\GPC::get_int( 'tag_id' );
+$t_tag_row = \Core\Tag::get( $f_tag_id );
 
-$t_name = \Flickerbox\String::display_line( $t_tag_row['name'] );
-$t_description = \Flickerbox\String::display( $t_tag_row['description'] );
+$t_name = \Core\String::display_line( $t_tag_row['name'] );
+$t_description = \Core\String::display( $t_tag_row['description'] );
 
-if( !( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) )
+if( !( \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) )
 	|| ( auth_get_current_user_id() == $t_tag_row['user_id'] )
-		&& \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
-	\Flickerbox\Access::denied();
+		&& \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
+	\Core\Access::denied();
 }
 
-\Flickerbox\HTML::page_top( sprintf( \Flickerbox\Lang::get( 'tag_update' ), $t_name ) );
+\Core\HTML::page_top( sprintf( \Core\Lang::get( 'tag_update' ), $t_name ) );
 ?>
 <div class="form-container">
 	<form method="post" action="tag_update.php">
 		<fieldset>
-			<legend><span><?php echo sprintf( \Flickerbox\Lang::get( 'tag_update' ), $t_name ) ?></span></legend>
-			<div class="section-link"><?php \Flickerbox\Print_Util::bracket_link( 'tag_view_page.php?tag_id='.$f_tag_id, \Flickerbox\Lang::get( 'tag_update_return' ) ); ?></div>
+			<legend><span><?php echo sprintf( \Core\Lang::get( 'tag_update' ), $t_name ) ?></span></legend>
+			<div class="section-link"><?php \Core\Print_Util::bracket_link( 'tag_view_page.php?tag_id='.$f_tag_id, \Core\Lang::get( 'tag_update_return' ) ); ?></div>
 			<input type="hidden" name="tag_id" value="<?php echo $f_tag_id ?>"/>
-			<?php echo \Flickerbox\Form::security_field( 'tag_update' ) ?>
+			<?php echo \Core\Form::security_field( 'tag_update' ) ?>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_id' ) ?></span></span>
+				<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_id' ) ?></span></span>
 				<span class="display-value"><span><?php echo $t_tag_row['id'] ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="tag-name"><span><?php echo \Flickerbox\Lang::get( 'tag_name' ) ?></span></label>
-				<span class="input"><input type="text" <?php echo \Flickerbox\Helper::get_tab_index() ?> id="tag-name" name="name" value="<?php echo $t_name ?>"/></span>
+				<label for="tag-name"><span><?php echo \Core\Lang::get( 'tag_name' ) ?></span></label>
+				<span class="input"><input type="text" <?php echo \Core\Helper::get_tab_index() ?> id="tag-name" name="name" value="<?php echo $t_name ?>"/></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<?php
-					if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) ) ) {
-						echo '<label for="tag-user-id"><span>', \Flickerbox\Lang::get( 'tag_creator' ), '</span></label>';
-						echo '<span class="select"><select ', \Flickerbox\Helper::get_tab_index(), ' id="tag-user-id" name="user_id">';
-						\Flickerbox\Print_Util::user_option_list( (int)$t_tag_row['user_id'], ALL_PROJECTS, (int)\Flickerbox\Config::mantis_get( 'tag_create_threshold' ) );
+					if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) ) ) {
+						echo '<label for="tag-user-id"><span>', \Core\Lang::get( 'tag_creator' ), '</span></label>';
+						echo '<span class="select"><select ', \Core\Helper::get_tab_index(), ' id="tag-user-id" name="user_id">';
+						\Core\Print_Util::user_option_list( (int)$t_tag_row['user_id'], ALL_PROJECTS, (int)\Core\Config::mantis_get( 'tag_create_threshold' ) );
 						echo '</select></span>';
 					} else { ?>
-						<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_creator' ); ?></span></span>
-						<span class="display-value"><span><?php echo \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_tag_row['user_id'] ) ); ?></span></span><?php
+						<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_creator' ); ?></span></span>
+						<span class="display-value"><span><?php echo \Core\String::display_line( \Core\User::get_name( $t_tag_row['user_id'] ) ); ?></span></span><?php
 					} ?>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_created' ) ?></span></span>
-				<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
+				<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_created' ) ?></span></span>
+				<span class="display-value"><span><?php echo date( \Core\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'tag_updated' ) ?></span></span>
-				<span class="display-value"><span><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
+				<span class="display-label"><span><?php echo \Core\Lang::get( 'tag_updated' ) ?></span></span>
+				<span class="display-value"><span><?php echo date( \Core\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></span></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="tag-description"><span><?php echo \Flickerbox\Lang::get( 'tag_description' ) ?></span></label>
-				<span class="textarea"><textarea id="tag-description" name="description" <?php echo \Flickerbox\Helper::get_tab_index() ?> cols="80" rows="6"><?php echo \Flickerbox\String::textarea( $t_description ) ?></textarea></span>
+				<label for="tag-description"><span><?php echo \Core\Lang::get( 'tag_description' ) ?></span></label>
+				<span class="textarea"><textarea id="tag-description" name="description" <?php echo \Core\Helper::get_tab_index() ?> cols="80" rows="6"><?php echo \Core\String::textarea( $t_description ) ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input <?php echo \Flickerbox\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'tag_update_button' ) ?>" /></span>
+			<span class="submit-button"><input <?php echo \Core\Helper::get_tab_index() ?> type="submit" class="button" value="<?php echo \Core\Lang::get( 'tag_update_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

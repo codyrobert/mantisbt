@@ -35,35 +35,35 @@
 require_once( 'core.php' );
 
 # Check if project documentation feature is enabled.
-if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ||
-	!\Flickerbox\File::is_uploading_enabled() ||
-	!\Flickerbox\File::allow_project_upload() ) {
-	\Flickerbox\Access::denied();
+if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ||
+	!\Core\File::is_uploading_enabled() ||
+	!\Core\File::allow_project_upload() ) {
+	\Core\Access::denied();
 }
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'upload_project_file_threshold' ) );
 
-$t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_filesize' ), \Flickerbox\Utility::ini_get_number( 'post_max_size' ), \Flickerbox\Config::mantis_get( 'max_file_size' ) );
+$t_max_file_size = (int)min( \Core\Utility::ini_get_number( 'upload_max_filesize' ), \Core\Utility::ini_get_number( 'post_max_size' ), \Core\Config::mantis_get( 'max_file_size' ) );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 ?>
 
 <br />
 <div>
 <form method="post" enctype="multipart/form-data" action="proj_doc_add.php">
-<?php echo \Flickerbox\Form::security_field( 'proj_doc_add' ) ?>
+<?php echo \Core\Form::security_field( 'proj_doc_add' ) ?>
 <table class="width75" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo \Flickerbox\Lang::get( 'upload_file_title' ) ?>
+		<?php echo \Core\Lang::get( 'upload_file_title' ) ?>
 	</td>
 	<td class="right">
-		<?php \Flickerbox\HTML::print_doc_menu( 'proj_doc_add_page.php' ) ?>
+		<?php \Core\HTML::print_doc_menu( 'proj_doc_add_page.php' ) ?>
 	</td>
 </tr>
 <tr class="row-1">
 	<th class="category" width="25%">
-		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'title' ) ?>
+		<span class="required">*</span><?php echo \Core\Lang::get( 'title' ) ?>
 	</th>
 	<td width="75%">
 		<input type="text" name="title" size="70" maxlength="250" />
@@ -71,7 +71,7 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 </tr>
 <tr class="row-2">
 	<th class="category">
-		<?php echo \Flickerbox\Lang::get( 'description' ) ?>
+		<?php echo \Core\Lang::get( 'description' ) ?>
 	</th>
 	<td>
 		<textarea name="description" cols="60" rows="7"></textarea>
@@ -79,9 +79,9 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 </tr>
 <tr class="row-1">
 	<td class="category">
-		<span class="required">*</span><?php echo \Flickerbox\Lang::get( 'select_file' ); ?>
+		<span class="required">*</span><?php echo \Core\Lang::get( 'select_file' ); ?>
 		<br />
-		<?php \Flickerbox\Print_Util::max_filesize( $t_max_file_size ); ?>
+		<?php \Core\Print_Util::max_filesize( $t_max_file_size ); ?>
 	</td>
 	<td>
 		<input type="hidden" name="max_file_size" value="<?php echo $t_max_file_size ?>" />
@@ -90,10 +90,10 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 </tr>
 <tr>
 	<td class="left">
-		<span class="required"> * <?php echo \Flickerbox\Lang::get( 'required' ) ?></span>
+		<span class="required"> * <?php echo \Core\Lang::get( 'required' ) ?></span>
 	</td>
 	<td class="center">
-		<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'upload_file_button' ) ?>" />
+		<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'upload_file_button' ) ?>" />
 	</td>
 </tr>
 </table>
@@ -101,4 +101,4 @@ $t_max_file_size = (int)min( \Flickerbox\Utility::ini_get_number( 'upload_max_fi
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

@@ -43,28 +43,28 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_user_update' );
+\Core\Form::security_validate( 'manage_user_update' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
-$f_protected	= \Flickerbox\GPC::get_bool( 'protected' );
-$f_enabled		= \Flickerbox\GPC::get_bool( 'enabled' );
-$f_email		= \Flickerbox\GPC::get_string( 'email', '' );
-$f_username		= \Flickerbox\GPC::get_string( 'username', '' );
-$f_realname		= \Flickerbox\GPC::get_string( 'realname', '' );
-$f_access_level	= \Flickerbox\GPC::get_int( 'access_level' );
-$f_user_id		= \Flickerbox\GPC::get_int( 'user_id' );
+$f_protected	= \Core\GPC::get_bool( 'protected' );
+$f_enabled		= \Core\GPC::get_bool( 'enabled' );
+$f_email		= \Core\GPC::get_string( 'email', '' );
+$f_username		= \Core\GPC::get_string( 'username', '' );
+$f_realname		= \Core\GPC::get_string( 'realname', '' );
+$f_access_level	= \Core\GPC::get_int( 'access_level' );
+$f_user_id		= \Core\GPC::get_int( 'user_id' );
 
-if( \Flickerbox\Config::mantis_get( 'enable_email_notification' ) == ON ) {
-	$f_send_email_notification = \Flickerbox\GPC::get_bool( 'send_email_notification' );
+if( \Core\Config::mantis_get( 'enable_email_notification' ) == ON ) {
+	$f_send_email_notification = \Core\GPC::get_bool( 'send_email_notification' );
 } else {
 	$f_send_email_notification = 0;
 }
 
-\Flickerbox\User::ensure_exists( $f_user_id );
+\Core\User::ensure_exists( $f_user_id );
 
-$t_user = \Flickerbox\User::get_row( $f_user_id );
+$t_user = \Core\User::get_row( $f_user_id );
 
 $f_username	= trim( $f_username );
 
@@ -78,32 +78,32 @@ if( $f_send_email_notification ) {
 
 # Ensure that the account to be updated is of equal or lower access to the
 # current user.
-\Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
+\Core\Access::ensure_global_level( $t_user['access_level'] );
 
 # check that the username is unique
 if( 0 != strcasecmp( $t_old_username, $f_username )
-	&& false == \Flickerbox\User::is_name_unique( $f_username ) ) {
+	&& false == \Core\User::is_name_unique( $f_username ) ) {
 	trigger_error( ERROR_USER_NAME_NOT_UNIQUE, ERROR );
 }
 
-\Flickerbox\User::ensure_name_valid( $f_username );
+\Core\User::ensure_name_valid( $f_username );
 
-$t_ldap = ( LDAP == \Flickerbox\Config::mantis_get( 'login_method' ) );
+$t_ldap = ( LDAP == \Core\Config::mantis_get( 'login_method' ) );
 
-if( $t_ldap && \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) {
-	$t_realname = \Flickerbox\LDAP::realname_from_username( $f_username );
+if( $t_ldap && \Core\Config::mantis_get( 'use_ldap_realname' ) ) {
+	$t_realname = \Core\LDAP::realname_from_username( $f_username );
 } else {
 	# strip extra space from real name
 	$t_realname = string_normalize( $f_realname );
-	\Flickerbox\User::ensure_realname_unique( $t_old_username, $t_realname );
+	\Core\User::ensure_realname_unique( $t_old_username, $t_realname );
 }
 
-if( $t_ldap && \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) {
-	$t_email = \Flickerbox\LDAP::email( $f_user_id );
+if( $t_ldap && \Core\Config::mantis_get( 'use_ldap_email' ) ) {
+	$t_email = \Core\LDAP::email( $f_user_id );
 } else {
 	$t_email = trim( $f_email );
-	\Flickerbox\Email::ensure_valid( $t_email );
-	\Flickerbox\Email::ensure_not_disposable( $t_email );
+	\Core\Email::ensure_valid( $t_email );
+	\Core\Email::ensure_not_disposable( $t_email );
 }
 
 $c_email = $t_email;
@@ -118,20 +118,20 @@ $t_old_protected = $t_user['protected'];
 
 # Ensure that users aren't escalating privileges of accounts beyond their
 # own global access level.
-\Flickerbox\Access::ensure_global_level( $f_access_level );
+\Core\Access::ensure_global_level( $f_access_level );
 
 # check that we are not downgrading the last administrator
-$t_admin_threshold = \Flickerbox\Config::get_global( 'admin_site_threshold' );
-if( \Flickerbox\User::is_administrator( $f_user_id ) &&
+$t_admin_threshold = \Core\Config::get_global( 'admin_site_threshold' );
+if( \Core\User::is_administrator( $f_user_id ) &&
 	 $f_access_level < $t_admin_threshold &&
-	 \Flickerbox\User::count_level( $t_admin_threshold ) <= 1 ) {
+	 \Core\User::count_level( $t_admin_threshold ) <= 1 ) {
 	trigger_error( ERROR_USER_CHANGE_LAST_ADMIN, ERROR );
 }
 
 # Project specific access rights override global levels, hence, for users who are changed
 # to be administrators, we have to remove project specific rights.
-if( ( $f_access_level >= $t_admin_threshold ) && ( !\Flickerbox\User::is_administrator( $f_user_id ) ) ) {
-	\Flickerbox\User::delete_project_specific_access_levels( $f_user_id );
+if( ( $f_access_level >= $t_admin_threshold ) && ( !\Core\User::is_administrator( $f_user_id ) ) ) {
+	\Core\User::delete_project_specific_access_levels( $f_user_id );
 }
 
 # if the user is already protected and the admin is not removing the
@@ -141,70 +141,70 @@ if( ( $f_access_level >= $t_admin_threshold ) && ( !\Flickerbox\User::is_adminis
 $t_query_params = array();
 if( $f_protected && $t_old_protected ) {
 	$t_query = 'UPDATE {user}
-			SET username=' . \Flickerbox\Database::param() . ', email=' . \Flickerbox\Database::param() . ',
-				protected=' . \Flickerbox\Database::param() . ', realname=' . \Flickerbox\Database::param() . '
-			WHERE id=' . \Flickerbox\Database::param();
+			SET username=' . \Core\Database::param() . ', email=' . \Core\Database::param() . ',
+				protected=' . \Core\Database::param() . ', realname=' . \Core\Database::param() . '
+			WHERE id=' . \Core\Database::param();
 	$t_query_params = array( $c_username, $c_email, $c_protected, $c_realname, $c_user_id );
 	# Prevent e-mail notification for a change that did not happen
 	$f_access_level = $t_old_access_level;
 } else {
 	$t_query = 'UPDATE {user}
-			SET username=' . \Flickerbox\Database::param() . ', email=' . \Flickerbox\Database::param() . ',
-				access_level=' . \Flickerbox\Database::param() . ', enabled=' . \Flickerbox\Database::param() . ',
-				protected=' . \Flickerbox\Database::param() . ', realname=' . \Flickerbox\Database::param() . '
-			WHERE id=' . \Flickerbox\Database::param();
+			SET username=' . \Core\Database::param() . ', email=' . \Core\Database::param() . ',
+				access_level=' . \Core\Database::param() . ', enabled=' . \Core\Database::param() . ',
+				protected=' . \Core\Database::param() . ', realname=' . \Core\Database::param() . '
+			WHERE id=' . \Core\Database::param();
 	$t_query_params = array( $c_username, $c_email, $c_access_level, $c_enabled, $c_protected, $c_realname, $c_user_id );
 }
 
-$t_result = \Flickerbox\Database::query( $t_query, $t_query_params );
+$t_result = \Core\Database::query( $t_query, $t_query_params );
 
 if( $f_send_email_notification ) {
-	\Flickerbox\Lang::push( \Flickerbox\User\Pref::get_language( $f_user_id ) );
+	\Core\Lang::push( \Core\User\Pref::get_language( $f_user_id ) );
 	$t_changes = '';
 	if( strcmp( $f_username, $t_old_username ) ) {
-		$t_changes .= \Flickerbox\Lang::get( 'username_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_username . ' => ' . $f_username . "\n";
+		$t_changes .= \Core\Lang::get( 'username_label' ) . \Core\Lang::get( 'word_separator' ) . $t_old_username . ' => ' . $f_username . "\n";
 	}
 	if( strcmp( $t_realname, $t_old_realname ) ) {
-		$t_changes .= \Flickerbox\Lang::get( 'realname_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_realname . ' => ' . $t_realname . "\n";
+		$t_changes .= \Core\Lang::get( 'realname_label' ) . \Core\Lang::get( 'word_separator' ) . $t_old_realname . ' => ' . $t_realname . "\n";
 	}
 	if( strcmp( $t_email, $t_old_email ) ) {
-		$t_changes .= \Flickerbox\Lang::get( 'email_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_email . ' => ' . $t_email . "\n";
+		$t_changes .= \Core\Lang::get( 'email_label' ) . \Core\Lang::get( 'word_separator' ) . $t_old_email . ' => ' . $t_email . "\n";
 	}
 	if( strcmp( $f_access_level, $t_old_access_level ) ) {
-		$t_old_access_string = \Flickerbox\Helper::get_enum_element( 'access_levels', $t_old_access_level );
-		$t_new_access_string = \Flickerbox\Helper::get_enum_element( 'access_levels', $f_access_level );
-		$t_changes .= \Flickerbox\Lang::get( 'access_level_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_old_access_string . ' => ' . $t_new_access_string . "\n\n";
+		$t_old_access_string = \Core\Helper::get_enum_element( 'access_levels', $t_old_access_level );
+		$t_new_access_string = \Core\Helper::get_enum_element( 'access_levels', $f_access_level );
+		$t_changes .= \Core\Lang::get( 'access_level_label' ) . \Core\Lang::get( 'word_separator' ) . $t_old_access_string . ' => ' . $t_new_access_string . "\n\n";
 	}
 	if( !empty( $t_changes ) ) {
-		$t_subject = '[' . \Flickerbox\Config::mantis_get( 'window_title' ) . '] ' . \Flickerbox\Lang::get( 'email_user_updated_subject' );
-		$t_updated_msg = \Flickerbox\Lang::get( 'email_user_updated_msg' );
-		$t_message = $t_updated_msg . "\n\n" . \Flickerbox\Config::mantis_get( 'path' ) . 'account_page.php' . "\n\n" . $t_changes;
+		$t_subject = '[' . \Core\Config::mantis_get( 'window_title' ) . '] ' . \Core\Lang::get( 'email_user_updated_subject' );
+		$t_updated_msg = \Core\Lang::get( 'email_user_updated_msg' );
+		$t_message = $t_updated_msg . "\n\n" . \Core\Config::mantis_get( 'path' ) . 'account_page.php' . "\n\n" . $t_changes;
 
-		if( null === \Flickerbox\Email::store( $t_email, $t_subject, $t_message ) ) {
-			\Flickerbox\Log::event( LOG_EMAIL, 'Notification was NOT sent to ' . $f_username );
+		if( null === \Core\Email::store( $t_email, $t_subject, $t_message ) ) {
+			\Core\Log::event( LOG_EMAIL, 'Notification was NOT sent to ' . $f_username );
 		} else {
-			\Flickerbox\Log::event( LOG_EMAIL, 'Account update notification sent to ' . $f_username . ' (' . $t_email . ')' );
-			if( \Flickerbox\Config::mantis_get( 'email_send_using_cronjob' ) == OFF ) {
-				\Flickerbox\Email::send_all();
+			\Core\Log::event( LOG_EMAIL, 'Account update notification sent to ' . $f_username . ' (' . $t_email . ')' );
+			if( \Core\Config::mantis_get( 'email_send_using_cronjob' ) == OFF ) {
+				\Core\Email::send_all();
 			}
 		}
 	}
-	\Flickerbox\Lang::pop();
+	\Core\Lang::pop();
 }
 
 $t_redirect_url = 'manage_user_edit_page.php?user_id=' . $c_user_id;
 
-\Flickerbox\Form::security_purge( 'manage_user_update' );
+\Core\Form::security_purge( 'manage_user_update' );
 
-\Flickerbox\HTML::page_top( null, $t_result ? $t_redirect_url : null );
+\Core\HTML::page_top( null, $t_result ? $t_redirect_url : null );
 
 if( $f_protected && $t_old_protected ) {				# PROTECTED
 	echo '<div class="failure-msg">';
-	echo \Flickerbox\Lang::get( 'manage_user_protected_msg' ) . '<br />';
-	\Flickerbox\Print_Util::bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+	echo \Core\Lang::get( 'manage_user_protected_msg' ) . '<br />';
+	\Core\Print_Util::bracket_link( $t_redirect_url, \Core\Lang::get( 'proceed' ) );
 	echo '</div>';
 } else if( $t_result ) {					# SUCCESS
-	\Flickerbox\HTML::operation_successful( $t_redirect_url );
+	\Core\HTML::operation_successful( $t_redirect_url );
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

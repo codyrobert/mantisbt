@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -51,8 +51,8 @@ class Collapse
 	static function open( $p_name, $p_section = '', $p_css_class = '' ) {
 		global $g_current_collapse_section, $g_open_collapse_section;
 	
-		$t_block = ( \Flickerbox\Utility::is_blank( $p_section ) ? $p_name : $p_section . '_' . $p_name );
-		$t_display = \Flickerbox\Collapse::display( $t_block );
+		$t_block = ( \Core\Utility::is_blank( $p_section ) ? $p_name : $p_section . '_' . $p_name );
+		$t_display = \Core\Collapse::display( $t_block );
 	
 		# make sure no other collapse section is started
 		if( $g_current_collapse_section !== null ) {
@@ -83,8 +83,8 @@ class Collapse
 	static function closed( $p_name, $p_section = '' ) {
 		global $g_current_collapse_section, $g_open_collapse_section;
 	
-		$t_block = ( \Flickerbox\Utility::is_blank( $p_section ) ? $p_name : $p_section . '_' . $p_name );
-		$t_display = !\Flickerbox\Collapse::display( $t_block );
+		$t_block = ( \Core\Utility::is_blank( $p_section ) ? $p_name : $p_section . '_' . $p_name );
+		$t_display = !\Core\Collapse::display( $t_block );
 	
 		# Make sure a section is opened, and it is the same section.
 		if( $t_block !== $g_current_collapse_section ) {
@@ -135,8 +135,8 @@ class Collapse
 	static function end( $p_name, $p_section = '' ) {
 		global $g_current_collapse_section, $g_open_collapse_section;
 	
-		$t_block = ( \Flickerbox\Utility::is_blank( $p_section ) ? $p_name : $p_section . '_' . $p_name );
-		\Flickerbox\Collapse::display( $t_block );
+		$t_block = ( \Core\Utility::is_blank( $p_section ) ? $p_name : $p_section . '_' . $p_name );
+		\Core\Collapse::display( $t_block );
 	
 		# Make sure a section is opened, and it is the same section.
 		if( $t_block !== $g_current_collapse_section ) {
@@ -177,7 +177,7 @@ class Collapse
 	static function cache_token() {
 		global $g_collapse_cache_token;
 	
-		if( !\Flickerbox\Auth::is_user_authenticated() || \Flickerbox\Current_User::is_anonymous() ) {
+		if( !\Core\Auth::is_user_authenticated() || \Core\Current_User::is_anonymous() ) {
 			$g_collapse_cache_token = array();
 			return;
 		}
@@ -186,7 +186,7 @@ class Collapse
 			return;
 		}
 	
-		$t_token = \Flickerbox\Token::get_value( TOKEN_COLLAPSE );
+		$t_token = \Core\Token::get_value( TOKEN_COLLAPSE );
 	
 		if( !is_null( $t_token ) ) {
 			$t_data = json_decode( $t_token, true );
@@ -197,9 +197,9 @@ class Collapse
 	
 		$g_collapse_cache_token = $t_data;
 	
-		$t_cookie = \Flickerbox\GPC::get_cookie( 'MANTIS_collapse_settings', '' );
+		$t_cookie = \Core\GPC::get_cookie( 'MANTIS_collapse_settings', '' );
 	
-		if( false !== $t_cookie && !\Flickerbox\Utility::is_blank( $t_cookie ) ) {
+		if( false !== $t_cookie && !\Core\Utility::is_blank( $t_cookie ) ) {
 			$t_update = false;
 			$t_data = explode( '|', $t_cookie );
 	
@@ -214,12 +214,12 @@ class Collapse
 	
 			if( $t_update ) {
 				$t_token = json_encode( $g_collapse_cache_token );
-				\Flickerbox\Token::set( TOKEN_COLLAPSE, $t_token, TOKEN_EXPIRY_COLLAPSE );
+				\Core\Token::set( TOKEN_COLLAPSE, $t_token, TOKEN_EXPIRY_COLLAPSE );
 			} else {
-				\Flickerbox\Token::touch( TOKEN_COLLAPSE );
+				\Core\Token::touch( TOKEN_COLLAPSE );
 			}
 	
-			\Flickerbox\GPC::clear_cookie( 'MANTIS_collapse_settings' );
+			\Core\GPC::clear_cookie( 'MANTIS_collapse_settings' );
 		}
 	}
 

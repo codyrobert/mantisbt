@@ -39,38 +39,38 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_proj_cat_delete' );
+\Core\Form::security_validate( 'manage_proj_cat_delete' );
 
 auth_reauthenticate();
 
-$f_category_id = \Flickerbox\GPC::get_int( 'id' );
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
+$f_category_id = \Core\GPC::get_int( 'id' );
+$f_project_id = \Core\GPC::get_int( 'project_id' );
 
-$t_row = \Flickerbox\Category::get_row( $f_category_id );
-$t_name = \Flickerbox\Category::full_name( $f_category_id );
+$t_row = \Core\Category::get_row( $f_category_id );
+$t_name = \Core\Category::full_name( $f_category_id );
 $t_project_id = $t_row['project_id'];
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_project_id );
 
 # Protect the 'default category for moves' from deletion
 $t_default_cat = 'default_category_for_moves';
-$t_query = 'SELECT count(config_id) FROM {config} WHERE config_id = ' . \Flickerbox\Database::param() . ' AND value = ' . \Flickerbox\Database::param();
-$t_default_cat_count = \Flickerbox\Database::result( \Flickerbox\Database::query( $t_query, array( $t_default_cat, $f_category_id ) ) );
-if( $t_default_cat_count > 0 || $f_category_id == \Flickerbox\Config::get_global( $t_default_cat ) ) {
+$t_query = 'SELECT count(config_id) FROM {config} WHERE config_id = ' . \Core\Database::param() . ' AND value = ' . \Core\Database::param();
+$t_default_cat_count = \Core\Database::result( \Core\Database::query( $t_query, array( $t_default_cat, $f_category_id ) ) );
+if( $t_default_cat_count > 0 || $f_category_id == \Core\Config::get_global( $t_default_cat ) ) {
 	trigger_error( ERROR_CATEGORY_CANNOT_DELETE_DEFAULT, ERROR );
 }
 
 # Get a bug count
-$t_query = 'SELECT COUNT(id) FROM {bug} WHERE category_id=' . \Flickerbox\Database::param();
-$t_bug_count = \Flickerbox\Database::result( \Flickerbox\Database::query( $t_query, array( $f_category_id ) ) );
+$t_query = 'SELECT COUNT(id) FROM {bug} WHERE category_id=' . \Core\Database::param();
+$t_bug_count = \Core\Database::result( \Core\Database::query( $t_query, array( $f_category_id ) ) );
 
 # Confirm with the user
-\Flickerbox\Helper::ensure_confirmed( sprintf( \Flickerbox\Lang::get( 'category_delete_sure_msg' ), \Flickerbox\String::display_line( $t_name ), $t_bug_count ),
-	\Flickerbox\Lang::get( 'delete_category_button' ) );
+\Core\Helper::ensure_confirmed( sprintf( \Core\Lang::get( 'category_delete_sure_msg' ), \Core\String::display_line( $t_name ), $t_bug_count ),
+	\Core\Lang::get( 'delete_category_button' ) );
 
-\Flickerbox\Category::remove( $f_category_id );
+\Core\Category::remove( $f_category_id );
 
-\Flickerbox\Form::security_purge( 'manage_proj_cat_delete' );
+\Core\Form::security_purge( 'manage_proj_cat_delete' );
 
 if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_page.php';
@@ -78,8 +78,8 @@ if( $f_project_id == ALL_PROJECTS ) {
 	$t_redirect_url = 'manage_proj_edit_page.php?project_id=' . $f_project_id;
 }
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

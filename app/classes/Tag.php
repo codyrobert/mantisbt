@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -53,10 +53,10 @@ class Tag
 	 * @return boolean True if tag exists
 	 */
 	static function exists( $p_tag_id ) {
-		$t_query = 'SELECT id FROM {tag} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_tag_id ) );
+		$t_query = 'SELECT id FROM {tag} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_tag_id ) );
 	
-		return ( \Flickerbox\Database::result( $t_result ) !== false );
+		return ( \Core\Database::result( $t_result ) !== false );
 	}
 	
 	/**
@@ -65,8 +65,8 @@ class Tag
 	 * @return void
 	 */
 	static function ensure_exists( $p_tag_id ) {
-		if( !\Flickerbox\Tag::exists( $p_tag_id ) ) {
-			\Flickerbox\Error::parameters( $p_tag_id );
+		if( !\Core\Tag::exists( $p_tag_id ) ) {
+			\Core\Error::parameters( $p_tag_id );
 			trigger_error( ERROR_TAG_NOT_FOUND, ERROR );
 		}
 	}
@@ -80,10 +80,10 @@ class Tag
 	static function is_unique( $p_name ) {
 		$c_name = trim( $p_name );
 	
-		$t_query = 'SELECT id FROM {tag} WHERE ' . \Flickerbox\Database::helper_like( 'name' );
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_name ) );
+		$t_query = 'SELECT id FROM {tag} WHERE ' . \Core\Database::helper_like( 'name' );
+		$t_result = \Core\Database::query( $t_query, array( $c_name ) );
 	
-		if( \Flickerbox\Database::result( $t_result ) ) {
+		if( \Core\Database::result( $t_result ) ) {
 			return false;
 		}
 		return true;
@@ -95,7 +95,7 @@ class Tag
 	 * @return void
 	 */
 	static function ensure_unique( $p_name ) {
-		if( !\Flickerbox\Tag::is_unique( $p_name ) ) {
+		if( !\Core\Tag::is_unique( $p_name ) ) {
 			trigger_error( ERROR_TAG_DUPLICATE, ERROR );
 		}
 	}
@@ -115,7 +115,7 @@ class Tag
 	 * @return boolean True if the name is valid.
 	 */
 	static function name_is_valid( $p_name, array &$p_matches, $p_prefix = '' ) {
-		$t_separator = \Flickerbox\Config::mantis_get( 'tag_separator' );
+		$t_separator = \Core\Config::mantis_get( 'tag_separator' );
 		$t_pattern = '/^' . $p_prefix . '([^\+\-' . $t_separator . '][^' . $t_separator . ']*)$/';
 		return preg_match( $t_pattern, $p_name, $p_matches );
 	}
@@ -127,7 +127,7 @@ class Tag
 	 */
 	static function ensure_name_is_valid( $p_name ) {
 		$t_matches = array();
-		if( !\Flickerbox\Tag::name_is_valid( $p_name, $t_matches ) ) {
+		if( !\Core\Tag::name_is_valid( $p_name, $t_matches ) ) {
 			trigger_error( ERROR_TAG_NAME_INVALID, ERROR );
 		}
 	}
@@ -155,19 +155,19 @@ class Tag
 	static function parse_string( $p_string ) {
 		$t_tags = array();
 	
-		$t_strings = explode( \Flickerbox\Config::mantis_get( 'tag_separator' ), $p_string );
+		$t_strings = explode( \Core\Config::mantis_get( 'tag_separator' ), $p_string );
 		foreach( $t_strings as $t_name ) {
 			$t_name = trim( $t_name );
-			if( \Flickerbox\Utility::is_blank( $t_name ) ) {
+			if( \Core\Utility::is_blank( $t_name ) ) {
 				continue;
 			}
 	
 			$t_matches = array();
-			$t_tag_row = \Flickerbox\Tag::get_by_name( $t_name );
+			$t_tag_row = \Core\Tag::get_by_name( $t_name );
 			if( $t_tag_row !== false ) {
 				$t_tags[] = $t_tag_row;
 			} else {
-				if( \Flickerbox\Tag::name_is_valid( $t_name, $t_matches ) ) {
+				if( \Core\Tag::name_is_valid( $t_name, $t_matches ) ) {
 					$t_id = -1;
 				} else {
 					$t_id = -2;
@@ -196,13 +196,13 @@ class Tag
 		$t_tags = array();
 		$t_prefix = '[+-]{0,1}';
 	
-		$t_strings = explode( \Flickerbox\Config::mantis_get( 'tag_separator' ), $p_string );
+		$t_strings = explode( \Core\Config::mantis_get( 'tag_separator' ), $p_string );
 		foreach( $t_strings as $t_name ) {
 			$t_name = trim( $t_name );
 			$t_matches = array();
 	
-			if( !\Flickerbox\Utility::is_blank( $t_name ) && \Flickerbox\Tag::name_is_valid( $t_name, $t_matches, $t_prefix ) ) {
-				$t_tag_row = \Flickerbox\Tag::get_by_name( $t_matches[1] );
+			if( !\Core\Utility::is_blank( $t_name ) && \Core\Tag::name_is_valid( $t_name, $t_matches, $t_prefix ) ) {
+				$t_tag_row = \Core\Tag::get_by_name( $t_matches[1] );
 				if( $t_tag_row !== false ) {
 					$t_filter = utf8_substr( $t_name, 0, 1 );
 	
@@ -237,14 +237,14 @@ class Tag
 		$t_where = '';
 		$t_where_params = array();
 	
-		if( !\Flickerbox\Utility::is_blank( $p_name_filter ) ) {
-			$t_where = 'WHERE ' . \Flickerbox\Database::helper_like( 'name' );
+		if( !\Core\Utility::is_blank( $p_name_filter ) ) {
+			$t_where = 'WHERE ' . \Core\Database::helper_like( 'name' );
 			$t_where_params[] = $p_name_filter . '%';
 		}
 	
 		$t_query = 'SELECT * FROM {tag} ' . $t_where . ' ORDER BY name';
 	
-		return \Flickerbox\Database::query( $t_query, $t_where_params, $p_count, $p_offset );
+		return \Core\Database::query( $t_query, $t_where_params, $p_count, $p_offset );
 	}
 	
 	/**
@@ -257,15 +257,15 @@ class Tag
 		$t_where_params = array();
 	
 		if( $p_name_filter ) {
-			$t_where = ' WHERE ' . \Flickerbox\Database::helper_like( 'name' );
+			$t_where = ' WHERE ' . \Core\Database::helper_like( 'name' );
 			$t_where_params[] = $p_name_filter . '%';
 		}
 	
 		$t_query = 'SELECT count(*) FROM {tag}' . $t_where;
 	
-		$t_result = \Flickerbox\Database::query( $t_query, $t_where_params );
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
-		return (int)\Flickerbox\Database::result( $t_result );
+		$t_result = \Core\Database::query( $t_query, $t_where_params );
+		$t_row = \Core\Database::fetch_array( $t_result );
+		return (int)\Core\Database::result( $t_result );
 	
 	}
 	
@@ -275,12 +275,12 @@ class Tag
 	 * @return array Tag row
 	 */
 	static function get( $p_tag_id ) {
-		\Flickerbox\Tag::ensure_exists( $p_tag_id );
+		\Core\Tag::ensure_exists( $p_tag_id );
 	
-		$t_query = 'SELECT * FROM {tag} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_tag_id ) );
+		$t_query = 'SELECT * FROM {tag} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_tag_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			return false;
@@ -295,10 +295,10 @@ class Tag
 	 * @return array|boolean Tag row
 	 */
 	static function get_by_name( $p_name ) {
-		$t_query = 'SELECT * FROM {tag} WHERE ' . \Flickerbox\Database::helper_like( 'name' );
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_name ) );
+		$t_query = 'SELECT * FROM {tag} WHERE ' . \Core\Database::helper_like( 'name' );
+		$t_result = \Core\Database::query( $t_query, array( $p_name ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			return false;
@@ -314,12 +314,12 @@ class Tag
 	 * @return array Field value
 	 */
 	static function get_field( $p_tag_id, $p_field_name ) {
-		$t_row = \Flickerbox\Tag::get( $p_tag_id );
+		$t_row = \Core\Tag::get( $p_tag_id );
 	
 		if( isset( $t_row[$p_field_name] ) ) {
 			return $t_row[$p_field_name];
 		} else {
-			\Flickerbox\Error::parameters( $p_field_name );
+			\Core\Error::parameters( $p_field_name );
 			trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 			return '';
 		}
@@ -334,27 +334,27 @@ class Tag
 	 * @return int Tag ID
 	 */
 	static function create( $p_name, $p_user_id = null, $p_description = '' ) {
-		\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'tag_create_threshold' ) );
+		\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'tag_create_threshold' ) );
 	
-		\Flickerbox\Tag::ensure_name_is_valid( $p_name );
-		\Flickerbox\Tag::ensure_unique( $p_name );
+		\Core\Tag::ensure_name_is_valid( $p_name );
+		\Core\Tag::ensure_unique( $p_name );
 	
 		if( null == $p_user_id ) {
-			$p_user_id = \Flickerbox\Auth::get_current_user_id();
+			$p_user_id = \Core\Auth::get_current_user_id();
 		} else {
-			\Flickerbox\User::ensure_exists( $p_user_id );
+			\Core\User::ensure_exists( $p_user_id );
 		}
 	
-		$c_date_created = \Flickerbox\Database::now();
+		$c_date_created = \Core\Database::now();
 	
 		$t_query = 'INSERT INTO {tag}
 					( user_id, name, description, date_created, date_updated )
 					VALUES
-					( ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
+					( ' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ')';
 	
-		\Flickerbox\Database::query( $t_query, array( $p_user_id, trim( $p_name ), trim( $p_description ), $c_date_created, $c_date_created ) );
+		\Core\Database::query( $t_query, array( $p_user_id, trim( $p_name ), trim( $p_description ), $c_date_created, $c_date_created ) );
 	
-		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'tag' ) );
+		return \Core\Database::insert_id( \Core\Database::get_table( 'tag' ) );
 	}
 	
 	/**
@@ -366,7 +366,7 @@ class Tag
 	 * @return boolean
 	 */
 	static function update( $p_tag_id, $p_name, $p_user_id, $p_description ) {
-		$t_tag_row = \Flickerbox\Tag::get( $p_tag_id );
+		$t_tag_row = \Core\Tag::get( $p_tag_id );
 		$t_tag_name = $t_tag_row['name'];
 	
 		if( $t_tag_name == $p_name &&
@@ -376,39 +376,39 @@ class Tag
 			return true;
 		}
 	
-		\Flickerbox\User::ensure_exists( $p_user_id );
+		\Core\User::ensure_exists( $p_user_id );
 	
 		if( auth_get_current_user_id() == $t_tag_row['user_id'] ) {
-			$t_update_level = \Flickerbox\Config::mantis_get( 'tag_edit_own_threshold' );
+			$t_update_level = \Core\Config::mantis_get( 'tag_edit_own_threshold' );
 		} else {
-			$t_update_level = \Flickerbox\Config::mantis_get( 'tag_edit_threshold' );
+			$t_update_level = \Core\Config::mantis_get( 'tag_edit_threshold' );
 		}
 	
-		\Flickerbox\Access::ensure_global_level( $t_update_level );
+		\Core\Access::ensure_global_level( $t_update_level );
 	
-		\Flickerbox\Tag::ensure_name_is_valid( $p_name );
+		\Core\Tag::ensure_name_is_valid( $p_name );
 	
 		$t_rename = false;
 		if( utf8_strtolower( $p_name ) != utf8_strtolower( $t_tag_name ) ) {
-			\Flickerbox\Tag::ensure_unique( $p_name );
+			\Core\Tag::ensure_unique( $p_name );
 			$t_rename = true;
 		}
 	
-		$c_date_updated = \Flickerbox\Database::now();
+		$c_date_updated = \Core\Database::now();
 	
 		$t_query = 'UPDATE {tag}
-						SET user_id=' . \Flickerbox\Database::param() . ',
-							name=' . \Flickerbox\Database::param() . ',
-							description=' . \Flickerbox\Database::param() . ',
-							date_updated=' . \Flickerbox\Database::param() . '
-						WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_user_id, $p_name, $p_description, $c_date_updated, $p_tag_id ) );
+						SET user_id=' . \Core\Database::param() . ',
+							name=' . \Core\Database::param() . ',
+							description=' . \Core\Database::param() . ',
+							date_updated=' . \Core\Database::param() . '
+						WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_user_id, $p_name, $p_description, $c_date_updated, $p_tag_id ) );
 	
 		if( $t_rename ) {
-			$t_bugs = \Flickerbox\Tag::get_bugs_attached( $p_tag_id );
+			$t_bugs = \Core\Tag::get_bugs_attached( $p_tag_id );
 	
 			foreach( $t_bugs as $t_bug_id ) {
-				\Flickerbox\History::log_event_special( $t_bug_id, TAG_RENAMED, $t_tag_name, $p_name );
+				\Core\History::log_event_special( $t_bug_id, TAG_RENAMED, $t_tag_name, $p_name );
 			}
 		}
 	
@@ -421,17 +421,17 @@ class Tag
 	 * @return boolean
 	 */
 	static function delete( $p_tag_id ) {
-		\Flickerbox\Tag::ensure_exists( $p_tag_id );
+		\Core\Tag::ensure_exists( $p_tag_id );
 	
-		\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) );
+		\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) );
 	
-		$t_bugs = \Flickerbox\Tag::get_bugs_attached( $p_tag_id );
+		$t_bugs = \Core\Tag::get_bugs_attached( $p_tag_id );
 		foreach( $t_bugs as $t_bug_id ) {
-			\Flickerbox\Tag::bug_detach( $p_tag_id, $t_bug_id );
+			\Core\Tag::bug_detach( $p_tag_id, $t_bug_id );
 		}
 	
-		$t_query = 'DELETE FROM {tag} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_tag_id ) );
+		$t_query = 'DELETE FROM {tag} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_tag_id ) );
 	
 		return true;
 	}
@@ -448,17 +448,17 @@ class Tag
 		if( 0 != $p_bug_id ) {
 			$t_params[] = $p_bug_id;
 	
-			if( \Flickerbox\Config::get_global( 'db_type' ) == 'odbc_mssql' ) {
+			if( \Core\Config::get_global( 'db_type' ) == 'odbc_mssql' ) {
 				$t_query = 'SELECT t.id FROM {tag} t
 						LEFT JOIN {bug_tag} b ON t.id=b.tag_id
-						WHERE b.bug_id IS NULL OR b.bug_id != ' . \Flickerbox\Database::param();
-				$t_result = \Flickerbox\Database::query( $t_query, $t_params );
+						WHERE b.bug_id IS NULL OR b.bug_id != ' . \Core\Database::param();
+				$t_result = \Core\Database::query( $t_query, $t_params );
 	
 				$t_params = null;
 	
 				$t_subquery_results = array();
 	
-				while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+				while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 					$t_subquery_results[] = (int)$t_row['id'];
 				}
 	
@@ -471,7 +471,7 @@ class Tag
 				$t_query = 'SELECT id, name, description FROM {tag} WHERE id IN (
 						SELECT t.id FROM {tag} t
 						LEFT JOIN {bug_tag} b ON t.id=b.tag_id
-						WHERE b.bug_id IS NULL OR b.bug_id != ' . \Flickerbox\Database::param() .
+						WHERE b.bug_id IS NULL OR b.bug_id != ' . \Core\Database::param() .
 					')';
 			}
 		} else {
@@ -479,11 +479,11 @@ class Tag
 		}
 	
 		$t_query .= ' ORDER BY name ASC ';
-		$t_result = \Flickerbox\Database::query( $t_query, $t_params );
+		$t_result = \Core\Database::query( $t_query, $t_params );
 	
 		$t_results_to_return = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_results_to_return[] = $t_row;
 		}
 	
@@ -497,9 +497,9 @@ class Tag
 	 * @return boolean True if the tag is attached
 	 */
 	static function bug_is_attached( $p_tag_id, $p_bug_id ) {
-		$t_query = 'SELECT bug_id FROM {bug_tag} WHERE tag_id=' . \Flickerbox\Database::param() . ' AND bug_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_tag_id, $p_bug_id ) );
-		return( \Flickerbox\Database::result( $t_result ) !== false );
+		$t_query = 'SELECT bug_id FROM {bug_tag} WHERE tag_id=' . \Core\Database::param() . ' AND bug_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_tag_id, $p_bug_id ) );
+		return( \Core\Database::result( $t_result ) !== false );
 	}
 	
 	/**
@@ -508,11 +508,11 @@ class Tag
 	 * @param integer $p_bug_id The bug ID to check.
 	 * @return array Tag attachment row
 	 */
-	static function \Flickerbox\Bug::get_row( $p_tag_id, $p_bug_id ) {
-		$t_query = 'SELECT * FROM {bug_tag} WHERE tag_id=' . \Flickerbox\Database::param() . ' AND bug_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_tag_id, $p_bug_id ) );
+	static function \Core\Bug::get_row( $p_tag_id, $p_bug_id ) {
+		$t_query = 'SELECT * FROM {bug_tag} WHERE tag_id=' . \Core\Database::param() . ' AND bug_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_tag_id, $p_bug_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( !$t_row ) {
 			trigger_error( TAG_NOT_ATTACHED, ERROR );
 		}
@@ -529,11 +529,11 @@ class Tag
 						FROM {tag} t
 						LEFT JOIN {bug_tag} b
 							on t.id=b.tag_id
-						WHERE b.bug_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_bug_id ) );
+						WHERE b.bug_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_bug_id ) );
 	
 		$t_rows = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_rows[] = $t_row;
 		}
 	
@@ -547,11 +547,11 @@ class Tag
 	 * @return array Array of bug ID's.
 	 */
 	static function get_bugs_attached( $p_tag_id ) {
-		$t_query = 'SELECT bug_id FROM {bug_tag} WHERE tag_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_tag_id ) );
+		$t_query = 'SELECT bug_id FROM {bug_tag} WHERE tag_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_tag_id ) );
 	
 		$t_bugs = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_bugs[] = $t_row['bug_id'];
 		}
 	
@@ -566,31 +566,31 @@ class Tag
 	 * @return boolean
 	 */
 	static function bug_attach( $p_tag_id, $p_bug_id, $p_user_id = null ) {
-		\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'tag_attach_threshold' ), $p_bug_id, $p_user_id );
+		\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'tag_attach_threshold' ), $p_bug_id, $p_user_id );
 	
-		\Flickerbox\Tag::ensure_exists( $p_tag_id );
+		\Core\Tag::ensure_exists( $p_tag_id );
 	
-		if( \Flickerbox\Tag::bug_is_attached( $p_tag_id, $p_bug_id ) ) {
+		if( \Core\Tag::bug_is_attached( $p_tag_id, $p_bug_id ) ) {
 			trigger_error( TAG_ALREADY_ATTACHED, ERROR );
 		}
 	
 		if( null == $p_user_id ) {
-			$p_user_id = \Flickerbox\Auth::get_current_user_id();
+			$p_user_id = \Core\Auth::get_current_user_id();
 		} else {
-			\Flickerbox\User::ensure_exists( $p_user_id );
+			\Core\User::ensure_exists( $p_user_id );
 		}
 	
 		$t_query = 'INSERT INTO {bug_tag}
 						( tag_id, bug_id, user_id, date_attached )
 						VALUES
-						( ' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
-		\Flickerbox\Database::query( $t_query, array( $p_tag_id, $p_bug_id, $p_user_id, \Flickerbox\Database::now() ) );
+						( ' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ')';
+		\Core\Database::query( $t_query, array( $p_tag_id, $p_bug_id, $p_user_id, \Core\Database::now() ) );
 	
-		$t_tag_name = \Flickerbox\Tag::get_field( $p_tag_id, 'name' );
-		\Flickerbox\History::log_event_special( $p_bug_id, TAG_ATTACHED, $t_tag_name );
+		$t_tag_name = \Core\Tag::get_field( $p_tag_id, 'name' );
+		\Core\History::log_event_special( $p_bug_id, TAG_ATTACHED, $t_tag_name );
 	
 		# updated the last_updated date
-		\Flickerbox\Bug::update_date( $p_bug_id );
+		\Core\Bug::update_date( $p_bug_id );
 	
 		return true;
 	}
@@ -605,34 +605,34 @@ class Tag
 	 */
 	static function bug_detach( $p_tag_id, $p_bug_id, $p_add_history = true, $p_user_id = null ) {
 		if( $p_user_id === null ) {
-			$t_user_id = \Flickerbox\Auth::get_current_user_id();
+			$t_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$t_user_id = $p_user_id;
 		}
 	
-		if( !\Flickerbox\Tag::bug_is_attached( $p_tag_id, $p_bug_id ) ) {
+		if( !\Core\Tag::bug_is_attached( $p_tag_id, $p_bug_id ) ) {
 			trigger_error( TAG_NOT_ATTACHED, ERROR );
 		}
 	
-		$t_tag_row = \Flickerbox\Tag::\Flickerbox\Bug::get_row( $p_tag_id, $p_bug_id );
-		if( $t_user_id == \Flickerbox\Tag::get_field( $p_tag_id, 'user_id' ) || $t_user_id == $t_tag_row['user_id'] ) {
-			$t_detach_level = \Flickerbox\Config::mantis_get( 'tag_detach_own_threshold' );
+		$t_tag_row = \Core\Tag::\Core\Bug::get_row( $p_tag_id, $p_bug_id );
+		if( $t_user_id == \Core\Tag::get_field( $p_tag_id, 'user_id' ) || $t_user_id == $t_tag_row['user_id'] ) {
+			$t_detach_level = \Core\Config::mantis_get( 'tag_detach_own_threshold' );
 		} else {
-			$t_detach_level = \Flickerbox\Config::mantis_get( 'tag_detach_threshold' );
+			$t_detach_level = \Core\Config::mantis_get( 'tag_detach_threshold' );
 		}
 	
-		\Flickerbox\Access::ensure_bug_level( $t_detach_level, $p_bug_id, $t_user_id );
+		\Core\Access::ensure_bug_level( $t_detach_level, $p_bug_id, $t_user_id );
 	
-		$t_query = 'DELETE FROM {bug_tag} WHERE tag_id=' . \Flickerbox\Database::param() . ' AND bug_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_tag_id, $p_bug_id ) );
+		$t_query = 'DELETE FROM {bug_tag} WHERE tag_id=' . \Core\Database::param() . ' AND bug_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_tag_id, $p_bug_id ) );
 	
 		if( $p_add_history ) {
-			$t_tag_name = \Flickerbox\Tag::get_field( $p_tag_id, 'name' );
-			\Flickerbox\History::log_event_special( $p_bug_id, TAG_DETACHED, $t_tag_name );
+			$t_tag_name = \Core\Tag::get_field( $p_tag_id, 'name' );
+			\Core\History::log_event_special( $p_bug_id, TAG_DETACHED, $t_tag_name );
 		}
 	
 		# updated the last_updated date
-		\Flickerbox\Bug::update_date( $p_bug_id );
+		\Core\Bug::update_date( $p_bug_id );
 	
 		return true;
 	}
@@ -645,9 +645,9 @@ class Tag
 	 * @return void
 	 */
 	static function bug_detach_all( $p_bug_id, $p_add_history = true, $p_user_id = null ) {
-		$t_tags = \Flickerbox\Tag::bug_get_attached( $p_bug_id );
+		$t_tags = \Core\Tag::bug_get_attached( $p_bug_id );
 		foreach( $t_tags as $t_tag_row ) {
-			\Flickerbox\Tag::bug_detach( $t_tag_row['id'], $p_bug_id, $p_add_history, $p_user_id );
+			\Core\Tag::bug_detach( $t_tag_row['id'], $p_bug_id, $p_add_history, $p_user_id );
 		}
 	}
 	
@@ -660,8 +660,8 @@ class Tag
 		return sprintf(
 			'<a href="tag_view_page.php?tag_id=%s" title="%s">%s</a>',
 			$p_tag_row['id'],
-			\Flickerbox\String::display_line( $p_tag_row['description'] ),
-			\Flickerbox\String::display_line( $p_tag_row['name'] )
+			\Core\String::display_line( $p_tag_row['description'] ),
+			\Core\String::display_line( $p_tag_row['name'] )
 		);
 	}
 	
@@ -676,21 +676,21 @@ class Tag
 	static function display_link( array $p_tag_row, $p_bug_id = 0 ) {
 		static $s_security_token = null;
 		if( is_null( $s_security_token ) ) {
-			$s_security_token = htmlspecialchars( \Flickerbox\Form::security_param( 'tag_detach' ) );
+			$s_security_token = htmlspecialchars( \Core\Form::security_param( 'tag_detach' ) );
 		}
 	
-		echo \Flickerbox\Tag::get_link( $p_tag_row );
+		echo \Core\Tag::get_link( $p_tag_row );
 	
 		if( isset( $p_tag_row['user_attached'] ) && auth_get_current_user_id() == $p_tag_row['user_attached']
 		 || auth_get_current_user_id() == $p_tag_row['user_id']
 		) {
-			$t_detach = \Flickerbox\Config::mantis_get( 'tag_detach_own_threshold' );
+			$t_detach = \Core\Config::mantis_get( 'tag_detach_own_threshold' );
 		} else {
-			$t_detach = \Flickerbox\Config::mantis_get( 'tag_detach_threshold' );
+			$t_detach = \Core\Config::mantis_get( 'tag_detach_threshold' );
 		}
 	
-		if( $p_bug_id > 0 && \Flickerbox\Access::has_bug_level( $t_detach, $p_bug_id ) ) {
-			$t_tooltip = \Flickerbox\String::html_specialchars( sprintf( \Flickerbox\Lang::get( 'tag_detach' ), \Flickerbox\String::display_line( $p_tag_row['name'] ) ) );
+		if( $p_bug_id > 0 && \Core\Access::has_bug_level( $t_detach, $p_bug_id ) ) {
+			$t_tooltip = \Core\String::html_specialchars( sprintf( \Core\Lang::get( 'tag_detach' ), \Core\String::display_line( $p_tag_row['name'] ) ) );
 			echo '<a href="tag_detach.php?bug_id=' . $p_bug_id . '&amp;tag_id=' . $p_tag_row['id'] . $s_security_token . '"><img src="images/delete.png" class="delete-icon" title="' . $t_tooltip . '" alt="X"/></a>';
 		}
 	
@@ -703,15 +703,15 @@ class Tag
 	 * @return boolean
 	 */
 	static function display_attached( $p_bug_id ) {
-		$t_tag_rows = \Flickerbox\Tag::bug_get_attached( $p_bug_id );
+		$t_tag_rows = \Core\Tag::bug_get_attached( $p_bug_id );
 	
 		if( count( $t_tag_rows ) == 0 ) {
-			echo \Flickerbox\Lang::get( 'tag_none_attached' );
+			echo \Core\Lang::get( 'tag_none_attached' );
 		} else {
 			$i = 0;
 			foreach( $t_tag_rows as $t_tag ) {
-				echo( $i > 0 ? \Flickerbox\Config::mantis_get( 'tag_separator' ) . ' ' : '' );
-				\Flickerbox\Tag::display_link( $t_tag, $p_bug_id );
+				echo( $i > 0 ? \Core\Config::mantis_get( 'tag_separator' ) . ' ' : '' );
+				\Core\Tag::display_link( $t_tag, $p_bug_id );
 				$i++;
 			}
 		}
@@ -725,10 +725,10 @@ class Tag
 	 * @return int Number of attached bugs
 	 */
 	static function stats_attached( $p_tag_id ) {
-		$t_query = 'SELECT COUNT(*) FROM {bug_tag} WHERE tag_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_tag_id ) );
+		$t_query = 'SELECT COUNT(*) FROM {bug_tag} WHERE tag_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_tag_id ) );
 	
-		return \Flickerbox\Database::result( $t_result );
+		return \Core\Database::result( $t_result );
 	}
 	
 	/**
@@ -741,26 +741,26 @@ class Tag
 	 * @return array Array of tag rows, with share count added
 	 */
 	static function stats_related( $p_tag_id, $p_limit = 5 ) {
-		$c_user_id = \Flickerbox\Auth::get_current_user_id();
+		$c_user_id = \Core\Auth::get_current_user_id();
 	
 		$t_subquery = 'SELECT b.id FROM {bug} b
 						LEFT JOIN {project_user_list} p
-							ON p.project_id=b.project_id AND p.user_id=' . \Flickerbox\Database::param() . # 2nd Param
+							ON p.project_id=b.project_id AND p.user_id=' . \Core\Database::param() . # 2nd Param
 						' JOIN {user} u
-							ON u.id=' . \Flickerbox\Database::param() . # 3rd Param
+							ON u.id=' . \Core\Database::param() . # 3rd Param
 						' JOIN {bug_tag} t
 							ON t.bug_id=b.id
 						WHERE ( p.access_level>b.view_state OR u.access_level>b.view_state )
-							AND t.tag_id=' . \Flickerbox\Database::param(); # 4th Param
+							AND t.tag_id=' . \Core\Database::param(); # 4th Param
 	
 		$t_query = 'SELECT * FROM {bug_tag}
-						WHERE tag_id != ' . \Flickerbox\Database::param() . # 1st Param
+						WHERE tag_id != ' . \Core\Database::param() . # 1st Param
 							' AND bug_id IN ( ' . $t_subquery . ' ) ';
 	
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_tag_id, $c_user_id, $c_user_id, $p_tag_id ) );
+		$t_result = \Core\Database::query( $t_query, array( $p_tag_id, $c_user_id, $c_user_id, $p_tag_id ) );
 	
 		$t_tag_counts = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			if( !isset( $t_tag_counts[$t_row['tag_id']] ) ) {
 				$t_tag_counts[$t_row['tag_id']] = 1;
 			} else {
@@ -773,7 +773,7 @@ class Tag
 		$t_tags = array();
 		$i = 1;
 		foreach( $t_tag_counts as $t_tag_id => $t_count ) {
-			$t_tag_row = \Flickerbox\Tag::get( $t_tag_id );
+			$t_tag_row = \Core\Tag::get( $t_tag_id );
 			$t_tag_row['count'] = $t_count;
 			$t_tags[] = $t_tag_row;
 			$i++;

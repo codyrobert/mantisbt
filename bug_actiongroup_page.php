@@ -43,14 +43,14 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_action = \Flickerbox\GPC::get_string( 'action', '' );
-$f_bug_arr = \Flickerbox\GPC::get_int_array( 'bug_arr', array() );
+$f_action = \Core\GPC::get_string( 'action', '' );
+$f_bug_arr = \Core\GPC::get_int_array( 'bug_arr', array() );
 
 # redirects to all_bug_page if nothing is selected
-if( \Flickerbox\Utility::is_blank( $f_action ) || ( 0 == count( $f_bug_arr ) ) ) {
-	\Flickerbox\Print_Util::header_redirect( 'view_all_bug_page.php' );
+if( \Core\Utility::is_blank( $f_action ) || ( 0 == count( $f_bug_arr ) ) ) {
+	\Core\Print_Util::header_redirect( 'view_all_bug_page.php' );
 }
 
 # run through the issues to see if they are all from one project
@@ -58,10 +58,10 @@ $t_project_id = ALL_PROJECTS;
 $t_multiple_projects = false;
 $t_projects = array();
 
-\Flickerbox\Bug::cache_array_rows( $f_bug_arr );
+\Core\Bug::cache_array_rows( $f_bug_arr );
 
 foreach( $f_bug_arr as $t_bug_id ) {
-	$t_bug = \Flickerbox\Bug::get( $t_bug_id );
+	$t_bug = \Core\Bug::get( $t_bug_id );
 	if( $t_project_id != $t_bug->project_id ) {
 		if( ( $t_project_id != ALL_PROJECTS ) && !$t_multiple_projects ) {
 			$t_multiple_projects = true;
@@ -76,7 +76,7 @@ if( $t_multiple_projects ) {
 	$t_projects[ALL_PROJECTS] = ALL_PROJECTS;
 }
 # override the project if necessary
-if( $t_project_id != \Flickerbox\Helper::get_current_project() ) {
+if( $t_project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_project_id;
@@ -94,7 +94,7 @@ if( strpos( $f_action, $t_external_action_prefix ) === 0 ) {
 	exit;
 }
 
-$t_custom_group_actions = \Flickerbox\Config::mantis_get( 'custom_group_actions' );
+$t_custom_group_actions = \Core\Config::mantis_get( 'custom_group_actions' );
 
 foreach( $t_custom_group_actions as $t_custom_group_action ) {
 	if( $f_action == $t_custom_group_action['action'] ) {
@@ -117,85 +117,85 @@ switch( $f_action ) {
 	# Use a simple confirmation page, if close or delete...
 	case 'CLOSE' :
 		$t_finished 			= true;
-		$t_question_title 		= \Flickerbox\Lang::get( 'close_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'close_group_bugs_button' );
+		$t_question_title 		= \Core\Lang::get( 'close_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'close_group_bugs_button' );
 		$t_bugnote				= true;
 		break;
 	case 'DELETE' :
 		$t_finished 			= true;
-		$t_question_title		= \Flickerbox\Lang::get( 'delete_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'delete_group_bugs_button' );
+		$t_question_title		= \Core\Lang::get( 'delete_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'delete_group_bugs_button' );
 		break;
 	case 'SET_STICKY' :
 		$t_finished 			= true;
-		$t_question_title		= \Flickerbox\Lang::get( 'set_sticky_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'set_sticky_group_bugs_button' );
+		$t_question_title		= \Core\Lang::get( 'set_sticky_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'set_sticky_group_bugs_button' );
 		break;
 	# ...else we define the variables used in the form
 	case 'MOVE' :
-		$t_question_title 		= \Flickerbox\Lang::get( 'move_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'move_group_bugs_button' );
+		$t_question_title 		= \Core\Lang::get( 'move_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'move_group_bugs_button' );
 		$t_form					= 'project_id';
 		break;
 	case 'COPY' :
-		$t_question_title 		= \Flickerbox\Lang::get( 'copy_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'copy_group_bugs_button' );
+		$t_question_title 		= \Core\Lang::get( 'copy_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'copy_group_bugs_button' );
 		$t_form					= 'project_id';
 		break;
 	case 'ASSIGN' :
-		$t_question_title 		= \Flickerbox\Lang::get( 'assign_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'assign_group_bugs_button' );
+		$t_question_title 		= \Core\Lang::get( 'assign_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'assign_group_bugs_button' );
 		$t_form 				= 'assign';
 		break;
 	case 'RESOLVE' :
-		$t_question_title 		= \Flickerbox\Lang::get( 'resolve_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'resolve_group_bugs_button' );
+		$t_question_title 		= \Core\Lang::get( 'resolve_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'resolve_group_bugs_button' );
 		$t_form 				= 'resolution';
 		if( ALL_PROJECTS != $t_project_id ) {
-			$t_question_title2 = \Flickerbox\Lang::get( 'fixed_in_version' );
+			$t_question_title2 = \Core\Lang::get( 'fixed_in_version' );
 			$t_form2 = 'fixed_in_version';
 		}
 		$t_bugnote				= true;
 		break;
 	case 'UP_PRIOR' :
-		$t_question_title 		= \Flickerbox\Lang::get( 'priority_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'priority_group_bugs_button' );
+		$t_question_title 		= \Core\Lang::get( 'priority_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'priority_group_bugs_button' );
 		$t_form 				= 'priority';
 		break;
 	case 'UP_STATUS' :
-		$t_question_title 		= \Flickerbox\Lang::get( 'status_bugs_conf_msg' );
-		$t_button_title 		= \Flickerbox\Lang::get( 'status_group_bugs_button' );
+		$t_question_title 		= \Core\Lang::get( 'status_bugs_conf_msg' );
+		$t_button_title 		= \Core\Lang::get( 'status_group_bugs_button' );
 		$t_form 				= 'status';
 		$t_bugnote				= true;
 		break;
 	case 'UP_CATEGORY' :
-		$t_question_title		= \Flickerbox\Lang::get( 'category_bugs_conf_msg' );
-		$t_button_title			= \Flickerbox\Lang::get( 'category_group_bugs_button' );
+		$t_question_title		= \Core\Lang::get( 'category_bugs_conf_msg' );
+		$t_button_title			= \Core\Lang::get( 'category_group_bugs_button' );
 		$t_form					= 'category';
 		break;
 	case 'VIEW_STATUS' :
-		$t_question_title		= \Flickerbox\Lang::get( 'view_status_bugs_conf_msg' );
-		$t_button_title			= \Flickerbox\Lang::get( 'view_status_group_bugs_button' );
+		$t_question_title		= \Core\Lang::get( 'view_status_bugs_conf_msg' );
+		$t_button_title			= \Core\Lang::get( 'view_status_group_bugs_button' );
 		$t_form					= 'view_status';
 		break;
 	case 'UP_PRODUCT_VERSION':
-		$t_question_title		= \Flickerbox\Lang::get( 'product_version_bugs_conf_msg' );
-		$t_button_title			= \Flickerbox\Lang::get( 'product_version_group_bugs_button' );
+		$t_question_title		= \Core\Lang::get( 'product_version_bugs_conf_msg' );
+		$t_button_title			= \Core\Lang::get( 'product_version_group_bugs_button' );
 		$t_form					= 'product_version';
 		break;
 	case 'UP_FIXED_IN_VERSION':
-		$t_question_title		= \Flickerbox\Lang::get( 'fixed_in_version_bugs_conf_msg' );
-		$t_button_title			= \Flickerbox\Lang::get( 'fixed_in_version_group_bugs_button' );
+		$t_question_title		= \Core\Lang::get( 'fixed_in_version_bugs_conf_msg' );
+		$t_button_title			= \Core\Lang::get( 'fixed_in_version_group_bugs_button' );
 		$t_form					= 'fixed_in_version';
 		break;
 	case 'UP_TARGET_VERSION':
-		$t_question_title		= \Flickerbox\Lang::get( 'target_version_bugs_conf_msg' );
-		$t_button_title			= \Flickerbox\Lang::get( 'target_version_group_bugs_button' );
+		$t_question_title		= \Core\Lang::get( 'target_version_bugs_conf_msg' );
+		$t_button_title			= \Core\Lang::get( 'target_version_group_bugs_button' );
 		$t_form					= 'target_version';
 		break;
 	case 'CUSTOM' :
 		$t_custom_field_def = custom_field_get_definition( $t_custom_field_id );
-		$t_question_title = sprintf( \Flickerbox\Lang::get( 'actiongroup_menu_update_field' ), \Flickerbox\Lang::get_defaulted( $t_custom_field_def['name'] ) );
+		$t_question_title = sprintf( \Core\Lang::get( 'actiongroup_menu_update_field' ), \Core\Lang::get_defaulted( $t_custom_field_def['name'] ) );
 		$t_button_title = $t_question_title;
 		$t_form = 'custom_field_' . $t_custom_field_id;
 		break;
@@ -203,10 +203,10 @@ switch( $f_action ) {
 		trigger_error( ERROR_GENERIC, ERROR );
 }
 
-\Flickerbox\Bug\Group::action_print_top();
+\Core\Bug\Group::action_print_top();
 
 if( $t_multiple_projects ) {
-	echo '<p class="bold">' . \Flickerbox\Lang::get( 'multiple_projects' ) . '</p>';
+	echo '<p class="bold">' . \Core\Lang::get( 'multiple_projects' ) . '</p>';
 }
 ?>
 
@@ -214,10 +214,10 @@ if( $t_multiple_projects ) {
 
 <div id="action-group-div" class="form-container">
 	<form method="post" action="bug_actiongroup.php">
-		<?php echo \Flickerbox\Form::security_field( $t_form_name ); ?>
-		<input type="hidden" name="action" value="<?php echo \Flickerbox\String::attribute( $f_action ) ?>" />
+		<?php echo \Core\Form::security_field( $t_form_name ); ?>
+		<input type="hidden" name="action" value="<?php echo \Core\String::attribute( $f_action ) ?>" />
 <?php
-	\Flickerbox\Bug\Group::action_print_hidden_fields( $f_bug_arr );
+	\Core\Bug\Group::action_print_hidden_fields( $f_bug_arr );
 
 	if( $f_action === 'CUSTOM' ) {
 		echo '<input type="hidden" name="custom_field_id" value="' . $t_custom_field_id . '" />';
@@ -252,32 +252,32 @@ if( $t_multiple_projects ) {
 			switch( $f_action ) {
 				case 'COPY':
 				case 'MOVE':
-					\Flickerbox\Print_Util::project_option_list( null, false );
+					\Core\Print_Util::project_option_list( null, false );
 					break;
 				case 'ASSIGN':
-					\Flickerbox\Print_Util::assign_to_option_list( 0, $t_project_id );
+					\Core\Print_Util::assign_to_option_list( 0, $t_project_id );
 					break;
 				case 'RESOLVE':
-					\Flickerbox\Print_Util::enum_string_option_list( 'resolution', \Flickerbox\Config::mantis_get( 'bug_resolution_fixed_threshold' ) );
+					\Core\Print_Util::enum_string_option_list( 'resolution', \Core\Config::mantis_get( 'bug_resolution_fixed_threshold' ) );
 					break;
 				case 'UP_PRIOR':
-					\Flickerbox\Print_Util::enum_string_option_list( 'priority', \Flickerbox\Config::mantis_get( 'default_bug_priority' ) );
+					\Core\Print_Util::enum_string_option_list( 'priority', \Core\Config::mantis_get( 'default_bug_priority' ) );
 					break;
 				case 'UP_STATUS':
-					\Flickerbox\Print_Util::enum_string_option_list( 'status', \Flickerbox\Config::mantis_get( 'bug_submit_status' ) );
+					\Core\Print_Util::enum_string_option_list( 'status', \Core\Config::mantis_get( 'bug_submit_status' ) );
 					break;
 				case 'UP_CATEGORY':
-					\Flickerbox\Print_Util::category_option_list();
+					\Core\Print_Util::category_option_list();
 					break;
 				case 'VIEW_STATUS':
-					\Flickerbox\Print_Util::enum_string_option_list( 'view_state', \Flickerbox\Config::mantis_get( 'default_bug_view_status' ) );
+					\Core\Print_Util::enum_string_option_list( 'view_state', \Core\Config::mantis_get( 'default_bug_view_status' ) );
 					break;
 				case 'UP_TARGET_VERSION':
-					\Flickerbox\Print_Util::version_option_list( '', $t_project_id, VERSION_FUTURE, true, true );
+					\Core\Print_Util::version_option_list( '', $t_project_id, VERSION_FUTURE, true, true );
 					break;
 				case 'UP_PRODUCT_VERSION':
 				case 'UP_FIXED_IN_VERSION':
-					\Flickerbox\Print_Util::version_option_list( '', $t_project_id, VERSION_ALL, true, true );
+					\Core\Print_Util::version_option_list( '', $t_project_id, VERSION_ALL, true, true );
 					break;
 			}
 
@@ -290,9 +290,9 @@ if( $t_multiple_projects ) {
 		if( isset( $t_question_title2 ) ) {
 			switch( $f_action ) {
 				case 'RESOLVE':
-					$t_show_product_version = ( ON == \Flickerbox\Config::mantis_get( 'show_product_version' ) )
-						|| ( ( AUTO == \Flickerbox\Config::mantis_get( 'show_product_version' ) )
-									&& ( count( \Flickerbox\Version::get_all_rows( $t_project_id ) ) > 0 ) );
+					$t_show_product_version = ( ON == \Core\Config::mantis_get( 'show_product_version' ) )
+						|| ( ( AUTO == \Core\Config::mantis_get( 'show_product_version' ) )
+									&& ( count( \Core\Version::get_all_rows( $t_project_id ) ) > 0 ) );
 					if( $t_show_product_version ) {
 ?>
 				<tr class="row-2">
@@ -301,7 +301,7 @@ if( $t_multiple_projects ) {
 					</th>
 					<td>
 						<select name="<?php echo $t_form2 ?>">
-							<?php \Flickerbox\Print_Util::version_option_list( '', null, VERSION_ALL );?>
+							<?php \Core\Print_Util::version_option_list( '', null, VERSION_ALL );?>
 						</select>
 					</td>
 				</tr>
@@ -324,29 +324,29 @@ if( $t_multiple_projects ) {
 ?>
 				<tr class="row-1">
 					<th class="category">
-						<?php echo \Flickerbox\Lang::get( 'add_bugnote_title' ); ?>
+						<?php echo \Core\Lang::get( 'add_bugnote_title' ); ?>
 					</th>
 					<td>
 						<textarea name="bugnote_text" cols="80" rows="10"></textarea>
 					</td>
 				</tr>
 <?php
-		if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'private_bugnote_threshold' ), $t_project_id ) ) {
+		if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'private_bugnote_threshold' ), $t_project_id ) ) {
 ?>
 				<tr>
 					<th class="category">
-						<?php echo \Flickerbox\Lang::get( 'view_status' ) ?>
+						<?php echo \Core\Lang::get( 'view_status' ) ?>
 					</th>
 					<td>
 <?php
-			$t_default_bugnote_view_status = \Flickerbox\Config::mantis_get( 'default_bugnote_view_status' );
-			if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'set_view_status_threshold' ), $t_project_id ) ) {
+			$t_default_bugnote_view_status = \Core\Config::mantis_get( 'default_bugnote_view_status' );
+			if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'set_view_status_threshold' ), $t_project_id ) ) {
 ?>
-						<input type="checkbox" name="private" <?php \Flickerbox\Helper::check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
+						<input type="checkbox" name="private" <?php \Core\Helper::check_checked( $t_default_bugnote_view_status, VS_PRIVATE ); ?> />
 <?php
-				echo \Flickerbox\Lang::get( 'private' );
+				echo \Core\Lang::get( 'private' );
 			} else {
-				echo \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
+				echo \Core\Helper::get_enum_element( 'project_view_state', $t_default_bugnote_view_status );
 			}
 ?>
 					</td>
@@ -372,5 +372,5 @@ if( $t_multiple_projects ) {
 <br />
 
 <?php
-\Flickerbox\Bug\Group::action_print_bug_list( $f_bug_arr );
-\Flickerbox\Bug\Group::action_print_bottom();
+\Core\Bug\Group::action_print_bug_list( $f_bug_arr );
+\Core\Bug\Group::action_print_bottom();

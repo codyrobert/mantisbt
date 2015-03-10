@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -73,7 +73,7 @@ class Error
 	
 		$t_db_connected = false;
 		if( function_exists( 'db_is_connected' ) ) {
-			if( \Flickerbox\Database::is_connected() ) {
+			if( \Core\Database::is_connected() ) {
 				$t_db_connected = true;
 			}
 		}
@@ -84,11 +84,11 @@ class Error
 	
 		# flush any language overrides to return to user's natural default
 		if( $t_db_connected ) {
-			\Flickerbox\Lang::push( \Flickerbox\Lang::get_default() );
+			\Core\Lang::push( \Core\Lang::get_default() );
 			$t_lang_pushed = true;
 		}
 	
-		$t_method_array = \Flickerbox\Config::get_global( 'display_errors' );
+		$t_method_array = \Core\Config::get_global( 'display_errors' );
 		if( isset( $t_method_array[$p_type] ) ) {
 			$t_method = $t_method_array[$p_type];
 		} else {
@@ -113,14 +113,14 @@ class Error
 				break;
 			case E_USER_ERROR:
 				$t_error_type = 'APPLICATION ERROR #' . $p_error;
-				$t_error_description = \Flickerbox\Error::string( $p_error );
+				$t_error_description = \Core\Error::string( $p_error );
 				if( $t_method == DISPLAY_ERROR_INLINE ) {
-					$t_error_description .= "\n" . \Flickerbox\Error::string( ERROR_DISPLAY_USER_ERROR_INLINE );
+					$t_error_description .= "\n" . \Core\Error::string( ERROR_DISPLAY_USER_ERROR_INLINE );
 				}
 				break;
 			case E_USER_WARNING:
 				$t_error_type = 'APPLICATION WARNING #' . $p_error;
-				$t_error_description = \Flickerbox\Error::string( $p_error );
+				$t_error_description = \Core\Error::string( $p_error );
 				break;
 			case E_USER_NOTICE:
 				# used for debugging
@@ -133,12 +133,12 @@ class Error
 				$t_caller = $t_stack[2];
 	
 				$t_error_type = 'WARNING';
-				$t_error_description =  \Flickerbox\Error::string( $p_error )
+				$t_error_description =  \Core\Error::string( $p_error )
 					. ' (in ' . $t_caller['file']
 					. ' line ' . $t_caller['line'] . ')';
 	
 				if( $t_method == DISPLAY_ERROR_INLINE && php_sapi_name() != 'cli') {
-					# Enqueue messages for later display with \Flickerbox\Error::print_delayed()
+					# Enqueue messages for later display with \Core\Error::print_delayed()
 					global $g_errors_delayed;
 					$g_errors_delayed[] = $t_error_description;
 					$g_error_handled = true;
@@ -158,7 +158,7 @@ class Error
 			if( DISPLAY_ERROR_NONE != $t_method ) {
 				echo $t_error_type . ': ' . $t_error_description . "\n";
 	
-				if( ON == \Flickerbox\Config::get_global( 'show_detailed_errors' ) ) {
+				if( ON == \Core\Config::get_global( 'show_detailed_errors' ) ) {
 					echo "\n";
 					debug_print_backtrace();
 				}
@@ -171,13 +171,13 @@ class Error
 				case DISPLAY_ERROR_HALT:
 					# disable any further event callbacks
 					if( function_exists( 'event_clear_callbacks' ) ) {
-						\Flickerbox\Event::clear_callbacks();
+						\Core\Event::clear_callbacks();
 					}
 	
 					$t_oblen = ob_get_length();
 					if( $t_oblen > 0 ) {
 						$t_old_contents = ob_get_contents();
-						if( !\Flickerbox\Error::handled() ) {
+						if( !\Core\Error::handled() ) {
 							# Retrieve the previously output header
 							if( false !== preg_match_all( '|^(.*)(</head>.*$)|is', $t_old_contents, $t_result ) &&
 								isset( $t_result[1] ) && isset( $t_result[1][0] ) ) {
@@ -188,7 +188,7 @@ class Error
 					}
 	
 					# We need to ensure compression is off - otherwise the compression headers are output.
-					\Flickerbox\Compress::disable();
+					\Core\Compress::disable();
 	
 					# then clean the buffer, leaving output buffering on.
 					if( $t_oblen > 0 ) {
@@ -198,11 +198,11 @@ class Error
 					# don't send the page header information if it has already been sent
 					if( $g_error_send_page_header ) {
 						if( $t_html_api ) {
-							\Flickerbox\HTML::page_top1();
+							\Core\HTML::page_top1();
 							if( $p_error != ERROR_DB_QUERY_FAILED && $t_db_connected == true ) {
-								\Flickerbox\HTML::page_top2();
+								\Core\HTML::page_top2();
 							} else {
-								\Flickerbox\HTML::page_top2a();
+								\Core\HTML::page_top2a();
 							}
 						} else {
 							echo '<html><head><title>', $t_error_type, '</title></head><body>';
@@ -211,7 +211,7 @@ class Error
 						# Output the previously sent headers, if defined
 						if( isset( $t_old_headers ) ) {
 							echo $t_old_headers, "\n";
-							\Flickerbox\HTML::page_top2();
+							\Core\HTML::page_top2();
 						}
 					}
 	
@@ -221,18 +221,18 @@ class Error
 	
 					echo '<div class="error-info">';
 					if( null === $g_error_proceed_url ) {
-						echo \Flickerbox\Lang::get( 'error_no_proceed' );
+						echo \Core\Lang::get( 'error_no_proceed' );
 					} else {
-						echo '<a href="', $g_error_proceed_url, '">', \Flickerbox\Lang::get( 'proceed' ), '</a>';
+						echo '<a href="', $g_error_proceed_url, '">', \Core\Lang::get( 'proceed' ), '</a>';
 					}
 					echo '</div>';
 	
-					if( ON == \Flickerbox\Config::get_global( 'show_detailed_errors' ) ) {
+					if( ON == \Core\Config::get_global( 'show_detailed_errors' ) ) {
 						echo '<div class="error-details">';
-						\Flickerbox\Error::print_details( $p_file, $p_line, $p_context );
+						\Core\Error::print_details( $p_file, $p_line, $p_context );
 						echo '</div>';
 						echo '<div class="error-trace">';
-						\Flickerbox\Error::print_stack_trace();
+						\Core\Error::print_stack_trace();
 						echo '</div>';
 					}
 					echo '</div>';
@@ -246,10 +246,10 @@ class Error
 	
 					if( $t_html_api ) {
 						if( $p_error != ERROR_DB_QUERY_FAILED && $t_db_connected == true ) {
-							\Flickerbox\HTML::page_bottom();
+							\Core\HTML::page_bottom();
 						} else {
-							\Flickerbox\HTML::body_end();
-							\Flickerbox\HTML::end();
+							\Core\HTML::body_end();
+							\Core\HTML::end();
 						}
 					} else {
 						echo '</body></html>', "\n";
@@ -267,7 +267,7 @@ class Error
 		}
 	
 		if( $t_lang_pushed ) {
-			\Flickerbox\Lang::pop();
+			\Core\Lang::pop();
 		}
 	
 		$g_error_parameters = array();
@@ -312,7 +312,7 @@ class Error
 				</tr>
 				<tr>
 					<td>
-						<?php \Flickerbox\Error::print_context( $p_context )?>
+						<?php \Core\Error::print_context( $p_context )?>
 					</td>
 				</tr>
 			</table>
@@ -353,7 +353,7 @@ class Error
 			if( is_array( $t_val ) && ( $t_var != 'GLOBALS' ) ) {
 				echo '<tr><td colspan="3" style="word-wrap:break-word"><br /><strong>', $t_var, '</strong></td></tr>';
 				echo '<tr><td colspan="3">';
-				\Flickerbox\Error::print_context( $t_val );
+				\Core\Error::print_context( $t_val );
 				echo '</td></tr>';
 			}
 		}
@@ -380,13 +380,13 @@ class Error
 		# remove the call to the error handler from the stack trace
 	
 		foreach( $t_stack as $t_frame ) {
-			echo '<tr ', \Flickerbox\Error::alternate_class(), '>';
+			echo '<tr ', \Core\Error::alternate_class(), '>';
 			echo '<td>', ( isset( $t_frame['file'] ) ? htmlentities( $t_frame['file'], ENT_COMPAT, 'UTF-8' ) : '-' ), '</td><td>', ( isset( $t_frame['line'] ) ? $t_frame['line'] : '-' ), '</td><td>', ( isset( $t_frame['class'] ) ? $t_frame['class'] : '-' ), '</td><td>', ( isset( $t_frame['type'] ) ? $t_frame['type'] : '-' ), '</td><td>', ( isset( $t_frame['function'] ) ? $t_frame['function'] : '-' ), '</td>';
 	
 			$t_args = array();
 			if( isset( $t_frame['args'] ) && !empty( $t_frame['args'] ) ) {
 				foreach( $t_frame['args'] as $t_value ) {
-					$t_args[] = \Flickerbox\Error::build_parameter_string( $t_value );
+					$t_args[] = \Core\Error::build_parameter_string( $t_value );
 				}
 				echo '<td>( ', htmlentities( implode( $t_args, ', ' ), ENT_COMPAT, 'UTF-8' ), ' )</td></tr>';
 			} else {
@@ -412,7 +412,7 @@ class Error
 			$t_results = array();
 	
 			foreach( $p_param as $t_key => $t_value ) {
-				$t_results[] = '[' . \Flickerbox\Error::build_parameter_string( $t_key, false, $p_depth ) . '] => ' . \Flickerbox\Error::build_parameter_string( $t_value, false, $p_depth );
+				$t_results[] = '[' . \Core\Error::build_parameter_string( $t_key, false, $p_depth ) . '] => ' . \Core\Error::build_parameter_string( $t_value, false, $p_depth );
 			}
 	
 			return '<array> { ' . implode( $t_results, ', ' ) . ' }';
@@ -423,7 +423,7 @@ class Error
 			$t_inst_vars = get_object_vars( $p_param );
 	
 			foreach( $t_inst_vars as $t_name => $t_value ) {
-				$t_results[] = '[' . $t_name . '] => ' . \Flickerbox\Error::build_parameter_string( $t_value, false, $p_depth );
+				$t_results[] = '[' . $t_name . '] => ' . \Core\Error::build_parameter_string( $t_value, false, $p_depth );
 			}
 	
 			return '<Object><' . $t_class_name . '> ( ' . implode( $t_results, ', ' ) . ' )';
@@ -447,7 +447,7 @@ class Error
 	
 		$t_lang = null;
 		while( true ) {
-			$t_err_msg = \Flickerbox\Lang::get( 'MANTIS_ERROR', $t_lang );
+			$t_err_msg = \Core\Lang::get( 'MANTIS_ERROR', $t_lang );
 			if( array_key_exists( $p_error, $t_err_msg ) ) {
 				$t_error = $t_err_msg[$p_error];
 				break;
@@ -456,7 +456,7 @@ class Error
 				$t_lang = 'english';
 			} else {
 				# Error string not found
-				$t_error = \Flickerbox\Lang::get( 'missing_error_string' );
+				$t_error = \Core\Lang::get( 'missing_error_string' );
 				# Prepend the error number
 				array_unshift( $g_error_parameters, $p_error );
 				break;

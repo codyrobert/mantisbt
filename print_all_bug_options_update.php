@@ -39,12 +39,12 @@ require_once( 'core.php' );
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/print_all_bug_options_inc.php' );
 
-\Flickerbox\Form::security_validate( 'print_all_bug_options_update' );
+\Core\Form::security_validate( 'print_all_bug_options_update' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_user_id		= \Flickerbox\GPC::get_int( 'user_id' );
-$f_redirect_url	= \Flickerbox\GPC::get_string( 'redirect_url' );
+$f_user_id		= \Core\GPC::get_int( 'user_id' );
+$f_redirect_url	= \Core\GPC::get_string( 'redirect_url' );
 
 # the check for the protected state is already done in the form, there is
 # no need to duplicate it here.
@@ -56,7 +56,7 @@ $t_field_name_count = count( $t_field_name_arr );
 # check the checkboxes
 for( $i=0; $i <$t_field_name_count; $i++ ) {
 	$t_name = 'print_' . utf8_strtolower( str_replace( ' ', '_', $t_field_name_arr[$i] ) );
-	$t_flag = \Flickerbox\GPC::get( $t_name, null );
+	$t_flag = \Core\GPC::get( $t_name, null );
 
 	if( $t_flag === null ) {
 		$t_prefs_arr[$i] = 0;
@@ -71,21 +71,21 @@ $t_user_id = $f_user_id;
 $c_export = implode( '', $t_prefs_arr );
 
 # update preferences
-$t_query = 'UPDATE {user_print_pref} SET print_pref=' . \Flickerbox\Database::param() . ' WHERE user_id=' . \Flickerbox\Database::param();
+$t_query = 'UPDATE {user_print_pref} SET print_pref=' . \Core\Database::param() . ' WHERE user_id=' . \Core\Database::param();
 
-$t_result = \Flickerbox\Database::query( $t_query, array( $c_export, $t_user_id ) );
+$t_result = \Core\Database::query( $t_query, array( $c_export, $t_user_id ) );
 
-\Flickerbox\Form::security_purge( 'print_all_bug_options_update' );
+\Core\Form::security_purge( 'print_all_bug_options_update' );
 
-\Flickerbox\HTML::page_top( null, $f_redirect_url );
+\Core\HTML::page_top( null, $f_redirect_url );
 
 if( $t_result ) {
-	\Flickerbox\HTML::operation_successful( $f_redirect_url );
+	\Core\HTML::operation_successful( $f_redirect_url );
 } else {
 	echo '<div class="failure-msg">';
-	print \Flickerbox\Error::string( ERROR_GENERIC ) . '<br />';
-	\Flickerbox\Print_Util::bracket_link( $f_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+	print \Core\Error::string( ERROR_GENERIC ) . '<br />';
+	\Core\Print_Util::bracket_link( $f_redirect_url, \Core\Lang::get( 'proceed' ) );
 	echo '</div>';
 }
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

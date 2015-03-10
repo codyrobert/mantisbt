@@ -38,32 +38,32 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'proj_doc_add' );
+\Core\Form::security_validate( 'proj_doc_add' );
 
 # Check if project documentation feature is enabled.
-if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
-	\Flickerbox\Access::denied();
+if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ) {
+	\Core\Access::denied();
 }
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'upload_project_file_threshold' ) );
 
-$f_title = \Flickerbox\GPC::get_string( 'title' );
-$f_description = \Flickerbox\GPC::get_string( 'description' );
+$f_title = \Core\GPC::get_string( 'title' );
+$f_description = \Core\GPC::get_string( 'description' );
 $f_file = gpc_get_file( 'file' );
 
-if( \Flickerbox\Utility::is_blank( $f_title ) ) {
-	\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'title' ) );
+if( \Core\Utility::is_blank( $f_title ) ) {
+	\Core\Error::parameters( \Core\Lang::get( 'title' ) );
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
-\Flickerbox\File::add( 0, $f_file, 'project', $f_title, $f_description );
+\Core\File::add( 0, $f_file, 'project', $f_title, $f_description );
 
-\Flickerbox\Form::security_purge( 'proj_doc_add' );
+\Core\Form::security_purge( 'proj_doc_add' );
 
 $t_redirect_url = 'proj_doc_page.php';
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

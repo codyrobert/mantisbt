@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -64,7 +64,7 @@ class Event
 	 */
 	static function declare_many( array $p_events ) {
 		foreach( $p_events as $t_name => $t_type ) {
-			\Flickerbox\Event::event_declare( $t_name, $t_type );
+			\Core\Event::event_declare( $t_name, $t_type );
 		}
 	}
 	
@@ -81,7 +81,7 @@ class Event
 		global $g_event_cache;
 	
 		if( !isset( $g_event_cache[$p_name] ) ) {
-			\Flickerbox\Error::parameters( $p_name );
+			\Core\Error::parameters( $p_name );
 			trigger_error( ERROR_EVENT_UNDECLARED, WARNING );
 			return null;
 		}
@@ -99,12 +99,12 @@ class Event
 	static function hook_many( array $p_hooks, $p_plugin = 0 ) {
 		foreach( $p_hooks as $t_name => $t_callbacks ) {
 			if( !is_array( $t_callbacks ) ) {
-				\Flickerbox\Event::hook( $t_name, $t_callbacks, $p_plugin );
+				\Core\Event::hook( $t_name, $t_callbacks, $p_plugin );
 				continue;
 			}
 	
 			foreach( $t_callbacks as $t_callback ) {
-				\Flickerbox\Event::hook( $t_name, $t_callback, $p_plugin );
+				\Core\Event::hook( $t_name, $t_callback, $p_plugin );
 			}
 		}
 	}
@@ -136,7 +136,7 @@ class Event
 		global $g_event_cache;
 	
 		if( !isset( $g_event_cache[$p_name] ) ) {
-			\Flickerbox\Error::parameters( $p_name );
+			\Core\Error::parameters( $p_name );
 			trigger_error( ERROR_EVENT_UNDECLARED, WARNING );
 			return null;
 		}
@@ -150,10 +150,10 @@ class Event
 	
 		switch( $t_type ) {
 			case EVENT_TYPE_EXECUTE:
-				\Flickerbox\Event::type_execute( $p_name, $t_callbacks, $p_params );
+				\Core\Event::type_execute( $p_name, $t_callbacks, $p_params );
 				return null;
 			case EVENT_TYPE_OUTPUT:
-				\Flickerbox\Event::type_output( $p_name, $t_callbacks, $p_params );
+				\Core\Event::type_output( $p_name, $t_callbacks, $p_params );
 				return null;
 			case EVENT_TYPE_CHAIN:
 				if( !is_array( $p_params_dynamic ) ) {
@@ -161,11 +161,11 @@ class Event
 						$p_params_dynamic,
 					);
 				}
-				return \Flickerbox\Event::type_chain( $p_name, $t_callbacks, $p_params, $p_params_dynamic );
+				return \Core\Event::type_chain( $p_name, $t_callbacks, $p_params, $p_params_dynamic );
 			case EVENT_TYPE_FIRST:
-				return \Flickerbox\Event::type_first( $p_name, $t_callbacks, $p_params );
+				return \Core\Event::type_first( $p_name, $t_callbacks, $p_params );
 			default:
-				return \Flickerbox\Event::type_default( $p_name, $t_callbacks, $p_params );
+				return \Core\Event::type_default( $p_name, $t_callbacks, $p_params );
 		}
 	}
 	
@@ -189,13 +189,13 @@ class Event
 		if( $p_plugin !== 0 ) {
 			global $g_plugin_cache;
 	
-			\Flickerbox\Plugin::push_current( $p_plugin );
+			\Core\Plugin::push_current( $p_plugin );
 	
 			if( method_exists( $g_plugin_cache[$p_plugin], $p_callback ) ) {
 				$t_value = call_user_func_array( array( $g_plugin_cache[$p_plugin], $p_callback ), array_merge( array( $p_event ), $p_params ) );
 			}
 	
-			\Flickerbox\Plugin::pop_current();
+			\Core\Plugin::pop_current();
 		} else {
 			if( function_exists( $p_callback ) ) {
 				$t_value = call_user_func_array( $p_callback, array_merge( array( $p_event ), $p_params ) );
@@ -218,7 +218,7 @@ class Event
 	static function type_execute( $p_event, array $p_callbacks, $p_params = null ) {
 		foreach( $p_callbacks as $t_plugin => $t_callbacks ) {
 			foreach( $t_callbacks as $t_callback ) {
-				\Flickerbox\Event::callback( $p_event, $t_callback, $t_plugin, $p_params );
+				\Core\Event::callback( $p_event, $t_callback, $t_plugin, $p_params );
 			}
 		}
 	}
@@ -255,7 +255,7 @@ class Event
 		$t_output = array();
 		foreach( $p_callbacks as $t_plugin => $t_callbacks ) {
 			foreach( $t_callbacks as $t_callback ) {
-				$t_output[] = \Flickerbox\Event::callback( $p_event, $t_callback, $t_plugin, $p_params );
+				$t_output[] = \Core\Event::callback( $p_event, $t_callback, $t_plugin, $p_params );
 			}
 		}
 		if( count( $p_callbacks ) > 0 ) {
@@ -287,7 +287,7 @@ class Event
 				}
 	
 				$t_params = array_merge( $t_output, $p_params );
-				$t_output = \Flickerbox\Event::callback( $p_event, $t_callback, $t_plugin, $t_params );
+				$t_output = \Core\Event::callback( $p_event, $t_callback, $t_plugin, $t_params );
 			}
 		}
 		return $t_output;
@@ -309,7 +309,7 @@ class Event
 	
 		foreach( $p_callbacks as $t_plugin => $t_callbacks ) {
 			foreach( $t_callbacks as $t_callback ) {
-				$t_output = \Flickerbox\Event::callback( $p_event, $t_callback, $t_plugin, $p_params );
+				$t_output = \Core\Event::callback( $p_event, $t_callback, $t_plugin, $p_params );
 	
 				if( !is_null( $t_output ) ) {
 					return $t_output;
@@ -335,7 +335,7 @@ class Event
 		$t_output = array();
 		foreach( $p_callbacks as $t_plugin => $t_callbacks ) {
 			foreach( $t_callbacks as $t_callback ) {
-				$t_output[$t_plugin][$t_callback] = \Flickerbox\Event::callback( $p_event, $t_callback, $t_plugin, $p_data );
+				$t_output[$t_plugin][$t_callback] = \Core\Event::callback( $p_event, $t_callback, $t_plugin, $p_data );
 			}
 		}
 		return $t_output;

@@ -42,22 +42,22 @@ if( !defined( 'PRINT_BUGNOTE_INC_ALLOW' ) ) {
 }
 
 
-$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
+$f_bug_id = \Core\GPC::get_int( 'bug_id' );
 
 # grab the user id currently logged in
-$t_user_id	= \Flickerbox\Auth::get_current_user_id();
+$t_user_id	= \Core\Auth::get_current_user_id();
 $c_bug_id		= (integer)$f_bug_id;
 
-if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'private_bugnote_threshold' ), $f_bug_id ) ) {
+if( !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'private_bugnote_threshold' ), $f_bug_id ) ) {
 	$t_restriction = 'AND view_state=' . VS_PUBLIC;
 } else {
 	$t_restriction = '';
 }
 
 # get the bugnote data
-$t_bugnote_order = \Flickerbox\Current_User::get_pref( 'bugnote_order' );
-$t_bugnotes = \Flickerbox\Bug\Note::get_all_visible_bugnotes( $f_bug_id, $t_bugnote_order, 0, $t_user_id );
-$t_show_time_tracking = \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'time_tracking_view_threshold' ), $f_bug_id );
+$t_bugnote_order = \Core\Current_User::get_pref( 'bugnote_order' );
+$t_bugnotes = \Core\Bug\Note::get_all_visible_bugnotes( $f_bug_id, $t_bugnote_order, 0, $t_user_id );
+$t_show_time_tracking = \Core\Access::has_bug_level( \Core\Config::mantis_get( 'time_tracking_view_threshold' ), $f_bug_id );
 $t_total_time = 0;
 ?>
 
@@ -68,24 +68,24 @@ $t_total_time = 0;
 	?>
 	<tr>
 		<td class="print" colspan="2">
-			<?php echo \Flickerbox\Lang::get( 'no_bugnotes_msg' ) ?>
+			<?php echo \Core\Lang::get( 'no_bugnotes_msg' ) ?>
 		</td>
 	</tr>
 	<?php } else { # print bugnotes ?>
 	<tr>
 		<td class="form-title" colspan="2">
-			<?php echo \Flickerbox\Lang::get( 'bug_notes_title' ) ?>
+			<?php echo \Core\Lang::get( 'bug_notes_title' ) ?>
 		</td>
 	</tr>
 	<?php
 		foreach( $t_bugnotes as $t_row ) {
-			$t_date_submitted = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_row->date_submitted );
-			$t_last_modified = date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_row->last_modified );
+			$t_date_submitted = date( \Core\Config::mantis_get( 'normal_date_format' ), $t_row->date_submitted );
+			$t_last_modified = date( \Core\Config::mantis_get( 'normal_date_format' ), $t_row->last_modified );
 
-			$t_note = \Flickerbox\String::display_links( $t_row->note );
+			$t_note = \Core\String::display_links( $t_row->note );
 
 			if( $t_row->note_type == TIME_TRACKING ) {
-				$t_time = \Flickerbox\Database::minutes_to_hhmm( $t_row->time_tracking );
+				$t_time = \Core\Database::minutes_to_hhmm( $t_row->time_tracking );
 				$t_total_time += $t_row->time_tracking;
 			} else {
 				$t_time = '';
@@ -101,13 +101,13 @@ $t_total_time = 0;
 			<table class="hide" cellspacing="1">
 				<tr>
 					<td class="print">
-						(<?php echo \Flickerbox\Bug\Note::format_id( $t_row->id ) ?>)
+						(<?php echo \Core\Bug\Note::format_id( $t_row->id ) ?>)
 					</td>
 				</tr>
 				<tr>
 					<td class="print">
 						<?php
-						\Flickerbox\Print_Util::user( $t_row->reporter_id );
+						\Core\Print_Util::user( $t_row->reporter_id );
 						?>&#160;&#160;&#160;
 					</td>
 				</tr>
@@ -115,7 +115,7 @@ $t_total_time = 0;
 					<td class="print">
 						<?php echo $t_date_submitted ?>&#160;&#160;&#160;
 						<?php if( $t_date_submitted != $t_last_modified ) {
-							echo '<br />(' . \Flickerbox\Lang::get( 'last_edited' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_last_modified . ')';
+							echo '<br />(' . \Core\Lang::get( 'last_edited' ) . \Core\Lang::get( 'word_separator' ) . $t_last_modified . ')';
 						} ?>
 					</td>
 				</tr>
@@ -128,18 +128,18 @@ $t_total_time = 0;
 					<?php
 						switch( $t_row->note_type ) {
 							case REMINDER:
-								echo '<p><strong>' . \Flickerbox\Lang::get( 'reminder_sent_to' ) . ': ';
+								echo '<p><strong>' . \Core\Lang::get( 'reminder_sent_to' ) . ': ';
 								$t_note_attr = utf8_substr( $t_row->note_attr, 1, utf8_strlen( $t_row->note_attr ) - 2 );
 								$t_to = array();
 								foreach ( explode( '|', $t_note_attr ) as $t_recipient ) {
-									$t_to[] = \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_recipient ) );
+									$t_to[] = \Core\String::display_line( \Core\User::get_name( $t_recipient ) );
 								}
 								echo implode( ', ', $t_to ) . '</strong></p>';
 								echo $t_note;
 								break;
 							case TIME_TRACKING:
 								if( $t_show_time_tracking ) {
-									echo '<p><strong>', \Flickerbox\Lang::get( 'time_tracking_time_spent' ) . ' ' . $t_time, '</strong></p>';
+									echo '<p><strong>', \Core\Lang::get( 'time_tracking_time_spent' ) . ' ' . $t_time, '</strong></p>';
 								}
 								echo $t_note;
 								break;
@@ -160,5 +160,5 @@ $t_total_time = 0;
 </table>
 <?php
 if( $t_total_time > 0 && $t_show_time_tracking ) {
-	echo '<p align="right">', sprintf( \Flickerbox\Lang::get( 'total_time_for_issue' ), '<strong>' . \Flickerbox\Database::minutes_to_hhmm( $t_total_time ) . '</strong>' ), '</p>';
+	echo '<p align="right">', sprintf( \Core\Lang::get( 'total_time_for_issue' ), '<strong>' . \Core\Database::minutes_to_hhmm( $t_total_time ) . '</strong>' ), '</p>';
 }

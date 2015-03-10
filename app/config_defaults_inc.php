@@ -3730,7 +3730,7 @@ $g_forward_year_count = 4;
  * array(
  *	array(
  *		'action' => 'my_custom_action',
- *		'label' => 'my_label',   # string to be passed to \Flickerbox\Lang::get_defaulted()
+ *		'label' => 'my_label',   # string to be passed to \Core\Lang::get_defaulted()
  *		'form_page' => 'my_custom_action_page.php',
  *		'action_page' => 'my_custom_action.php'
  *	)

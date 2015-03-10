@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -40,8 +40,8 @@ abstract class MantisCoreWikiPlugin extends MantisWikiPlugin {
 	 */
 	function config() {
 		return array(
-			'root_namespace' => \Flickerbox\Config::get_global( 'wiki_root_namespace' ),
-			'engine_url' => \Flickerbox\Config::get_global( 'wiki_engine_url' ),
+			'root_namespace' => \Core\Config::get_global( 'wiki_root_namespace' ),
+			'engine_url' => \Core\Config::get_global( 'wiki_engine_url' ),
 		);
 	}
 }

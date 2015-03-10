@@ -45,7 +45,7 @@ function mc_user_profiles_get_all( $p_username, $p_password, $p_page_number, $p_
 	$t_results = array();
 	$t_start = max( array( 0, $p_page_number - 1 ) ) * $p_per_page;
 
-	foreach ( \Flickerbox\Profile::get_all_for_user( $t_user_id ) as $t_profile_row ) {
+	foreach ( \Core\Profile::get_all_for_user( $t_user_id ) as $t_profile_row ) {
 		$t_result = array(
 			'id' => $t_profile_row['id'],
 			'description' => $t_profile_row['description'],

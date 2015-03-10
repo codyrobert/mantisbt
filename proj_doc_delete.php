@@ -38,36 +38,36 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'proj_doc_delete' );
+\Core\Form::security_validate( 'proj_doc_delete' );
 
 # Check if project documentation feature is enabled.
-if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) ) {
-	\Flickerbox\Access::denied();
+if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ) {
+	\Core\Access::denied();
 }
 
-$f_file_id = \Flickerbox\GPC::get_int( 'file_id' );
+$f_file_id = \Core\GPC::get_int( 'file_id' );
 
-$t_project_id = \Flickerbox\File::get_field( $f_file_id, 'project_id', 'project' );
+$t_project_id = \Core\File::get_field( $f_file_id, 'project_id', 'project' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'upload_project_file_threshold' ), $t_project_id );
 
-$t_query = 'SELECT title FROM {project_file} WHERE id=' . \Flickerbox\Database::param();
-$t_result = \Flickerbox\Database::query( $t_query, array( $f_file_id ) );
-$t_title = \Flickerbox\Database::result( $t_result );
+$t_query = 'SELECT title FROM {project_file} WHERE id=' . \Core\Database::param();
+$t_result = \Core\Database::query( $t_query, array( $f_file_id ) );
+$t_title = \Core\Database::result( $t_result );
 
 # Confirm with the user
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'confirm_file_delete_msg' ) .
-	'<br/>' . \Flickerbox\Lang::get( 'filename_label' ) . \Flickerbox\Lang::get( 'word_separator' ) . \Flickerbox\String::display( $t_title ),
-	\Flickerbox\Lang::get( 'file_delete_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'confirm_file_delete_msg' ) .
+	'<br/>' . \Core\Lang::get( 'filename_label' ) . \Core\Lang::get( 'word_separator' ) . \Core\String::display( $t_title ),
+	\Core\Lang::get( 'file_delete_button' ) );
 
-\Flickerbox\File::delete( $f_file_id, 'project' );
+\Core\File::delete( $f_file_id, 'project' );
 
-\Flickerbox\Form::security_purge( 'proj_doc_delete' );
+\Core\Form::security_purge( 'proj_doc_delete' );
 
 $t_redirect_url = 'proj_doc_page.php';
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

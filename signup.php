@@ -38,11 +38,11 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'signup' );
+\Core\Form::security_validate( 'signup' );
 
-$f_username		= strip_tags( \Flickerbox\GPC::get_string( 'username' ) );
-$f_email		= strip_tags( \Flickerbox\GPC::get_string( 'email' ) );
-$f_captcha		= \Flickerbox\GPC::get_string( 'captcha', '' );
+$f_username		= strip_tags( \Core\GPC::get_string( 'username' ) );
+$f_email		= strip_tags( \Core\GPC::get_string( 'email' ) );
+$f_captcha		= \Core\GPC::get_string( 'captcha', '' );
 
 $f_username = trim( $f_username );
 $f_email = trim( $f_email );
@@ -54,13 +54,13 @@ if( auth_is_user_authenticated() ) {
 }
 
 # Check to see if signup is allowed
-if( OFF == \Flickerbox\Config::get_global( 'allow_signup' ) ) {
-	\Flickerbox\Print_Util::header_redirect( 'login_page.php' );
+if( OFF == \Core\Config::get_global( 'allow_signup' ) ) {
+	\Core\Print_Util::header_redirect( 'login_page.php' );
 	exit;
 }
 
-if( ON == \Flickerbox\Config::mantis_get( 'signup_use_captcha' ) && \Flickerbox\Utility::get_gd_version() > 0 	&&
-			\Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() ) ) {
+if( ON == \Core\Config::mantis_get( 'signup_use_captcha' ) && \Core\Utility::get_gd_version() > 0 	&&
+			\Core\Helper::call_custom_function( 'auth_can_change_password', array() ) ) {
 	# captcha image requires GD library and related option to ON
 	require_lib( 'securimage/securimage.php' );
 
@@ -70,40 +70,40 @@ if( ON == \Flickerbox\Config::mantis_get( 'signup_use_captcha' ) && \Flickerbox\
 	}
 }
 
-\Flickerbox\Email::ensure_not_disposable( $f_email );
+\Core\Email::ensure_not_disposable( $f_email );
 
 # notify the selected group a new user has signed-up
-if( \Flickerbox\User::signup( $f_username, $f_email ) ) {
-	\Flickerbox\Email::notify_new_account( $f_username, $f_email );
+if( \Core\User::signup( $f_username, $f_email ) ) {
+	\Core\Email::notify_new_account( $f_username, $f_email );
 }
 
-\Flickerbox\Form::security_purge( 'signup' );
+\Core\Form::security_purge( 'signup' );
 
-\Flickerbox\HTML::page_top1();
-\Flickerbox\HTML::page_top2a();
+\Core\HTML::page_top1();
+\Core\HTML::page_top2a();
 ?>
 
 <br />
 
 <div id="error-msg">
 	<div class="center">
-		<strong><?php echo \Flickerbox\Lang::get( 'signup_done_title' ) ?></strong><br/>
+		<strong><?php echo \Core\Lang::get( 'signup_done_title' ) ?></strong><br/>
 		<?php echo '[' . $f_username . ' - ' . $f_email . '] ' ?>
 	</div>
 
 	<div>
 		<br />
-		<?php echo \Flickerbox\Lang::get( 'password_emailed_msg' ) ?>
+		<?php echo \Core\Lang::get( 'password_emailed_msg' ) ?>
 		<br /><br />
-		<?php echo \Flickerbox\Lang::get( 'no_reponse_msg' ) ?>
+		<?php echo \Core\Lang::get( 'no_reponse_msg' ) ?>
 		<br /><br/>
 	</div>
 </div>
 
 <br />
 <div class="center">
-	<?php \Flickerbox\Print_Util::bracket_link( 'login_page.php', \Flickerbox\Lang::get( 'proceed' ) ); ?>
+	<?php \Core\Print_Util::bracket_link( 'login_page.php', \Core\Lang::get( 'proceed' ) ); ?>
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom1a( __FILE__ );
+\Core\HTML::page_bottom1a( __FILE__ );

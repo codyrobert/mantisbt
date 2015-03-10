@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -73,7 +73,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_access_level() {
-		return \Flickerbox\User::get_access_level( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
+		return \Core\User::get_access_level( \Core\Auth::get_current_user_id(), \Core\Helper::get_current_project() );
 	}
 	
 	/**
@@ -84,7 +84,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_assigned_open_bug_count() {
-		return \Flickerbox\User::get_assigned_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
+		return \Core\User::get_assigned_open_bug_count( \Core\Auth::get_current_user_id(), \Core\Helper::get_current_project() );
 	}
 	
 	/**
@@ -95,7 +95,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_reported_open_bug_count() {
-		return \Flickerbox\User::get_reported_open_bug_count( \Flickerbox\Auth::get_current_user_id(), \Flickerbox\Helper::get_current_project() );
+		return \Core\User::get_reported_open_bug_count( \Core\Auth::get_current_user_id(), \Core\Helper::get_current_project() );
 	}
 	
 	/**
@@ -106,7 +106,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_field( $p_field_name ) {
-		return \Flickerbox\User::get_field( \Flickerbox\Auth::get_current_user_id(), $p_field_name );
+		return \Core\User::get_field( \Core\Auth::get_current_user_id(), $p_field_name );
 	}
 	
 	/**
@@ -117,7 +117,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_pref( $p_pref_name ) {
-		return \Flickerbox\User\Pref::get_pref( \Flickerbox\Auth::get_current_user_id(), $p_pref_name );
+		return \Core\User\Pref::get_pref( \Core\Auth::get_current_user_id(), $p_pref_name );
 	}
 	
 	/**
@@ -129,7 +129,7 @@ class Current_User
 	 * @return boolean
 	 */
 	static function set_pref( $p_pref_name, $p_pref_value ) {
-		return \Flickerbox\User\Pref::set_pref( \Flickerbox\Auth::get_current_user_id(), $p_pref_name, $p_pref_value );
+		return \Core\User\Pref::set_pref( \Core\Auth::get_current_user_id(), $p_pref_name, $p_pref_value );
 	}
 	
 	/**
@@ -140,7 +140,7 @@ class Current_User
 	 * @access public
 	 */
 	static function set_default_project( $p_project_id ) {
-		\Flickerbox\User::set_default_project( \Flickerbox\Auth::get_current_user_id(), $p_project_id );
+		\Core\User::set_default_project( \Core\Auth::get_current_user_id(), $p_project_id );
 	}
 	
 	/**
@@ -152,7 +152,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_accessible_projects( $p_show_disabled = false ) {
-		return \Flickerbox\User::get_accessible_projects( \Flickerbox\Auth::get_current_user_id(), $p_show_disabled );
+		return \Core\User::get_accessible_projects( \Core\Auth::get_current_user_id(), $p_show_disabled );
 	}
 	
 	/**
@@ -165,7 +165,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_accessible_subprojects( $p_project_id, $p_show_disabled = false ) {
-		return \Flickerbox\User::get_accessible_subprojects( \Flickerbox\Auth::get_current_user_id(), $p_project_id, $p_show_disabled );
+		return \Core\User::get_accessible_subprojects( \Core\Auth::get_current_user_id(), $p_project_id, $p_show_disabled );
 	}
 	
 	/**
@@ -177,7 +177,7 @@ class Current_User
 	 * @access public
 	 */
 	static function get_all_accessible_subprojects( $p_project_id ) {
-		return \Flickerbox\User::get_all_accessible_subprojects( \Flickerbox\Auth::get_current_user_id(), $p_project_id );
+		return \Core\User::get_all_accessible_subprojects( \Core\Auth::get_current_user_id(), $p_project_id );
 	}
 	
 	/**
@@ -188,7 +188,7 @@ class Current_User
 	 * @access public
 	 */
 	static function is_administrator() {
-		return \Flickerbox\User::is_administrator( \Flickerbox\Auth::get_current_user_id() );
+		return \Core\User::is_administrator( \Core\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -199,7 +199,7 @@ class Current_User
 	 * @access public
 	 */
 	static function is_protected() {
-		return \Flickerbox\User::is_protected( \Flickerbox\Auth::get_current_user_id() );
+		return \Core\User::is_protected( \Core\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -209,7 +209,7 @@ class Current_User
 	 * @access public
 	 */
 	static function is_anonymous() {
-		return \Flickerbox\User::is_anonymous( \Flickerbox\Auth::get_current_user_id() );
+		return \Core\User::is_anonymous( \Core\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -220,7 +220,7 @@ class Current_User
 	 * @return void
 	 */
 	static function ensure_unprotected() {
-		\Flickerbox\User::ensure_unprotected( \Flickerbox\Auth::get_current_user_id() );
+		\Core\User::ensure_unprotected( \Core\Auth::get_current_user_id() );
 	}
 	
 	/**
@@ -233,24 +233,24 @@ class Current_User
 	 * @access public
 	 */
 	static function get_bug_filter( $p_project_id = null ) {
-		$f_filter_string = \Flickerbox\GPC::get_string( 'filter', '' );
+		$f_filter_string = \Core\GPC::get_string( 'filter', '' );
 		$t_filter = '';
 	
-		if( !\Flickerbox\Utility::is_blank( $f_filter_string ) ) {
+		if( !\Core\Utility::is_blank( $f_filter_string ) ) {
 			if( is_numeric( $f_filter_string ) ) {
-				$t_token = \Flickerbox\Token::get_value( TOKEN_FILTER );
+				$t_token = \Core\Token::get_value( TOKEN_FILTER );
 				if( null != $t_token ) {
 					$t_filter = json_decode( $t_token, true );
 				}
 			} else {
 				$t_filter = json_decode( $f_filter_string, true );
 			}
-			$t_filter = \Flickerbox\Filter::ensure_valid_filter( $t_filter );
-		} else if( !\Flickerbox\Filter::is_cookie_valid() ) {
-			$t_filter = \Flickerbox\Filter::get_default();
+			$t_filter = \Core\Filter::ensure_valid_filter( $t_filter );
+		} else if( !\Core\Filter::is_cookie_valid() ) {
+			$t_filter = \Core\Filter::get_default();
 		} else {
-			$t_user_id = \Flickerbox\Auth::get_current_user_id();
-			$t_filter = \Flickerbox\User::get_bug_filter( $t_user_id, $p_project_id );
+			$t_user_id = \Core\Auth::get_current_user_id();
+			$t_filter = \Core\User::get_bug_filter( $t_user_id, $p_project_id );
 		}
 	
 		return $t_filter;

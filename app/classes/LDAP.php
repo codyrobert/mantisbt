@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -44,7 +44,7 @@ class LDAP
 	 * @return void
 	 */
 	static function log_error( $p_ds ) {
-		\Flickerbox\Log::event( LOG_LDAP, 'ERROR #' . ldap_errno( $p_ds ) . ': ' . ldap_error( $p_ds ) );
+		\Core\Log::event( LOG_LDAP, 'ERROR #' . ldap_errno( $p_ds ) . ': ' . ldap_error( $p_ds ) );
 	}
 	
 	/**
@@ -55,58 +55,58 @@ class LDAP
 	 */
 	static function connect_bind( $p_binddn = '', $p_password = '' ) {
 		if( !extension_loaded( 'ldap' ) ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'Error: LDAP extension missing in php' );
+			\Core\Log::event( LOG_LDAP, 'Error: LDAP extension missing in php' );
 			trigger_error( ERROR_LDAP_EXTENSION_NOT_LOADED, ERROR );
 		}
 	
-		$t_ldap_server = \Flickerbox\Config::mantis_get( 'ldap_server' );
+		$t_ldap_server = \Core\Config::mantis_get( 'ldap_server' );
 	
-		\Flickerbox\Log::event( LOG_LDAP, 'Attempting connection to LDAP server/URI \'' . $t_ldap_server . '\'.' );
+		\Core\Log::event( LOG_LDAP, 'Attempting connection to LDAP server/URI \'' . $t_ldap_server . '\'.' );
 		$t_ds = @ldap_connect( $t_ldap_server );
 		if( $t_ds !== false && $t_ds > 0 ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'Connection accepted by LDAP server' );
-			$t_protocol_version = \Flickerbox\Config::mantis_get( 'ldap_protocol_version' );
+			\Core\Log::event( LOG_LDAP, 'Connection accepted by LDAP server' );
+			$t_protocol_version = \Core\Config::mantis_get( 'ldap_protocol_version' );
 	
 			if( $t_protocol_version > 0 ) {
-				\Flickerbox\Log::event( LOG_LDAP, 'Setting LDAP protocol version to ' . $t_protocol_version );
+				\Core\Log::event( LOG_LDAP, 'Setting LDAP protocol version to ' . $t_protocol_version );
 				$t_result = @ldap_set_option( $t_ds, LDAP_OPT_PROTOCOL_VERSION, $t_protocol_version );
 				if( !$t_result ) {
-					\Flickerbox\LDAP::log_error( $t_ds );
+					\Core\LDAP::log_error( $t_ds );
 				}
 			}
 	
 			# Set referrals flag.
-			$t_follow_referrals = ON == \Flickerbox\Config::mantis_get( 'ldap_follow_referrals' );
+			$t_follow_referrals = ON == \Core\Config::mantis_get( 'ldap_follow_referrals' );
 			$t_result = @ldap_set_option( $t_ds, LDAP_OPT_REFERRALS, $t_follow_referrals );
 			if( !$t_result ) {
-				\Flickerbox\LDAP::log_error( $t_ds );
+				\Core\LDAP::log_error( $t_ds );
 			}
 	
 			# If no Bind DN and Password is set, attempt to login as the configured
 			#  Bind DN.
-			if( \Flickerbox\Utility::is_blank( $p_binddn ) && \Flickerbox\Utility::is_blank( $p_password ) ) {
-				$p_binddn = \Flickerbox\Config::mantis_get( 'ldap_bind_dn', '' );
-				$p_password = \Flickerbox\Config::mantis_get( 'ldap_bind_passwd', '' );
+			if( \Core\Utility::is_blank( $p_binddn ) && \Core\Utility::is_blank( $p_password ) ) {
+				$p_binddn = \Core\Config::mantis_get( 'ldap_bind_dn', '' );
+				$p_password = \Core\Config::mantis_get( 'ldap_bind_passwd', '' );
 			}
 	
-			if( !\Flickerbox\Utility::is_blank( $p_binddn ) && !\Flickerbox\Utility::is_blank( $p_password ) ) {
-				\Flickerbox\Log::event( LOG_LDAP, 'Attempting bind to ldap server with username and password' );
+			if( !\Core\Utility::is_blank( $p_binddn ) && !\Core\Utility::is_blank( $p_password ) ) {
+				\Core\Log::event( LOG_LDAP, 'Attempting bind to ldap server with username and password' );
 				$t_br = @ldap_bind( $t_ds, $p_binddn, $p_password );
 			} else {
 				# Either the Bind DN or the Password are empty, so attempt an anonymous bind.
-				\Flickerbox\Log::event( LOG_LDAP, 'Attempting anonymous bind to ldap server' );
+				\Core\Log::event( LOG_LDAP, 'Attempting anonymous bind to ldap server' );
 				$t_br = @ldap_bind( $t_ds );
 			}
 	
 			if( !$t_br ) {
-				\Flickerbox\LDAP::log_error( $t_ds );
-				\Flickerbox\Log::event( LOG_LDAP, 'Bind to ldap server failed' );
+				\Core\LDAP::log_error( $t_ds );
+				\Core\Log::event( LOG_LDAP, 'Bind to ldap server failed' );
 				trigger_error( ERROR_LDAP_SERVER_CONNECT_FAILED, ERROR );
 			} else {
-				\Flickerbox\Log::event( LOG_LDAP, 'Bind to ldap server successful' );
+				\Core\Log::event( LOG_LDAP, 'Bind to ldap server successful' );
 			}
 		} else {
-			\Flickerbox\Log::event( LOG_LDAP, 'Connection to ldap server failed' );
+			\Core\Log::event( LOG_LDAP, 'Connection to ldap server failed' );
 			trigger_error( ERROR_LDAP_SERVER_CONNECT_FAILED, ERROR );
 		}
 	
@@ -125,8 +125,8 @@ class LDAP
 			return $g_cache_ldap_email[(int)$p_user_id];
 		}
 	
-		$t_username = \Flickerbox\User::get_field( $p_user_id, 'username' );
-		$t_email = \Flickerbox\LDAP::email_from_username( $t_username );
+		$t_username = \Core\User::get_field( $p_user_id, 'username' );
+		$t_email = \Core\LDAP::email_from_username( $t_username );
 	
 		$g_cache_ldap_email[(int)$p_user_id] = $t_email;
 		return $t_email;
@@ -138,11 +138,11 @@ class LDAP
 	 * @return string
 	 */
 	static function email_from_username( $p_username ) {
-		if( \Flickerbox\LDAP::simulation_is_enabled() ) {
-			return \Flickerbox\LDAP::simulation_email_from_username( $p_username );
+		if( \Core\LDAP::simulation_is_enabled() ) {
+			return \Core\LDAP::simulation_email_from_username( $p_username );
 		}
 	
-		$t_email = \Flickerbox\LDAP::get_field_from_username( $p_username, 'mail' );
+		$t_email = \Core\LDAP::get_field_from_username( $p_username, 'mail' );
 		if( $t_email === null ) {
 			return '';
 		}
@@ -157,8 +157,8 @@ class LDAP
 	 * @return string real name.
 	 */
 	static function realname( $p_user_id ) {
-		$t_username = \Flickerbox\User::get_field( $p_user_id, 'username' );
-		return \Flickerbox\LDAP::realname_from_username( $t_username );
+		$t_username = \Core\User::get_field( $p_user_id, 'username' );
+		return \Core\LDAP::realname_from_username( $t_username );
 	}
 	
 	/**
@@ -168,12 +168,12 @@ class LDAP
 	 * @return string The user's real name.
 	 */
 	static function realname_from_username( $p_username ) {
-		if( \Flickerbox\LDAP::simulation_is_enabled() ) {
-			return \Flickerbox\LDAP::simulatiom_realname_from_username( $p_username );
+		if( \Core\LDAP::simulation_is_enabled() ) {
+			return \Core\LDAP::simulatiom_realname_from_username( $p_username );
 		}
 	
-		$t_ldap_realname_field	= \Flickerbox\Config::mantis_get( 'ldap_realname_field' );
-		$t_realname = \Flickerbox\LDAP::get_field_from_username( $p_username, $t_ldap_realname_field );
+		$t_ldap_realname_field	= \Core\Config::mantis_get( 'ldap_realname_field' );
+		$t_realname = \Core\LDAP::get_field_from_username( $p_username, $t_ldap_realname_field );
 		if( $t_realname === null ) {
 			return '';
 		}
@@ -208,19 +208,19 @@ class LDAP
 	 * @return string The field value or null if not found.
 	 */
 	static function get_field_from_username( $p_username, $p_field ) {
-		$t_ldap_organization    = \Flickerbox\Config::mantis_get( 'ldap_organization' );
-		$t_ldap_root_dn         = \Flickerbox\Config::mantis_get( 'ldap_root_dn' );
-		$t_ldap_uid_field		= \Flickerbox\Config::mantis_get( 'ldap_uid_field' );
+		$t_ldap_organization    = \Core\Config::mantis_get( 'ldap_organization' );
+		$t_ldap_root_dn         = \Core\Config::mantis_get( 'ldap_root_dn' );
+		$t_ldap_uid_field		= \Core\Config::mantis_get( 'ldap_uid_field' );
 	
-		$c_username = \Flickerbox\LDAP::escape_string( $p_username );
+		$c_username = \Core\LDAP::escape_string( $p_username );
 	
-		\Flickerbox\Log::event( LOG_LDAP, 'Retrieving field \'' . $p_field . '\' for \'' . $p_username . '\'' );
+		\Core\Log::event( LOG_LDAP, 'Retrieving field \'' . $p_field . '\' for \'' . $p_username . '\'' );
 	
 		# Bind
-		\Flickerbox\Log::event( LOG_LDAP, 'Binding to LDAP server' );
-		$t_ds = @\Flickerbox\LDAP::connect_bind();
+		\Core\Log::event( LOG_LDAP, 'Binding to LDAP server' );
+		$t_ds = @\Core\LDAP::connect_bind();
 		if( $t_ds === false ) {
-			\Flickerbox\LDAP::log_error( $t_ds );
+			\Core\LDAP::log_error( $t_ds );
 			return null;
 		}
 	
@@ -228,40 +228,40 @@ class LDAP
 		$t_search_filter        = '(&' . $t_ldap_organization . '(' . $t_ldap_uid_field . '=' . $c_username . '))';
 		$t_search_attrs         = array( $t_ldap_uid_field, $p_field, 'dn' );
 	
-		\Flickerbox\Log::event( LOG_LDAP, 'Searching for ' . $t_search_filter );
+		\Core\Log::event( LOG_LDAP, 'Searching for ' . $t_search_filter );
 		$t_sr = @ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
 		if( $t_sr === false ) {
-			\Flickerbox\LDAP::log_error( $t_ds );
+			\Core\LDAP::log_error( $t_ds );
 			ldap_unbind( $t_ds );
-			\Flickerbox\Log::event( LOG_LDAP, 'ldap search failed' );
+			\Core\Log::event( LOG_LDAP, 'ldap search failed' );
 			return null;
 		}
 	
 		# Get results
 		$t_info = ldap_get_entries( $t_ds, $t_sr );
 		if( $t_info === false ) {
-			\Flickerbox\LDAP::log_error( $t_ds );
-			\Flickerbox\Log::event( LOG_LDAP, 'ldap_get_entries() returned false.' );
+			\Core\LDAP::log_error( $t_ds );
+			\Core\Log::event( LOG_LDAP, 'ldap_get_entries() returned false.' );
 			return null;
 		}
 	
 		# Free results / unbind
-		\Flickerbox\Log::event( LOG_LDAP, 'Unbinding from LDAP server' );
+		\Core\Log::event( LOG_LDAP, 'Unbinding from LDAP server' );
 		ldap_free_result( $t_sr );
 		ldap_unbind( $t_ds );
 	
 		# If no matches, return null.
 		if( $t_info['count'] == 0 ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'No matches found.' );
+			\Core\Log::event( LOG_LDAP, 'No matches found.' );
 			return null;
 		}
 	
 		# Make sure the requested field exists
 		if( is_array( $t_info[0] ) && array_key_exists( $p_field, $t_info[0] ) ) {
 			$t_value = $t_info[0][$p_field][0];
-			\Flickerbox\Log::event( LOG_LDAP, 'Found value \'' . $t_value . '\' for field \'' . $p_field . '\'.' );
+			\Core\Log::event( LOG_LDAP, 'Found value \'' . $t_value . '\' for field \'' . $p_field . '\'.' );
 		} else {
-			\Flickerbox\Log::event( LOG_LDAP, 'WARNING: field \'' . $p_field . '\' does not exist' );
+			\Core\Log::event( LOG_LDAP, 'WARNING: field \'' . $p_field . '\' does not exist' );
 			return null;
 		}
 	
@@ -279,13 +279,13 @@ class LDAP
 		# if password is empty and ldap allows anonymous login, then
 		# the user will be able to login, hence, we need to check
 		# for this special case.
-		if( \Flickerbox\Utility::is_blank( $p_password ) ) {
+		if( \Core\Utility::is_blank( $p_password ) ) {
 			return false;
 		}
 	
-		$t_username = \Flickerbox\User::get_field( $p_user_id, 'username' );
+		$t_username = \Core\User::get_field( $p_user_id, 'username' );
 	
-		return \Flickerbox\LDAP::authenticate_by_username( $t_username, $p_password );
+		return \Core\LDAP::authenticate_by_username( $t_username, $p_password );
 	}
 	
 	/**
@@ -296,16 +296,16 @@ class LDAP
 	 * @return true: authenticated, false: failed to authenticate.
 	 */
 	static function authenticate_by_username( $p_username, $p_password ) {
-		if( \Flickerbox\LDAP::simulation_is_enabled() ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'Authenticating via LDAP simulation' );
-			$t_authenticated = \Flickerbox\LDAP::simulation_authenticate_by_username( $p_username, $p_password );
+		if( \Core\LDAP::simulation_is_enabled() ) {
+			\Core\Log::event( LOG_LDAP, 'Authenticating via LDAP simulation' );
+			$t_authenticated = \Core\LDAP::simulation_authenticate_by_username( $p_username, $p_password );
 		} else {
-			$c_username = \Flickerbox\LDAP::escape_string( $p_username );
+			$c_username = \Core\LDAP::escape_string( $p_username );
 	
-			$t_ldap_organization = \Flickerbox\Config::mantis_get( 'ldap_organization' );
-			$t_ldap_root_dn = \Flickerbox\Config::mantis_get( 'ldap_root_dn' );
+			$t_ldap_organization = \Core\Config::mantis_get( 'ldap_organization' );
+			$t_ldap_root_dn = \Core\Config::mantis_get( 'ldap_root_dn' );
 	
-			$t_ldap_uid_field = \Flickerbox\Config::mantis_get( 'ldap_uid_field', 'uid' );
+			$t_ldap_uid_field = \Core\Config::mantis_get( 'ldap_uid_field', 'uid' );
 			$t_search_filter = '(&' . $t_ldap_organization . '(' . $t_ldap_uid_field . '=' . $c_username . '))';
 			$t_search_attrs = array(
 				$t_ldap_uid_field,
@@ -313,26 +313,26 @@ class LDAP
 			);
 	
 			# Bind
-			\Flickerbox\Log::event( LOG_LDAP, 'Binding to LDAP server' );
-			$t_ds = \Flickerbox\LDAP::connect_bind();
+			\Core\Log::event( LOG_LDAP, 'Binding to LDAP server' );
+			$t_ds = \Core\LDAP::connect_bind();
 			if( $t_ds === false ) {
-				\Flickerbox\LDAP::log_error( $t_ds );
+				\Core\LDAP::log_error( $t_ds );
 				trigger_error( ERROR_LDAP_AUTH_FAILED, ERROR );
 			}
 	
 			# Search for the user id
-			\Flickerbox\Log::event( LOG_LDAP, 'Searching for ' . $t_search_filter );
+			\Core\Log::event( LOG_LDAP, 'Searching for ' . $t_search_filter );
 			$t_sr = ldap_search( $t_ds, $t_ldap_root_dn, $t_search_filter, $t_search_attrs );
 			if( $t_sr === false ) {
-				\Flickerbox\LDAP::log_error( $t_ds );
+				\Core\LDAP::log_error( $t_ds );
 				ldap_unbind( $t_ds );
-				\Flickerbox\Log::event( LOG_LDAP, 'ldap search failed' );
+				\Core\Log::event( LOG_LDAP, 'ldap search failed' );
 				trigger_error( ERROR_LDAP_AUTH_FAILED, ERROR );
 			}
 	
 			$t_info = @ldap_get_entries( $t_ds, $t_sr );
 			if( $t_info === false ) {
-				\Flickerbox\LDAP::log_error( $t_ds );
+				\Core\LDAP::log_error( $t_ds );
 				ldap_free_result( $t_sr );
 				ldap_unbind( $t_ds );
 				trigger_error( ERROR_LDAP_AUTH_FAILED, ERROR );
@@ -344,7 +344,7 @@ class LDAP
 				# Try to authenticate to each until we get a match
 				for( $i = 0; $i < $t_info['count']; $i++ ) {
 					$t_dn = $t_info[$i]['dn'];
-					\Flickerbox\Log::event( LOG_LDAP, 'Checking ' . $t_info[$i]['dn'] );
+					\Core\Log::event( LOG_LDAP, 'Checking ' . $t_info[$i]['dn'] );
 	
 					# Attempt to bind with the DN and password
 					if( @ldap_bind( $t_ds, $t_dn, $p_password ) ) {
@@ -353,10 +353,10 @@ class LDAP
 					}
 				}
 			} else {
-				\Flickerbox\Log::event( LOG_LDAP, 'No matching entries found' );
+				\Core\Log::event( LOG_LDAP, 'No matching entries found' );
 			}
 	
-			\Flickerbox\Log::event( LOG_LDAP, 'Unbinding from LDAP server' );
+			\Core\Log::event( LOG_LDAP, 'Unbinding from LDAP server' );
 			ldap_free_result( $t_sr );
 			ldap_unbind( $t_ds );
 		}
@@ -365,25 +365,25 @@ class LDAP
 		# from LDAP.  This will allow us to use the local data after login without
 		# having to go back to LDAP.  This will also allow fallback to DB if LDAP is down.
 		if( $t_authenticated ) {
-			$t_user_id = \Flickerbox\User::get_id_by_name( $p_username );
+			$t_user_id = \Core\User::get_id_by_name( $p_username );
 	
 			if( false !== $t_user_id ) {
 	
 				$t_fields_to_update = array('password' => md5( $p_password ));
 	
-				if( ON == \Flickerbox\Config::mantis_get( 'use_ldap_realname' ) ) {
-					$t_fields_to_update['realname'] = \Flickerbox\LDAP::realname( $t_user_id );
+				if( ON == \Core\Config::mantis_get( 'use_ldap_realname' ) ) {
+					$t_fields_to_update['realname'] = \Core\LDAP::realname( $t_user_id );
 				}
 	
-				if( ON == \Flickerbox\Config::mantis_get( 'use_ldap_email' ) ) {
-					$t_fields_to_update['email'] = \Flickerbox\LDAP::email_from_username( $p_username );
+				if( ON == \Core\Config::mantis_get( 'use_ldap_email' ) ) {
+					$t_fields_to_update['email'] = \Core\LDAP::email_from_username( $p_username );
 				}
 	
-				\Flickerbox\User::set_fields( $t_user_id, $t_fields_to_update );
+				\Core\User::set_fields( $t_user_id, $t_fields_to_update );
 			}
-			\Flickerbox\Log::event( LOG_LDAP, 'User \'' . $p_username . '\' authenticated' );
+			\Core\Log::event( LOG_LDAP, 'User \'' . $p_username . '\' authenticated' );
 		} else {
-			\Flickerbox\Log::event( LOG_LDAP, 'Authentication failed' );
+			\Core\Log::event( LOG_LDAP, 'Authentication failed' );
 		}
 	
 		return $t_authenticated;
@@ -395,8 +395,8 @@ class LDAP
 	 * @return boolean true if enabled, false otherwise.
 	 */
 	static function simulation_is_enabled() {
-		$t_filename = \Flickerbox\Config::mantis_get( 'ldap_simulation_file_path' );
-		return !\Flickerbox\Utility::is_blank( $t_filename );
+		$t_filename = \Core\Config::mantis_get( 'ldap_simulation_file_path' );
+		return !\Core\Utility::is_blank( $t_filename );
 	}
 	
 	/**
@@ -406,10 +406,10 @@ class LDAP
 	 * @return array|null An associate array with user information or null if not found.
 	 */
 	static function simulation_get_user( $p_username ) {
-		$t_filename = \Flickerbox\Config::mantis_get( 'ldap_simulation_file_path' );
+		$t_filename = \Core\Config::mantis_get( 'ldap_simulation_file_path' );
 		$t_lines = file( $t_filename );
 		if( $t_lines === false ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_get_user: could not read simulation data from ' . $t_filename );
+			\Core\Log::event( LOG_LDAP, 'ldap_simulation_get_user: could not read simulation data from ' . $t_filename );
 			trigger_error( ERROR_LDAP_SERVER_CONNECT_FAILED, ERROR );
 		}
 	
@@ -431,7 +431,7 @@ class LDAP
 			return $t_user;
 		}
 	
-		\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_get_user: user \'' . $p_username . '\' not found.' );
+		\Core\Log::event( LOG_LDAP, 'ldap_simulation_get_user: user \'' . $p_username . '\' not found.' );
 		return null;
 	}
 	
@@ -442,13 +442,13 @@ class LDAP
 	 * @return The email address or blank if user is not found.
 	 */
 	static function simulation_email_from_username( $p_username ) {
-		$t_user = \Flickerbox\LDAP::simulation_get_user( $p_username );
+		$t_user = \Core\LDAP::simulation_get_user( $p_username );
 		if( $t_user === null ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_email_from_username: user \'' . $p_username . '\' not found.' );
+			\Core\Log::event( LOG_LDAP, 'ldap_simulation_email_from_username: user \'' . $p_username . '\' not found.' );
 			return '';
 		}
 	
-		\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_email_from_username: user \'' . $p_username . '\' has email \'' . $t_user['email'] .'\'.' );
+		\Core\Log::event( LOG_LDAP, 'ldap_simulation_email_from_username: user \'' . $p_username . '\' has email \'' . $t_user['email'] .'\'.' );
 		return $t_user['email'];
 	}
 	
@@ -459,13 +459,13 @@ class LDAP
 	 * @return string The real name or an empty string if not found.
 	 */
 	static function simulatiom_realname_from_username( $p_username ) {
-		$t_user = \Flickerbox\LDAP::simulation_get_user( $p_username );
+		$t_user = \Core\LDAP::simulation_get_user( $p_username );
 		if( $t_user === null ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulatiom_realname_from_username: user \'' . $p_username . '\' not found.' );
+			\Core\Log::event( LOG_LDAP, 'ldap_simulatiom_realname_from_username: user \'' . $p_username . '\' not found.' );
 			return '';
 		}
 	
-		\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulatiom_realname_from_username: user \'' . $p_username . '\' has email \'' . $t_user['realname'] . '\'.' );
+		\Core\Log::event( LOG_LDAP, 'ldap_simulatiom_realname_from_username: user \'' . $p_username . '\' has email \'' . $t_user['realname'] . '\'.' );
 		return $t_user['realname'];
 	}
 	
@@ -477,20 +477,20 @@ class LDAP
 	 * @return boolean true for authenticated, false otherwise.
 	 */
 	static function simulation_authenticate_by_username( $p_username, $p_password ) {
-		$c_username = \Flickerbox\LDAP::escape_string( $p_username );
+		$c_username = \Core\LDAP::escape_string( $p_username );
 	
-		$t_user = \Flickerbox\LDAP::simulation_get_user( $c_username );
+		$t_user = \Core\LDAP::simulation_get_user( $c_username );
 		if( $t_user === null ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_authenticate: user \'' . $p_username . '\' not found.' );
+			\Core\Log::event( LOG_LDAP, 'ldap_simulation_authenticate: user \'' . $p_username . '\' not found.' );
 			return false;
 		}
 	
 		if( $t_user['password'] != $p_password ) {
-			\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_authenticate: expected password \'' . $t_user['password'] . '\' and got \'' . $p_password . '\'.' );
+			\Core\Log::event( LOG_LDAP, 'ldap_simulation_authenticate: expected password \'' . $t_user['password'] . '\' and got \'' . $p_password . '\'.' );
 			return false;
 		}
 	
-		\Flickerbox\Log::event( LOG_LDAP, 'ldap_simulation_authenticate: authentication successful for user \'' . $p_username . '\'.' );
+		\Core\Log::event( LOG_LDAP, 'ldap_simulation_authenticate: authentication successful for user \'' . $p_username . '\'.' );
 		return true;
 	}
 

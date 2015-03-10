@@ -39,44 +39,44 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
 # extracts the user information for the currently logged in user
 # and prefixes it with u_
-$f_user_id = \Flickerbox\GPC::get_int( 'id', auth_get_current_user_id() );
-$t_row = \Flickerbox\User::get_row( $f_user_id );
+$f_user_id = \Core\GPC::get_int( 'id', auth_get_current_user_id() );
+$t_row = \Core\User::get_row( $f_user_id );
 
 extract( $t_row, EXTR_PREFIX_ALL, 'u' );
 
-$t_can_manage = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) ) &&
-	\Flickerbox\Access::has_global_level( $u_access_level );
-$t_can_see_realname = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_realname_threshold' ) );
-$t_can_see_email = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) );
+$t_can_manage = \Core\Access::has_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) ) &&
+	\Core\Access::has_global_level( $u_access_level );
+$t_can_see_realname = \Core\Access::has_project_level( \Core\Config::mantis_get( 'show_user_realname_threshold' ) );
+$t_can_see_email = \Core\Access::has_project_level( \Core\Config::mantis_get( 'show_user_email_threshold' ) );
 
 # In case we're using LDAP to get the email address... this will pull out
 #  that version instead of the one in the DB
-$u_email = \Flickerbox\User::get_email( $u_id );
-$u_realname = \Flickerbox\User::get_realname( $u_id );
+$u_email = \Core\User::get_email( $u_id );
+$u_realname = \Core\User::get_realname( $u_id );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 ?>
 
 <div class="section-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'view_account_title' ) ?></h2>
+	<h2><?php echo \Core\Lang::get( 'view_account_title' ) ?></h2>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></span>
-		<span class="display-value"><span><?php echo \Flickerbox\String::display_line( $u_username ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'username' ) ?></span></span>
+		<span class="display-value"><span><?php echo \Core\String::display_line( $u_username ) ?></span></span>
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'email' ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'email' ) ?></span></span>
 		<span class="display-value"><span>
 			<?php
 				if( ! ( $t_can_manage || $t_can_see_email ) ) {
-					print \Flickerbox\Error::string( ERROR_ACCESS_DENIED );
+					print \Core\Error::string( ERROR_ACCESS_DENIED );
 				} else {
-					if( !\Flickerbox\Utility::is_blank( $u_email ) ) {
-						\Flickerbox\Print_Util::email_link( $u_email, $u_email );
+					if( !\Core\Utility::is_blank( $u_email ) ) {
+						\Core\Print_Util::email_link( $u_email, $u_email );
 					} else {
 						echo ' - ';
 					}
@@ -85,21 +85,21 @@ $u_realname = \Flickerbox\User::get_realname( $u_id );
 		<span class="label-style"></span>
 	</div>
 	<div class="field-container">
-		<span class="display-label"><span><?php echo \Flickerbox\Lang::get( 'realname' ) ?></span></span>
+		<span class="display-label"><span><?php echo \Core\Lang::get( 'realname' ) ?></span></span>
 		<span class="display-value"><span><?php
 			if( ! ( $t_can_manage || $t_can_see_realname ) ) {
-				print \Flickerbox\Error::string( ERROR_ACCESS_DENIED );
+				print \Core\Error::string( ERROR_ACCESS_DENIED );
 			} else {
-				echo \Flickerbox\String::display_line( $u_realname );
+				echo \Core\String::display_line( $u_realname );
 			} ?>
 		</span></span>
 		<span class="label-style"></span>
 	</div>
 	<span class="section-links">
 	<?php if( $t_can_manage ) { ?>
-			<span id="manage-user-link"><a href="<?php echo \Flickerbox\String::html_specialchars( 'manage_user_edit_page.php?user_id=' . $f_user_id ); ?>"><?php echo \Flickerbox\Lang::get( 'manage_user' ); ?></a></span>
+			<span id="manage-user-link"><a href="<?php echo \Core\String::html_specialchars( 'manage_user_edit_page.php?user_id=' . $f_user_id ); ?>"><?php echo \Core\Lang::get( 'manage_user' ); ?></a></span>
 	<?php } ?>
 	</span>
 </div><?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

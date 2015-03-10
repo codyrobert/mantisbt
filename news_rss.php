@@ -40,48 +40,48 @@
 require_once( 'core.php' );
 require_lib( 'rssbuilder' . DIRECTORY_SEPARATOR . 'class.RSSBuilder.inc.php' );
 
-$f_username = \Flickerbox\GPC::get_string( 'username', null );
-$f_key = \Flickerbox\GPC::get_string( 'key', null );
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
+$f_username = \Core\GPC::get_string( 'username', null );
+$f_key = \Core\GPC::get_string( 'key', null );
+$f_project_id = \Core\GPC::get_int( 'project_id', ALL_PROJECTS );
 
-\Flickerbox\News::ensure_enabled();
+\Core\News::ensure_enabled();
 
 # make sure RSS syndication is enabled.
-if( OFF == \Flickerbox\Config::mantis_get( 'rss_enabled' ) ) {
-	\Flickerbox\Access::denied();
+if( OFF == \Core\Config::mantis_get( 'rss_enabled' ) ) {
+	\Core\Access::denied();
 }
 
 # authenticate the user
 if( $f_username !== null ) {
-	if( !\Flickerbox\RSS::login( $f_username, $f_key ) ) {
-		\Flickerbox\Access::denied();
+	if( !\Core\RSS::login( $f_username, $f_key ) ) {
+		\Core\Access::denied();
 	}
 } else {
-	if( OFF == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
-		\Flickerbox\Access::denied();
+	if( OFF == \Core\Config::mantis_get( 'allow_anonymous_login' ) ) {
+		\Core\Access::denied();
 	}
 }
 
 # Make sure that the current user has access to the selected project (if not ALL PROJECTS).
 if( $f_project_id != ALL_PROJECTS ) {
-	\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
+	\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
 }
 
 # construct rss file
 
 $t_encoding = 'utf-8';
-$t_about = \Flickerbox\Config::mantis_get( 'path' );
-$t_title = string_rss_links( \Flickerbox\Config::mantis_get( 'window_title' ) . ' - ' . \Flickerbox\Lang::get( 'news' ) );
+$t_about = \Core\Config::mantis_get( 'path' );
+$t_title = string_rss_links( \Core\Config::mantis_get( 'window_title' ) . ' - ' . \Core\Lang::get( 'news' ) );
 
 if( $f_username !== null ) {
 	$t_title .= ' - (' . $f_username . ')';
 }
 
 $t_description = $t_title;
-$t_image_link = \Flickerbox\Config::mantis_get( 'path' ) . 'images/mantis_logo_button.gif';
+$t_image_link = \Core\Config::mantis_get( 'path' ) . 'images/mantis_logo_button.gif';
 
 # only rss 2.0
-$t_category = string_rss_links( \Flickerbox\Project::get_name( $f_project_id ) );
+$t_category = string_rss_links( \Core\Project::get_name( $f_project_id ) );
 
 # in minutes (only rss 2.0)
 $t_cache = '60';
@@ -96,7 +96,7 @@ $t_publisher = '';
 $t_creator = '';
 
 $t_date = (string)date( 'r' );
-$t_language = \Flickerbox\Lang::get( 'phpmailer_language' );
+$t_language = \Core\Lang::get( 'phpmailer_language' );
 $t_rights = '';
 
 # spatial location , temporal period or jurisdiction
@@ -122,7 +122,7 @@ $t_base = utf8_substr( $t_base, 0, 22 ) . ':' . utf8_substr( $t_base, -2 );
 
 $t_rssfile->addSYdata( $t_period, $t_frequency, $t_base );
 
-$t_news_rows = \Flickerbox\News::get_limited_rows( 0, $f_project_id );
+$t_news_rows = \Core\News::get_limited_rows( 0, $f_project_id );
 $t_news_count = count( $t_news_rows );
 
 # Loop through results
@@ -139,7 +139,7 @@ for( $i = 0; $i < $t_news_count; $i++ ) {
 	$v_headline 	= string_rss_links( $v_headline );
 	$v_body 	= string_rss_links( $v_body );
 
-	$t_about = $t_link = \Flickerbox\Config::mantis_get( 'path' ) . 'news_view_page.php?news_id=' . $v_id;
+	$t_about = $t_link = \Core\Config::mantis_get( 'path' ) . 'news_view_page.php?news_id=' . $v_id;
 	$t_title = $v_headline;
 	$t_description = $v_body;
 
@@ -151,12 +151,12 @@ for( $i = 0; $i < $t_news_count; $i++ ) {
 
 	# author of item
 	$t_author = '';
-	if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
-		$t_author_name = string_rss_links( \Flickerbox\User::get_name( $v_poster_id ) );
-		$t_author_email = \Flickerbox\User::get_field( $v_poster_id, 'email' );
+	if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
+		$t_author_name = string_rss_links( \Core\User::get_name( $v_poster_id ) );
+		$t_author_email = \Core\User::get_field( $v_poster_id, 'email' );
 
-		if( !\Flickerbox\Utility::is_blank( $t_author_email ) ) {
-			if( !\Flickerbox\Utility::is_blank( $t_author_name ) ) {
+		if( !\Core\Utility::is_blank( $t_author_email ) ) {
+			if( !\Core\Utility::is_blank( $t_author_name ) ) {
 				$t_author = $t_author_name . ' &lt;' . $t_author_email . '&gt;';
 			} else {
 				$t_author = $t_author_email;

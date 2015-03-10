@@ -46,31 +46,31 @@
 
 require_once( 'core.php' );
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id', ALL_PROJECTS );
-$f_filter_id = \Flickerbox\GPC::get_int( 'filter_id', 0 );
-$f_sort = \Flickerbox\GPC::get_string( 'sort', 'submit' );
-$f_username = \Flickerbox\GPC::get_string( 'username', null );
-$f_key = \Flickerbox\GPC::get_string( 'key', null );
+$f_project_id = \Core\GPC::get_int( 'project_id', ALL_PROJECTS );
+$f_filter_id = \Core\GPC::get_int( 'filter_id', 0 );
+$f_sort = \Core\GPC::get_string( 'sort', 'submit' );
+$f_username = \Core\GPC::get_string( 'username', null );
+$f_key = \Core\GPC::get_string( 'key', null );
 
 # make sure RSS syndication is enabled.
-if( OFF == \Flickerbox\Config::mantis_get( 'rss_enabled' ) ) {
-	\Flickerbox\Access::denied();
+if( OFF == \Core\Config::mantis_get( 'rss_enabled' ) ) {
+	\Core\Access::denied();
 }
 
 # authenticate the user
 if( $f_username !== null ) {
-	if( !\Flickerbox\RSS::login( $f_username, $f_key ) ) {
-		\Flickerbox\Access::denied();
+	if( !\Core\RSS::login( $f_username, $f_key ) ) {
+		\Core\Access::denied();
 	}
 } else {
-	if( OFF == \Flickerbox\Config::mantis_get( 'allow_anonymous_login' ) ) {
-		\Flickerbox\Access::denied();
+	if( OFF == \Core\Config::mantis_get( 'allow_anonymous_login' ) ) {
+		\Core\Access::denied();
 	}
 }
 
 # Make sure that the current user has access to the selected project (if not ALL PROJECTS).
 if( $f_project_id != ALL_PROJECTS ) {
-	\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
+	\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $f_project_id ), $f_project_id );
 }
 
 if( $f_sort === 'update' ) {
@@ -79,29 +79,29 @@ if( $f_sort === 'update' ) {
 	$c_sort_field = 'date_submitted';
 }
 
-$t_path = \Flickerbox\Config::mantis_get( 'path' );
+$t_path = \Core\Config::mantis_get( 'path' );
 
 # construct rss file
 
 $t_encoding = 'utf-8';
 $t_about = $t_path;
-$t_title = \Flickerbox\Config::mantis_get( 'window_title' );
+$t_title = \Core\Config::mantis_get( 'window_title' );
 $t_image_link = $t_path . 'images/mantis_logo_button.gif';
 
 # only rss 2.0
-$t_category = \Flickerbox\Project::get_name( $f_project_id );
+$t_category = \Core\Project::get_name( $f_project_id );
 if( $f_project_id !== 0 ) {
 	$t_title .= ' - ' . $t_category;
 }
 
-$t_title .= ' - ' . \Flickerbox\Lang::get( 'issues' );
+$t_title .= ' - ' . \Core\Lang::get( 'issues' );
 
 if( $f_username !== null ) {
 	$t_title .= ' - (' . $f_username . ')';
 }
 
 if( $f_filter_id !== 0 ) {
-	$t_title .= ' (' . \Flickerbox\Filter::get_field( $f_filter_id, 'name' ) . ')';
+	$t_title .= ' (' . \Core\Filter::get_field( $f_filter_id, 'name' ) . ')';
 }
 
 $t_description = $t_title;
@@ -118,7 +118,7 @@ $t_publisher = '';
 $t_creator = '';
 
 $t_date = date( 'r' );
-$t_language = \Flickerbox\Lang::get( 'phpmailer_language' );
+$t_language = \Core\Lang::get( 'phpmailer_language' );
 $t_rights = '';
 
 # spatial location , temporal period or jurisdiction
@@ -150,26 +150,26 @@ $t_page_count = 0;
 $t_issues_count = 0;
 $t_project_id = $f_project_id;
 if( $f_username !== null ) {
-	$t_user_id = \Flickerbox\User::get_id_by_name( $f_username );
+	$t_user_id = \Core\User::get_id_by_name( $f_username );
 } else {
-	$t_user_id = \Flickerbox\User::get_id_by_name( \Flickerbox\Config::mantis_get( 'anonymous_account' ) );
+	$t_user_id = \Core\User::get_id_by_name( \Core\Config::mantis_get( 'anonymous_account' ) );
 }
 $t_show_sticky = null;
 
 if( $f_filter_id == 0 ) {
-	$t_custom_filter = \Flickerbox\Filter::get_default();
+	$t_custom_filter = \Core\Filter::get_default();
 	$t_custom_filter['sort'] = $c_sort_field;
 } else {
 	# null will be returned if the user doesn't have access right to access the filter.
-	$t_custom_filter = \Flickerbox\Filter::db_get_filter( $f_filter_id, $t_user_id );
+	$t_custom_filter = \Core\Filter::db_get_filter( $f_filter_id, $t_user_id );
 	if( null === $t_custom_filter ) {
-		\Flickerbox\Access::denied();
+		\Core\Access::denied();
 	}
 
-	$t_custom_filter = \Flickerbox\Filter::deserialize( $t_custom_filter );
+	$t_custom_filter = \Core\Filter::deserialize( $t_custom_filter );
 }
 
-$t_issues = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_issues_per_page, $t_page_count, $t_issues_count,
+$t_issues = \Core\Filter::get_bug_rows( $t_page_number, $t_issues_per_page, $t_page_count, $t_issues_count,
 								 $t_custom_filter, $t_project_id, $t_user_id, $t_show_sticky );
 $t_issues_count = count( $t_issues );
 
@@ -178,28 +178,28 @@ for( $i = 0; $i < $t_issues_count; $i++ ) {
 	$t_bug = $t_issues[$i];
 
 	$t_about = $t_link = $t_path . 'view.php?id=' . $t_bug->id;
-	$t_title = \Flickerbox\Bug::format_id( $t_bug->id ) . ': ' . $t_bug->summary;
+	$t_title = \Core\Bug::format_id( $t_bug->id ) . ': ' . $t_bug->summary;
 
 	if( $t_bug->view_state == VS_PRIVATE ) {
-		$t_title .= ' [' . \Flickerbox\Lang::get( 'private' ) . ']';
+		$t_title .= ' [' . \Core\Lang::get( 'private' ) . ']';
 	}
 
 	$t_description = string_rss_links( $t_bug->description );
 
 	# subject is category.
-	$t_subject = \Flickerbox\Category::full_name( $t_bug->category_id, false );
+	$t_subject = \Core\Category::full_name( $t_bug->category_id, false );
 
 	# optional DC value
 	$t_date = $t_bug->last_updated;
 
 	# author of item
 	$t_author = '';
-	if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
-		$t_author_name = \Flickerbox\User::get_name( $t_bug->reporter_id );
-		$t_author_email = \Flickerbox\User::get_field( $t_bug->reporter_id, 'email' );
+	if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
+		$t_author_name = \Core\User::get_name( $t_bug->reporter_id );
+		$t_author_email = \Core\User::get_field( $t_bug->reporter_id, 'email' );
 
-		if( !\Flickerbox\Utility::is_blank( $t_author_email ) ) {
-			if( !\Flickerbox\Utility::is_blank( $t_author_name ) ) {
+		if( !\Core\Utility::is_blank( $t_author_email ) ) {
+			if( !\Core\Utility::is_blank( $t_author_name ) ) {
 				$t_author = $t_author_name . ' <' . $t_author_email . '>';
 			} else {
 				$t_author = $t_author_email;

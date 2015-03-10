@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -49,7 +49,7 @@ class Excel
 	 * A method that returns the header for an Excel Xml file.
 	 *
 	 * @param string $p_worksheet_title The worksheet title.
-	 * @param array  $p_styles          An optional array of \Flickerbox\Excel\Style entries . Parent entries must be placed before child entries.
+	 * @param array  $p_styles          An optional array of \Core\Excel\Style entries . Parent entries must be placed before child entries.
 	 * @return string the header Xml.
 	 */
 	function excel_get_header( $p_worksheet_title, array $p_styles = array() ) {
@@ -64,7 +64,7 @@ class Excel
 	/**
 	 * Returns an XML string containing the <tt>ss:Styles</tt> entry, possibly empty
 	 *
-	 * @param array $p_styles An array of \Flickerbox\Excel\Style entries.
+	 * @param array $p_styles An array of \Core\Excel\Style entries.
 	 * @return null|string
 	 */
 	function excel_get_styles( array $p_styles ) {
@@ -131,7 +131,7 @@ class Excel
 		$t_ret = excel_get_start_row( $p_style_id );
 	
 		foreach( $t_columns as $t_column ) {
-			$t_ret .= excel_format_column_title( \Flickerbox\Columns::column_get_title( $t_column ) );
+			$t_ret .= excel_format_column_title( \Core\Columns::column_get_title( $t_column ) );
 		}
 	
 		$t_ret .= '</Row>';
@@ -145,12 +145,12 @@ class Excel
 	 * @return string file name without extension
 	 */
 	function excel_get_default_filename() {
-		$t_current_project_id = \Flickerbox\Helper::get_current_project();
+		$t_current_project_id = \Core\Helper::get_current_project();
 	
 		if( ALL_PROJECTS == $t_current_project_id ) {
-			$t_filename = \Flickerbox\User::get_name( auth_get_current_user_id() );
+			$t_filename = \Core\User::get_name( auth_get_current_user_id() );
 		} else {
-			$t_filename = \Flickerbox\Project::get_field( $t_current_project_id, 'name' );
+			$t_filename = \Core\Project::get_field( $t_current_project_id, 'name' );
 		}
 	
 		return $t_filename;
@@ -200,7 +200,7 @@ class Excel
 	 * @return array column names.
 	 */
 	function excel_get_columns() {
-		$t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_EXCEL_PAGE );
+		$t_columns = \Core\Helper::get_columns_to_view( COLUMNS_TARGET_EXCEL_PAGE );
 		return $t_columns;
 	}
 	
@@ -212,48 +212,48 @@ class Excel
 	#
 	/**
 	 * Gets the formatted bug id value.
-	 * @param \Flickerbox\BugData $p_bug The bug object.
+	 * @param \Core\BugData $p_bug The bug object.
 	 * @return string The bug id prefixed with 0s.
 	 */
-	function excel_format_id( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Bug::format_id( $p_bug->id ) );
+	function excel_format_id( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Bug::format_id( $p_bug->id ) );
 	}
 	
 	/**
 	 * Gets the formatted project id value.
-	 * @param \Flickerbox\BugData $p_bug The bug object.
+	 * @param \Core\BugData $p_bug The bug object.
 	 * @return string The project name.
 	 */
-	function excel_format_project_id( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Project::get_name( $p_bug->project_id ) );
+	function excel_format_project_id( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Project::get_name( $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the formatted reporter id value.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The reporter user name.
 	 */
-	function excel_format_reporter_id( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\User::get_name( $p_bug->reporter_id ) );
+	function excel_format_reporter_id( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\User::get_name( $p_bug->reporter_id ) );
 	}
 	
 	/**
 	 * Gets the formatted number of bug notes.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The number of bug notes.
 	 */
-	function excel_format_bugnotes_count( \Flickerbox\BugData $p_bug ) {
+	function excel_format_bugnotes_count( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->bugnotes_count );
 	}
 	
 	/**
 	 * Gets the formatted handler id.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The handler user name or empty string.
 	 */
-	function excel_format_handler_id( \Flickerbox\BugData $p_bug ) {
+	function excel_format_handler_id( \Core\BugData $p_bug ) {
 		if( $p_bug->handler_id > 0 ) {
-			return excel_prepare_string( \Flickerbox\User::get_name( $p_bug->handler_id ) );
+			return excel_prepare_string( \Core\User::get_name( $p_bug->handler_id ) );
 		} else {
 			return excel_prepare_string( '' );
 		}
@@ -261,208 +261,208 @@ class Excel
 	
 	/**
 	 * Gets the formatted priority.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the priority text.
 	 */
-	function excel_format_priority( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'priority', $p_bug->priority, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_priority( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'priority', $p_bug->priority, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the formatted severity.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the severity text.
 	 */
-	function excel_format_severity( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'severity', $p_bug->severity, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_severity( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'severity', $p_bug->severity, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the formatted reproducibility.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the reproducibility text.
 	 */
-	function excel_format_reproducibility( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'reproducibility', $p_bug->reproducibility, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_reproducibility( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'reproducibility', $p_bug->reproducibility, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the formatted view state,
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The view state
 	 */
-	function excel_format_view_state( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'view_state', $p_bug->view_state, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_view_state( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'view_state', $p_bug->view_state, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the formatted projection.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the projection text.
 	 */
-	function excel_format_projection( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'projection', $p_bug->projection, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_projection( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'projection', $p_bug->projection, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the formatted eta.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the eta text.
 	 */
-	function excel_format_eta( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'eta', $p_bug->eta, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_eta( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'eta', $p_bug->eta, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the status field.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the formatted status.
 	 */
-	function excel_format_status( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'status', $p_bug->status, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_status( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'status', $p_bug->status, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the resolution field.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the formatted resolution.
 	 */
-	function excel_format_resolution( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Helper::get_enum_element( 'resolution', $p_bug->resolution, auth_get_current_user_id(), $p_bug->project_id ) );
+	function excel_format_resolution( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'resolution', $p_bug->resolution, auth_get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
 	 * Gets the formatted version.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the product version.
 	 */
-	function excel_format_version( \Flickerbox\BugData $p_bug ) {
+	function excel_format_version( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->version );
 	}
 	
 	/**
 	 * Gets the formatted fixed in version.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the fixed in version.
 	 */
-	function excel_format_fixed_in_version( \Flickerbox\BugData $p_bug ) {
+	function excel_format_fixed_in_version( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->fixed_in_version );
 	}
 	
 	/**
 	 * Gets the formatted target version.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the target version.
 	 */
-	function excel_format_target_version( \Flickerbox\BugData $p_bug ) {
+	function excel_format_target_version( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->target_version );
 	}
 	
 	/**
 	 * Gets the formatted category.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the category.
 	 */
-	function excel_format_category_id( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( \Flickerbox\Category::full_name( $p_bug->category_id, false ) );
+	function excel_format_category_id( \Core\BugData $p_bug ) {
+		return excel_prepare_string( \Core\Category::full_name( $p_bug->category_id, false ) );
 	}
 	
 	/**
 	 * Gets the formatted operating system.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the operating system.
 	 */
-	function excel_format_os( \Flickerbox\BugData $p_bug ) {
+	function excel_format_os( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->os );
 	}
 	
 	/**
 	 * Gets the formatted operating system build (version).
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the operating system build (version)
 	 */
-	function excel_format_os_build( \Flickerbox\BugData $p_bug ) {
+	function excel_format_os_build( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->os_build );
 	}
 	
 	/**
 	 * Gets the formatted product build,
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the product build.
 	 */
-	function excel_format_build( \Flickerbox\BugData $p_bug ) {
+	function excel_format_build( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->build );
 	}
 	
 	/**
 	 * Gets the formatted platform,
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the platform.
 	 */
-	function excel_format_platform( \Flickerbox\BugData $p_bug ) {
+	function excel_format_platform( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->platform );
 	}
 	
 	/**
 	 * Gets the formatted date submitted.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the date submitted in short date format.
 	 */
-	function excel_format_date_submitted( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_bug->date_submitted ) );
+	function excel_format_date_submitted( \Core\BugData $p_bug ) {
+		return excel_prepare_string( date( \Core\Config::mantis_get( 'short_date_format' ), $p_bug->date_submitted ) );
 	}
 	
 	/**
 	 * Gets the formatted date last updated.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the date last updated in short date format.
 	 */
-	function excel_format_last_updated( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_bug->last_updated ) );
+	function excel_format_last_updated( \Core\BugData $p_bug ) {
+		return excel_prepare_string( date( \Core\Config::mantis_get( 'short_date_format' ), $p_bug->last_updated ) );
 	}
 	
 	/**
 	 * Gets the summary field.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string the formatted summary.
 	 */
-	function excel_format_summary( \Flickerbox\BugData $p_bug ) {
+	function excel_format_summary( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->summary );
 	}
 	
 	/**
 	 * Gets the formatted selection.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string an formatted empty string.
 	 */
-	function excel_format_selection( \Flickerbox\BugData $p_bug ) {
+	function excel_format_selection( \Core\BugData $p_bug ) {
 		return excel_prepare_string( '' );
 	}
 	
 	/**
 	 * Gets the formatted description field.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The formatted description (multi-line).
 	 */
-	function excel_format_description( \Flickerbox\BugData $p_bug ) {
+	function excel_format_description( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->description );
 	}
 	
 	/**
 	 * Gets the formatted 'steps to reproduce' field.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The formatted steps to reproduce (multi-line).
 	 */
-	function excel_format_steps_to_reproduce( \Flickerbox\BugData $p_bug ) {
+	function excel_format_steps_to_reproduce( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->steps_to_reproduce );
 	}
 	
 	/**
 	 * Gets the formatted 'additional information' field.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The formatted additional information (multi-line).
 	 */
-	function excel_format_additional_information( \Flickerbox\BugData $p_bug ) {
+	function excel_format_additional_information( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->additional_information );
 	}
 	
@@ -492,11 +492,11 @@ class Excel
 	/**
 	 * Gets the formatted value for the specified plugin column value.
 	 * @param string  $p_column The plugin column name.
-	 * @param \Flickerbox\BugData $p_bug    A bug object to print the column for - needed for the display function of the plugin column.
+	 * @param \Core\BugData $p_bug    A bug object to print the column for - needed for the display function of the plugin column.
 	 * @return string The plugin column value.
 	 */
-	function excel_format_plugin_column_value( $p_column, \Flickerbox\BugData $p_bug ) {
-		$t_plugin_columns = \Flickerbox\Columns::get_plugin_columns();
+	function excel_format_plugin_column_value( $p_column, \Core\BugData $p_bug ) {
+		$t_plugin_columns = \Core\Columns::get_plugin_columns();
 	
 		if( !isset( $t_plugin_columns[$p_column] ) ) {
 			return excel_prepare_string( '' );
@@ -511,20 +511,20 @@ class Excel
 	
 	/**
 	 * Gets the formatted due date.
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string The formatted due date.
 	 */
-	function excel_format_due_date( \Flickerbox\BugData $p_bug ) {
-		return excel_prepare_string( date( \Flickerbox\Config::mantis_get( 'short_date_format' ), $p_bug->due_date ) );
+	function excel_format_due_date( \Core\BugData $p_bug ) {
+		return excel_prepare_string( date( \Core\Config::mantis_get( 'short_date_format' ), $p_bug->due_date ) );
 	}
 	
 	/**
 	 * Gets the sponsorship total for an issue
-	 * @param \Flickerbox\BugData $p_bug A bug object.
+	 * @param \Core\BugData $p_bug A bug object.
 	 * @return string
 	 * @access public
 	 */
-	function excel_format_sponsorship_total( \Flickerbox\BugData $p_bug ) {
+	function excel_format_sponsorship_total( \Core\BugData $p_bug ) {
 		return excel_prepare_string( $p_bug->sponsorship_total );
 	}
 	

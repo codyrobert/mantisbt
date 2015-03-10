@@ -24,12 +24,12 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Plugin::require_api( 'core/graph_api.php' );
+\Core\Plugin::require_api( 'core/graph_api.php' );
 
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_summary_threshold' ) );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
-$f_width = \Flickerbox\GPC::get_int( 'width', 300 );
-$t_ar = \Flickerbox\Plugin::config_get( 'bar_aspect' );
+$f_width = \Core\GPC::get_int( 'width', 300 );
+$t_ar = \Core\Plugin::config_get( 'bar_aspect' );
 
 	$t_metrics = create_developer_summary();
-graph_group( $t_metrics, \Flickerbox\Lang::get( 'by_developer' ), $f_width, $f_width * $t_ar );
+graph_group( $t_metrics, \Core\Lang::get( 'by_developer' ), $f_width, $f_width * $t_ar );

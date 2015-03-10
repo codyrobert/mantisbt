@@ -34,54 +34,54 @@
  */
 
 require_once( 'core.php' );
-\Flickerbox\HTML::require_css( 'login.css' );
+\Core\HTML::require_css( 'login.css' );
 
 # lost password feature disabled or reset password via email disabled -> stop here!
-if( LDAP == \Flickerbox\Config::get_global( 'login_method' ) ||
-	OFF == \Flickerbox\Config::mantis_get( 'lost_password_feature' ) ||
-	OFF == \Flickerbox\Config::mantis_get( 'send_reset_password' )  ||
-	OFF == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) {
+if( LDAP == \Core\Config::get_global( 'login_method' ) ||
+	OFF == \Core\Config::mantis_get( 'lost_password_feature' ) ||
+	OFF == \Core\Config::mantis_get( 'send_reset_password' )  ||
+	OFF == \Core\Config::mantis_get( 'enable_email_notification' ) ) {
 	trigger_error( ERROR_LOST_PASSWORD_NOT_ENABLED, ERROR );
 }
 
 # don't index lost password page
-\Flickerbox\HTML::robots_noindex();
+\Core\HTML::robots_noindex();
 
-\Flickerbox\HTML::page_top1();
-\Flickerbox\HTML::page_top2a();
+\Core\HTML::page_top1();
+\Core\HTML::page_top2a();
 ?>
 <div id="lost-password-div" class="form-container">
 	<form id="lost-password-form" method="post" action="lost_pwd.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'lost_password_title' ); ?></span></legend>
+			<legend><span><?php echo \Core\Lang::get( 'lost_password_title' ); ?></span></legend>
 			 <ul id="login-links">
-				<li><a href="login_page.php"><?php echo \Flickerbox\Lang::get( 'login_link' ); ?></a></li>
-				<li><a href="signup_page.php"><?php echo \Flickerbox\Lang::get( 'signup_link' ); ?></a></li>
+				<li><a href="login_page.php"><?php echo \Core\Lang::get( 'login_link' ); ?></a></li>
+				<li><a href="signup_page.php"><?php echo \Core\Lang::get( 'signup_link' ); ?></a></li>
             </ul>
 			<?php
-			echo \Flickerbox\Form::security_field( 'lost_pwd' );
+			echo \Core\Form::security_field( 'lost_pwd' );
 
-			$t_allow_passwd = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
+			$t_allow_passwd = \Core\Helper::call_custom_function( 'auth_can_change_password', array() );
 			if( $t_allow_passwd ) { ?>
 			<div class="field-container">
-				<label for="username"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></label>
+				<label for="username"><span><?php echo \Core\Lang::get( 'username' ) ?></span></label>
 				<span class="input"><input id="username" type="text" name="username" size="32" maxlength="<?php echo DB_FIELD_SIZE_USERNAME;?>" class="autofocus" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="email-field"><span><?php echo \Flickerbox\Lang::get( 'email' ) ?></span></label>
-				<span class="input"><?php \Flickerbox\Print_Util::email_input( 'email', '' ) ?></span>
+				<label for="email-field"><span><?php echo \Core\Lang::get( 'email' ) ?></span></label>
+				<span class="input"><?php \Core\Print_Util::email_input( 'email', '' ) ?></span>
 				<span class="label-style"></span>
 			</div>
-			<span id="lost-password-msg"><?php echo \Flickerbox\Lang::get( 'lost_password_info' ); ?></span>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'submit_button' ) ?>" /></span><?php
+			<span id="lost-password-msg"><?php echo \Core\Lang::get( 'lost_password_info' ); ?></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'submit_button' ) ?>" /></span><?php
 			} else {
 				echo '<span id="no-password-msg">';
-				echo \Flickerbox\Lang::get( 'no_password_request' );
+				echo \Core\Lang::get( 'no_password_request' );
 				echo '</span>';
 			} ?>
 		</fieldset>
 	</form>
 </div><?php
 
-\Flickerbox\HTML::page_bottom1a( __FILE__ );
+\Core\HTML::page_bottom1a( __FILE__ );

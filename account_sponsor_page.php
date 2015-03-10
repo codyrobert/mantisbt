@@ -17,8 +17,8 @@
 /**
  * CALLERS
  *	This page is called from:
- *	- \Flickerbox\HTML::print_menu()
- *	- \Flickerbox\HTML::print_account_menu()
+ *	- \Core\HTML::print_menu()
+ *	- \Core\HTML::print_account_menu()
  *
  * EXPECTED BEHAVIOUR
  *	- Display the user's current sponsorships
@@ -59,60 +59,60 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\HTML::require_css( 'status_config.php' );
+\Core\HTML::require_css( 'status_config.php' );
 
-if( !\Flickerbox\Config::mantis_get( 'enable_sponsorship' ) ) {
+if( !\Core\Config::mantis_get( 'enable_sponsorship' ) ) {
 	trigger_error( ERROR_SPONSORSHIP_NOT_ENABLED, ERROR );
 }
 
 # anonymous users are not allowed to sponsor issues
-if( \Flickerbox\Current_User::is_anonymous() ) {
-	\Flickerbox\Access::denied();
+if( \Core\Current_User::is_anonymous() ) {
+	\Core\Access::denied();
 }
 
-$t_show_all = \Flickerbox\GPC::get_bool( 'show_all', false );
+$t_show_all = \Core\GPC::get_bool( 'show_all', false );
 
 # start the page
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'my_sponsorship' ) );
+\Core\HTML::page_top( \Core\Lang::get( 'my_sponsorship' ) );
 
-$t_project = \Flickerbox\Helper::get_current_project();
+$t_project = \Core\Helper::get_current_project();
 ?>
 <br />
 <table class="width100" cellspacing="1">
 <tr>
 	<td class="form-title">
-		<?php echo \Flickerbox\Lang::get( 'my_sponsorship' ) ?>
+		<?php echo \Core\Lang::get( 'my_sponsorship' ) ?>
 	</td>
 	<td class="right">
-		<?php \Flickerbox\HTML::print_account_menu( 'account_sponsor_page.php' ) ?>
+		<?php \Core\HTML::print_account_menu( 'account_sponsor_page.php' ) ?>
 	</td>
 </tr>
 </table>
 <?php
 # get issues user has sponsored
-$t_user = \Flickerbox\Auth::get_current_user_id();
-$t_resolved = \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold' );
-$t_payment = \Flickerbox\Config::mantis_get( 'payment_enable', 0 );
+$t_user = \Core\Auth::get_current_user_id();
+$t_resolved = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
+$t_payment = \Core\Config::mantis_get( 'payment_enable', 0 );
 
-$t_project_clause = \Flickerbox\Helper::project_specific_where( $t_project );
+$t_project_clause = \Core\Helper::project_specific_where( $t_project );
 
 $t_query = 'SELECT b.id as bug, s.id as sponsor, s.paid, b.project_id, b.fixed_in_version, b.status
 	FROM {bug} b, {sponsorship} s
-	WHERE s.user_id=' . \Flickerbox\Database::param() . ' AND s.bug_id = b.id ' .
-	( $t_show_all ? '' : 'AND ( b.status < ' . \Flickerbox\Database::param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
+	WHERE s.user_id=' . \Core\Database::param() . ' AND s.bug_id = b.id ' .
+	( $t_show_all ? '' : 'AND ( b.status < ' . \Core\Database::param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
 	AND ' . $t_project_clause . '
 	ORDER BY s.paid ASC, b.project_id ASC, b.fixed_in_version ASC, b.status ASC, b.id DESC';
 
-$t_result = \Flickerbox\Database::query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
+$t_result = \Core\Database::query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
 
 $t_sponsors = array();
-while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 	$t_sponsors[] = $t_row;
 }
 
 $t_sponsor_count = count( $t_sponsors );
 if( $t_sponsor_count === 0 ) {
-	echo '<p>' . \Flickerbox\Lang::get( 'no_own_sponsored' ) . '</p>';
+	echo '<p>' . \Core\Lang::get( 'no_own_sponsored' ) . '</p>';
 } else {
 ?>
 
@@ -134,18 +134,18 @@ if( $t_sponsor_count === 0 ) {
 	<!-- Headings -->
 	<tr>
 		<td class="form-title" colspan="9">
-			<?php echo \Flickerbox\Lang::get( 'own_sponsored' ) ?>
+			<?php echo \Core\Lang::get( 'own_sponsored' ) ?>
 		</td>
 	</tr>
 	<tr>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_bug' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_project' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'fixed_in_version' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_status' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_handler' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_summary' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'amount' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'status' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_bug' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_project' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'fixed_in_version' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_status' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_handler' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_summary' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'amount' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'status' ) ?></td>
 		<td class="form-title">&#160;</td>
 	</tr>
 <?php
@@ -153,41 +153,41 @@ if( $t_sponsor_count === 0 ) {
 	$t_total_paid = 0;
 	for( $i = 0; $i < $t_sponsor_count; ++$i ) {
 		$t_sponsor_row = $t_sponsors[$i];
-		$t_bug = \Flickerbox\Bug::get( $t_sponsor_row['bug'] );
-		$t_sponsor = \Flickerbox\Sponsorship::get( $t_sponsor_row['sponsor'] );
+		$t_bug = \Core\Bug::get( $t_sponsor_row['bug'] );
+		$t_sponsor = \Core\Sponsorship::get( $t_sponsor_row['sponsor'] );
 
 		# describe bug
-		$t_status = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_resolution = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_version_id = \Flickerbox\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
-		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Flickerbox\Version::get_field( $t_version_id, 'released' ) ) ) {
-			$t_released_label = '<a title="' . \Flickerbox\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
+		$t_status = \Core\String::attribute( \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_resolution = \Core\String::attribute( \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_version_id = \Core\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
+		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Core\Version::get_field( $t_version_id, 'released' ) ) ) {
+			$t_released_label = '<a title="' . \Core\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
 		} else {
 			$t_released_label = $t_bug->fixed_in_version;
 		}
 
 		# choose color based on status
-		$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 
 		echo '<tr class="' . $t_status_label .  '">';
-		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Flickerbox\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';
-		echo '<td>' . \Flickerbox\String::display_line( \Flickerbox\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
+		echo '<td><a href="' . \Core\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Core\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';
+		echo '<td>' . \Core\String::display_line( \Core\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
 		echo '<td class="right">' . $t_released_label . '&#160;</td>';
 		echo '<td><span class="issue-status" title="' . $t_resolution . '">' . $t_status . '</span></td>';
 		echo '<td>';
-		\Flickerbox\Print_Util::user( $t_bug->handler_id );
+		\Core\Print_Util::user( $t_bug->handler_id );
 		echo '</td>';
 
 		# summary
-		echo '<td>' . \Flickerbox\String::display_line( $t_bug->summary );
+		echo '<td>' . \Core\String::display_line( $t_bug->summary );
 		if( VS_PRIVATE == $t_bug->view_state ) {
-			printf( ' <img src="%s" alt="(%s)" title="%s" />', $t_icon_path . 'protected.gif', \Flickerbox\Lang::get( 'private' ), \Flickerbox\Lang::get( 'private' ) );
+			printf( ' <img src="%s" alt="(%s)" title="%s" />', $t_icon_path . 'protected.gif', \Core\Lang::get( 'private' ), \Core\Lang::get( 'private' ) );
 		}
 		echo '</td>';
 
 		# describe sponsorship amount
-		echo '<td class="right">' . \Flickerbox\Sponsorship::format_amount( $t_sponsor->amount ) . '</td>';
-		echo '<td>' . \Flickerbox\Helper::get_enum_element( 'sponsorship', $t_sponsor->paid ) . '</td>';
+		echo '<td class="right">' . \Core\Sponsorship::format_amount( $t_sponsor->amount ) . '</td>';
+		echo '<td>' . \Core\Helper::get_enum_element( 'sponsorship', $t_sponsor->paid ) . '</td>';
 
 		if( SPONSORSHIP_PAID == $t_sponsor->paid ) {
 			$t_total_paid += $t_sponsor->amount;
@@ -208,14 +208,14 @@ if( $t_sponsor_count === 0 ) {
 <!-- Totals -->
 <tr>
 	<td colspan="5"></td>
-	<td><?php echo \Flickerbox\Lang::get( 'total_owing' ) ?></td>
-	<td class="right"><?php echo \Flickerbox\Sponsorship::format_amount( $t_total_owing ) ?></td>
+	<td><?php echo \Core\Lang::get( 'total_owing' ) ?></td>
+	<td class="right"><?php echo \Core\Sponsorship::format_amount( $t_total_owing ) ?></td>
 	<td colspan="2"></td>
 </tr>
 <tr>
 	<td colspan="5"></td>
-	<td><?php echo \Flickerbox\Lang::get( 'total_paid' ) ?></td>
-	<td class="right"><?php echo \Flickerbox\Sponsorship::format_amount( $t_total_paid ) ?></td>
+	<td><?php echo \Core\Lang::get( 'total_paid' ) ?></td>
+	<td class="right"><?php echo \Core\Sponsorship::format_amount( $t_total_paid ) ?></td>
 	<td colspan="2"></td>
 </tr>
 </table>
@@ -224,21 +224,21 @@ if( $t_sponsor_count === 0 ) {
 
 $t_query = 'SELECT b.id as bug, s.id as sponsor, s.paid, b.project_id, b.fixed_in_version, b.status
 	FROM {bug} b, {sponsorship} s
-	WHERE b.handler_id=' . \Flickerbox\Database::param() . ' AND s.bug_id = b.id ' .
-	( $t_show_all ? '' : 'AND ( b.status < ' . \Flickerbox\Database::param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
+	WHERE b.handler_id=' . \Core\Database::param() . ' AND s.bug_id = b.id ' .
+	( $t_show_all ? '' : 'AND ( b.status < ' . \Core\Database::param() . ' OR s.paid < ' . SPONSORSHIP_PAID . ')' ) . '
 	AND ' . $t_project_clause . '
 	ORDER BY s.paid ASC, b.project_id ASC, b.fixed_in_version ASC, b.status ASC, b.id DESC';
 
-$t_result = \Flickerbox\Database::query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
+$t_result = \Core\Database::query( $t_query, $t_show_all ? array( $t_user ) : array( $t_user , $t_resolved ) );
 
 $t_sponsors = array();
-while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 	$t_sponsors[] = $t_row;
 }
 
 $t_sponsor_count = count( $t_sponsors );
 if( $t_sponsor_count === 0 ) {
-	echo '<p>' . \Flickerbox\Lang::get( 'no_sponsored' ) . '</p>';
+	echo '<p>' . \Core\Lang::get( 'no_sponsored' ) . '</p>';
 } else {
 ?>
 
@@ -246,7 +246,7 @@ if( $t_sponsor_count === 0 ) {
 <br />
 <div>
 <form method="post" action="account_sponsor_update.php">
-<?php echo \Flickerbox\Form::security_field( 'account_sponsor_update' ) ?>
+<?php echo \Core\Form::security_field( 'account_sponsor_update' ) ?>
 <table class="width100" cellspacing="1">
 	<colgroup>
 		<col style="width:10%" />
@@ -261,18 +261,18 @@ if( $t_sponsor_count === 0 ) {
 	<!-- Headings -->
 	<tr>
 		<td class="form-title" colspan="8">
-			<?php echo \Flickerbox\Lang::get( 'issues_handled' ) ?>
+			<?php echo \Core\Lang::get( 'issues_handled' ) ?>
 		</td>
 	</tr>
 	<tr>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_bug' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_project' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'fixed_in_version' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_status' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'email_summary' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'sponsor' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'amount' ) ?></td>
-		<td class="form-title"><?php echo \Flickerbox\Lang::get( 'status' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_bug' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_project' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'fixed_in_version' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_status' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'email_summary' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'sponsor' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'amount' ) ?></td>
+		<td class="form-title"><?php echo \Core\Lang::get( 'status' ) ?></td>
 	</tr>
 <?php
 	$t_bug_list = array();
@@ -280,43 +280,43 @@ if( $t_sponsor_count === 0 ) {
 	$t_total_paid = 0;
 	for( $i = 0; $i < $t_sponsor_count; ++$i ) {
 		$t_sponsor_row = $t_sponsors[$i];
-		$t_bug = \Flickerbox\Bug::get( $t_sponsor_row['bug'] );
-		$t_sponsor = \Flickerbox\Sponsorship::get( $t_sponsor_row['sponsor'] );
+		$t_bug = \Core\Bug::get( $t_sponsor_row['bug'] );
+		$t_sponsor = \Core\Sponsorship::get( $t_sponsor_row['sponsor'] );
 		$t_buglist[] = $t_sponsor_row['bug'] . ':' . $t_sponsor_row['sponsor'];
 
 		# describe bug
-		$t_status = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_resolution = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_version_id = \Flickerbox\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
-		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Flickerbox\Version::get_field( $t_version_id, 'released' ) ) ) {
-			$t_released_label = '<a title="' . \Flickerbox\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
+		$t_status = \Core\String::attribute( \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_resolution = \Core\String::attribute( \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_version_id = \Core\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
+		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Core\Version::get_field( $t_version_id, 'released' ) ) ) {
+			$t_released_label = '<a title="' . \Core\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
 		} else {
 			$t_released_label = $t_bug->fixed_in_version;
 		}
 
 		# choose color based on status
-		$t_status_label = \Flickerbox\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
 
 		echo '<tr class="' . $t_status_label .  '">';
-		echo '<td><a href="' . \Flickerbox\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Flickerbox\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';
-		echo '<td>' . \Flickerbox\String::display_line( \Flickerbox\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
+		echo '<td><a href="' . \Core\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Core\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';
+		echo '<td>' . \Core\String::display_line( \Core\Project::get_field( $t_bug->project_id, 'name' ) ) . '&#160;</td>';
 		echo '<td class="right">' . $t_released_label . '&#160;</td>';
 		echo '<td><a title="' . $t_resolution . '"><span class="underline">' . $t_status . '</span>&#160;</a></td>';
 
 		# summary
-		echo '<td>' . \Flickerbox\String::display_line( $t_bug->summary );
+		echo '<td>' . \Core\String::display_line( $t_bug->summary );
 		if( VS_PRIVATE == $t_bug->view_state ) {
-			printf( ' <img src="%s" alt="(%s)" title="%s" />', $t_icon_path . 'protected.gif', \Flickerbox\Lang::get( 'private' ), \Flickerbox\Lang::get( 'private' ) );
+			printf( ' <img src="%s" alt="(%s)" title="%s" />', $t_icon_path . 'protected.gif', \Core\Lang::get( 'private' ), \Core\Lang::get( 'private' ) );
 		}
 		echo '</td>';
 
 		# describe sponsorship amount
 		echo '<td>';
-		\Flickerbox\Print_Util::user( $t_sponsor->user_id );
+		\Core\Print_Util::user( $t_sponsor->user_id );
 		echo '</td>';
-		echo '<td class="right">' . \Flickerbox\Sponsorship::format_amount( $t_sponsor->amount ) . '</td>';
+		echo '<td class="right">' . \Core\Sponsorship::format_amount( $t_sponsor->amount ) . '</td>';
 		echo '<td><select name="sponsor_' . $t_row['bug'] . '_' . $t_sponsor->id . '">';
-		\Flickerbox\Print_Util::enum_string_option_list( 'sponsorship', $t_sponsor->paid );
+		\Core\Print_Util::enum_string_option_list( 'sponsorship', $t_sponsor->paid );
 		echo '</select></td>';
 
 		echo '</tr>';
@@ -332,14 +332,14 @@ if( $t_sponsor_count === 0 ) {
 <!-- Totals -->
 <tr>
 	<td colspan="5"></td>
-	<td><?php echo \Flickerbox\Lang::get( 'total_owing' ) ?></td>
-	<td class="right"><?php echo \Flickerbox\Sponsorship::format_amount( $t_total_owing ) ?></td>
+	<td><?php echo \Core\Lang::get( 'total_owing' ) ?></td>
+	<td class="right"><?php echo \Core\Sponsorship::format_amount( $t_total_owing ) ?></td>
 	<td></td>
 </tr>
 <tr>
 	<td colspan="5"></td>
-	<td><?php echo \Flickerbox\Lang::get( 'total_paid' ) ?></td>
-	<td class="right"><?php echo \Flickerbox\Sponsorship::format_amount( $t_total_paid ) ?></td>
+	<td><?php echo \Core\Lang::get( 'total_paid' ) ?></td>
+	<td class="right"><?php echo \Core\Sponsorship::format_amount( $t_total_paid ) ?></td>
 	<td></td>
 </tr>
 	<!-- BUTTONS -->
@@ -348,7 +348,7 @@ if( $t_sponsor_count === 0 ) {
 		<!-- Update Button -->
 		<td colspan="3">
 			<input type="hidden" name="buglist" value="<?php echo $t_hidden_bug_list ?>" />
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_sponsorship_button' ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_sponsorship_button' ) ?>" />
 		</td>
 	</tr>
 </table>
@@ -359,11 +359,11 @@ if( $t_sponsor_count === 0 ) {
 <br />
 <div>
 <?php
-\Flickerbox\HTML::button( 'account_sponsor_page.php',
-	\Flickerbox\Lang::get( ( $t_show_all ? 'sponsor_hide' : 'sponsor_show' ) ),
+\Core\HTML::button( 'account_sponsor_page.php',
+	\Core\Lang::get( ( $t_show_all ? 'sponsor_hide' : 'sponsor_show' ) ),
 	array( 'show_all' => ( $t_show_all ? 0 : 1 ) ) );
 ?>
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

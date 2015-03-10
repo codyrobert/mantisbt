@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox\User;
+namespace Core\User;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -59,10 +59,10 @@ class Pref
 			return $g_cache_user_pref[(int)$p_user_id][(int)$p_project_id];
 		}
 	
-		$t_query = 'SELECT * FROM {user_pref} WHERE user_id=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_user_id, (int)$p_project_id ) );
+		$t_query = 'SELECT * FROM {user_pref} WHERE user_id=' . \Core\Database::param() . ' AND project_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( (int)$p_user_id, (int)$p_project_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			if( $p_trigger_errors ) {
@@ -104,11 +104,11 @@ class Pref
 			return;
 		}
 	
-		$t_query = 'SELECT * FROM {user_pref} WHERE user_id IN (' . implode( ',', $c_user_id_array ) . ') AND project_id=' . \Flickerbox\Database::param();
+		$t_query = 'SELECT * FROM {user_pref} WHERE user_id IN (' . implode( ',', $c_user_id_array ) . ') AND project_id=' . \Core\Database::param();
 	
-		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
+		$t_result = \Core\Database::query( $t_query, array( (int)$p_project_id ) );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			if( !isset( $g_cache_user_pref[(int)$t_row['user_id']] ) ) {
 				$g_cache_user_pref[(int)$t_row['user_id']] = array();
 			}
@@ -153,7 +153,7 @@ class Pref
 	 * @return boolean
 	 */
 	static function exists( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-		if( false === \Flickerbox\User\Pref::cache_row( $p_user_id, $p_project_id, false ) ) {
+		if( false === \Core\User\Pref::cache_row( $p_user_id, $p_project_id, false ) ) {
 			return false;
 		} else {
 			return true;
@@ -167,25 +167,25 @@ class Pref
 	 * @param UserPreferences $p_prefs      An UserPrefences Object.
 	 * @return boolean
 	 */
-	static function insert( $p_user_id, $p_project_id, \Flickerbox\UserPreferences $p_prefs ) {
+	static function insert( $p_user_id, $p_project_id, \Core\UserPreferences $p_prefs ) {
 		static $s_vars;
 		$c_user_id = (int)$p_user_id;
 		$c_project_id = (int)$p_project_id;
 	
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	
 		if( $s_vars == null ) {
-			$s_vars = \Flickerbox\Utility::getClassProperties( '\\Flickerbox\\UserPreferences', 'protected' );
+			$s_vars = \Core\Utility::getClassProperties( '\\Core\\UserPreferences', 'protected' );
 		}
 	
 		$t_values = array();
 	
-		$t_params[] = \Flickerbox\Database::param(); # user_id
+		$t_params[] = \Core\Database::param(); # user_id
 		$t_values[] = $c_user_id;
-		$t_params[] = \Flickerbox\Database::param(); # project_id
+		$t_params[] = \Core\Database::param(); # project_id
 		$t_values[] = $c_project_id;
 		foreach( $s_vars as $t_var => $t_val ) {
-			array_push( $t_params, \Flickerbox\Database::param() );
+			array_push( $t_params, \Core\Database::param() );
 			array_push( $t_values, $p_prefs->Get( $t_var ) );
 		}
 	
@@ -194,7 +194,7 @@ class Pref
 	
 		$t_query = 'INSERT INTO {user_pref}
 				  (user_id, project_id, ' . $t_vars_string . ') VALUES ( ' . $t_params_string . ')';
-		\Flickerbox\Database::query( $t_query, $t_values );
+		\Core\Database::query( $t_query, $t_values );
 	
 		return true;
 	}
@@ -206,20 +206,20 @@ class Pref
 	 * @param UserPreferences $p_prefs      An UserPrefences Object.
 	 * @return void
 	 */
-	static function update( $p_user_id, $p_project_id, \Flickerbox\UserPreferences $p_prefs ) {
+	static function update( $p_user_id, $p_project_id, \Core\UserPreferences $p_prefs ) {
 		static $s_vars;
 	
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	
 		if( $s_vars == null ) {
-			$s_vars = \Flickerbox\Utility::getClassProperties( '\\Flickerbox\\UserPreferences', 'protected' );
+			$s_vars = \Core\Utility::getClassProperties( '\\Core\\UserPreferences', 'protected' );
 		}
 	
 		$t_pairs = array();
 		$t_values = array();
 	
 		foreach( $s_vars as $t_var => $t_val ) {
-			array_push( $t_pairs, $t_var . ' = ' . \Flickerbox\Database::param() ) ;
+			array_push( $t_pairs, $t_var . ' = ' . \Core\Database::param() ) ;
 			array_push( $t_values, $p_prefs->$t_var );
 		}
 	
@@ -228,8 +228,8 @@ class Pref
 		$t_values[] = $p_project_id;
 	
 		$t_query = 'UPDATE {user_pref} SET ' . $t_pairs_string . '
-					  WHERE user_id=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, $t_values );
+					  WHERE user_id=' . \Core\Database::param() . ' AND project_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, $t_values );
 	
 		user_pref_clear_cache( $p_user_id, $p_project_id );
 	}
@@ -242,12 +242,12 @@ class Pref
 	 * @return void
 	 */
 	static function delete( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	
 		$t_query = 'DELETE FROM {user_pref}
-					  WHERE user_id=' . \Flickerbox\Database::param() . ' AND
-					  		project_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_user_id, $p_project_id ) );
+					  WHERE user_id=' . \Core\Database::param() . ' AND
+					  		project_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_user_id, $p_project_id ) );
 	
 		user_pref_clear_cache( $p_user_id, $p_project_id );
 	}
@@ -257,16 +257,16 @@ class Pref
 	 * returns true if the prefs were successfully deleted
 	 *
 	 * It is far more efficient to delete them all in one query than to
-	 *  call \Flickerbox\User\Pref::delete() for each one and the code is short so that's
+	 *  call \Core\User\Pref::delete() for each one and the code is short so that's
 	 *  what we do
 	 * @param integer $p_user_id A valid user identifier.
 	 * @return void
 	 */
 	static function delete_all( $p_user_id ) {
-		\Flickerbox\User::ensure_unprotected( $p_user_id );
+		\Core\User::ensure_unprotected( $p_user_id );
 	
-		$t_query = 'DELETE FROM {user_pref} WHERE user_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_user_id ) );
+		$t_query = 'DELETE FROM {user_pref} WHERE user_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_user_id ) );
 	
 		user_pref_clear_cache( $p_user_id );
 	}
@@ -276,13 +276,13 @@ class Pref
 	 * returns true if the prefs were successfully deleted
 	 *
 	 * It is far more efficient to delete them all in one query than to
-	 * call \Flickerbox\User\Pref::delete() for each one and the code is short so that's what we do
+	 * call \Core\User\Pref::delete() for each one and the code is short so that's what we do
 	 * @param integer $p_project_id A valid project identifier.
 	 * @return void
 	 */
 	static function delete_project( $p_project_id ) {
-		$t_query = 'DELETE FROM {user_pref} WHERE project_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_project_id ) );
+		$t_query = 'DELETE FROM {user_pref} WHERE project_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_project_id ) );
 	}
 	
 	/**
@@ -296,20 +296,20 @@ class Pref
 		global $g_cache_current_user_pref;
 	
 		if( isset( $g_cache_current_user_pref[(int)$p_project_id] ) &&
-			\Flickerbox\Auth::is_user_authenticated() &&
-			\Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
+			\Core\Auth::is_user_authenticated() &&
+			\Core\Auth::get_current_user_id() == $p_user_id ) {
 			return $g_cache_current_user_pref[(int)$p_project_id];
 		}
 	
-		$t_prefs = new \Flickerbox\UserPreferences( $p_user_id, $p_project_id );
+		$t_prefs = new \Core\UserPreferences( $p_user_id, $p_project_id );
 	
-		$t_row = \Flickerbox\User\Pref::cache_row( $p_user_id, $p_project_id, false );
+		$t_row = \Core\User\Pref::cache_row( $p_user_id, $p_project_id, false );
 	
 		# If the user has no preferences for the given project
 		if( false === $t_row ) {
 			if( ALL_PROJECTS != $p_project_id ) {
 				# Try to get the prefs for ALL_PROJECTS (the defaults)
-				$t_row = \Flickerbox\User\Pref::cache_row( $p_user_id, ALL_PROJECTS, false );
+				$t_row = \Core\User\Pref::cache_row( $p_user_id, ALL_PROJECTS, false );
 			}
 	
 			# If $t_row is still false (the user doesn't have default preferences)
@@ -320,7 +320,7 @@ class Pref
 		}
 	
 		if( $s_vars == null ) {
-			$s_vars = \Flickerbox\Utility::getClassProperties( '\\Flickerbox\\UserPreferences', 'protected' );
+			$s_vars = \Core\Utility::getClassProperties( '\\Core\\UserPreferences', 'protected' );
 		}
 	
 		$t_row_keys = array_keys( $t_row );
@@ -333,7 +333,7 @@ class Pref
 				$t_prefs->$t_var = $t_row[$t_var];
 			}
 		}
-		if( \Flickerbox\Auth::is_user_authenticated() && \Flickerbox\Auth::get_current_user_id() == $p_user_id ) {
+		if( \Core\Auth::is_user_authenticated() && \Core\Auth::get_current_user_id() == $p_user_id ) {
 			$g_cache_current_user_pref[(int)$p_project_id] = $t_prefs;
 		}
 		return $t_prefs;
@@ -351,17 +351,17 @@ class Pref
 	static function get_pref( $p_user_id, $p_pref_name, $p_project_id = ALL_PROJECTS ) {
 		static $s_vars;
 	
-		$t_prefs = \Flickerbox\User\Pref::get( $p_user_id, $p_project_id );
+		$t_prefs = \Core\User\Pref::get( $p_user_id, $p_project_id );
 	
 		if( $s_vars == null ) {
-			$t_reflection = new \ReflectionClass( '\\Flickerbox\\UserPreferences' );
+			$t_reflection = new \ReflectionClass( '\\Core\\UserPreferences' );
 			$s_vars = $t_reflection->getDefaultProperties();
 		}
 	
 		if( in_array( $p_pref_name, array_keys( $s_vars ), true ) ) {
 			return $t_prefs->Get( $p_pref_name );
 		} else {
-			\Flickerbox\Error::parameters( $p_pref_name );
+			\Core\Error::parameters( $p_pref_name );
 			trigger_error( ERROR_DB_FIELD_NOT_FOUND, WARNING );
 			return '';
 		}
@@ -374,11 +374,11 @@ class Pref
 	 * @return string language name or null if invalid language specified
 	 */
 	static function get_language( $p_user_id, $p_project_id = ALL_PROJECTS ) {
-		$t_prefs = \Flickerbox\User\Pref::get( $p_user_id, $p_project_id );
+		$t_prefs = \Core\User\Pref::get( $p_user_id, $p_project_id );
 	
 		# ensure the language is a valid one
 		$t_lang = $t_prefs->language;
-		if( !\Flickerbox\Lang::language_exists( $t_lang ) ) {
+		if( !\Core\Lang::language_exists( $t_lang ) ) {
 			$t_lang = null;
 		}
 		return $t_lang;
@@ -398,11 +398,11 @@ class Pref
 	 * @return boolean
 	 */
 	static function set_pref( $p_user_id, $p_pref_name, $p_pref_value, $p_project_id = ALL_PROJECTS ) {
-		$t_prefs = \Flickerbox\User\Pref::get( $p_user_id, $p_project_id );
+		$t_prefs = \Core\User\Pref::get( $p_user_id, $p_project_id );
 	
 		if( $t_prefs->$p_pref_name != $p_pref_value ) {
 			$t_prefs->$p_pref_name = $p_pref_value;
-			\Flickerbox\User\Pref::set( $p_user_id, $t_prefs, $p_project_id );
+			\Core\User\Pref::set( $p_user_id, $t_prefs, $p_project_id );
 		}
 	
 		return true;
@@ -410,17 +410,17 @@ class Pref
 	
 	/**
 	 * set the user's preferences for the project from the given preferences object
-	 * Do the work by calling \Flickerbox\User\Pref::update() or \Flickerbox\User\Pref::insert() as appropriate
+	 * Do the work by calling \Core\User\Pref::update() or \Core\User\Pref::insert() as appropriate
 	 * @param integer         $p_user_id    A valid user identifier.
 	 * @param UserPreferences $p_prefs      A UserPreferences object containing settings to set.
 	 * @param integer         $p_project_id A valid project identifier.
 	 * @return null
 	 */
-	static function set( $p_user_id, \Flickerbox\UserPreferences $p_prefs, $p_project_id = ALL_PROJECTS ) {
-		if( \Flickerbox\User\Pref::exists( $p_user_id, $p_project_id ) ) {
-			return \Flickerbox\User\Pref::update( $p_user_id, $p_project_id, $p_prefs );
+	static function set( $p_user_id, \Core\UserPreferences $p_prefs, $p_project_id = ALL_PROJECTS ) {
+		if( \Core\User\Pref::exists( $p_user_id, $p_project_id ) ) {
+			return \Core\User\Pref::update( $p_user_id, $p_project_id, $p_prefs );
 		} else {
-			return \Flickerbox\User\Pref::insert( $p_user_id, $p_project_id, $p_prefs );
+			return \Core\User\Pref::insert( $p_user_id, $p_project_id, $p_prefs );
 		}
 	}
 

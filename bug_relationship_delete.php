@@ -45,70 +45,70 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bug_relationship_delete' );
+\Core\Form::security_validate( 'bug_relationship_delete' );
 
-$f_rel_id = \Flickerbox\GPC::get_int( 'rel_id' );
-$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
+$f_rel_id = \Core\GPC::get_int( 'rel_id' );
+$f_bug_id = \Core\GPC::get_int( 'bug_id' );
 
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+$t_bug = \Core\Bug::get( $f_bug_id, true );
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
 # user has access to update the bug...
-\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'update_bug_threshold' ), $f_bug_id );
+\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'update_bug_threshold' ), $f_bug_id );
 
 # bug is not read-only...
-if( \Flickerbox\Bug::is_readonly( $f_bug_id ) ) {
-	\Flickerbox\Error::parameters( $f_bug_id );
+if( \Core\Bug::is_readonly( $f_bug_id ) ) {
+	\Core\Error::parameters( $f_bug_id );
 	trigger_error( ERROR_BUG_READ_ONLY_ACTION_DENIED, ERROR );
 }
 
 # retrieve the destination bug of the relationship
-$t_dest_bug_id = \Flickerbox\Relationship::get_linked_bug_id( $f_rel_id, $f_bug_id );
+$t_dest_bug_id = \Core\Relationship::get_linked_bug_id( $f_rel_id, $f_bug_id );
 
-$t_dest_bug = \Flickerbox\Bug::get( $t_dest_bug_id, true );
+$t_dest_bug = \Core\Bug::get( $t_dest_bug_id, true );
 
 # user can access to the related bug at least as viewer, if it's exist...
-if( \Flickerbox\Bug::exists( $t_dest_bug_id ) ) {
-	if( !\Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_dest_bug->project_id ), $t_dest_bug_id ) ) {
-		\Flickerbox\Error::parameters( $t_dest_bug_id );
+if( \Core\Bug::exists( $t_dest_bug_id ) ) {
+	if( !\Core\Access::has_bug_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_dest_bug->project_id ), $t_dest_bug_id ) ) {
+		\Core\Error::parameters( $t_dest_bug_id );
 		trigger_error( ERROR_RELATIONSHIP_ACCESS_LEVEL_TO_DEST_BUG_TOO_LOW, ERROR );
 	}
 }
 
-\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'delete_relationship_sure_msg' ), \Flickerbox\Lang::get( 'delete_relationship_button' ) );
+\Core\Helper::ensure_confirmed( \Core\Lang::get( 'delete_relationship_sure_msg' ), \Core\Lang::get( 'delete_relationship_button' ) );
 
-$t_bug_relationship_data = \Flickerbox\Relationship::get( $f_rel_id );
+$t_bug_relationship_data = \Core\Relationship::get( $f_rel_id );
 $t_rel_type = $t_bug_relationship_data->type;
 
 # delete relationship from the DB
-\Flickerbox\Relationship::delete( $f_rel_id );
+\Core\Relationship::delete( $f_rel_id );
 
 # update bug last updated (just for the src bug)
-\Flickerbox\Bug::update_date( $f_bug_id );
+\Core\Bug::update_date( $f_bug_id );
 
 # set the rel_type for both bug and dest_bug based on $t_rel_type and on who is the dest bug
 if( $f_bug_id == $t_bug_relationship_data->src_bug_id ) {
 	$t_bug_rel_type = $t_rel_type;
-	$t_dest_bug_rel_type = \Flickerbox\Relationship::get_complementary_type( $t_rel_type );
+	$t_dest_bug_rel_type = \Core\Relationship::get_complementary_type( $t_rel_type );
 } else {
-	$t_bug_rel_type = \Flickerbox\Relationship::get_complementary_type( $t_rel_type );
+	$t_bug_rel_type = \Core\Relationship::get_complementary_type( $t_rel_type );
 	$t_dest_bug_rel_type = $t_rel_type;
 }
 
 # send email and update the history for the src issue
-\Flickerbox\History::log_event_special( $f_bug_id, BUG_DEL_RELATIONSHIP, $t_bug_rel_type, $t_dest_bug_id );
-\Flickerbox\Email::relationship_deleted( $f_bug_id, $t_dest_bug_id, $t_bug_rel_type );
+\Core\History::log_event_special( $f_bug_id, BUG_DEL_RELATIONSHIP, $t_bug_rel_type, $t_dest_bug_id );
+\Core\Email::relationship_deleted( $f_bug_id, $t_dest_bug_id, $t_bug_rel_type );
 
-if( \Flickerbox\Bug::exists( $t_dest_bug_id ) ) {
+if( \Core\Bug::exists( $t_dest_bug_id ) ) {
 	# send email and update the history for the dest issue
-	\Flickerbox\History::log_event_special( $t_dest_bug_id, BUG_DEL_RELATIONSHIP, $t_dest_bug_rel_type, $f_bug_id );
-	\Flickerbox\Email::relationship_deleted( $t_dest_bug_id, $f_bug_id, $t_dest_bug_rel_type );
+	\Core\History::log_event_special( $t_dest_bug_id, BUG_DEL_RELATIONSHIP, $t_dest_bug_rel_type, $f_bug_id );
+	\Core\Email::relationship_deleted( $t_dest_bug_id, $f_bug_id, $t_dest_bug_rel_type );
 }
 
-\Flickerbox\Form::security_purge( 'bug_relationship_delete' );
+\Core\Form::security_purge( 'bug_relationship_delete' );
 
-\Flickerbox\Print_Util::header_redirect_view( $f_bug_id );
+\Core\Print_Util::header_redirect_view( $f_bug_id );

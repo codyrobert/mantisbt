@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -48,7 +48,7 @@ class Category
 	 * @access public
 	 */
 	static function exists( $p_category_id ) {
-		$t_category_row = \Flickerbox\Category::get_row( $p_category_id, /* error_if_not_exists */ false );
+		$t_category_row = \Core\Category::get_row( $p_category_id, /* error_if_not_exists */ false );
 		return $t_category_row !== false;
 	}
 	
@@ -60,7 +60,7 @@ class Category
 	 * @access public
 	 */
 	static function ensure_exists( $p_category_id ) {
-		if( !\Flickerbox\Category::exists( $p_category_id ) ) {
+		if( !\Core\Category::exists( $p_category_id ) ) {
 			trigger_error( ERROR_CATEGORY_NOT_FOUND, ERROR );
 		}
 	}
@@ -74,8 +74,8 @@ class Category
 	 */
 	static function is_unique( $p_project_id, $p_name ) {
 		$t_query = 'SELECT COUNT(*) FROM {category}
-						WHERE project_id=' . \Flickerbox\Database::param() . ' AND ' . \Flickerbox\Database::helper_like( 'name' );
-		$t_count = \Flickerbox\Database::result( \Flickerbox\Database::query( $t_query, array( $p_project_id, $p_name ) ) );
+						WHERE project_id=' . \Core\Database::param() . ' AND ' . \Core\Database::helper_like( 'name' );
+		$t_count = \Core\Database::result( \Core\Database::query( $t_query, array( $p_project_id, $p_name ) ) );
 	
 		if( 0 < $t_count ) {
 			return false;
@@ -93,7 +93,7 @@ class Category
 	 * @access public
 	 */
 	static function ensure_unique( $p_project_id, $p_name ) {
-		if( !\Flickerbox\Category::is_unique( $p_project_id, $p_name ) ) {
+		if( !\Core\Category::is_unique( $p_project_id, $p_name ) ) {
 			trigger_error( ERROR_CATEGORY_DUPLICATE, ERROR );
 		}
 	}
@@ -106,19 +106,19 @@ class Category
 	 * @access public
 	 */
 	static function add( $p_project_id, $p_name ) {
-		if( \Flickerbox\Utility::is_blank( $p_name ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'category' ) );
+		if( \Core\Utility::is_blank( $p_name ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'category' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
-		\Flickerbox\Category::ensure_unique( $p_project_id, $p_name );
+		\Core\Category::ensure_unique( $p_project_id, $p_name );
 	
 		$t_query = 'INSERT INTO {category} ( project_id, name )
-					  VALUES ( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
-		\Flickerbox\Database::query( $t_query, array( $p_project_id, $p_name ) );
+					  VALUES ( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
+		\Core\Database::query( $t_query, array( $p_project_id, $p_name ) );
 	
-		# \Flickerbox\Database::query() errors on failure so:
-		return \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'category' ) );
+		# \Core\Database::query() errors on failure so:
+		return \Core\Database::insert_id( \Core\Database::get_table( 'category' ) );
 	}
 	
 	/**
@@ -130,24 +130,24 @@ class Category
 	 * @access public
 	 */
 	static function update( $p_category_id, $p_name, $p_assigned_to ) {
-		if( \Flickerbox\Utility::is_blank( $p_name ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'category' ) );
+		if( \Core\Utility::is_blank( $p_name ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'category' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
-		$t_old_category = \Flickerbox\Category::get_row( $p_category_id );
+		$t_old_category = \Core\Category::get_row( $p_category_id );
 	
-		$t_query = 'UPDATE {category} SET name=' . \Flickerbox\Database::param() . ', user_id=' . \Flickerbox\Database::param() . '
-					  WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_name, $p_assigned_to, $p_category_id ) );
+		$t_query = 'UPDATE {category} SET name=' . \Core\Database::param() . ', user_id=' . \Core\Database::param() . '
+					  WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_name, $p_assigned_to, $p_category_id ) );
 	
 		# Add bug history entries if we update the category's name
 		if( $t_old_category['name'] != $p_name ) {
-			$t_query = 'SELECT id FROM {bug} WHERE category_id=' . \Flickerbox\Database::param();
-			$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_id ) );
+			$t_query = 'SELECT id FROM {bug} WHERE category_id=' . \Core\Database::param();
+			$t_result = \Core\Database::query( $t_query, array( $p_category_id ) );
 	
-			while( $t_bug_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-				\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', $t_old_category['name'], $p_name );
+			while( $t_bug_row = \Core\Database::fetch_array( $t_result ) ) {
+				\Core\History::log_event_direct( $t_bug_row['id'], 'category', $t_old_category['name'], $p_name );
 			}
 		}
 	}
@@ -160,27 +160,27 @@ class Category
 	 * @access public
 	 */
 	static function remove( $p_category_id, $p_new_category_id = 0 ) {
-		$t_category_row = \Flickerbox\Category::get_row( $p_category_id );
+		$t_category_row = \Core\Category::get_row( $p_category_id );
 	
-		\Flickerbox\Category::ensure_exists( $p_category_id );
+		\Core\Category::ensure_exists( $p_category_id );
 		if( 0 != $p_new_category_id ) {
-			\Flickerbox\Category::ensure_exists( $p_new_category_id );
+			\Core\Category::ensure_exists( $p_new_category_id );
 		}
 	
-		$t_query = 'DELETE FROM {category} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_category_id ) );
+		$t_query = 'DELETE FROM {category} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_category_id ) );
 	
 		# update bug history entries
-		$t_query = 'SELECT id FROM {bug} WHERE category_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_id ) );
+		$t_query = 'SELECT id FROM {bug} WHERE category_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_category_id ) );
 	
-		while( $t_bug_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', $t_category_row['name'], \Flickerbox\Category::full_name( $p_new_category_id, false ) );
+		while( $t_bug_row = \Core\Database::fetch_array( $t_result ) ) {
+			\Core\History::log_event_direct( $t_bug_row['id'], 'category', $t_category_row['name'], \Core\Category::full_name( $p_new_category_id, false ) );
 		}
 	
 		# update bug data
-		$t_query = 'UPDATE {bug} SET category_id=' . \Flickerbox\Database::param() . ' WHERE category_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_new_category_id, $p_category_id ) );
+		$t_query = 'UPDATE {bug} SET category_id=' . \Core\Database::param() . ' WHERE category_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_new_category_id, $p_category_id ) );
 	}
 	
 	/**
@@ -191,20 +191,20 @@ class Category
 	 * @access public
 	 */
 	static function remove_all( $p_project_id, $p_new_category_id = 0 ) {
-		\Flickerbox\Project::ensure_exists( $p_project_id );
+		\Core\Project::ensure_exists( $p_project_id );
 		if( 0 != $p_new_category_id ) {
-			\Flickerbox\Category::ensure_exists( $p_new_category_id );
+			\Core\Category::ensure_exists( $p_new_category_id );
 		}
 	
 		# cache category names
-		\Flickerbox\Category::get_all_rows( $p_project_id );
+		\Core\Category::get_all_rows( $p_project_id );
 	
 		# get a list of affected categories
-		$t_query = 'SELECT id FROM {category} WHERE project_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_project_id ) );
+		$t_query = 'SELECT id FROM {category} WHERE project_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_project_id ) );
 	
 		$t_category_ids = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_category_ids[] = $t_row['id'];
 		}
 	
@@ -217,19 +217,19 @@ class Category
 	
 		# update bug history entries
 		$t_query = 'SELECT id, category_id FROM {bug} WHERE category_id IN ( ' . $t_category_ids . ' )';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
-		while( $t_bug_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			\Flickerbox\History::log_event_direct( $t_bug_row['id'], 'category', \Flickerbox\Category::full_name( $t_bug_row['category_id'], false ), \Flickerbox\Category::full_name( $p_new_category_id, false ) );
+		while( $t_bug_row = \Core\Database::fetch_array( $t_result ) ) {
+			\Core\History::log_event_direct( $t_bug_row['id'], 'category', \Core\Category::full_name( $t_bug_row['category_id'], false ), \Core\Category::full_name( $p_new_category_id, false ) );
 		}
 	
 		# update bug data
-		$t_query = 'UPDATE {bug} SET category_id=' . \Flickerbox\Database::param() . ' WHERE category_id IN ( ' . $t_category_ids . ' )';
-		\Flickerbox\Database::query( $t_query, array( $p_new_category_id ) );
+		$t_query = 'UPDATE {bug} SET category_id=' . \Core\Database::param() . ' WHERE category_id IN ( ' . $t_category_ids . ' )';
+		\Core\Database::query( $t_query, array( $p_new_category_id ) );
 	
 		# delete categories
-		$t_query = 'DELETE FROM {category} WHERE project_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_project_id ) );
+		$t_query = 'DELETE FROM {category} WHERE project_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_project_id ) );
 	
 		return true;
 	}
@@ -250,9 +250,9 @@ class Category
 			return $g_category_cache[$p_category_id];
 		}
 	
-		$t_query = 'SELECT * FROM {category} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_id ) );
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_query = 'SELECT * FROM {category} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_category_id ) );
+		$t_row = \Core\Database::fetch_array( $t_result );
 		if( !$t_row ) {
 			if( $p_error_if_not_exists ) {
 				trigger_error( ERROR_CATEGORY_NOT_FOUND, ERROR );
@@ -324,10 +324,10 @@ class Category
 						ON c.project_id=p.id
 					WHERE project_id IN ( ' . implode( ', ', $c_project_id_array ) . ' )
 					ORDER BY c.name ';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
 		$t_rows = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$g_category_cache[(int)$t_row['id']] = $t_row;
 	
 			$t_rows[(int)$t_row['project_id']][] = $t_row['id'];
@@ -349,27 +349,27 @@ class Category
 	 */
 	static function get_filter_list( $p_project_id = null ) {
 		if( null === $p_project_id ) {
-			$t_project_id = \Flickerbox\Helper::get_current_project();
+			$t_project_id = \Core\Helper::get_current_project();
 		} else {
 			$t_project_id = $p_project_id;
 		}
 	
 		if( $t_project_id == ALL_PROJECTS ) {
-			$t_project_ids = \Flickerbox\Current_User::get_accessible_projects();
+			$t_project_ids = \Core\Current_User::get_accessible_projects();
 		} else {
 			$t_project_ids = array( $t_project_id );
 		}
 	
 		$t_subproject_ids = array();
 		foreach( $t_project_ids as $t_project_id ) {
-			$t_subproject_ids = array_merge( $t_subproject_ids, \Flickerbox\Current_User::get_all_accessible_subprojects( $t_project_id ) );
+			$t_subproject_ids = array_merge( $t_subproject_ids, \Core\Current_User::get_all_accessible_subprojects( $t_project_id ) );
 		}
 	
 		$t_project_ids = array_merge( $t_project_ids, $t_subproject_ids );
 	
 		$t_categories = array();
 		foreach( $t_project_ids as $t_id ) {
-			$t_categories = array_merge( $t_categories, \Flickerbox\Category::get_all_rows( $t_id ) );
+			$t_categories = array_merge( $t_categories, \Core\Category::get_all_rows( $t_id ) );
 		}
 	
 		$t_unique = array();
@@ -397,13 +397,13 @@ class Category
 		if( isset( $g_cache_category_project[(int)$p_project_id] ) ) {
 			if( !empty( $g_cache_category_project[(int)$p_project_id]) ) {
 				foreach( $g_cache_category_project[(int)$p_project_id] as $t_id ) {
-					$t_categories[] = \Flickerbox\Category::get_row( $t_id );
+					$t_categories[] = \Core\Category::get_row( $t_id );
 				}
 	
 				if( $p_sort_by_project ) {
-					\Flickerbox\Category::sort_rows_by_project( $p_project_id );
+					\Core\Category::sort_rows_by_project( $p_project_id );
 					usort( $t_categories, 'category_sort_rows_by_project' );
-					\Flickerbox\Category::sort_rows_by_project( null );
+					\Core\Category::sort_rows_by_project( null );
 				}
 				return $t_categories;
 			} else {
@@ -417,14 +417,14 @@ class Category
 			$t_inherit = false;
 		} else {
 			if( $p_inherit === null ) {
-				$t_inherit = \Flickerbox\Config::mantis_get( 'subprojects_inherit_categories' );
+				$t_inherit = \Core\Config::mantis_get( 'subprojects_inherit_categories' );
 			} else {
 				$t_inherit = $p_inherit;
 			}
 		}
 	
 		if( $t_inherit ) {
-			$t_project_ids = \Flickerbox\Project\Hierarchy::inheritance( $p_project_id );
+			$t_project_ids = \Core\Project\Hierarchy::inheritance( $p_project_id );
 			$t_project_where = ' project_id IN ( ' . implode( ', ', $t_project_ids ) . ' ) ';
 		} else {
 			$t_project_where = ' project_id=' . $p_project_id . ' ';
@@ -434,17 +434,17 @@ class Category
 					LEFT JOIN {project} p
 						ON c.project_id=p.id
 					WHERE ' . $t_project_where . ' ORDER BY c.name';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 		$t_rows = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_rows[] = $t_row;
 			$g_category_cache[(int)$t_row['id']] = $t_row;
 		}
 	
 		if( $p_sort_by_project ) {
-			\Flickerbox\Category::sort_rows_by_project( $p_project_id );
+			\Core\Category::sort_rows_by_project( $p_project_id );
 			usort( $t_rows, 'category_sort_rows_by_project' );
-			\Flickerbox\Category::sort_rows_by_project( null );
+			\Core\Category::sort_rows_by_project( null );
 		}
 	
 		return $t_rows;
@@ -474,9 +474,9 @@ class Category
 					LEFT JOIN {project} p
 						ON c.project_id=p.id
 					WHERE c.id IN (' . implode( ',', $c_cat_id_array ) . ')';
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$g_category_cache[(int)$t_row['id']] = $t_row;
 		}
 		return;
@@ -491,7 +491,7 @@ class Category
 	 * @access public
 	 */
 	static function get_field( $p_category_id, $p_field_name ) {
-		$t_row = \Flickerbox\Category::get_row( $p_category_id );
+		$t_row = \Core\Category::get_row( $p_category_id );
 		return $t_row[$p_field_name];
 	}
 	
@@ -503,7 +503,7 @@ class Category
 	 * @access public
 	 */
 	static function get_name( $p_category_id ) {
-		return \Flickerbox\Category::get_field( $p_category_id, 'name' );
+		return \Core\Category::get_field( $p_category_id, 'name' );
 	}
 	
 	/**
@@ -517,14 +517,14 @@ class Category
 	 * @access public
 	 */
 	static function get_id_by_name( $p_category_name, $p_project_id, $p_trigger_errors = true ) {
-		$t_project_name = \Flickerbox\Project::get_name( $p_project_id );
+		$t_project_name = \Core\Project::get_name( $p_project_id );
 	
-		$t_query = 'SELECT id FROM {category} WHERE name=' . \Flickerbox\Database::param() . ' AND project_id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_category_name, (int)$p_project_id ) );
-		$t_id = \Flickerbox\Database::result( $t_result );
+		$t_query = 'SELECT id FROM {category} WHERE name=' . \Core\Database::param() . ' AND project_id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_category_name, (int)$p_project_id ) );
+		$t_id = \Core\Database::result( $t_result );
 		if( $t_id === false ) {
 			if( $p_trigger_errors ) {
-				\Flickerbox\Error::parameters( $p_category_name, $t_project_name );
+				\Core\Error::parameters( $p_category_name, $t_project_name );
 				trigger_error( ERROR_CATEGORY_NOT_FOUND_FOR_PROJECT, ERROR );
 			} else {
 				return false;
@@ -545,17 +545,17 @@ class Category
 	static function full_name( $p_category_id, $p_show_project = true, $p_current_project = null ) {
 		if( 0 == $p_category_id ) {
 			# No Category
-			return \Flickerbox\Lang::get( 'no_category' );
-		} else if( !\Flickerbox\Category::exists( $p_category_id ) ) {
+			return \Core\Lang::get( 'no_category' );
+		} else if( !\Core\Category::exists( $p_category_id ) ) {
 			return '@' . $p_category_id . '@';
 		} else {
-			$t_row = \Flickerbox\Category::get_row( $p_category_id );
+			$t_row = \Core\Category::get_row( $p_category_id );
 			$t_project_id = $t_row['project_id'];
 	
-			$t_current_project = is_null( $p_current_project ) ? \Flickerbox\Helper::get_current_project() : $p_current_project;
+			$t_current_project = is_null( $p_current_project ) ? \Core\Helper::get_current_project() : $p_current_project;
 	
 			if( $p_show_project && $t_project_id != $t_current_project ) {
-				return '[' . \Flickerbox\Project::get_name( $t_project_id ) . '] ' . $t_row['name'];
+				return '[' . \Core\Project::get_name( $t_project_id ) . '] ' . $t_row['name'];
 			}
 	
 			return $t_row['name'];

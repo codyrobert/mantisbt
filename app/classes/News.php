@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -54,13 +54,13 @@ class News
 	 * @return integer news article id
 	 */
 	static function create( $p_project_id, $p_poster_id, $p_view_state, $p_announcement, $p_headline, $p_body ) {
-		if( \Flickerbox\Utility::is_blank( $p_headline ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'headline' ) );
+		if( \Core\Utility::is_blank( $p_headline ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'headline' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
-		if( \Flickerbox\Utility::is_blank( $p_body ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'body' ) );
+		if( \Core\Utility::is_blank( $p_body ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'body' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
@@ -68,18 +68,18 @@ class News
 		    		  ( project_id, poster_id, date_posted, last_modified,
 		    		    view_state, announcement, headline, body )
 					VALUES
-					    ( ' . \Flickerbox\Database::param() . ',
-					      ' . \Flickerbox\Database::param() . ',
-					      ' . \Flickerbox\Database::param() . ',
-					      ' . \Flickerbox\Database::param() . ',
-					      ' . \Flickerbox\Database::param() . ',
-					      ' . \Flickerbox\Database::param() . ',
-					      ' . \Flickerbox\Database::param() . ',
-					      ' . \Flickerbox\Database::param() . '
+					    ( ' . \Core\Database::param() . ',
+					      ' . \Core\Database::param() . ',
+					      ' . \Core\Database::param() . ',
+					      ' . \Core\Database::param() . ',
+					      ' . \Core\Database::param() . ',
+					      ' . \Core\Database::param() . ',
+					      ' . \Core\Database::param() . ',
+					      ' . \Core\Database::param() . '
 						)';
-		\Flickerbox\Database::query( $t_query, array( (int)$p_project_id, (int)$p_poster_id, \Flickerbox\Database::now(), \Flickerbox\Database::now(), (int)$p_view_state, $p_announcement, $p_headline, $p_body ) );
+		\Core\Database::query( $t_query, array( (int)$p_project_id, (int)$p_poster_id, \Core\Database::now(), \Core\Database::now(), (int)$p_view_state, $p_announcement, $p_headline, $p_body ) );
 	
-		$t_news_id = \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'news' ) );
+		$t_news_id = \Core\Database::insert_id( \Core\Database::get_table( 'news' ) );
 	
 		return $t_news_id;
 	}
@@ -91,8 +91,8 @@ class News
 	 * @return void
 	 */
 	static function delete( $p_news_id ) {
-		$t_query = 'DELETE FROM {news} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_news_id ) );
+		$t_query = 'DELETE FROM {news} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_news_id ) );
 	}
 	
 	/**
@@ -102,8 +102,8 @@ class News
 	 * @return void
 	 */
 	static function delete_all( $p_project_id ) {
-		$t_query = 'DELETE FROM {news} WHERE project_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_project_id ) );
+		$t_query = 'DELETE FROM {news} WHERE project_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_project_id ) );
 	}
 	
 	/**
@@ -118,27 +118,27 @@ class News
 	 * @return void
 	 */
 	static function update( $p_news_id, $p_project_id, $p_view_state, $p_announcement, $p_headline, $p_body ) {
-		if( \Flickerbox\Utility::is_blank( $p_headline ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'headline' ) );
+		if( \Core\Utility::is_blank( $p_headline ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'headline' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
-		if( \Flickerbox\Utility::is_blank( $p_body ) ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Lang::get( 'body' ) );
+		if( \Core\Utility::is_blank( $p_body ) ) {
+			\Core\Error::parameters( \Core\Lang::get( 'body' ) );
 			trigger_error( ERROR_EMPTY_FIELD, ERROR );
 		}
 	
 		# Update entry
 		$t_query = 'UPDATE {news}
-					  SET view_state=' . \Flickerbox\Database::param() . ',
-						announcement=' . \Flickerbox\Database::param() . ',
-						headline=' . \Flickerbox\Database::param() . ',
-						body=' . \Flickerbox\Database::param() . ',
-						project_id=' . \Flickerbox\Database::param() . ',
-						last_modified= ' . \Flickerbox\Database::param() . '
-					  WHERE id=' . \Flickerbox\Database::param();
+					  SET view_state=' . \Core\Database::param() . ',
+						announcement=' . \Core\Database::param() . ',
+						headline=' . \Core\Database::param() . ',
+						body=' . \Core\Database::param() . ',
+						project_id=' . \Core\Database::param() . ',
+						last_modified= ' . \Core\Database::param() . '
+					  WHERE id=' . \Core\Database::param();
 	
-		\Flickerbox\Database::query( $t_query, array( $p_view_state, $p_announcement, $p_headline, $p_body, $p_project_id, \Flickerbox\Database::now(), $p_news_id ) );
+		\Core\Database::query( $t_query, array( $p_view_state, $p_announcement, $p_headline, $p_body, $p_project_id, \Core\Database::now(), $p_news_id ) );
 	}
 	
 	/**
@@ -148,10 +148,10 @@ class News
 	 * @return array news article
 	 */
 	static function get_row( $p_news_id ) {
-		$t_query = 'SELECT * FROM {news} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $p_news_id ) );
+		$t_query = 'SELECT * FROM {news} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $p_news_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			trigger_error( ERROR_NEWS_NOT_FOUND, ERROR );
@@ -168,7 +168,7 @@ class News
 	 * @return int news count
 	 */
 	static function get_count( $p_project_id, $p_global = true ) {
-		$t_project_where = \Flickerbox\Helper::project_specific_where( $p_project_id );
+		$t_project_where = \Core\Helper::project_specific_where( $p_project_id );
 	
 		$t_query = 'SELECT COUNT(*) FROM {news} WHERE ' . $t_project_where;
 	
@@ -176,9 +176,9 @@ class News
 			$t_query .= ' OR project_id=' . ALL_PROJECTS;
 		}
 	
-		$t_result = \Flickerbox\Database::query( $t_query );
+		$t_result = \Core\Database::query( $t_query );
 	
-		return \Flickerbox\Database::result( $t_result, 0 );
+		return \Core\Database::result( $t_result, 0 );
 	}
 	
 	/**
@@ -189,7 +189,7 @@ class News
 	 * @return array Array of news articles
 	 */
 	static function get_rows( $p_project_id, $p_global = true ) {
-		$t_projects = \Flickerbox\Current_User::get_all_accessible_subprojects( $p_project_id );
+		$t_projects = \Core\Current_User::get_all_accessible_subprojects( $p_project_id );
 		$t_projects[] = (int)$p_project_id;
 	
 		if( $p_global && ALL_PROJECTS != $p_project_id ) {
@@ -207,11 +207,11 @@ class News
 	
 		$t_query .= ' ORDER BY date_posted DESC';
 	
-		$t_result = \Flickerbox\Database::query( $t_query, array() );
+		$t_result = \Core\Database::query( $t_query, array() );
 	
 		$t_rows = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row );
 		}
 	
@@ -226,7 +226,7 @@ class News
 	 * @return mixed
 	 */
 	static function get_field( $p_news_id, $p_field_name ) {
-		$t_row = \Flickerbox\News::get_row( $p_news_id );
+		$t_row = \Core\News::get_row( $p_news_id );
 		return( $t_row[$p_field_name] );
 	}
 	
@@ -237,7 +237,7 @@ class News
 	 * @return boolean
 	 */
 	static function is_private( $p_news_id ) {
-		return( \Flickerbox\News::get_field( $p_news_id, 'view_state' ) == VS_PRIVATE );
+		return( \Core\News::get_field( $p_news_id, 'view_state' ) == VS_PRIVATE );
 	}
 	
 	/**
@@ -250,28 +250,28 @@ class News
 	 */
 	static function get_limited_rows( $p_offset, $p_project_id = null ) {
 		if( $p_project_id === null ) {
-			$p_project_id = \Flickerbox\Helper::get_current_project();
+			$p_project_id = \Core\Helper::get_current_project();
 		}
 	
 		$c_offset = (int)$p_offset;
 	
-		$t_projects = \Flickerbox\Current_User::get_all_accessible_subprojects( $p_project_id );
+		$t_projects = \Core\Current_User::get_all_accessible_subprojects( $p_project_id );
 		$t_projects[] = (int)$p_project_id;
 		if( ALL_PROJECTS != $p_project_id ) {
 			$t_projects[] = ALL_PROJECTS;
 		}
 	
-		$t_news_view_limit = \Flickerbox\Config::mantis_get( 'news_view_limit' );
-		$t_news_view_limit_days = \Flickerbox\Config::mantis_get( 'news_view_limit_days' ) * SECONDS_PER_DAY;
+		$t_news_view_limit = \Core\Config::mantis_get( 'news_view_limit' );
+		$t_news_view_limit_days = \Core\Config::mantis_get( 'news_view_limit_days' ) * SECONDS_PER_DAY;
 	
-		switch( \Flickerbox\Config::mantis_get( 'news_limit_method' ) ) {
+		switch( \Core\Config::mantis_get( 'news_limit_method' ) ) {
 			case 0:
 				# BY_LIMIT - Select the news posts
 				$t_query = 'SELECT * FROM {news}';
 	
 				if( 1 == count( $t_projects ) ) {
 					$c_project_id = $t_projects[0];
-					$t_query .= ' WHERE project_id=' . \Flickerbox\Database::param();
+					$t_query .= ' WHERE project_id=' . \Core\Database::param();
 					$t_params = array( $c_project_id );
 				} else {
 					$t_query .= ' WHERE project_id IN (' . join( $t_projects, ',' ) . ')';
@@ -279,31 +279,31 @@ class News
 				}
 	
 				$t_query .= ' ORDER BY announcement DESC, id DESC';
-				$t_result = \Flickerbox\Database::query( $t_query, $t_params, $t_news_view_limit, $c_offset );
+				$t_result = \Core\Database::query( $t_query, $t_params, $t_news_view_limit, $c_offset );
 				break;
 			case 1:
 				# BY_DATE - Select the news posts
 				$t_query = 'SELECT * FROM {news} WHERE
-							( ' . \Flickerbox\Database::helper_compare_time( \Flickerbox\Database::param(), '<', 'date_posted', $t_news_view_limit_days ) . '
-							 OR announcement = ' . \Flickerbox\Database::param() . ' ) ';
+							( ' . \Core\Database::helper_compare_time( \Core\Database::param(), '<', 'date_posted', $t_news_view_limit_days ) . '
+							 OR announcement = ' . \Core\Database::param() . ' ) ';
 				$t_params = array(
-					\Flickerbox\Database::now(),
+					\Core\Database::now(),
 					1,
 				);
 				if( 1 == count( $t_projects ) ) {
 					$c_project_id = $t_projects[0];
-					$t_query .= ' AND project_id=' . \Flickerbox\Database::param();
+					$t_query .= ' AND project_id=' . \Core\Database::param();
 					$t_params[] = $c_project_id;
 				} else {
 					$t_query .= ' AND project_id IN (' . join( $t_projects, ',' ) . ')';
 				}
 				$t_query .= ' ORDER BY announcement DESC, id DESC';
-				$t_result = \Flickerbox\Database::query( $t_query, $t_params, $t_news_view_limit, $c_offset );
+				$t_result = \Core\Database::query( $t_query, $t_params, $t_news_view_limit, $c_offset );
 				break;
 		}
 	
 		$t_rows = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			array_push( $t_rows, $t_row );
 		}
 	
@@ -316,7 +316,7 @@ class News
 	 * @return boolean
 	 */
 	static function is_enabled() {
-		return \Flickerbox\Config::mantis_get( 'news_enabled' ) == ON;
+		return \Core\Config::mantis_get( 'news_enabled' ) == ON;
 	}
 	
 	/**
@@ -324,8 +324,8 @@ class News
 	 * @return void
 	 */
 	static function ensure_enabled() {
-		if( !\Flickerbox\News::is_enabled() ) {
-			\Flickerbox\Access::denied();
+		if( !\Core\News::is_enabled() ) {
+			\Core\Access::denied();
 		}
 	}
 

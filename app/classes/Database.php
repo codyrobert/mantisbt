@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -51,10 +51,10 @@ class Database
 	 */
 	static function connect( $p_dsn, $p_hostname = null, $p_username = null, $p_password = null, $p_database_name = null, $p_db_schema = null, $p_pconnect = false ) {
 		global $g_db_connected, $g_db;
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
-		if( !\Flickerbox\Database::check_database_support( $t_db_type ) ) {
-			\Flickerbox\Error::parameters( 0, 'PHP Support for database is not enabled' );
+		if( !\Core\Database::check_database_support( $t_db_type ) ) {
+			\Core\Error::parameters( 0, 'PHP Support for database is not enabled' );
 			trigger_error( ERROR_DB_CONNECT_FAILED, ERROR );
 		}
 	
@@ -73,20 +73,20 @@ class Database
 	
 		if( $t_result ) {
 			# For MySQL, the charset for the connection needs to be specified.
-			if( \Flickerbox\Database::is_mysql() ) {
+			if( \Core\Database::is_mysql() ) {
 				# @todo Is there a way to translate any charset name to MySQL format? e.g. remote the dashes?
 				# @todo Is this needed for other databases?
-				\Flickerbox\Database::query( 'SET NAMES UTF8' );
-			} else if( \Flickerbox\Database::is_db2() && $p_db_schema !== null && !\Flickerbox\Utility::is_blank( $p_db_schema ) ) {
-				$t_result2 = \Flickerbox\Database::query( 'set schema ' . $p_db_schema );
+				\Core\Database::query( 'SET NAMES UTF8' );
+			} else if( \Core\Database::is_db2() && $p_db_schema !== null && !\Core\Utility::is_blank( $p_db_schema ) ) {
+				$t_result2 = \Core\Database::query( 'set schema ' . $p_db_schema );
 				if( $t_result2 === false ) {
-					\Flickerbox\Database::error();
+					\Core\Database::error();
 					trigger_error( ERROR_DB_CONNECT_FAILED, ERROR );
 					return false;
 				}
 			}
 		} else {
-			\Flickerbox\Database::error();
+			\Core\Database::error();
 			trigger_error( ERROR_DB_CONNECT_FAILED, ERROR );
 			return false;
 		}
@@ -149,7 +149,7 @@ class Database
 	 * @return boolean true if mysql
 	 */
 	static function is_mysql() {
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		switch( $t_db_type ) {
 			case 'mysql':
@@ -165,7 +165,7 @@ class Database
 	 * @return boolean true if postgres
 	 */
 	static function is_pgsql() {
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		switch( $t_db_type ) {
 			case 'postgres':
@@ -182,7 +182,7 @@ class Database
 	 * @return boolean true if mssql
 	 */
 	static function is_mssql() {
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		switch( $t_db_type ) {
 			case 'mssql':
@@ -199,7 +199,7 @@ class Database
 	 * @return boolean true if db2
 	 */
 	static function is_db2() {
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		switch( $t_db_type ) {
 			case 'db2':
@@ -214,7 +214,7 @@ class Database
 	 * @return boolean true if oracle
 	 */
 	static function is_oracle() {
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		return ( $t_db_type == 'oci8' );
 	}
@@ -227,14 +227,14 @@ class Database
 	 */
 	static function check_identifier_size( $p_identifier ) {
 		# Oracle does not support long object names (30 chars max)
-		if( \Flickerbox\Database::is_oracle() && 30 < strlen( $p_identifier ) ) {
-			\Flickerbox\Error::parameters( $p_identifier );
+		if( \Core\Database::is_oracle() && 30 < strlen( $p_identifier ) ) {
+			\Core\Error::parameters( $p_identifier );
 			trigger_error( ERROR_DB_IDENTIFIER_TOO_LONG, ERROR );
 		}
 	}
 	
 	/**
-	 * function alias for \Flickerbox\Database::query() for legacy support of plugins
+	 * function alias for \Core\Database::query() for legacy support of plugins
 	 * @deprecated db_query should be used in preference to this function. This function may be removed in 2.0
 	 */
 	static function query_bound() {
@@ -257,11 +257,11 @@ class Database
 	static function query( $p_query, array $p_arr_parms = null, $p_limit = -1, $p_offset = -1 ) {
 		global $g_queries_array, $g_db, $g_db_log_queries, $g_db_param;
 	
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		static $s_check_params;
 		if( $s_check_params === null ) {
-			$s_check_params = ( \Flickerbox\Database::is_pgsql() || $t_db_type == 'odbc_mssql' || $t_db_type == 'mssqlnative' );
+			$s_check_params = ( \Core\Database::is_pgsql() || $t_db_type == 'odbc_mssql' || $t_db_type == 'mssqlnative' );
 		}
 	
 		$t_start = microtime( true );
@@ -288,8 +288,8 @@ class Database
 		static $s_suffix;
 		if( $s_prefix === null ) {
 			# Determine table prefix and suffixes including trailing and leading '_'
-			$s_prefix = trim( \Flickerbox\Config::get_global( 'db_table_prefix' ) );
-			$s_suffix = trim( \Flickerbox\Config::get_global( 'db_table_suffix' ) );
+			$s_prefix = trim( \Core\Config::get_global( 'db_table_prefix' ) );
+			$s_suffix = trim( \Core\Config::get_global( 'db_table_suffix' ) );
 	
 			if( !empty( $s_prefix ) && '_' != substr( $s_prefix, -1 ) ) {
 				$s_prefix .= '_';
@@ -302,14 +302,14 @@ class Database
 		$p_query = strtr($p_query, array(
 								'{' => $s_prefix,
 								'}' => $s_suffix,
-								'%s' => \Flickerbox\Database::param(),
-								'%d' => \Flickerbox\Database::param(),
-								'%b' => \Flickerbox\Database::param(),
-								'%l' => \Flickerbox\Database::param(),
+								'%s' => \Core\Database::param(),
+								'%d' => \Core\Database::param(),
+								'%b' => \Core\Database::param(),
+								'%l' => \Core\Database::param(),
 								) );
 	
-		if( \Flickerbox\Database::is_oracle() ) {
-			$p_query = \Flickerbox\Database::oracle_adapt_query_syntax( $p_query, $p_arr_parms );
+		if( \Core\Database::is_oracle() ) {
+			$p_query = \Core\Database::oracle_adapt_query_syntax( $p_query, $p_arr_parms );
 		}
 	
 		if( ( $p_limit != -1 ) || ( $p_offset != -1 ) ) {
@@ -359,14 +359,14 @@ class Database
 				}
 			}
 			$t_log_msg = array( $p_query, $t_elapsed );
-			\Flickerbox\Log::event( LOG_DATABASE, $t_log_msg );
+			\Core\Log::event( LOG_DATABASE, $t_log_msg );
 			array_push( $g_queries_array, $t_log_msg );
 		} else {
 			array_push( $g_queries_array, array( '', $t_elapsed ) );
 		}
 	
 		if( !$t_result ) {
-			\Flickerbox\Database::error( $p_query );
+			\Core\Database::error( $p_query );
 			trigger_error( ERROR_DB_QUERY_FAILED, ERROR );
 			return false;
 		} else {
@@ -437,7 +437,7 @@ class Database
 			static $s_array_fields;
 	
 			# Oci8 returns null values for empty strings
-			if( \Flickerbox\Database::is_oracle() ) {
+			if( \Core\Database::is_oracle() ) {
 				foreach( $t_row as &$t_value ) {
 					if( !isset( $t_value ) ) {
 						$t_value = '';
@@ -498,7 +498,7 @@ class Database
 	 * @return mixed Database result
 	 */
 	static function result( $p_result, $p_index1 = 0, $p_index2 = 0 ) {
-		if( $p_result && ( \Flickerbox\Database::num_rows( $p_result ) > 0 ) ) {
+		if( $p_result && ( \Core\Database::num_rows( $p_result ) > 0 ) ) {
 			$p_result->Move( $p_index1 );
 			$t_result = $p_result->GetArray();
 	
@@ -525,20 +525,20 @@ class Database
 		global $g_db;
 	
 		if( isset( $p_table ) ) {
-			if( \Flickerbox\Database::is_oracle() ) {
+			if( \Core\Database::is_oracle() ) {
 				$t_query = 'SELECT seq_' . $p_table . '.CURRVAL FROM DUAL';
-			} elseif( \Flickerbox\Database::is_pgsql() ) {
+			} elseif( \Core\Database::is_pgsql() ) {
 				$t_query = 'SELECT currval(\'' . $p_table . '_' . $p_field . '_seq\')';
 			}
 			if( isset( $t_query ) ) {
-				$t_result = \Flickerbox\Database::query( $t_query );
-				return \Flickerbox\Database::result( $t_result );
+				$t_result = \Core\Database::query( $t_query );
+				return \Core\Database::result( $t_result );
 			}
 		}
-		if( \Flickerbox\Database::is_mssql() ) {
+		if( \Core\Database::is_mssql() ) {
 			$t_query = 'SELECT IDENT_CURRENT(\'' . $p_table . '\')';
-			$t_result = \Flickerbox\Database::query( $t_query );
-			return \Flickerbox\Database::result( $t_result );
+			$t_result = \Core\Database::query( $t_query );
+			return \Core\Database::result( $t_result );
 		}
 		return $g_db->Insert_ID();
 	}
@@ -549,11 +549,11 @@ class Database
 	 * @return boolean indicating whether the table exists
 	 */
 	static function table_exists( $p_table_name ) {
-		if( \Flickerbox\Utility::is_blank( $p_table_name ) ) {
+		if( \Core\Utility::is_blank( $p_table_name ) ) {
 			return false;
 		}
 	
-		$t_tables = \Flickerbox\Database::get_table_list();
+		$t_tables = \Core\Database::get_table_list();
 		if( !is_array( $t_tables ) ) {
 			return false;
 		}
@@ -578,7 +578,7 @@ class Database
 	static function index_exists( $p_table_name, $p_index_name ) {
 		global $g_db;
 	
-		if( \Flickerbox\Utility::is_blank( $p_index_name ) || \Flickerbox\Utility::is_blank( $p_table_name ) ) {
+		if( \Core\Utility::is_blank( $p_index_name ) || \Core\Utility::is_blank( $p_table_name ) ) {
 			return false;
 		}
 	
@@ -607,7 +607,7 @@ class Database
 	 * @return boolean indicating whether the field exists
 	 */
 	static function field_exists( $p_field_name, $p_table_name ) {
-		$t_columns = \Flickerbox\Database::field_names( $p_table_name );
+		$t_columns = \Core\Database::field_names( $p_table_name );
 		return in_array( $p_field_name, $t_columns );
 	}
 	
@@ -653,9 +653,9 @@ class Database
 	 */
 	static function error( $p_query = null ) {
 		if( null !== $p_query ) {
-			\Flickerbox\Error::parameters( \Flickerbox\Database::error_num(), \Flickerbox\Database::error_msg(), $p_query );
+			\Core\Error::parameters( \Core\Database::error_num(), \Core\Database::error_msg(), $p_query );
 		} else {
-			\Flickerbox\Error::parameters( \Flickerbox\Database::error_num(), \Flickerbox\Database::error_msg() );
+			\Core\Error::parameters( \Core\Database::error_num(), \Core\Database::error_msg() );
 		}
 	}
 	
@@ -678,7 +678,7 @@ class Database
 	 */
 	static function prepare_string( $p_string ) {
 		global $g_db;
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		switch( $t_db_type ) {
 			case 'mssql':
@@ -701,7 +701,7 @@ class Database
 			case 'oci8':
 				return $p_string;
 			default:
-				\Flickerbox\Error::parameters( 'db_type', $t_db_type );
+				\Core\Error::parameters( 'db_type', $t_db_type );
 				trigger_error( ERROR_CONFIG_OPT_INVALID, ERROR );
 		}
 	}
@@ -709,13 +709,13 @@ class Database
 	/**
 	 * Prepare a binary string before DB insertion
 	 * Use of this function is required for some DB types, to properly encode
-	 * BLOB fields prior to calling \Flickerbox\Database::query()
+	 * BLOB fields prior to calling \Core\Database::query()
 	 * @param string $p_string Raw binary data.
 	 * @return string prepared database query string
 	 */
 	static function prepare_binary_string( $p_string ) {
 		global $g_db;
-		$t_db_type = \Flickerbox\Config::get_global( 'db_type' );
+		$t_db_type = \Core\Config::get_global( 'db_type' );
 	
 		switch( $t_db_type ) {
 			case 'mssql':
@@ -770,7 +770,7 @@ class Database
 	 */
 	static function prepare_bool( $p_bool ) {
 		global $g_db;
-		if( \Flickerbox\Database::is_pgsql() ) {
+		if( \Core\Database::is_pgsql() ) {
 			return $g_db->qstr( $p_bool );
 		} else {
 			return (int)(bool)$p_bool;
@@ -806,19 +806,19 @@ class Database
 		$t_like_keyword = ' LIKE ';
 	
 		if( $p_case_sensitive === false ) {
-			if( \Flickerbox\Database::is_pgsql() ) {
+			if( \Core\Database::is_pgsql() ) {
 				$t_like_keyword = ' ILIKE ';
 			}
 		}
 	
-		return '(' . $p_field_name . $t_like_keyword . \Flickerbox\Database::param() . ')';
+		return '(' . $p_field_name . $t_like_keyword . \Core\Database::param() . ')';
 	}
 	
 	/**
 	 * Compare two dates against a certain number of days
 	 * 'val_or_col' parameters will be used "as is" in the query component,
 	 * allowing use of a column name. To compare against a specific date,
-	 * it is recommended to pass \Flickerbox\Database::param() instead of a date constant.
+	 * it is recommended to pass \Core\Database::param() instead of a date constant.
 	 * @param string  $p_val_or_col_1 Value or Column to compare.
 	 * @param string  $p_operator     SQL comparison operator.
 	 * @param string  $p_val_or_col_2 Value or Column to compare.
@@ -890,7 +890,7 @@ class Database
 	static function get_table( $p_name ) {
 		if( strpos( $p_name, 'mantis_' ) === 0 ) {
 			$t_table = substr( $p_name, 7, strpos( $p_name, '_table' ) - 7 );
-			\Flickerbox\Error::parameters(
+			\Core\Error::parameters(
 				__FUNCTION__ . "( '$p_name' )",
 				__FUNCTION__ . "( '$t_table' )"
 			);
@@ -900,19 +900,19 @@ class Database
 		}
 	
 		# Determine table prefix including trailing '_'
-		$t_prefix = trim( \Flickerbox\Config::get_global( 'db_table_prefix' ) );
+		$t_prefix = trim( \Core\Config::get_global( 'db_table_prefix' ) );
 		if( !empty( $t_prefix ) && '_' != substr( $t_prefix, -1 ) ) {
 			$t_prefix .= '_';
 		}
 		# Determine table suffix including leading '_'
-		$t_suffix = trim( \Flickerbox\Config::get_global( 'db_table_suffix' ) );
+		$t_suffix = trim( \Core\Config::get_global( 'db_table_suffix' ) );
 		if( !empty( $t_suffix ) && '_' != substr( $t_suffix, 0, 1 ) ) {
 			$t_suffix = '_' . $t_suffix;
 		}
 	
 		# Physical table name
 		$t_table = $t_prefix . $t_table . $t_suffix;
-		\Flickerbox\Database::check_identifier_size( $t_table );
+		\Core\Database::check_identifier_size( $t_table );
 		return $t_table;
 	}
 	
@@ -923,7 +923,7 @@ class Database
 	static function get_table_list() {
 		global $g_db, $g_db_schema;
 	
-		if( \Flickerbox\Database::is_db2() ) {
+		if( \Core\Database::is_db2() ) {
 			# must pass schema
 			$t_tables = $g_db->MetaTables( 'TABLE', false, '', $g_db_schema );
 		} else {
@@ -948,12 +948,12 @@ class Database
 	static function update_blob( $p_table, $p_column, $p_val, $p_where = null ) {
 		global $g_db, $g_db_log_queries, $g_queries_array;
 	
-		if( !\Flickerbox\Database::is_oracle() ) {
+		if( !\Core\Database::is_oracle() ) {
 			return false;
 		}
 	
 		if( null == $p_where ) {
-			$p_where = 'id=' . \Flickerbox\Database::insert_id( $p_table );
+			$p_where = 'id=' . \Core\Database::insert_id( $p_table );
 		}
 	
 		if( ON == $g_db_log_queries ) {
@@ -981,12 +981,12 @@ class Database
 				$t_elapsed,
 				$t_caller
 			);
-			\Flickerbox\Log::event( LOG_DATABASE, var_export( $t_log_data, true ) );
+			\Core\Log::event( LOG_DATABASE, var_export( $t_log_data, true ) );
 			array_push( $g_queries_array, $t_log_data );
 		}
 	
 		if( !$t_result ) {
-			\Flickerbox\Database::error();
+			\Core\Database::error();
 			trigger_error( ERROR_DB_QUERY_FAILED, ERROR );
 			return false;
 		}
@@ -998,7 +998,7 @@ class Database
 	 * Sorts bind variable numbers and puts them in sequential order
 	 * e.g. input:  "... WHERE F1=:12 and F2=:97 ",
 	 *      output: "... WHERE F1=:0 and F2=:1 ".
-	 * Used in \Flickerbox\Database::oracle_adapt_query_syntax().
+	 * Used in \Core\Database::oracle_adapt_query_syntax().
 	 * @param string $p_query Query string to sort.
 	 * @return string Query string with sorted bind variable numbers.
 	 */
@@ -1043,7 +1043,7 @@ class Database
 	/**
 	 * Adapt input query string and bindvars array to Oracle DB syntax:
 	 * 1. Change bind vars id's to sequence beginning with 0
-	 *    (calls \Flickerbox\Database::oracle_order_binds_sequentially() )
+	 *    (calls \Core\Database::oracle_order_binds_sequentially() )
 	 * 2. Remove "AS" keyword, because it is not supported with table aliasing
 	 * 3. Remove null bind variables in insert statements for default values support
 	 * 4. Replace "tab.column=:bind" to "tab.column IS NULL" when :bind is empty string
@@ -1125,7 +1125,7 @@ class Database
 				$t_removed_set_where = '';
 	
 				# Need to order parameter array element correctly
-				$p_query = \Flickerbox\Database::oracle_order_binds_sequentially( $p_query );
+				$p_query = \Core\Database::oracle_order_binds_sequentially( $p_query );
 	
 				# Find and remove temporarily "SET var1=:bind1, var2=:bind2 WHERE" part
 				preg_match( '/^(?P<before_set_where>.*)(?P<set_where>[\s\n\r]*set[\s\n\r]+[\s\n\ra-z0-9_\.=,:\']+)(?P<after_set_where>where[\d\D]*)$/i', $p_query, $t_matches );
@@ -1173,7 +1173,7 @@ class Database
 					# Put temporarily removed "SET ... WHERE" part back
 					$p_query = str_replace( $t_set_where_template_str, $t_removed_set_where, $p_query );
 					# Need to order parameter array element correctly
-					$p_query = \Flickerbox\Database::oracle_order_binds_sequentially( $p_query );
+					$p_query = \Core\Database::oracle_order_binds_sequentially( $p_query );
 					# Find and remove temporary "SET var1=:bind1, var2=:bind2 WHERE" part again
 					preg_match( '/^(?P<before_set_where>.*)(?P<set_where>[\s\n\r]*set[\s\n\r]+[\s\n\ra-z0-9_\.=,:\']+)(?P<after_set_where>where[\d\D]*)$/i', $p_query, $t_matches );
 					$t_removed_set_where = $t_matches['set_where'];
@@ -1201,7 +1201,7 @@ class Database
 				}
 			}
 		}
-		$p_query = \Flickerbox\Database::oracle_order_binds_sequentially( $p_query );
+		$p_query = \Core\Database::oracle_order_binds_sequentially( $p_query );
 		return $p_query;
 	}
 

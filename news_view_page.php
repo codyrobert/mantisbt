@@ -34,30 +34,30 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\News::ensure_enabled();
+\Core\News::ensure_enabled();
 
-$f_news_id = \Flickerbox\GPC::get_int( 'news_id', null );
+$f_news_id = \Core\GPC::get_int( 'news_id', null );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 ?>
 
 <?php
 if( $f_news_id !== null ) {
-	$t_project_id = \Flickerbox\News::get_field( $f_news_id, 'project_id' );
-	if( \Flickerbox\News::is_private( $f_news_id ) ) {
-		\Flickerbox\Access::ensure_project_level(	\Flickerbox\Config::mantis_get( 'private_news_threshold' ),
+	$t_project_id = \Core\News::get_field( $f_news_id, 'project_id' );
+	if( \Core\News::is_private( $f_news_id ) ) {
+		\Core\Access::ensure_project_level(	\Core\Config::mantis_get( 'private_news_threshold' ),
 						$t_project_id );
 	} else {
-		\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id );
+		\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_bug_threshold', null, null, $t_project_id ), $t_project_id );
 	}
 
-	\Flickerbox\Print_Util::news_string_by_news_id( $f_news_id );
+	\Core\Print_Util::news_string_by_news_id( $f_news_id );
 }
 ?>
 
 <div id="news-menu">
-	<?php \Flickerbox\Print_Util::bracket_link( 'news_list_page.php', \Flickerbox\Lang::get( 'archives' ) ); ?>
+	<?php \Core\Print_Util::bracket_link( 'news_list_page.php', \Core\Lang::get( 'archives' ) ); ?>
 </div>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

@@ -29,14 +29,14 @@
 
 require_once( 'core.php' );
 
-$f_type = \Flickerbox\GPC::get_string( 'type', 'text' );
+$f_type = \Core\GPC::get_string( 'type', 'text' );
 
 header( 'Content-Type: application/opensearchdescription+xml' );
 ?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
                        xmlns:moz="http://www.mozilla.org/2006/browser/search/">
 <?php
-$t_path = \Flickerbox\Config::get_global( 'path' );
+$t_path = \Core\Config::get_global( 'path' );
 
 if( strtolower( $f_type ) == 'id' ) {
 	echo '<ShortName>MantisBT IssueId</ShortName>';

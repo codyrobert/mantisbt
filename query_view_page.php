@@ -37,20 +37,20 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$t_query_arr = \Flickerbox\Filter::db_get_available_queries();
+$t_query_arr = \Core\Filter::db_get_available_queries();
 
 # Special case: if we've deleted our last query, we have nothing to show here.
 if( count( $t_query_arr ) < 1 ) {
-	\Flickerbox\Print_Util::header_redirect( 'view_all_bug_page.php' );
+	\Core\Print_Util::header_redirect( 'view_all_bug_page.php' );
 }
 
-\Flickerbox\Compress::enable();
+\Core\Compress::enable();
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
-$t_rss_enabled = \Flickerbox\Config::mantis_get( 'rss_enabled' );
+$t_rss_enabled = \Core\Config::mantis_get( 'rss_enabled' );
 ?>
 <br />
 <div>
@@ -68,16 +68,16 @@ foreach( $t_query_arr as $t_id => $t_name ) {
 
 	if( OFF != $t_rss_enabled ) {
 		# Use the "new" RSS link style.
-		print_rss( \Flickerbox\RSS::get_issues_feed_url( null, null, $t_id ), \Flickerbox\Lang::get( 'rss' ) );
+		print_rss( \Core\RSS::get_issues_feed_url( null, null, $t_id ), \Core\Lang::get( 'rss' ) );
 		echo ' ';
 	}
 
 	$t_query_id = (int)$t_id;
-	\Flickerbox\Print_Util::link( 'view_all_set.php?type=3&source_query_id=' . $t_query_id, $t_name );
+	\Core\Print_Util::link( 'view_all_set.php?type=3&source_query_id=' . $t_query_id, $t_name );
 
-	if( \Flickerbox\Filter::db_can_delete_filter( $t_id ) ) {
+	if( \Core\Filter::db_can_delete_filter( $t_id ) ) {
 		echo ' ';
-		\Flickerbox\Print_Util::button( 'query_delete_page.php?source_query_id=' . $t_query_id, \Flickerbox\Lang::get( 'delete_query' ) );
+		\Core\Print_Util::button( 'query_delete_page.php?source_query_id=' . $t_query_id, \Core\Lang::get( 'delete_query' ) );
 	}
 
 	print '</td>';
@@ -100,4 +100,4 @@ if( ( $t_column_count > 0 ) && ( $t_column_count < $t_max_column_count ) ) {
 </table>
 </div>
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

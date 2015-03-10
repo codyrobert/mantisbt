@@ -41,23 +41,23 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_user_create' );
+\Core\Form::security_validate( 'manage_user_create' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
-$f_username        = \Flickerbox\GPC::get_string( 'username' );
-$f_realname        = \Flickerbox\GPC::get_string( 'realname', '' );
-$f_password        = \Flickerbox\GPC::get_string( 'password', '' );
-$f_password_verify = \Flickerbox\GPC::get_string( 'password_verify', '' );
-$f_email           = \Flickerbox\GPC::get_string( 'email', '' );
-$f_access_level    = \Flickerbox\GPC::get_string( 'access_level' );
-$f_protected       = \Flickerbox\GPC::get_bool( 'protected' );
-$f_enabled         = \Flickerbox\GPC::get_bool( 'enabled' );
+$f_username        = \Core\GPC::get_string( 'username' );
+$f_realname        = \Core\GPC::get_string( 'realname', '' );
+$f_password        = \Core\GPC::get_string( 'password', '' );
+$f_password_verify = \Core\GPC::get_string( 'password_verify', '' );
+$f_email           = \Core\GPC::get_string( 'email', '' );
+$f_access_level    = \Core\GPC::get_string( 'access_level' );
+$f_protected       = \Core\GPC::get_bool( 'protected' );
+$f_enabled         = \Core\GPC::get_bool( 'enabled' );
 
 # check for empty username
 $f_username = trim( $f_username );
-if( \Flickerbox\Utility::is_blank( $f_username ) ) {
+if( \Core\Utility::is_blank( $f_username ) ) {
 	trigger_error( ERROR_EMPTY_FIELD, ERROR );
 }
 
@@ -66,64 +66,64 @@ if( \Flickerbox\Utility::is_blank( $f_username ) ) {
 #  anyway)
 # strip extra space from real name
 $t_realname = string_normalize( $f_realname );
-\Flickerbox\User::ensure_name_valid( $f_username );
-\Flickerbox\User::ensure_realname_unique( $f_username, $f_realname );
+\Core\User::ensure_name_valid( $f_username );
+\Core\User::ensure_realname_unique( $f_username, $f_realname );
 
 if( $f_password != $f_password_verify ) {
 	trigger_error( ERROR_USER_CREATE_PASSWORD_MISMATCH, ERROR );
 }
 
-\Flickerbox\Email::ensure_not_disposable( $f_email );
+\Core\Email::ensure_not_disposable( $f_email );
 
-if( ( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
+if( ( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Core\Config::mantis_get( 'enable_email_notification' ) ) ) {
 	# Check code will be sent to the user directly via email. Dummy password set to random
 	# Create random password
 	$f_password	= auth_generate_random_password();
 } else {
 	# Password won't to be sent by email. It entered by the admin
 	# Now, if the password is empty, confirm that that is what we wanted
-	if( \Flickerbox\Utility::is_blank( $f_password ) ) {
-		\Flickerbox\Helper::ensure_confirmed( \Flickerbox\Lang::get( 'empty_password_sure_msg' ),
-				 \Flickerbox\Lang::get( 'empty_password_button' ) );
+	if( \Core\Utility::is_blank( $f_password ) ) {
+		\Core\Helper::ensure_confirmed( \Core\Lang::get( 'empty_password_sure_msg' ),
+				 \Core\Lang::get( 'empty_password_button' ) );
 	}
 }
 
 # Don't allow the creation of accounts with access levels higher than that of
 # the user creating the account.
-\Flickerbox\Access::ensure_global_level( $f_access_level );
+\Core\Access::ensure_global_level( $f_access_level );
 
 # Need to send the user creation mail in the tracker language, not in the creating admin's language
 # Park the current language name until the user has been created
-\Flickerbox\Lang::push( \Flickerbox\Config::mantis_get( 'default_language' ) );
+\Core\Lang::push( \Core\Config::mantis_get( 'default_language' ) );
 
 # create the user
-$t_admin_name = \Flickerbox\User::get_name( auth_get_current_user_id() );
-$t_cookie = \Flickerbox\User::create( $f_username, $f_password, $f_email, $f_access_level, $f_protected, $f_enabled, $t_realname, $t_admin_name );
+$t_admin_name = \Core\User::get_name( auth_get_current_user_id() );
+$t_cookie = \Core\User::create( $f_username, $f_password, $f_email, $f_access_level, $f_protected, $f_enabled, $t_realname, $t_admin_name );
 
 # set language back to user language
-\Flickerbox\Lang::pop();
+\Core\Lang::pop();
 
-\Flickerbox\Form::security_purge( 'manage_user_create' );
+\Core\Form::security_purge( 'manage_user_create' );
 
 if( $t_cookie === false ) {
 	$t_redirect_url = 'manage_user_page.php';
 } else {
 	# ok, we created the user, get the row again
-	$t_user_id = \Flickerbox\User::get_id_by_name( $f_username );
+	$t_user_id = \Core\User::get_id_by_name( $f_username );
 	$t_redirect_url = 'manage_user_edit_page.php?user_id=' . $t_user_id;
 }
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 ?>
 
 <br />
 <div class="success-msg">
 <?php
-$t_access_level = \Flickerbox\Helper::get_enum_element( 'access_levels', $f_access_level );
-echo \Flickerbox\Lang::get( 'created_user_part1' ) . ' <span class="bold">' . $f_username . '</span> ' . \Flickerbox\Lang::get( 'created_user_part2' ) . ' <span class="bold">' . $t_access_level . '</span><br />';
+$t_access_level = \Core\Helper::get_enum_element( 'access_levels', $f_access_level );
+echo \Core\Lang::get( 'created_user_part1' ) . ' <span class="bold">' . $f_username . '</span> ' . \Core\Lang::get( 'created_user_part2' ) . ' <span class="bold">' . $t_access_level . '</span><br />';
 
-\Flickerbox\Print_Util::bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+\Core\Print_Util::bracket_link( $t_redirect_url, \Core\Lang::get( 'proceed' ) );
 ?>
 </div>
 
-<?php \Flickerbox\HTML::page_bottom();
+<?php \Core\HTML::page_bottom();

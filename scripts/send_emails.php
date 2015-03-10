@@ -36,7 +36,7 @@ if( php_sapi_name() != 'cli' ) {
 }
 
 echo "Sending emails...\n";
-\Flickerbox\Email::send_all();
+\Core\Email::send_all();
 echo "Done.\n";
 
 exit( 0 );

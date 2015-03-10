@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -43,7 +43,7 @@ class Wiki
 	 * @access public
 	 */
 	static function enabled() {
-		return( \Flickerbox\Config::get_global( 'wiki_enable' ) == ON );
+		return( \Core\Config::get_global( 'wiki_enable' ) == ON );
 	}
 	
 	/**
@@ -52,30 +52,30 @@ class Wiki
 	 * @access public
 	 */
 	static function init() {
-		if( \Flickerbox\Wiki::enabled() ) {
+		if( \Core\Wiki::enabled() ) {
 	
 			# handle legacy style wiki integration
-			//require_once( \Flickerbox\Config::get_global( 'class_path' ) . 'MantisCoreWikiPlugin.class.php' );
-			switch( \Flickerbox\Config::get_global( 'wiki_engine' ) ) {
+			//require_once( \Core\Config::get_global( 'class_path' ) . 'MantisCoreWikiPlugin.class.php' );
+			switch( \Core\Config::get_global( 'wiki_engine' ) ) {
 				case 'dokuwiki':
-					\Flickerbox\Plugin::child( 'MantisCoreDokuwiki' );
+					\Core\Plugin::child( 'MantisCoreDokuwiki' );
 					break;
 				case 'mediawiki':
-					\Flickerbox\Plugin::child( 'MantisCoreMediaWiki' );
+					\Core\Plugin::child( 'MantisCoreMediaWiki' );
 					break;
 				case 'twiki':
-					\Flickerbox\Plugin::child( 'MantisCoreTwiki' );
+					\Core\Plugin::child( 'MantisCoreTwiki' );
 					break;
 				case 'WikkaWiki':
-					\Flickerbox\Plugin::child( 'MantisCoreWikkaWiki' );
+					\Core\Plugin::child( 'MantisCoreWikkaWiki' );
 					break;
 				case 'xwiki':
-					\Flickerbox\Plugin::child( 'MantisCoreXwiki' );
+					\Core\Plugin::child( 'MantisCoreXwiki' );
 					break;
 			}
 	
-			if( is_null( \Flickerbox\Event::signal( 'EVENT_WIKI_INIT' ) ) ) {
-				\Flickerbox\Config::set_global( 'wiki_enable', OFF );
+			if( is_null( \Core\Event::signal( 'EVENT_WIKI_INIT' ) ) ) {
+				\Core\Config::set_global( 'wiki_enable', OFF );
 			}
 		}
 	}
@@ -87,7 +87,7 @@ class Wiki
 	 * @access public
 	 */
 	static function link_bug( $p_bug_id ) {
-		return \Flickerbox\Event::signal( 'EVENT_WIKI_LINK_BUG', $p_bug_id );
+		return \Core\Event::signal( 'EVENT_WIKI_LINK_BUG', $p_bug_id );
 	}
 	
 	/**
@@ -97,7 +97,7 @@ class Wiki
 	 * @access public
 	 */
 	static function link_project( $p_project_id ) {
-		return \Flickerbox\Event::signal( 'EVENT_WIKI_LINK_PROJECT', $p_project_id );
+		return \Core\Event::signal( 'EVENT_WIKI_LINK_PROJECT', $p_project_id );
 	}
 
 

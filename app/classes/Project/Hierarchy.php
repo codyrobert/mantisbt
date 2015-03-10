@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox\Project;
+namespace Core\Project;
 
 # MantisBT - A PHP based bugtracking system
 
@@ -42,16 +42,16 @@ class Hierarchy
 	 * @return void
 	 */
 	static function add( $p_child_id, $p_parent_id, $p_inherit_parent = true ) {
-		if( in_array( $p_parent_id, \Flickerbox\Project\Hierarchy::get_all_subprojects( $p_child_id ) ) ) {
+		if( in_array( $p_parent_id, \Core\Project\Hierarchy::get_all_subprojects( $p_child_id ) ) ) {
 			trigger_error( ERROR_PROJECT_RECURSIVE_HIERARCHY, ERROR );
 		}
 	
 		$t_query = 'INSERT INTO {project_hierarchy}
 			                ( child_id, parent_id, inherit_parent )
 							VALUES
-							( ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ', ' . \Flickerbox\Database::param() . ' )';
+							( ' . \Core\Database::param() . ', ' . \Core\Database::param() . ', ' . \Core\Database::param() . ' )';
 	
-		\Flickerbox\Database::query( $t_query, array( $p_child_id, $p_parent_id, $p_inherit_parent ) );
+		\Core\Database::query( $t_query, array( $p_child_id, $p_parent_id, $p_inherit_parent ) );
 	}
 	
 	/**
@@ -63,10 +63,10 @@ class Hierarchy
 	 */
 	static function update( $p_child_id, $p_parent_id, $p_inherit_parent = true ) {
 		$t_query = 'UPDATE {project_hierarchy}
-						SET inherit_parent=' . \Flickerbox\Database::param() . '
-						WHERE child_id=' . \Flickerbox\Database::param() . '
-							AND parent_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( $p_inherit_parent, $p_child_id, $p_parent_id ) );
+						SET inherit_parent=' . \Core\Database::param() . '
+						WHERE child_id=' . \Core\Database::param() . '
+							AND parent_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( $p_inherit_parent, $p_child_id, $p_parent_id ) );
 	}
 	
 	/**
@@ -76,10 +76,10 @@ class Hierarchy
 	 * @return void
 	 */
 	static function remove( $p_child_id, $p_parent_id ) {
-		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . \Flickerbox\Database::param() . '
-							AND parent_id = ' . \Flickerbox\Database::param();
+		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . \Core\Database::param() . '
+							AND parent_id = ' . \Core\Database::param();
 	
-		\Flickerbox\Database::query( $t_query, array( $p_child_id, $p_parent_id ) );
+		\Core\Database::query( $t_query, array( $p_child_id, $p_parent_id ) );
 	}
 	
 	/**
@@ -88,10 +88,10 @@ class Hierarchy
 	 * @return void
 	 */
 	static function remove_all( $p_project_id ) {
-		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . \Flickerbox\Database::param() . '
-							  OR parent_id = ' . \Flickerbox\Database::param();
+		$t_query = 'DELETE FROM {project_hierarchy} WHERE child_id = ' . \Core\Database::param() . '
+							  OR parent_id = ' . \Core\Database::param();
 	
-		\Flickerbox\Database::query( $t_query, array( $p_project_id, $p_project_id ) );
+		\Core\Database::query( $t_query, array( $p_project_id, $p_project_id ) );
 	}
 	
 	/**
@@ -103,7 +103,7 @@ class Hierarchy
 	static function is_toplevel( $p_project_id, $p_show_disabled = false ) {
 		global $g_cache_project_hierarchy;
 	
-		\Flickerbox\Project\Hierarchy::cache( $p_show_disabled );
+		\Core\Project\Hierarchy::cache( $p_show_disabled );
 	
 		if( isset( $g_cache_project_hierarchy[ALL_PROJECTS] ) ) {
 			return in_array( $p_project_id, $g_cache_project_hierarchy[ALL_PROJECTS] );
@@ -121,7 +121,7 @@ class Hierarchy
 	static function get_parent( $p_project_id, $p_show_disabled = false ) {
 		global $g_cache_project_hierarchy;
 	
-		\Flickerbox\Project\Hierarchy::cache( $p_show_disabled );
+		\Core\Project\Hierarchy::cache( $p_show_disabled );
 	
 		if( ALL_PROJECTS == $p_project_id ) {
 			return 0;
@@ -150,7 +150,7 @@ class Hierarchy
 		}
 		$g_cache_show_disabled = $p_show_disabled;
 	
-		$t_enabled_clause = $p_show_disabled ? '1=1' : 'p.enabled = ' . \Flickerbox\Database::param();
+		$t_enabled_clause = $p_show_disabled ? '1=1' : 'p.enabled = ' . \Core\Database::param();
 	
 		$t_query = 'SELECT DISTINCT p.id, ph.parent_id, p.name, p.inherit_global, ph.inherit_parent
 					  FROM {project} p
@@ -159,12 +159,12 @@ class Hierarchy
 					  WHERE ' . $t_enabled_clause . '
 					  ORDER BY p.name';
 	
-		$t_result = \Flickerbox\Database::query( $t_query, ( $p_show_disabled ? array() : array( true ) ) );
+		$t_result = \Core\Database::query( $t_query, ( $p_show_disabled ? array() : array( true ) ) );
 	
 		$g_cache_project_hierarchy = array();
 		$g_cache_project_inheritance = array();
 	
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			if( null === $t_row['parent_id'] ) {
 				$t_row['parent_id'] = ALL_PROJECTS;
 			}
@@ -201,7 +201,7 @@ class Hierarchy
 	static function inherit_parent( $p_child_id, $p_parent_id, $p_show_disabled = false ) {
 		global $g_cache_project_inheritance;
 	
-		\Flickerbox\Project\Hierarchy::cache( $p_show_disabled );
+		\Core\Project\Hierarchy::cache( $p_show_disabled );
 	
 		return in_array( $p_parent_id, $g_cache_project_inheritance[$p_child_id] );
 	}
@@ -216,7 +216,7 @@ class Hierarchy
 	static function inheritance( $p_project_id, $p_show_disabled = false ) {
 		global $g_cache_project_inheritance;
 	
-		\Flickerbox\Project\Hierarchy::cache( $p_show_disabled );
+		\Core\Project\Hierarchy::cache( $p_show_disabled );
 	
 		$t_project_ids = array( (int)$p_project_id, );
 		$t_lookup_ids = array( (int)$p_project_id, );
@@ -251,7 +251,7 @@ class Hierarchy
 	static function get_subprojects( $p_project_id, $p_show_disabled = false ) {
 		global $g_cache_project_hierarchy;
 	
-		\Flickerbox\Project\Hierarchy::cache( $p_show_disabled );
+		\Core\Project\Hierarchy::cache( $p_show_disabled );
 	
 		if( isset( $g_cache_project_hierarchy[$p_project_id] ) ) {
 			return $g_cache_project_hierarchy[$p_project_id];
@@ -267,14 +267,14 @@ class Hierarchy
 	 * @return array
 	 */
 	static function get_all_subprojects( $p_project_id, $p_show_disabled = false ) {
-		$t_todo = \Flickerbox\Project\Hierarchy::get_subprojects( $p_project_id, $p_show_disabled );
+		$t_todo = \Core\Project\Hierarchy::get_subprojects( $p_project_id, $p_show_disabled );
 		$t_subprojects = array();
 	
 		while( $t_todo ) {
 			$t_elem = array_shift( $t_todo );
 			if( !in_array( $t_elem, $t_subprojects ) ) {
 				array_push( $t_subprojects, $t_elem );
-				$t_todo = array_merge( $t_todo, \Flickerbox\Project\Hierarchy::get_subprojects( $t_elem, $p_show_disabled ) );
+				$t_todo = array_merge( $t_todo, \Core\Project\Hierarchy::get_subprojects( $t_elem, $p_show_disabled ) );
 			}
 		}
 	

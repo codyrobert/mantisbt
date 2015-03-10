@@ -34,41 +34,41 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\News::ensure_enabled();
+\Core\News::ensure_enabled();
 
-\Flickerbox\Form::security_validate( 'news_update' );
+\Core\Form::security_validate( 'news_update' );
 
-$f_news_id		= \Flickerbox\GPC::get_int( 'news_id' );
-$f_project_id	= \Flickerbox\GPC::get_int( 'project_id' );
-$f_view_state	= \Flickerbox\GPC::get_int( 'view_state' );
-$f_headline		= \Flickerbox\GPC::get_string( 'headline' );
-$f_announcement	= \Flickerbox\GPC::get_bool( 'announcement' );
-$f_body			= \Flickerbox\GPC::get_string( 'body', '' );
+$f_news_id		= \Core\GPC::get_int( 'news_id' );
+$f_project_id	= \Core\GPC::get_int( 'project_id' );
+$f_view_state	= \Core\GPC::get_int( 'view_state' );
+$f_headline		= \Core\GPC::get_string( 'headline' );
+$f_announcement	= \Core\GPC::get_bool( 'announcement' );
+$f_body			= \Core\GPC::get_string( 'body', '' );
 
-$t_row = \Flickerbox\News::get_row( $f_news_id );
+$t_row = \Core\News::get_row( $f_news_id );
 
 # Check both the old project and the new project
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ), $t_row['project_id'] );
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_news_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_news_threshold' ), $t_row['project_id'] );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_news_threshold' ), $f_project_id );
 
-\Flickerbox\News::update( $f_news_id, $f_project_id, $f_view_state, $f_announcement, $f_headline, $f_body );
+\Core\News::update( $f_news_id, $f_project_id, $f_view_state, $f_announcement, $f_headline, $f_body );
 
-\Flickerbox\Form::security_purge( 'news_update' );
+\Core\Form::security_purge( 'news_update' );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
 echo '<div class="success-msg">';
-echo \Flickerbox\Lang::get( 'operation_successful' );
+echo \Core\Lang::get( 'operation_successful' );
 
 echo '<br />';
 
-\Flickerbox\Print_Util::bracket_link( 'news_edit_page.php?news_id=' . $f_news_id . '&action=edit', \Flickerbox\Lang::get( 'edit_link' ) );
-\Flickerbox\Print_Util::bracket_link( 'news_menu_page.php', \Flickerbox\Lang::get( 'proceed' ) );
+\Core\Print_Util::bracket_link( 'news_edit_page.php?news_id=' . $f_news_id . '&action=edit', \Core\Lang::get( 'edit_link' ) );
+\Core\Print_Util::bracket_link( 'news_menu_page.php', \Core\Lang::get( 'proceed' ) );
 
 echo '<br /><br />';
 
-\Flickerbox\Print_Util::news_entry( $f_headline, $f_body, $t_row['poster_id'], $f_view_state, $f_announcement, $t_row['date_posted'] );
+\Core\Print_Util::news_entry( $f_headline, $f_body, $t_row['poster_id'], $f_view_state, $f_announcement, $t_row['date_posted'] );
 
 echo '</div>';
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

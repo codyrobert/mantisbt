@@ -47,7 +47,7 @@ function mc_project_get_issues_for_user( $p_username, $p_password, $p_project_id
 		return mci_soap_fault_login_failed();
 	}
 
-	if( $p_project_id != ALL_PROJECTS && !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( $p_project_id != ALL_PROJECTS && !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -64,21 +64,21 @@ function mc_project_get_issues_for_user( $p_username, $p_password, $p_project_id
 	$t_show_sticky = true;
 
 	if( strcasecmp( $p_filter_type, 'assigned' ) == 0 ) {
-		$t_filter = \Flickerbox\Filter::create_assigned_to_unresolved( $p_project_id, $t_target_user_id );
+		$t_filter = \Core\Filter::create_assigned_to_unresolved( $p_project_id, $t_target_user_id );
 	} else if( strcasecmp( $p_filter_type, 'reported' ) == 0 ) {
 		# target id 0 for reporter doesn't make sense.
 		if( $t_target_user_id == 0 ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Target user id must be specified for \'reported\' filter.' );
 		}
 
-		$t_filter = \Flickerbox\Filter::create_reported_by( $p_project_id, $t_target_user_id );
+		$t_filter = \Core\Filter::create_reported_by( $p_project_id, $t_target_user_id );
 	} else if( strcasecmp( $p_filter_type, 'monitored' ) == 0 ) {
-		$t_filter = \Flickerbox\Filter::create_monitored_by( $p_project_id, $t_target_user_id );
+		$t_filter = \Core\Filter::create_monitored_by( $p_project_id, $t_target_user_id );
 	} else {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Unknown filter type \'' . $p_filter_type . '\'.' );
 	}
 
-	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id, $t_target_user_id, $t_show_sticky );
+	$t_rows = \Core\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, $t_filter, $p_project_id, $t_target_user_id, $t_show_sticky );
 
 	$t_result = array();
 
@@ -112,7 +112,7 @@ function mc_project_get_issues( $p_username, $p_password, $p_project_id, $p_page
 	}
 
 	$t_lang = mci_get_user_lang( $t_user_id );
-	if( $p_project_id != ALL_PROJECTS && !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( $p_project_id != ALL_PROJECTS && !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -125,7 +125,7 @@ function mc_project_get_issues( $p_username, $p_password, $p_project_id, $p_page
 	$t_bug_count = 0;
 	$g_project_override = $p_project_id;
 
-	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
+	$t_rows = \Core\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
 
 	$t_result = array();
 
@@ -161,8 +161,8 @@ function mc_projects_get_user_accessible( $p_username, $p_password ) {
 	$t_lang = mci_get_user_lang( $t_user_id );
 
 	$t_result = array();
-	foreach( \Flickerbox\User::get_accessible_projects( $t_user_id ) as $t_project_id ) {
-		$t_project_row = \Flickerbox\Project::cache_row( $t_project_id );
+	foreach( \Core\User::get_accessible_projects( $t_user_id ) as $t_project_id ) {
+		$t_project_row = \Core\Project::cache_row( $t_project_id );
 		$t_project = array();
 		$t_project['id'] = $t_project_id;
 		$t_project['name'] = $t_project_row['name'];
@@ -195,7 +195,7 @@ function mc_project_get_categories( $p_username, $p_password, $p_project_id ) {
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 	$g_project_override = $p_project_id;
@@ -205,7 +205,7 @@ function mc_project_get_categories( $p_username, $p_password, $p_project_id ) {
 	}
 
 	$t_result = array();
-	$t_cat_array = \Flickerbox\Category::get_all_rows( $p_project_id );
+	$t_cat_array = \Core\Category::get_all_rows( $p_project_id );
 	foreach( $t_cat_array as $t_category_row ) {
 		$t_result[] = $t_category_row['name'];
 	}
@@ -228,16 +228,16 @@ function mc_project_add_category( $p_username, $p_password, $p_project_id, $p_ca
 		return mci_soap_fault_access_denied();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 	$g_project_override = $p_project_id;
 
-	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
+	if( !mci_has_access( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
 		return mci_soap_fault_access_denied();
 	}
 
-	return \Flickerbox\Category::add( $p_project_id, $p_category_name );
+	return \Core\Category::add( $p_project_id, $p_category_name );
 }
 
 /**
@@ -256,21 +256,21 @@ function mc_project_delete_category ( $p_username, $p_password, $p_project_id, $
 		return mci_soap_fault_access_denied();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
 	$g_project_override = $p_project_id;
 
-	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
+	if( !mci_has_access( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
 		return mci_soap_fault_access_denied();
 	}
 
 	# find the id of the category
-	$p_category_id = \Flickerbox\Category::get_id_by_name( $p_category_name, $p_project_id );
+	$p_category_id = \Core\Category::get_id_by_name( $p_category_name, $p_project_id );
 
 	# delete the category and link all the issue to the default category
-	return \Flickerbox\Category::remove( $p_category_id, \Flickerbox\Config::mantis_get( 'default_category_for_moves' ) );
+	return \Core\Category::remove( $p_category_id, \Core\Config::mantis_get( 'default_category_for_moves' ) );
 }
 
 /**
@@ -295,21 +295,21 @@ function mc_project_rename_category_by_name( $p_username, $p_password, $p_projec
 		return mci_soap_fault_access_denied();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
 	$g_project_override = $p_project_id;
 
-	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
+	if( !mci_has_access( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $p_project_id ) ) {
 		return mci_soap_fault_access_denied();
 	}
 
 	# find the id of the category
-	$p_category_id = \Flickerbox\Category::get_id_by_name( $p_category_name, $p_project_id );
+	$p_category_id = \Core\Category::get_id_by_name( $p_category_name, $p_project_id );
 
 	# update the category
-	return \Flickerbox\Category::update( $p_category_id, $p_category_name_new, $p_assigned_to );
+	return \Core\Category::update( $p_category_id, $p_category_name_new, $p_assigned_to );
 }
 
 /**
@@ -328,7 +328,7 @@ function mc_project_get_versions( $p_username, $p_password, $p_project_id ) {
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 	$g_project_override = $p_project_id;
@@ -338,7 +338,7 @@ function mc_project_get_versions( $p_username, $p_password, $p_project_id ) {
 	}
 
 	$t_result = array();
-	foreach( \Flickerbox\Version::get_all_rows( $p_project_id, VERSION_ALL ) as $t_version ) {
+	foreach( \Core\Version::get_all_rows( $p_project_id, VERSION_ALL ) as $t_version ) {
 		$t_result[] = mci_project_version_as_array( $t_version );
 	}
 
@@ -361,7 +361,7 @@ function mc_project_get_released_versions( $p_username, $p_password, $p_project_
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -372,7 +372,7 @@ function mc_project_get_released_versions( $p_username, $p_password, $p_project_
 
 	$t_result = array();
 
-	foreach( \Flickerbox\Version::get_all_rows( $p_project_id, VERSION_RELEASED ) as $t_version ) {
+	foreach( \Core\Version::get_all_rows( $p_project_id, VERSION_RELEASED ) as $t_version ) {
 		$t_result[] = mci_project_version_as_array( $t_version );
 	}
 
@@ -396,7 +396,7 @@ function mc_project_get_unreleased_versions( $p_username, $p_password, $p_projec
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 	$g_project_override = $p_project_id;
@@ -407,7 +407,7 @@ function mc_project_get_unreleased_versions( $p_username, $p_password, $p_projec
 
 	$t_result = array();
 
-	foreach( \Flickerbox\Version::get_all_rows( $p_project_id, VERSION_FUTURE ) as $t_version ) {
+	foreach( \Core\Version::get_all_rows( $p_project_id, VERSION_FUTURE ) as $t_version ) {
 		$t_result[] = mci_project_version_as_array( $t_version );
 	}
 
@@ -439,7 +439,7 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 	$t_released = $p_version['released'];
 	$t_description = $p_version['description'];
 	$t_date_order =  $p_version['date_order'];
-	if( \Flickerbox\Utility::is_blank( $t_date_order ) ) {
+	if( \Core\Utility::is_blank( $t_date_order ) ) {
 		$t_date_order = null;
 	} else {
 		$t_date_order = SoapObjectsFactory::parseDateTimeString( $t_date_order );
@@ -447,11 +447,11 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 
 	$t_obsolete = isset( $p_version['obsolete'] ) ? $p_version['obsolete'] : false;
 
-	if( \Flickerbox\Utility::is_blank( $t_project_id ) ) {
+	if( \Core\Utility::is_blank( $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "project_id" was missing' );
 	}
 
-	if( !\Flickerbox\Project::exists( $t_project_id ) ) {
+	if( !\Core\Project::exists( $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $t_project_id . '\' does not exist.' );
 	}
 
@@ -459,15 +459,15 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
+	if( !mci_has_access( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( \Flickerbox\Utility::is_blank( $t_name ) ) {
+	if( \Core\Utility::is_blank( $t_name ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "name" was missing' );
 	}
 
-	if( !\Flickerbox\Version::is_unique( $t_name, $t_project_id ) ) {
+	if( !\Core\Version::is_unique( $t_name, $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version exists for project' );
 	}
 
@@ -477,8 +477,8 @@ function mc_project_version_add( $p_username, $p_password, stdClass $p_version )
 		$t_released = VERSION_RELEASED;
 	}
 
-	if( \Flickerbox\Version::add( $t_project_id, $t_name, $t_released, $t_description, $t_date_order, $t_obsolete ) ) {
-		return \Flickerbox\Version::get_id( $t_name, $t_project_id );
+	if( \Core\Version::add( $t_project_id, $t_name, $t_released, $t_description, $t_date_order, $t_obsolete ) ) {
+		return \Core\Version::get_id( $t_name, $t_project_id );
 	}
 
 	return null;
@@ -502,11 +502,11 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 		return mci_soap_fault_login_failed();
 	}
 
-	if( \Flickerbox\Utility::is_blank( $p_version_id ) ) {
+	if( \Core\Utility::is_blank( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "version_id" was missing' );
 	}
 
-	if( !\Flickerbox\Version::exists( $p_version_id ) ) {
+	if( !\Core\Version::exists( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version \'' . $p_version_id . '\' does not exist.' );
 	}
 
@@ -520,11 +520,11 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 	$t_date_order = isset( $p_version['date_order'] ) ? SoapObjectsFactory::parseDateTimeString( $p_version['date_order'] ) : null;
 	$t_obsolete = isset( $p_version['obsolete'] ) ? $p_version['obsolete'] : false;
 
-	if( \Flickerbox\Utility::is_blank( $t_project_id ) ) {
+	if( \Core\Utility::is_blank( $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "project_id" was missing' );
 	}
 
-	if( !\Flickerbox\Project::exists( $t_project_id ) ) {
+	if( !\Core\Project::exists( $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $t_project_id . '\' does not exist.' );
 	}
 
@@ -532,17 +532,17 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
+	if( !mci_has_access( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( \Flickerbox\Utility::is_blank( $t_name ) ) {
+	if( \Core\Utility::is_blank( $t_name ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "name" was missing' );
 	}
 
 	# check for duplicates
-	$t_old_version_name = \Flickerbox\Version::get_field( $p_version_id, 'version' );
-	if( ( strtolower( $t_old_version_name ) != strtolower( $t_name ) ) && !\Flickerbox\Version::is_unique( $t_name, $t_project_id ) ) {
+	$t_old_version_name = \Core\Version::get_field( $p_version_id, 'version' );
+	if( ( strtolower( $t_old_version_name ) != strtolower( $t_name ) ) && !\Core\Version::is_unique( $t_name, $t_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version exists for project' );
 	}
 
@@ -561,7 +561,7 @@ function mc_project_version_update( $p_username, $p_password, $p_version_id, std
 	$t_version_data->date_order = $t_date_order;
 	$t_version_data->obsolete = $t_obsolete;
 
-	return \Flickerbox\Version::update( $t_version_data );
+	return \Core\Version::update( $t_version_data );
 }
 
 /**
@@ -581,26 +581,26 @@ function mc_project_version_delete( $p_username, $p_password, $p_version_id ) {
 		return mci_soap_fault_login_failed();
 	}
 
-	if( \Flickerbox\Utility::is_blank( $p_version_id ) ) {
+	if( \Core\Utility::is_blank( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Mandatory field "version_id" was missing' );
 	}
 
-	if( !\Flickerbox\Version::exists( $p_version_id ) ) {
+	if( !\Core\Version::exists( $p_version_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Version \'' . $p_version_id . '\' does not exist.' );
 	}
 
-	$t_project_id = \Flickerbox\Version::get_field( $p_version_id, 'project_id' );
+	$t_project_id = \Core\Version::get_field( $p_version_id, 'project_id' );
 	$g_project_override = $t_project_id;
 
 	if( !mci_has_readwrite_access( $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !mci_has_access( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
+	if( !mci_has_access( \Core\Config::mantis_get( 'manage_project_threshold' ), $t_user_id, $t_project_id ) ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	return \Flickerbox\Version::remove( $p_version_id );
+	return \Core\Version::remove( $p_version_id );
 }
 
 /**
@@ -620,7 +620,7 @@ function mc_project_get_custom_fields( $p_username, $p_password, $p_project_id )
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -635,7 +635,7 @@ function mc_project_get_custom_fields( $p_username, $p_password, $p_project_id )
 
 	foreach( custom_field_get_linked_ids( $p_project_id ) as $t_id ) {
 		$t_def = custom_field_get_definition( $t_id );
-		if( \Flickerbox\Access::has_project_level( $t_def['access_level_r'], $p_project_id ) ) {
+		if( \Core\Access::has_project_level( $t_def['access_level_r'], $p_project_id ) ) {
 			$t_result[] = array(
 				'field' => array(
 					'id' => $t_def['id'],
@@ -684,11 +684,11 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 	$g_project_override = $p_project_id;
 
 	# Check if project documentation feature is enabled.
-	if( OFF == \Flickerbox\Config::mantis_get( 'enable_project_documentation' ) || !\Flickerbox\File::is_uploading_enabled() ) {
+	if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) || !\Core\File::is_uploading_enabled() ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -698,11 +698,11 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 
 	$t_pub = VS_PUBLIC;
 	$t_priv = VS_PRIVATE;
-	$t_admin = \Flickerbox\Config::get_global( 'admin_site_threshold' );
+	$t_admin = \Core\Config::get_global( 'admin_site_threshold' );
 
 	if( $p_project_id == ALL_PROJECTS ) {
 		# Select all the projects that the user has access to
-		$t_projects = \Flickerbox\User::get_accessible_projects( $t_user_id );
+		$t_projects = \Core\User::get_accessible_projects( $t_user_id );
 	} else {
 		# Select the specific project
 		$t_projects = array(
@@ -712,7 +712,7 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 
 	$t_projects[] = ALL_PROJECTS; # add ALL_PROJECTS to the list of projects to fetch
 
-	$t_reqd_access = \Flickerbox\Config::mantis_get( 'view_proj_doc_threshold' );
+	$t_reqd_access = \Core\Config::mantis_get( 'view_proj_doc_threshold' );
 	if( is_array( $t_reqd_access ) ) {
 		if( 1 == count( $t_reqd_access ) ) {
 			$t_access_clause = '= ' . array_shift( $t_reqd_access ) . ' ';
@@ -727,20 +727,20 @@ function mc_project_get_attachments( $p_username, $p_password, $p_project_id ) {
 		FROM {project_file} pft
 		LEFT JOIN {project} pt ON pft.project_id = pt.id
 		LEFT JOIN {project_user_list} pult
-		ON pft.project_id = pult.project_id AND pult.user_id = ' . \Flickerbox\Database::param() . '
-		LEFT JOIN {user} ut ON ut.id = ' . \Flickerbox\Database::param() . '
+		ON pft.project_id = pult.project_id AND pult.user_id = ' . \Core\Database::param() . '
+		LEFT JOIN {user} ut ON ut.id = ' . \Core\Database::param() . '
 		WHERE pft.project_id in (' . implode( ',', $t_projects ) . ') AND
-		( ( ( pt.view_state = ' . \Flickerbox\Database::param() . ' OR pt.view_state is null ) AND pult.user_id is null AND ut.access_level ' . $t_access_clause . ' ) OR
-		( ( pult.user_id = ' . \Flickerbox\Database::param() . ' ) AND ( pult.access_level ' . $t_access_clause . ' ) ) OR
-		( ut.access_level = ' . \Flickerbox\Database::param() . ' ) )
+		( ( ( pt.view_state = ' . \Core\Database::param() . ' OR pt.view_state is null ) AND pult.user_id is null AND ut.access_level ' . $t_access_clause . ' ) OR
+		( ( pult.user_id = ' . \Core\Database::param() . ' ) AND ( pult.access_level ' . $t_access_clause . ' ) ) OR
+		( ut.access_level = ' . \Core\Database::param() . ' ) )
 		ORDER BY pt.name ASC, pft.title ASC';
 
-	$t_result = \Flickerbox\Database::query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_id, $t_admin ) );
-	$t_num_files = \Flickerbox\Database::num_rows( $t_result );
+	$t_result = \Core\Database::query( $t_query, array( $t_user_id, $t_user_id, $t_pub, $t_user_id, $t_admin ) );
+	$t_num_files = \Core\Database::num_rows( $t_result );
 
 	$t_attachments = array();
 	for( $i = 0; $i < $t_num_files; $i++ ) {
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 
 		$t_attachment = array();
 		$t_attachment['id'] = $t_row['id'];
@@ -774,7 +774,7 @@ function mc_project_get_all_subprojects( $p_username, $p_password, $p_project_id
 		return mci_soap_fault_access_denied();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -784,7 +784,7 @@ function mc_project_get_all_subprojects( $p_username, $p_password, $p_project_id
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	return \Flickerbox\User::get_all_accessible_subprojects( $t_user_id, $p_project_id );
+	return \Core\User::get_all_accessible_subprojects( $t_user_id, $p_project_id );
 }
 
 /**
@@ -796,7 +796,7 @@ function mc_project_get_all_subprojects( $p_username, $p_password, $p_project_id
 function mci_project_as_array_by_id( $p_project_id ) {
 	$t_result = array();
 	$t_result['id'] = $p_project_id;
-	$t_result['name'] = \Flickerbox\Project::get_name( $p_project_id );
+	$t_result['name'] = \Core\Project::get_name( $p_project_id );
 	return $t_result;
 }
 
@@ -814,7 +814,7 @@ function mc_project_get_id_from_name( $p_username, $p_password, $p_project_name 
 		return mci_soap_fault_login_failed();
 	}
 
-	return \Flickerbox\Project::get_id_by_name( $p_project_name );
+	return \Core\Project::get_id_by_name( $p_project_name );
 }
 
 
@@ -883,7 +883,7 @@ function mc_project_add( $p_username, $p_password, stdClass $p_project ) {
 	}
 
 	# check to make sure project doesn't already exist
-	if( !\Flickerbox\Project::is_name_unique( $t_name ) ) {
+	if( !\Core\Project::is_name_unique( $t_name ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project name exists' );
 	}
 
@@ -891,7 +891,7 @@ function mc_project_add( $p_username, $p_password, stdClass $p_project ) {
 	$t_project_view_state = mci_get_project_view_state_id( $t_view_state );
 
 	# project_create returns the new project's id, spit that out to web service caller
-	return \Flickerbox\Project::create( $t_name, $t_description, $t_project_status, $t_project_view_state, $t_file_path, $t_enabled, $t_inherit_global );
+	return \Core\Project::create( $t_name, $t_description, $t_project_status, $t_project_view_state, $t_file_path, $t_enabled, $t_inherit_global );
 }
 
 /**
@@ -915,7 +915,7 @@ function mc_project_update( $p_username, $p_password, $p_project_id, stdClass $p
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -930,44 +930,44 @@ function mc_project_update( $p_username, $p_password, $p_project_id, stdClass $p
 	}
 
 	# check to make sure project doesn't already exist
-	if( $t_name != \Flickerbox\Project::get_name( $p_project_id ) ) {
-		if( !\Flickerbox\Project::is_name_unique( $t_name ) ) {
+	if( $t_name != \Core\Project::get_name( $p_project_id ) ) {
+		if( !\Core\Project::is_name_unique( $t_name ) ) {
 			return SoapObjectsFactory::newSoapFault( 'Client', 'Project name exists' );
 		}
 	}
 
 	if( !isset( $p_project['description'] ) ) {
-		$t_description = \Flickerbox\Project::get_field( $p_project_id, 'description' );
+		$t_description = \Core\Project::get_field( $p_project_id, 'description' );
 	} else {
 		$t_description = $p_project['description'];
 	}
 
 	if( !isset( $p_project['status'] ) ) {
-		$t_status = \Flickerbox\Project::get_field( $p_project_id, 'status' );
+		$t_status = \Core\Project::get_field( $p_project_id, 'status' );
 	} else {
 		$t_status = $p_project['status'];
 	}
 
 	if( !isset( $p_project['view_state'] ) ) {
-		$t_view_state = \Flickerbox\Project::get_field( $p_project_id, 'view_state' );
+		$t_view_state = \Core\Project::get_field( $p_project_id, 'view_state' );
 	} else {
 		$t_view_state = $p_project['view_state'];
 	}
 
 	if( !isset( $p_project['file_path'] ) ) {
-		$t_file_path = \Flickerbox\Project::get_field( $p_project_id, 'file_path' );
+		$t_file_path = \Core\Project::get_field( $p_project_id, 'file_path' );
 	} else {
 		$t_file_path = $p_project['file_path'];
 	}
 
 	if( !isset( $p_project['enabled'] ) ) {
-		$t_enabled = \Flickerbox\Project::get_field( $p_project_id, 'enabled' );
+		$t_enabled = \Core\Project::get_field( $p_project_id, 'enabled' );
 	} else {
 		$t_enabled = $p_project['enabled'];
 	}
 
 	if( !isset( $p_project['inherit_global'] ) ) {
-		$t_inherit_global = \Flickerbox\Project::get_field( $p_project_id, 'inherit_global' );
+		$t_inherit_global = \Core\Project::get_field( $p_project_id, 'inherit_global' );
 	} else {
 		$t_inherit_global = $p_project['inherit_global'];
 	}
@@ -975,7 +975,7 @@ function mc_project_update( $p_username, $p_password, $p_project_id, stdClass $p
 	$t_project_status = mci_get_project_status_id( $t_status );
 	$t_project_view_state = mci_get_project_view_state_id( $t_view_state );
 
-	\Flickerbox\Project::update( $p_project_id, $t_name, $t_description, $t_project_status, $t_project_view_state, $t_file_path, $t_enabled, $t_inherit_global );
+	\Core\Project::update( $p_project_id, $t_name, $t_description, $t_project_status, $t_project_view_state, $t_file_path, $t_enabled, $t_inherit_global );
 
 	return true;
 }
@@ -996,7 +996,7 @@ function mc_project_delete( $p_username, $p_password, $p_project_id ) {
 		return mci_soap_fault_login_failed();
 	}
 
-	if( !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -1006,7 +1006,7 @@ function mc_project_delete( $p_username, $p_password, $p_project_id ) {
 		return mci_soap_fault_access_denied( $t_user_id );
 	}
 
-	return \Flickerbox\Project::delete( $p_project_id );
+	return \Core\Project::delete( $p_project_id );
 }
 
 /**
@@ -1025,7 +1025,7 @@ function mc_project_get_issue_headers( $p_username, $p_password, $p_project_id, 
 	if( $t_user_id === false ) {
 		return mci_soap_fault_login_failed();
 	}
-	if( $p_project_id != ALL_PROJECTS && !\Flickerbox\Project::exists( $p_project_id ) ) {
+	if( $p_project_id != ALL_PROJECTS && !\Core\Project::exists( $p_project_id ) ) {
 		return SoapObjectsFactory::newSoapFault( 'Client', 'Project \'' . $p_project_id . '\' does not exist.' );
 	}
 
@@ -1039,7 +1039,7 @@ function mc_project_get_issue_headers( $p_username, $p_password, $p_project_id, 
 	$t_page_count = 0;
 	$t_bug_count = 0;
 
-	$t_rows = \Flickerbox\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
+	$t_rows = \Core\Filter::get_bug_rows( $p_page_number, $p_per_page, $t_page_count, $t_bug_count, null, $p_project_id );
 	$t_result = array();
 
 	# the page number was moved back, so we have exceeded the actual page number, see bug #12991
@@ -1076,17 +1076,17 @@ function mc_project_get_users( $p_username, $p_password, $p_project_id, $p_acces
 
 	$g_project_override = $p_project_id;
 
-	$t_users = \Flickerbox\Project::get_all_user_rows( $p_project_id, $p_access ); # handles ALL_PROJECTS case
+	$t_users = \Core\Project::get_all_user_rows( $p_project_id, $p_access ); # handles ALL_PROJECTS case
 
 	$t_display = array();
 	$t_sort = array();
-	$t_show_realname = ( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) );
-	$t_sort_by_last_name = ( ON == \Flickerbox\Config::mantis_get( 'sort_by_last_name' ) );
+	$t_show_realname = ( ON == \Core\Config::mantis_get( 'show_realname' ) );
+	$t_sort_by_last_name = ( ON == \Core\Config::mantis_get( 'sort_by_last_name' ) );
 	foreach( $t_users as $t_user ) {
-		$t_user_name = \Flickerbox\String::attribute( $t_user['username'] );
+		$t_user_name = \Core\String::attribute( $t_user['username'] );
 		$t_sort_name = strtolower( $t_user_name );
 		if( $t_show_realname && ( $t_user['realname'] <> '' ) ) {
-			$t_user_name = \Flickerbox\String::attribute( $t_user['realname'] );
+			$t_user_name = \Core\String::attribute( $t_user['realname'] );
 			if( $t_sort_by_last_name ) {
 				$t_sort_name_bits = explode( ' ', strtolower( $t_user_name ), 2 );
 				$t_sort_name = ( isset( $t_sort_name_bits[1] ) ? $t_sort_name_bits[1] . ', ' : '' ) . $t_sort_name_bits[0];

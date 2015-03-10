@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -114,7 +114,7 @@ class String
 					# @@@ thraxisp - this may want to be replaced by html_entity_decode (or equivalent)
 					#     if other encoded characters are a problem
 					$t_piece = preg_replace( '/&#160;/', ' ', $t_piece );
-					if( ON == \Flickerbox\Config::mantis_get( 'wrap_in_preformatted_text' ) ) {
+					if( ON == \Core\Config::mantis_get( 'wrap_in_preformatted_text' ) ) {
 						$t_output .= preg_replace( '/([^\n]{' . $p_wrap . ',}?[\s]+)(?!<\/pre>)/', "$1\n", $t_piece );
 					} else {
 						$t_output .= $t_piece;
@@ -135,7 +135,7 @@ class String
 	 * @return string
 	 */
 	static function display( $p_string ) {
-		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_TEXT', $p_string, true );
+		$t_data = \Core\Event::signal( 'EVENT_DISPLAY_TEXT', $p_string, true );
 		return $t_data;
 	}
 	
@@ -145,7 +145,7 @@ class String
 	 * @return string
 	 */
 	static function display_line( $p_string ) {
-		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_TEXT', $p_string, false );
+		$t_data = \Core\Event::signal( 'EVENT_DISPLAY_TEXT', $p_string, false );
 		return $t_data;
 	}
 	
@@ -156,7 +156,7 @@ class String
 	 * @return string
 	 */
 	static function display_links( $p_string ) {
-		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_FORMATTED', $p_string, true );
+		$t_data = \Core\Event::signal( 'EVENT_DISPLAY_FORMATTED', $p_string, true );
 		return $t_data;
 	}
 	
@@ -167,7 +167,7 @@ class String
 	 * @return string
 	 */
 	static function display_line_links( $p_string ) {
-		$t_data = \Flickerbox\Event::signal( 'EVENT_DISPLAY_FORMATTED', $p_string, false );
+		$t_data = \Core\Event::signal( 'EVENT_DISPLAY_FORMATTED', $p_string, false );
 		return $t_data;
 	}
 	
@@ -177,13 +177,13 @@ class String
 	 * @return string
 	 */
 	static function rss_links( $p_string ) {
-		# rss can not start with &#160; which spaces will be replaced into by \Flickerbox\String::display().
+		# rss can not start with &#160; which spaces will be replaced into by \Core\String::display().
 		$t_string = trim( $p_string );
 	
-		$t_string = \Flickerbox\Event::signal( 'EVENT_DISPLAY_RSS', $t_string );
+		$t_string = \Core\Event::signal( 'EVENT_DISPLAY_RSS', $t_string );
 	
 		# another escaping to escape the special characters created by the generated links
-		return \Flickerbox\String::html_specialchars( $t_string );
+		return \Core\String::html_specialchars( $t_string );
 	}
 	
 	/**
@@ -192,7 +192,7 @@ class String
 	 * @return string
 	 */
 	static function email( $p_string ) {
-		return \Flickerbox\String::strip_hrefs( $p_string );
+		return \Core\String::strip_hrefs( $p_string );
 	}
 	
 	/**
@@ -202,7 +202,7 @@ class String
 	 * @return string
 	 */
 	static function email_links( $p_string ) {
-		return \Flickerbox\Event::signal( 'EVENT_DISPLAY_EMAIL', $p_string );
+		return \Core\Event::signal( 'EVENT_DISPLAY_EMAIL', $p_string );
 	}
 	
 	/**
@@ -211,7 +211,7 @@ class String
 	 * @return string
 	 */
 	static function textarea( $p_string ) {
-		return \Flickerbox\String::html_specialchars( $p_string );
+		return \Core\String::html_specialchars( $p_string );
 	}
 	
 	/**
@@ -220,7 +220,7 @@ class String
 	 * @return string
 	 */
 	static function attribute( $p_string ) {
-		return \Flickerbox\String::html_specialchars( $p_string );
+		return \Core\String::html_specialchars( $p_string );
 	}
 	
 	/**
@@ -241,8 +241,8 @@ class String
 	static function sanitize_url( $p_url, $p_return_absolute = false ) {
 		$t_url = strip_tags( urldecode( $p_url ) );
 	
-		$t_path = rtrim( \Flickerbox\Config::mantis_get( 'path' ), '/' );
-		$t_short_path = rtrim( \Flickerbox\Config::mantis_get( 'short_path' ), '/' );
+		$t_path = rtrim( \Core\Config::mantis_get( 'path' ), '/' );
+		$t_short_path = rtrim( \Core\Config::mantis_get( 'short_path' ), '/' );
 	
 		$t_pattern = '(?:/*(?P<script>[^\?#]*))(?:\?(?P<query>[^#]*))?(?:#(?P<anchor>[^#]*))?';
 	
@@ -327,7 +327,7 @@ class String
 	static function process_bug_link( $p_string, $p_include_anchor = true, $p_detail_info = true, $p_fqdn = false ) {
 		global $g_string_process_bug_link_callback;
 	
-		$t_tag = \Flickerbox\Config::mantis_get( 'bug_link_tag' );
+		$t_tag = \Core\Config::mantis_get( 'bug_link_tag' );
 	
 		# bail if the link tag is blank
 		if( '' == $t_tag || $p_string == '' ) {
@@ -337,10 +337,10 @@ class String
 		if( !isset( $g_string_process_bug_link_callback[$p_include_anchor][$p_detail_info][$p_fqdn] ) ) {
 			if( $p_include_anchor ) {
 				$g_string_process_bug_link_callback[$p_include_anchor][$p_detail_info][$p_fqdn] = create_function( '$p_array', '
-											if( \Flickerbox\Bug::exists( (int)$p_array[2] ) ) {
-												$t_project_id = \Flickerbox\Bug::get_field( (int)$p_array[2], \'project_id\' );
-												if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( \'view_bug_threshold\', null, null, $t_project_id ), (int)$p_array[2] ) ) {
-													return $p_array[1] . \Flickerbox\String::get_bug_view_link( (int)$p_array[2], null, ' . ( $p_detail_info ? 'true' : 'false' ) . ', ' . ( $p_fqdn ? 'true' : 'false' ) . ');
+											if( \Core\Bug::exists( (int)$p_array[2] ) ) {
+												$t_project_id = \Core\Bug::get_field( (int)$p_array[2], \'project_id\' );
+												if( \Core\Access::has_bug_level( \Core\Config::mantis_get( \'view_bug_threshold\', null, null, $t_project_id ), (int)$p_array[2] ) ) {
+													return $p_array[1] . \Core\String::get_bug_view_link( (int)$p_array[2], null, ' . ( $p_detail_info ? 'true' : 'false' ) . ', ' . ( $p_fqdn ? 'true' : 'false' ) . ');
 												}
 											}
 											return $p_array[0];
@@ -352,7 +352,7 @@ class String
 											#  the summary lookup on a non-existant bug.  But here, we
 											#  can create the link and by the time it is clicked on, the
 											#  bug may exist.
-											return $p_array[1] . \Flickerbox\String::get_bug_view_url_with_fqdn( (int)$p_array[2], null );
+											return $p_array[1] . \Core\String::get_bug_view_url_with_fqdn( (int)$p_array[2], null );
 											' );
 			}
 		}
@@ -382,7 +382,7 @@ class String
 	 */
 	static function process_bugnote_link( $p_string, $p_include_anchor = true, $p_detail_info = true, $p_fqdn = false ) {
 		global $g_string_process_bugnote_link_callback;
-		$t_tag = \Flickerbox\Config::mantis_get( 'bugnote_link_tag' );
+		$t_tag = \Core\Config::mantis_get( 'bugnote_link_tag' );
 	
 		# bail if the link tag is blank
 		if( '' == $t_tag || $p_string == '' ) {
@@ -394,21 +394,21 @@ class String
 				$g_string_process_bugnote_link_callback[$p_include_anchor][$p_detail_info][$p_fqdn] =
 					create_function( '$p_array',
 						'
-						if( \Flickerbox\Bug\Note::exists( (int)$p_array[2] ) ) {
-							$t_bug_id = \Flickerbox\Bug\Note::get_field( (int)$p_array[2], \'bug_id\' );
-							if( \Flickerbox\Bug::exists( $t_bug_id ) ) {
-								$g_project_override = \Flickerbox\Bug::get_field( $t_bug_id, \'project_id\' );
-								if(   \Flickerbox\Access::compare_level(
-											\Flickerbox\User::get_access_level( auth_get_current_user_id(),
-											\Flickerbox\Bug::get_field( $t_bug_id, \'project_id\' ) ),
-											\Flickerbox\Config::mantis_get( \'private_bugnote_threshold\' )
+						if( \Core\Bug\Note::exists( (int)$p_array[2] ) ) {
+							$t_bug_id = \Core\Bug\Note::get_field( (int)$p_array[2], \'bug_id\' );
+							if( \Core\Bug::exists( $t_bug_id ) ) {
+								$g_project_override = \Core\Bug::get_field( $t_bug_id, \'project_id\' );
+								if(   \Core\Access::compare_level(
+											\Core\User::get_access_level( auth_get_current_user_id(),
+											\Core\Bug::get_field( $t_bug_id, \'project_id\' ) ),
+											\Core\Config::mantis_get( \'private_bugnote_threshold\' )
 									   )
-									|| \Flickerbox\Bug\Note::get_field( (int)$p_array[2], \'reporter_id\' ) == auth_get_current_user_id()
-									|| \Flickerbox\Bug\Note::get_field( (int)$p_array[2], \'view_state\' ) == VS_PUBLIC
+									|| \Core\Bug\Note::get_field( (int)$p_array[2], \'reporter_id\' ) == auth_get_current_user_id()
+									|| \Core\Bug\Note::get_field( (int)$p_array[2], \'view_state\' ) == VS_PUBLIC
 								) {
 									$g_project_override = null;
 									return $p_array[1] .
-										\Flickerbox\String::get_bugnote_view_link(
+										\Core\String::get_bugnote_view_link(
 											$t_bug_id,
 											(int)$p_array[2],
 											null,
@@ -430,9 +430,9 @@ class String
 						#  the summary lookup on a non-existant bug.  But here, we
 						#  can create the link and by the time it is clicked on, the
 						#  bug may exist.
-						$t_bug_id = \Flickerbox\Bug\Note::get_field( (int)$p_array[2], \'bug_id\' );
-						if( \Flickerbox\Bug::exists( $t_bug_id ) ) {
-							return $p_array[1] . \Flickerbox\String::get_bugnote_view_url_with_fqdn( $t_bug_id, (int)$p_array[2], null );
+						$t_bug_id = \Core\Bug\Note::get_field( (int)$p_array[2], \'bug_id\' );
+						if( \Core\Bug::exists( $t_bug_id ) ) {
+							return $p_array[1] . \Core\String::get_bugnote_view_url_with_fqdn( $t_bug_id, (int)$p_array[2], null );
 						} else {
 							return $p_array[0];
 						}
@@ -454,7 +454,7 @@ class String
 		static $s_email_regex = null;
 		static $s_anchor_regex = '/(<a[^>]*>.*?<\/a>)/is';
 	
-		if( !\Flickerbox\Config::mantis_get( 'html_make_links' ) ) {
+		if( !\Core\Config::mantis_get( 'html_make_links' ) ) {
 			return $p_string;
 		}
 	
@@ -481,7 +481,7 @@ class String
 			$s_url_regex = "/(${t_url_protocol}(${t_url_part1}*?${t_url_part2}+))/su";
 	
 			# e-mail regex
-			$s_email_regex = substr_replace( \Flickerbox\Email::regex_simple(), '(?:mailto:)?', 1, 0 );
+			$s_email_regex = substr_replace( \Core\Email::regex_simple(), '(?:mailto:)?', 1, 0 );
 		}
 	
 		# Find any URL in a string and replace it by a clickable link
@@ -537,16 +537,16 @@ class String
 	static function restore_valid_html_tags( $p_string, $p_multiline = true ) {
 		global $g_cache_html_valid_tags_single_line, $g_cache_html_valid_tags;
 	
-		if( \Flickerbox\Utility::is_blank( ( $p_multiline ? $g_cache_html_valid_tags : $g_cache_html_valid_tags_single_line ) ) ) {
-			$t_html_valid_tags = \Flickerbox\Config::mantis_get( $p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line' );
+		if( \Core\Utility::is_blank( ( $p_multiline ? $g_cache_html_valid_tags : $g_cache_html_valid_tags_single_line ) ) ) {
+			$t_html_valid_tags = \Core\Config::mantis_get( $p_multiline ? 'html_valid_tags' : 'html_valid_tags_single_line' );
 	
-			if( OFF === $t_html_valid_tags || \Flickerbox\Utility::is_blank( $t_html_valid_tags ) ) {
+			if( OFF === $t_html_valid_tags || \Core\Utility::is_blank( $t_html_valid_tags ) ) {
 				return $p_string;
 			}
 	
 			$t_tags = explode( ',', $t_html_valid_tags );
 			foreach( $t_tags as $t_key => $t_value ) {
-				if( !\Flickerbox\Utility::is_blank( $t_value ) ) {
+				if( !\Core\Utility::is_blank( $t_value ) ) {
 					$t_tags[$t_key] = trim( $t_value );
 				}
 			}
@@ -599,28 +599,28 @@ class String
 	 * @return string
 	 */
 	static function get_bug_view_link( $p_bug_id, $p_user_id = null, $p_detail_info = true, $p_fqdn = false ) {
-		if( \Flickerbox\Bug::exists( $p_bug_id ) ) {
+		if( \Core\Bug::exists( $p_bug_id ) ) {
 			$t_link = '<a href="';
 			if( $p_fqdn ) {
-				$t_link .= \Flickerbox\Config::get_global( 'path' );
+				$t_link .= \Core\Config::get_global( 'path' );
 			} else {
-				$t_link .= \Flickerbox\Config::get_global( 'short_path' );
+				$t_link .= \Core\Config::get_global( 'short_path' );
 			}
-			$t_link .= \Flickerbox\String::get_bug_view_url( $p_bug_id, $p_user_id ) . '"';
+			$t_link .= \Core\String::get_bug_view_url( $p_bug_id, $p_user_id ) . '"';
 			if( $p_detail_info ) {
-				$t_summary = \Flickerbox\String::attribute( \Flickerbox\Bug::get_field( $p_bug_id, 'summary' ) );
-				$t_project_id = \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' );
-				$t_status = \Flickerbox\String::attribute( \Flickerbox\Helper::get_enum_element( 'status', \Flickerbox\Bug::get_field( $p_bug_id, 'status' ), $t_project_id ) );
+				$t_summary = \Core\String::attribute( \Core\Bug::get_field( $p_bug_id, 'summary' ) );
+				$t_project_id = \Core\Bug::get_field( $p_bug_id, 'project_id' );
+				$t_status = \Core\String::attribute( \Core\Helper::get_enum_element( 'status', \Core\Bug::get_field( $p_bug_id, 'status' ), $t_project_id ) );
 				$t_link .= ' title="[' . $t_status . '] ' . $t_summary . '"';
 	
-				$t_resolved = \Flickerbox\Bug::get_field( $p_bug_id, 'status' ) >= \Flickerbox\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $t_project_id );
+				$t_resolved = \Core\Bug::get_field( $p_bug_id, 'status' ) >= \Core\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $t_project_id );
 				if( $t_resolved ) {
 					$t_link .= ' class="resolved"';
 				}
 			}
-			$t_link .= '>' . \Flickerbox\Bug::format_id( $p_bug_id ) . '</a>';
+			$t_link .= '>' . \Core\Bug::format_id( $p_bug_id ) . '</a>';
 		} else {
-			$t_link = \Flickerbox\Bug::format_id( $p_bug_id );
+			$t_link = \Core\Bug::format_id( $p_bug_id );
 		}
 	
 		return $t_link;
@@ -639,24 +639,24 @@ class String
 	static function get_bugnote_view_link( $p_bug_id, $p_bugnote_id, $p_user_id = null, $p_detail_info = true, $p_fqdn = false ) {
 		$t_bug_id = (int)$p_bug_id;
 	
-		if( \Flickerbox\Bug::exists( $t_bug_id ) && \Flickerbox\Bug\Note::exists( $p_bugnote_id ) ) {
+		if( \Core\Bug::exists( $t_bug_id ) && \Core\Bug\Note::exists( $p_bugnote_id ) ) {
 			$t_link = '<a href="';
 			if( $p_fqdn ) {
-				$t_link .= \Flickerbox\Config::get_global( 'path' );
+				$t_link .= \Core\Config::get_global( 'path' );
 			} else {
-				$t_link .= \Flickerbox\Config::get_global( 'short_path' );
+				$t_link .= \Core\Config::get_global( 'short_path' );
 			}
 	
-			$t_link .= \Flickerbox\String::get_bugnote_view_url( $p_bug_id, $p_bugnote_id, $p_user_id ) . '"';
+			$t_link .= \Core\String::get_bugnote_view_url( $p_bug_id, $p_bugnote_id, $p_user_id ) . '"';
 			if( $p_detail_info ) {
-				$t_reporter = \Flickerbox\String::attribute( \Flickerbox\User::get_name( \Flickerbox\Bug\Note::get_field( $p_bugnote_id, 'reporter_id' ) ) );
-				$t_update_date = \Flickerbox\String::attribute( date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), ( \Flickerbox\Bug\Note::get_field( $p_bugnote_id, 'last_modified' ) ) ) );
-				$t_link .= ' title="' . \Flickerbox\Bug::format_id( $t_bug_id ) . ': [' . $t_update_date . '] ' . $t_reporter . '"';
+				$t_reporter = \Core\String::attribute( \Core\User::get_name( \Core\Bug\Note::get_field( $p_bugnote_id, 'reporter_id' ) ) );
+				$t_update_date = \Core\String::attribute( date( \Core\Config::mantis_get( 'normal_date_format' ), ( \Core\Bug\Note::get_field( $p_bugnote_id, 'last_modified' ) ) ) );
+				$t_link .= ' title="' . \Core\Bug::format_id( $t_bug_id ) . ': [' . $t_update_date . '] ' . $t_reporter . '"';
 			}
 	
-			$t_link .= '>' . \Flickerbox\Bug::format_id( $t_bug_id ) . ':' . \Flickerbox\Bug\Note::format_id( $p_bugnote_id ) . '</a>';
+			$t_link .= '>' . \Core\Bug::format_id( $t_bug_id ) . ':' . \Core\Bug\Note::format_id( $p_bugnote_id ) . '</a>';
 		} else {
-			$t_link = \Flickerbox\Bug\Note::format_id( $t_bug_id ) . ':' . \Flickerbox\Bug\Note::format_id( $p_bugnote_id );
+			$t_link = \Core\Bug\Note::format_id( $t_bug_id ) . ':' . \Core\Bug\Note::format_id( $p_bugnote_id );
 		}
 	
 		return $t_link;
@@ -692,7 +692,7 @@ class String
 	 * @return string
 	 */
 	static function get_bugnote_view_url_with_fqdn( $p_bug_id, $p_bugnote_id, $p_user_id = null ) {
-		return \Flickerbox\Config::mantis_get( 'path' ) . \Flickerbox\String::get_bug_view_url( $p_bug_id, $p_user_id ) . '#c' . $p_bugnote_id;
+		return \Core\Config::mantis_get( 'path' ) . \Core\String::get_bug_view_url( $p_bug_id, $p_user_id ) . '#c' . $p_bugnote_id;
 	}
 	
 	/**
@@ -704,7 +704,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_view_url_with_fqdn( $p_bug_id, $p_user_id = null ) {
-		return \Flickerbox\Config::mantis_get( 'path' ) . \Flickerbox\String::get_bug_view_url( $p_bug_id, $p_user_id );
+		return \Core\Config::mantis_get( 'path' ) . \Core\String::get_bug_view_url( $p_bug_id, $p_user_id );
 	}
 	
 	/**
@@ -714,7 +714,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_view_page( $p_user_id = null ) {
-		return \Flickerbox\String::get_bug_page( 'view', $p_user_id );
+		return \Core\String::get_bug_page( 'view', $p_user_id );
 	}
 	
 	/**
@@ -725,8 +725,8 @@ class String
 	 * @return string
 	 */
 	static function get_bug_update_link( $p_bug_id, $p_user_id = null ) {
-		$t_summary = \Flickerbox\String::attribute( \Flickerbox\Bug::get_field( $p_bug_id, 'summary' ) );
-		return '<a href="' . \Flickerbox\Helper::mantis_url( \Flickerbox\String::get_bug_update_url( $p_bug_id, $p_user_id ) ) . '" title="' . $t_summary . '">' . \Flickerbox\Bug::format_id( $p_bug_id ) . '</a>';
+		$t_summary = \Core\String::attribute( \Core\Bug::get_field( $p_bug_id, 'summary' ) );
+		return '<a href="' . \Core\Helper::mantis_url( \Core\String::get_bug_update_url( $p_bug_id, $p_user_id ) ) . '" title="' . $t_summary . '">' . \Core\Bug::format_id( $p_bug_id ) . '</a>';
 	}
 	
 	/**
@@ -737,7 +737,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_update_url( $p_bug_id, $p_user_id = null ) {
-		return \Flickerbox\String::get_bug_update_page( $p_user_id ) . '?bug_id=' . $p_bug_id;
+		return \Core\String::get_bug_update_page( $p_user_id ) . '?bug_id=' . $p_bug_id;
 	}
 	
 	/**
@@ -747,7 +747,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_update_page( $p_user_id = null ) {
-		return \Flickerbox\String::get_bug_page( 'update', $p_user_id );
+		return \Core\String::get_bug_page( 'update', $p_user_id );
 	}
 	
 	/**
@@ -757,7 +757,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_report_link( $p_user_id = null ) {
-		return '<a href="' . \Flickerbox\Helper::mantis_url( \Flickerbox\String::get_bug_report_url( $p_user_id ) ) . '">' . \Flickerbox\Lang::get( 'report_bug_link' ) . '</a>';
+		return '<a href="' . \Core\Helper::mantis_url( \Core\String::get_bug_report_url( $p_user_id ) ) . '">' . \Core\Lang::get( 'report_bug_link' ) . '</a>';
 	}
 	
 	/**
@@ -767,7 +767,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_report_url( $p_user_id = null ) {
-		return \Flickerbox\String::get_bug_report_page( $p_user_id );
+		return \Core\String::get_bug_report_page( $p_user_id );
 	}
 	
 	/**
@@ -777,7 +777,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_report_page( $p_user_id = null ) {
-		return \Flickerbox\String::get_bug_page( 'report', $p_user_id );
+		return \Core\String::get_bug_page( 'report', $p_user_id );
 	}
 	
 	/**
@@ -787,8 +787,8 @@ class String
 	 * @return string
 	 */
 	static function get_confirm_hash_url( $p_user_id, $p_confirm_hash ) {
-		$t_path = \Flickerbox\Config::mantis_get( 'path' );
-		return $t_path . 'verify.php?id=' . \Flickerbox\String::url( $p_user_id ) . '&confirm_hash=' . \Flickerbox\String::url( $p_confirm_hash );
+		$t_path = \Core\Config::mantis_get( 'path' );
+		return $t_path . 'verify.php?id=' . \Core\String::url( $p_user_id ) . '&confirm_hash=' . \Core\String::url( $p_confirm_hash );
 	}
 	
 	/**
@@ -797,7 +797,7 @@ class String
 	 * @return string
 	 */
 	static function format_complete_date( $p_date ) {
-		return date( \Flickerbox\Config::mantis_get( 'complete_date_format' ), $p_date );
+		return date( \Core\Config::mantis_get( 'complete_date_format' ), $p_date );
 	}
 	
 	/**
@@ -810,7 +810,7 @@ class String
 	 */
 	static function shorten( $p_string, $p_max = null ) {
 		if( $p_max === null ) {
-			$t_max = \Flickerbox\Config::mantis_get( 'max_dropdown_length' );
+			$t_max = \Core\Config::mantis_get( 'max_dropdown_length' );
 		} else {
 			$t_max = (int)$p_max;
 		}
@@ -873,7 +873,7 @@ class String
 		if( isset( $t_map[$p_string] ) ) {
 			$t_string = $t_map[$p_string];
 		}
-		return \Flickerbox\Lang::get_defaulted( $t_string );
+		return \Core\Lang::get_defaulted( $t_string );
 	}
 	
 	/**

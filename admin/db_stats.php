@@ -25,9 +25,9 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 
 /**
  * Output HTML Table Row
@@ -52,14 +52,14 @@ function print_info_row( $p_description, $p_value ) {
 function helper_table_row_count( $p_table ) {
 	$t_table = $p_table;
 	$t_query = 'SELECT COUNT(*) FROM ' . $t_table;
-	$t_result = \Flickerbox\Database::query( $t_query );
-	$t_count = \Flickerbox\Database::result( $t_result );
+	$t_result = \Core\Database::query( $t_query );
+	$t_count = \Core\Database::result( $t_result );
 
 	return $t_count;
 }
 ?>
 <div class="table-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'mantisbt_database_statistics' ) ?></h2>
+	<h2><?php echo \Core\Lang::get( 'mantisbt_database_statistics' ) ?></h2>
 	<table cellspacing="1">
 		<thead>
 			<tr class="row-category">
@@ -69,8 +69,8 @@ function helper_table_row_count( $p_table ) {
 		<thead>
 		<tbody>
 <?php
-foreach( \Flickerbox\Database::get_table_list() as $t_table ) {
-	if( \Flickerbox\Database::table_exists( $t_table ) ) {
+foreach( \Core\Database::get_table_list() as $t_table ) {
+	if( \Core\Database::table_exists( $t_table ) ) {
 			print_info_row( $t_table, helper_table_row_count( $t_table ) );
 	}
 }
@@ -80,4 +80,4 @@ foreach( \Flickerbox\Database::get_table_list() as $t_table ) {
 </div>
 <?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

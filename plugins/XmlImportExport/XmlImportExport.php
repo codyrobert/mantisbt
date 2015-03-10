@@ -26,14 +26,14 @@
 /**
  * XmlImportExportPlugin Class
  */
-class XmlImportExportPlugin extends \Flickerbox\MantisPlugin {
+class XmlImportExportPlugin extends \Core\MantisPlugin {
 	/**
 	 * A method that populates the plugin information and minimum requirements.
 	 * @return void
 	 */
 	function register() {
-		$this->name = \Flickerbox\Plugin::langget( 'title' );
-		$this->description = \Flickerbox\Plugin::langget( 'description' );
+		$this->name = \Core\Plugin::langget( 'title' );
+		$this->description = \Core\Plugin::langget( 'description' );
 		$this->page = "config_page";
 
 		$this->version = '1.3.0';
@@ -74,7 +74,7 @@ class XmlImportExportPlugin extends \Flickerbox\MantisPlugin {
 	 * @return array
 	 */
 	function import_issues_menu() {
-		return array( '<a href="' . \Flickerbox\Plugin::page( 'import' ) . '">' . \Flickerbox\Plugin::langget( 'import' ) . '</a>', );
+		return array( '<a href="' . \Core\Plugin::page( 'import' ) . '">' . \Core\Plugin::langget( 'import' ) . '</a>', );
 	}
 
 	/**
@@ -82,10 +82,10 @@ class XmlImportExportPlugin extends \Flickerbox\MantisPlugin {
 	 * @return array
 	 */
 	function export_issues_menu() {
-		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Plugin::config_get( 'export_threshold' ) ) ) {
+		if( !\Core\Access::has_project_level( \Core\Plugin::config_get( 'export_threshold' ) ) ) {
 			return array();
 		}
-		return array( '<a href="' . \Flickerbox\Plugin::page( 'export' ) . '">' . \Flickerbox\Plugin::langget( 'export' ) . '</a>', );
+		return array( '<a href="' . \Core\Plugin::page( 'export' ) . '">' . \Core\Plugin::langget( 'export' ) . '</a>', );
 	}
 
 	/**
@@ -96,7 +96,7 @@ class XmlImportExportPlugin extends \Flickerbox\MantisPlugin {
 		$t_result = extension_loaded( 'xmlreader' ) && extension_loaded( 'xmlwriter' );
 		if( !$t_result ) {
 			# @todo returning false should trigger some error reporting, needs rethinking error_api
-			\Flickerbox\Error::parameters( \Flickerbox\Plugin::langget( 'error_no_xml' ) );
+			\Core\Error::parameters( \Core\Plugin::langget( 'error_no_xml' ) );
 			trigger_error( ERROR_PLUGIN_INSTALL_FAILED, ERROR );
 		}
 		return $t_result;

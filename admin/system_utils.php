@@ -26,9 +26,9 @@
 
 require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::get_global( 'admin_site_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
 
-\Flickerbox\HTML::page_top( 'MantisBT Administration - System Utilities' );
+\Core\HTML::page_top( 'MantisBT Administration - System Utilities' );
 
 ?>
 <div class="table-container">
@@ -46,7 +46,7 @@ require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 					Move attachments stored between database schema and disk files.
 				</td>
 				<td class="center">
-					<?php \Flickerbox\HTML::button( 'move_attachments_page.php', 'Move Attachments to Disk', array( 'type' => 'bug' ) );?>
+					<?php \Core\HTML::button( 'move_attachments_page.php', 'Move Attachments to Disk', array( 'type' => 'bug' ) );?>
 				</td>
 			</tr>
 			<tr>
@@ -54,7 +54,7 @@ require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 					Move project files stored between database schema and disk.
 				</td>
 				<td class="center">
-					<?php \Flickerbox\HTML::button( 'move_attachments_page.php', 'Move Project Files to Disk', array( 'type' => 'project' ) );?>
+					<?php \Core\HTML::button( 'move_attachments_page.php', 'Move Project Files to Disk', array( 'type' => 'project' ) );?>
 				</td>
 			</tr>
 			<tr>
@@ -62,11 +62,11 @@ require_once( dirname( dirname( __FILE__ ) ) . '/core.php' );
 					Show database statistics.
 				</td>
 				<td class="center">
-					<?php \Flickerbox\HTML::button( 'db_stats.php', 'Display', array() );?>
+					<?php \Core\HTML::button( 'db_stats.php', 'Display', array() );?>
 				</td>
 			</tr>
 		</tbody>
 	</table>
 </div>
 <?php
-	\Flickerbox\HTML::page_bottom();
+	\Core\HTML::page_bottom();

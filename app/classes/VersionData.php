@@ -50,7 +50,7 @@ class VersionData {
 			case 'date_order':
 				if( !is_numeric( $p_value ) ) {
 					if( $p_value == '' ) {
-						$p_value = \Flickerbox\Date::get_null();
+						$p_value = \Core\Date::get_null();
 					} else {
 						$p_value = strtotime( $p_value );
 						if( $p_value === false ) {

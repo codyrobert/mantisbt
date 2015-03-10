@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -53,11 +53,11 @@ class IssueAssignedTimelineEvent extends TimelineEvent {
 	 */
 	public function html() {
 		if( $this->user_id == $this->handler_id ) {
-			$t_string = sprintf( \Flickerbox\Lang::get( 'timeline_issue_assigned_to_self' ), \Flickerbox\User::get_name( $this->user_id ), \Flickerbox\String::get_bug_view_link( $this->issue_id ) );
+			$t_string = sprintf( \Core\Lang::get( 'timeline_issue_assigned_to_self' ), \Core\User::get_name( $this->user_id ), \Core\String::get_bug_view_link( $this->issue_id ) );
 		} else if( $this->handler_id != NO_USER ) {
-			$t_string = sprintf( \Flickerbox\Lang::get( 'timeline_issue_assigned' ), \Flickerbox\User::get_name( $this->user_id ), \Flickerbox\String::get_bug_view_link( $this->issue_id ), \Flickerbox\User::get_name( $this->handler_id ) );
+			$t_string = sprintf( \Core\Lang::get( 'timeline_issue_assigned' ), \Core\User::get_name( $this->user_id ), \Core\String::get_bug_view_link( $this->issue_id ), \Core\User::get_name( $this->handler_id ) );
 		} else {
-			$t_string = sprintf( \Flickerbox\Lang::get( 'timeline_issue_unassigned' ), \Flickerbox\User::get_name( $this->user_id ), \Flickerbox\String::get_bug_view_link( $this->issue_id ) );
+			$t_string = sprintf( \Core\Lang::get( 'timeline_issue_unassigned' ), \Core\User::get_name( $this->user_id ), \Core\String::get_bug_view_link( $this->issue_id ) );
 		}
 
 		$t_html = $this->html_start();

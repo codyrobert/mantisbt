@@ -39,48 +39,48 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bug_monitor_add' );
+\Core\Form::security_validate( 'bug_monitor_add' );
 
-$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
-$f_username = \Flickerbox\GPC::get_string( 'username', '' );
+$f_bug_id = \Core\GPC::get_int( 'bug_id' );
+$t_bug = \Core\Bug::get( $f_bug_id, true );
+$f_username = \Core\GPC::get_string( 'username', '' );
 
-$t_logged_in_user_id = \Flickerbox\Auth::get_current_user_id();
+$t_logged_in_user_id = \Core\Auth::get_current_user_id();
 
-if( \Flickerbox\Utility::is_blank( $f_username ) ) {
+if( \Core\Utility::is_blank( $f_username ) ) {
 	$t_user_id = $t_logged_in_user_id;
 } else {
-	$t_user_id = \Flickerbox\User::get_id_by_name( $f_username );
+	$t_user_id = \Core\User::get_id_by_name( $f_username );
 	if( $t_user_id === false ) {
-		$t_user_id = \Flickerbox\User::get_id_by_realname( $f_username );
+		$t_user_id = \Core\User::get_id_by_realname( $f_username );
 
 		if( $t_user_id === false ) {
-			\Flickerbox\Error::parameters( $f_username );
+			\Core\Error::parameters( $f_username );
 			trigger_error( ERROR_USER_BY_NAME_NOT_FOUND, E_USER_ERROR );
 		}
 	}
 }
 
-if( \Flickerbox\User::is_anonymous( $t_user_id ) ) {
+if( \Core\User::is_anonymous( $t_user_id ) ) {
 	trigger_error( ERROR_PROTECTED_ACCOUNT, E_USER_ERROR );
 }
 
-\Flickerbox\Bug::ensure_exists( $f_bug_id );
+\Core\Bug::ensure_exists( $f_bug_id );
 
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
 if( $t_logged_in_user_id == $t_user_id ) {
-	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'monitor_bug_threshold' ), $f_bug_id );
+	\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'monitor_bug_threshold' ), $f_bug_id );
 } else {
-	\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'monitor_add_others_bug_threshold' ), $f_bug_id );
+	\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'monitor_add_others_bug_threshold' ), $f_bug_id );
 }
 
-\Flickerbox\Bug::monitor( $f_bug_id, $t_user_id );
+\Core\Bug::monitor( $f_bug_id, $t_user_id );
 
-\Flickerbox\Form::security_purge( 'bug_monitor_add' );
+\Core\Form::security_purge( 'bug_monitor_add' );
 
-\Flickerbox\Print_Util::successful_redirect_to_bug( $f_bug_id );
+\Core\Print_Util::successful_redirect_to_bug( $f_bug_id );

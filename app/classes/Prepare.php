@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -48,15 +48,15 @@ class Prepare
 	 * @return string
 	 */
 	static function email_link( $p_email, $p_text ) {
-		if( !\Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
-			return \Flickerbox\String::display_line( $p_text );
+		if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'show_user_email_threshold' ) ) ) {
+			return \Core\String::display_line( $p_text );
 		}
 	
-		# If we apply \Flickerbox\String::url() to the whole mailto: link then the @
+		# If we apply \Core\String::url() to the whole mailto: link then the @
 		#  gets turned into a %40 and you can't right click in browsers to
 		#  do Copy Email Address.
-		$t_mailto = \Flickerbox\String::attribute( 'mailto:' . $p_email );
-		$p_text = \Flickerbox\String::display_line( $p_text );
+		$t_mailto = \Core\String::attribute( 'mailto:' . $p_email );
+		$p_text = \Core\String::display_line( $p_text );
 	
 		return '<a href="' . $t_mailto . '">' . $p_text . '</a>';
 	}
@@ -72,10 +72,10 @@ class Prepare
 			return '';
 		}
 	
-		$t_username = \Flickerbox\User::get_name( $p_user_id );
-		$t_username = \Flickerbox\String::display_line( $t_username );
-		if( \Flickerbox\User::exists( $p_user_id ) && \Flickerbox\User::get_field( $p_user_id, 'enabled' ) ) {
-			return '<a class="user" href="' . \Flickerbox\String::sanitize_url( 'view_user_page.php?id=' . $p_user_id, true ) . '">' . $t_username . '</a>';
+		$t_username = \Core\User::get_name( $p_user_id );
+		$t_username = \Core\String::display_line( $t_username );
+		if( \Core\User::exists( $p_user_id ) && \Core\User::get_field( $p_user_id, 'enabled' ) ) {
+			return '<a class="user" href="' . \Core\String::sanitize_url( 'view_user_page.php?id=' . $p_user_id, true ) . '">' . $t_username . '</a>';
 		} else {
 			return '<del class="user">' . $t_username . '</del>';
 		}
@@ -94,12 +94,12 @@ class Prepare
 			return '';
 		}
 	
-		$t_version_text = \Flickerbox\Version::full_name( $p_version_id, null, $p_project_id );
+		$t_version_text = \Core\Version::full_name( $p_version_id, null, $p_project_id );
 	
-		if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'show_version_dates_threshold' ), $p_project_id ) ) {
-			$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
+		if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'show_version_dates_threshold' ), $p_project_id ) ) {
+			$t_short_date_format = \Core\Config::mantis_get( 'short_date_format' );
 	
-			$t_version = \Flickerbox\Version::get( $p_version_id );
+			$t_version = \Core\Version::get( $p_version_id );
 			$t_version_text .= ' (' . date( $t_short_date_format, $t_version->date_order ) . ')';
 		}
 	

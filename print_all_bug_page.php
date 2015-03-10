@@ -44,28 +44,28 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_search		= \Flickerbox\GPC::get_string( FILTER_PROPERTY_SEARCH, false ); # @todo need a better default
-$f_offset		= \Flickerbox\GPC::get_int( 'offset', 0 );
+$f_search		= \Core\GPC::get_string( FILTER_PROPERTY_SEARCH, false ); # @todo need a better default
+$f_offset		= \Core\GPC::get_int( 'offset', 0 );
 
-$t_cookie_value_id = \Flickerbox\GPC::get_cookie( \Flickerbox\Config::mantis_get( 'view_all_cookie' ), '' );
-$t_cookie_value = \Flickerbox\Filter::db_get_filter( $t_cookie_value_id );
+$t_cookie_value_id = \Core\GPC::get_cookie( \Core\Config::mantis_get( 'view_all_cookie' ), '' );
+$t_cookie_value = \Core\Filter::db_get_filter( $t_cookie_value_id );
 
 $f_highlight_changed 	= 0;
 $f_sort 				= null;
 $f_dir		 			= null;
 $t_project_id 			= 0;
 
-$t_columns = \Flickerbox\Helper::get_columns_to_view( COLUMNS_TARGET_PRINT_PAGE );
+$t_columns = \Core\Helper::get_columns_to_view( COLUMNS_TARGET_PRINT_PAGE );
 $t_num_of_columns = count( $t_columns );
 
 # check to see if the cookie exists
-if( !\Flickerbox\Utility::is_blank( $t_cookie_value ) ) {
+if( !\Core\Utility::is_blank( $t_cookie_value ) ) {
 
 	# check to see if new cookie is needed
-	if( !\Flickerbox\Filter::is_cookie_valid() ) {
-		\Flickerbox\Print_Util::header_redirect( 'view_all_set.php?type=0&print=1' );
+	if( !\Core\Filter::is_cookie_valid() ) {
+		\Core\Print_Util::header_redirect( 'view_all_set.php?type=0&print=1' );
 	}
 
 	$t_setting_arr = explode( '#', $t_cookie_value, 2 );
@@ -74,30 +74,30 @@ if( !\Flickerbox\Utility::is_blank( $t_cookie_value ) ) {
 	$f_highlight_changed 	= $t_filter_cookie_arr[FILTER_PROPERTY_HIGHLIGHT_CHANGED];
 	$f_sort 				= $t_filter_cookie_arr[FILTER_PROPERTY_SORT_FIELD_NAME];
 	$f_dir		 			= $t_filter_cookie_arr[FILTER_PROPERTY_SORT_DIRECTION];
-	$t_project_id 			= \Flickerbox\Helper::get_current_project();
+	$t_project_id 			= \Core\Helper::get_current_project();
 }
 
 # This replaces the actual search that used to be here
-$f_page_number = \Flickerbox\GPC::get_int( 'page_number', 1 );
+$f_page_number = \Core\GPC::get_int( 'page_number', 1 );
 $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = null;
 
-$t_result = \Flickerbox\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_result = \Core\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count );
 $t_row_count = count( $t_result );
 
 # pre-cache custom column data
-\Flickerbox\Columns::plugin_cache_issue_data( $t_result );
+\Core\Columns::plugin_cache_issue_data( $t_result );
 
 # for export
-$t_show_flag = \Flickerbox\GPC::get_int( 'show_flag', 0 );
+$t_show_flag = \Core\GPC::get_int( 'show_flag', 0 );
 
-\Flickerbox\HTML::page_top();
+\Core\HTML::page_top();
 ?>
 
 <table class="width100"><tr><td class="form-title">
 	<div class="center">
-		<?php echo \Flickerbox\String::display( \Flickerbox\Config::mantis_get( 'window_title' ) ) . ' - ' . \Flickerbox\String::display( \Flickerbox\Project::get_name( $t_project_id ) ); ?>
+		<?php echo \Core\String::display( \Core\Config::mantis_get( 'window_title' ) ) . ' - ' . \Core\String::display( \Core\Project::get_name( $t_project_id ) ); ?>
 	</div>
 </td></tr></table>
 
@@ -119,7 +119,7 @@ $t_show_flag = \Flickerbox\GPC::get_int( 'show_flag', 0 );
 #$t_bug_arr_sort is used for displaying
 #$f_export is a string for the word and excel pages
 
-$f_bug_arr = \Flickerbox\GPC::get_int_array( 'bug_arr', array() );
+$f_bug_arr = \Core\GPC::get_int_array( 'bug_arr', array() );
 $f_bug_arr[$t_row_count]=-1;
 
 for( $i=0; $i < $t_row_count; $i++ ) {
@@ -130,7 +130,7 @@ for( $i=0; $i < $t_row_count; $i++ ) {
 }
 $f_export = implode( ',', $f_bug_arr );
 
-$t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
+$t_icon_path = \Core\Config::mantis_get( 'icon_path' );
 ?>
 
 <tr>
@@ -174,7 +174,7 @@ $t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 <tr>
 	<td class="form-title" colspan="<?php echo $t_num_of_columns / 2 + $t_num_of_columns % 2; ?>">
 		<?php
-			echo \Flickerbox\Lang::get( 'viewing_bugs_title' );
+			echo \Core\Lang::get( 'viewing_bugs_title' );
 
 			if( $t_row_count > 0 ) {
 				$v_start = $f_offset+1;
@@ -188,9 +188,9 @@ $t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 	</td>
 	<td class="right" colspan="<?php echo $t_num_of_columns / 2 ?>">
 		<?php
-			# \Flickerbox\Print_Util::bracket_link( 'print_all_bug_options_page.php', \Flickerbox\Lang::get( 'printing_options_link' ) );
-			# \Flickerbox\Print_Util::bracket_link( 'view_all_bug_page.php', \Flickerbox\Lang::get( 'view_bugs_link' ) );
-			# \Flickerbox\Print_Util::bracket_link( 'summary_page.php', \Flickerbox\Lang::get( 'summary' ) );
+			# \Core\Print_Util::bracket_link( 'print_all_bug_options_page.php', \Core\Lang::get( 'printing_options_link' ) );
+			# \Core\Print_Util::bracket_link( 'view_all_bug_page.php', \Core\Lang::get( 'view_bugs_link' ) );
+			# \Core\Print_Util::bracket_link( 'summary_page.php', \Core\Lang::get( 'summary' ) );
 		?>
 	</td>
 </tr>
@@ -201,7 +201,7 @@ $t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 
 		foreach( $t_columns as $t_column ) {
 			$t_title_function = 'print_column_title';
-			\Flickerbox\Helper::call_custom_function( $t_title_function, array( $t_column, COLUMNS_TARGET_PRINT_PAGE ) );
+			\Core\Helper::call_custom_function( $t_title_function, array( $t_column, COLUMNS_TARGET_PRINT_PAGE ) );
 		}
 	?>
 </tr>
@@ -213,14 +213,14 @@ $t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 		$t_row = $t_result[$i];
 
 		# alternate row colors
-		$t_status_color = \Flickerbox\Helper::alternate_colors( $i, '#ffffff', '#dddddd' );
+		$t_status_color = \Core\Helper::alternate_colors( $i, '#ffffff', '#dddddd' );
 		if( isset( $t_bug_arr_sort[$t_row->id] ) || ( $t_show_flag==0 ) ) {
 ?>
 <tr bgcolor="<?php echo $t_status_color ?>">
 <?php
 		foreach( $t_columns as $t_column ) {
 			$t_column_value_function = 'print_column_value';
-			\Flickerbox\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_PRINT_PAGE ) );
+			\Core\Helper::call_custom_function( $t_column_value_function, array( $t_column, $t_row, COLUMNS_TARGET_PRINT_PAGE ) );
 		}
 ?>
 </tr>
@@ -234,9 +234,9 @@ $t_icon_path = \Flickerbox\Config::mantis_get( 'icon_path' );
 	<input type="hidden" name="show_flag" value="1" />
 </fieldset>
 <p>
-	<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'hide_button' ) ?>" />
+	<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'hide_button' ) ?>" />
 </p>
 </form>
 
 <?php
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

@@ -39,9 +39,9 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Helper::begin_long_process();
+\Core\Helper::begin_long_process();
 
-$f_bug_id	= \Flickerbox\GPC::get_int( 'bug_id', -1 );
+$f_bug_id	= \Core\GPC::get_int( 'bug_id', -1 );
 $f_files		= gpc_get_file( 'ufile', -1 );
 
 if( $f_bug_id == -1 && $f_files	== -1 ) {
@@ -49,38 +49,38 @@ if( $f_bug_id == -1 && $f_files	== -1 ) {
 	trigger_error( ERROR_FILE_TOO_BIG, ERROR );
 }
 
-\Flickerbox\Form::security_validate( 'bug_file_add(' );
+\Core\Form::security_validate( 'bug_file_add(' );
 
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+$t_bug = \Core\Bug::get( $f_bug_id, true );
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
-if( !\Flickerbox\File::allow_bug_upload( $f_bug_id ) ) {
-	\Flickerbox\Access::denied();
+if( !\Core\File::allow_bug_upload( $f_bug_id ) ) {
+	\Core\Access::denied();
 }
 
-\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'upload_bug_file_threshold' ), $f_bug_id );
+\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'upload_bug_file_threshold' ), $f_bug_id );
 
 # Process array of files to upload
 if( -1 != $f_files ) {
-	$t_files = \Flickerbox\Helper::array_transpose( $f_files );
+	$t_files = \Core\Helper::array_transpose( $f_files );
 	foreach( $t_files as $t_file ) {
 		if( !empty( $t_file['name'] ) ) {
-			\Flickerbox\File::add( $f_bug_id, $t_file, 'bug' );
+			\Core\File::add( $f_bug_id, $t_file, 'bug' );
 		}
 	}
 }
 
-\Flickerbox\Form::security_purge( 'bug_file_add(' );
+\Core\Form::security_purge( 'bug_file_add(' );
 
 # Determine which view page to redirect back to.
-$t_redirect_url = \Flickerbox\String::get_bug_view_url( $f_bug_id );
+$t_redirect_url = \Core\String::get_bug_view_url( $f_bug_id );
 
-\Flickerbox\HTML::page_top( null, $t_redirect_url );
+\Core\HTML::page_top( null, $t_redirect_url );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

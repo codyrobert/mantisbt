@@ -37,16 +37,16 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_config_work_threshold_set' );
+\Core\Form::security_validate( 'manage_config_work_threshold_set' );
 
 auth_reauthenticate();
 
 $t_redirect_url = 'manage_config_work_threshold_page.php';
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_threshold_config' ), $t_redirect_url );
+\Core\HTML::page_top( \Core\Lang::get( 'manage_threshold_config' ), $t_redirect_url );
 
-$g_access = \Flickerbox\Current_User::get_access_level();
-$g_project = \Flickerbox\Helper::get_current_project();
+$g_access = \Core\Current_User::get_access_level();
+$g_project = \Core\Helper::get_current_project();
 
 /**
  * set row
@@ -57,12 +57,12 @@ $g_project = \Flickerbox\Helper::get_current_project();
 function set_capability_row( $p_threshold, $p_all_projects_only = false ) {
 	global $g_access, $g_project;
 
-	if( ( $g_access >= \Flickerbox\Config::get_access( $p_threshold ) )
+	if( ( $g_access >= \Core\Config::get_access( $p_threshold ) )
 			  && ( ( ALL_PROJECTS == $g_project ) || !$p_all_projects_only ) ) {
-		$f_threshold = \Flickerbox\GPC::get_int_array( 'flag_thres_' . $p_threshold, array() );
-		$f_access = \Flickerbox\GPC::get_int( 'access_' . $p_threshold );
+		$f_threshold = \Core\GPC::get_int_array( 'flag_thres_' . $p_threshold, array() );
+		$f_access = \Core\GPC::get_int( 'access_' . $p_threshold );
 		# @@debug @@ echo "<br />for $p_threshold "; var_dump($f_threshold, $f_access); echo '<br />';
-		$t_access_levels = \Flickerbox\MantisEnum::getAssocArrayIndexedByValues( \Flickerbox\Config::mantis_get( 'access_levels_enum_string' ) );
+		$t_access_levels = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 		ksort( $t_access_levels );
 		reset( $t_access_levels );
 
@@ -82,17 +82,17 @@ function set_capability_row( $p_threshold, $p_all_projects_only = false ) {
 			}
 		# @@debug @@ var_dump($$t_access_level, $t_lower_threshold, $t_array_threshold); echo '<br />';
 		}
-		$t_existing_threshold = \Flickerbox\Config::mantis_get( $p_threshold );
-		$t_existing_access = \Flickerbox\Config::get_access( $p_threshold );
+		$t_existing_threshold = \Core\Config::mantis_get( $p_threshold );
+		$t_existing_access = \Core\Config::get_access( $p_threshold );
 		if( -1 == $t_lower_threshold ) {
 			if( ( $t_existing_threshold != $t_array_threshold )
 					|| ( $t_existing_access != $f_access ) ) {
-				\Flickerbox\Config::set( $p_threshold, $t_array_threshold, NO_USER, $g_project, $f_access );
+				\Core\Config::mantis_set( $p_threshold, $t_array_threshold, NO_USER, $g_project, $f_access );
 			}
 		} else {
 			if( ( $t_existing_threshold != $t_lower_threshold )
 					|| ( $t_existing_access != $f_access ) ) {
-				\Flickerbox\Config::set( $p_threshold, $t_lower_threshold, NO_USER, $g_project, $f_access );
+				\Core\Config::mantis_set( $p_threshold, $t_lower_threshold, NO_USER, $g_project, $f_access );
 			}
 		}
 	}
@@ -107,15 +107,15 @@ function set_capability_row( $p_threshold, $p_all_projects_only = false ) {
 function set_capability_boolean( $p_threshold, $p_all_projects_only = false ) {
 	global $g_access, $g_project;
 
-	if( ( $g_access >= \Flickerbox\Config::get_access( $p_threshold ) )
+	if( ( $g_access >= \Core\Config::get_access( $p_threshold ) )
 			  && ( ( ALL_PROJECTS == $g_project ) || !$p_all_projects_only ) ) {
-		$f_flag = \Flickerbox\GPC::get( 'flag_' . $p_threshold, OFF );
-		$f_access = \Flickerbox\GPC::get_int( 'access_' . $p_threshold );
+		$f_flag = \Core\GPC::get( 'flag_' . $p_threshold, OFF );
+		$f_access = \Core\GPC::get_int( 'access_' . $p_threshold );
 		$f_flag = ( OFF == $f_flag ) ? OFF : ON;
 		# @@debug @@ echo "<br />for $p_threshold "; var_dump($f_flag, $f_access); echo '<br />';
 
-		if( ( $f_flag != \Flickerbox\Config::mantis_get( $p_threshold ) ) || ( $f_access != \Flickerbox\Config::get_access( $p_threshold ) ) ) {
-			\Flickerbox\Config::set( $p_threshold, $f_flag, NO_USER, $g_project, $f_access );
+		if( ( $f_flag != \Core\Config::mantis_get( $p_threshold ) ) || ( $f_access != \Core\Config::get_access( $p_threshold ) ) ) {
+			\Core\Config::mantis_set( $p_threshold, $f_flag, NO_USER, $g_project, $f_access );
 		}
 	}
 }
@@ -129,13 +129,13 @@ function set_capability_boolean( $p_threshold, $p_all_projects_only = false ) {
 function set_capability_enum( $p_threshold, $p_all_projects_only = false ) {
 	global $g_access, $g_project;
 
-	if( ( $g_access >= \Flickerbox\Config::get_access( $p_threshold ) )
+	if( ( $g_access >= \Core\Config::get_access( $p_threshold ) )
 			  && ( ( ALL_PROJECTS == $g_project ) || !$p_all_projects_only ) ) {
-		$f_flag = \Flickerbox\GPC::get( 'flag_' . $p_threshold );
-		$f_access = \Flickerbox\GPC::get_int( 'access_' . $p_threshold );
+		$f_flag = \Core\GPC::get( 'flag_' . $p_threshold );
+		$f_access = \Core\GPC::get_int( 'access_' . $p_threshold );
 
-		if( ( $f_flag != \Flickerbox\Config::mantis_get( $p_threshold ) ) || ( $f_access != \Flickerbox\Config::get_access( $p_threshold ) ) ) {
-			\Flickerbox\Config::set( $p_threshold, $f_flag, NO_USER, $g_project, $f_access );
+		if( ( $f_flag != \Core\Config::mantis_get( $p_threshold ) ) || ( $f_access != \Core\Config::get_access( $p_threshold ) ) ) {
+			\Core\Config::mantis_set( $p_threshold, $f_flag, NO_USER, $g_project, $f_access );
 		}
 	}
 }
@@ -182,8 +182,8 @@ set_capability_row( 'view_history_threshold' );
 set_capability_row( 'bug_reminder_threshold' );
 set_capability_row( 'reminder_receive_threshold' );
 
-\Flickerbox\Form::security_purge( 'manage_config_work_threshold_set' );
+\Core\Form::security_purge( 'manage_config_work_threshold_set' );
 
-\Flickerbox\HTML::operation_successful( $t_redirect_url );
+\Core\HTML::operation_successful( $t_redirect_url );
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

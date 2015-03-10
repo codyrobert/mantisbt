@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 
@@ -27,11 +27,11 @@ class MantisCoreXwikiPlugin extends MantisCoreWikiPlugin {
 	 * @return string
 	 */
 	function base_url( $p_project_id = null ) {
-		$t_base = \Flickerbox\Plugin::config_get( 'engine_url' );
+		$t_base = \Core\Plugin::config_get( 'engine_url' );
 		if( !is_null( $p_project_id ) && $p_project_id != ALL_PROJECTS ) {
-			$t_base .= urlencode( \Flickerbox\Project::get_name( $p_project_id ) ) . '/';
+			$t_base .= urlencode( \Core\Project::get_name( $p_project_id ) ) . '/';
 		} else {
-			$t_base .= urlencode( \Flickerbox\Plugin::config_get( 'root_namespace' ) );
+			$t_base .= urlencode( \Core\Plugin::config_get( 'root_namespace' ) );
 		}
 		return $t_base;
 	}
@@ -44,7 +44,7 @@ class MantisCoreXwikiPlugin extends MantisCoreWikiPlugin {
 	 * @return string
 	 */
 	function link_bug( $p_event, $p_bug_id ) {
-		return $this->base_url( \Flickerbox\Bug::get_field( $p_bug_id, 'project_id' ) ) .  (int)$p_bug_id;
+		return $this->base_url( \Core\Bug::get_field( $p_bug_id, 'project_id' ) ) .  (int)$p_bug_id;
 	}
 
 	/**

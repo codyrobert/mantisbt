@@ -54,8 +54,8 @@ check_init_error_handler();
 # of the tests may take a long time to complete.
 set_time_limit( 60 * 5 );
 
-$g_show_all = \Flickerbox\GPC::get_bool( 'show_all', false );
-$g_show_errors = \Flickerbox\GPC::get_bool( 'show_errors', false );
+$g_show_all = \Core\GPC::get_bool( 'show_all', false );
+$g_show_errors = \Core\GPC::get_bool( 'show_errors', false );
 
 /**
  * Returns a URL to implement filtering on the admin check page
@@ -85,20 +85,20 @@ $t_show_errors_mode_link = sprintf( $t_link,
 	'verbose error messages'
 );
 
-\Flickerbox\HTTP::content_headers();
+\Core\HTTP::content_headers();
 
-\Flickerbox\HTML::begin();
+\Core\HTML::begin();
 
-\Flickerbox\HTML::head_begin();
-\Flickerbox\HTML::css_link( 'admin.css' );
-\Flickerbox\HTML::content_type();
-\Flickerbox\HTML::title( 'MantisBT Administration - Check Installation' );
-\Flickerbox\HTML::head_end();
+\Core\HTML::head_begin();
+\Core\HTML::css_link( 'admin.css' );
+\Core\HTML::content_type();
+\Core\HTML::title( 'MantisBT Administration - Check Installation' );
+\Core\HTML::head_end();
 ?>
 
 <body>
 
-<?php \Flickerbox\HTML::top_banner(); ?>
+<?php \Core\HTML::top_banner(); ?>
 
 <p class="notice">Verbosity: <?php echo $t_show_all_mode_link ?> | <?php echo $t_show_errors_mode_link ?></p>
 <table id="check-results">

@@ -42,7 +42,7 @@ if( !defined( 'BUG_ACTIONGROUP_INC_ALLOW' ) ) {
 function action_update_severity_print_title() {
 	echo '<tr>';
 	echo '<td class="form-title" colspan="2">';
-	echo \Flickerbox\Lang::get( 'update_severity_title' );
+	echo \Core\Lang::get( 'update_severity_title' );
 	echo '</td></tr>';
 }
 
@@ -59,11 +59,11 @@ function action_update_severity_print_fields() {
 	</tbody>
 		<tr>
 			<th class="category">
-				<?php echo \Flickerbox\Lang::get( 'update_severity_msg' ); ?>
+				<?php echo \Core\Lang::get( 'update_severity_msg' ); ?>
 			</th>
 			<td>
 				<select name="severity">';
-					<?php \Flickerbox\Print_Util::enum_string_option_list( 'severity' ); ?>
+					<?php \Core\Print_Util::enum_string_option_list( 'severity' ); ?>
 				</select>
 			</td>
 		</tr>
@@ -71,7 +71,7 @@ function action_update_severity_print_fields() {
 	<tfoot>
 		<tr>
 			<td colspan="2" class="center">
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_severity_button' ); ?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_severity_button' ); ?>" />
 			</td>
 		</tr>
 	</tfoot>
@@ -85,15 +85,15 @@ function action_update_severity_print_fields() {
  * @return string|null On failure: the reason why the action could not be validated. On success: null.
  */
 function action_update_severity_validate( $p_bug_id ) {
-	$t_update_severity_threshold = \Flickerbox\Config::mantis_get( 'update_bug_threshold' );
+	$t_update_severity_threshold = \Core\Config::mantis_get( 'update_bug_threshold' );
 	$t_bug_id = $p_bug_id;
 
-	if( \Flickerbox\Bug::is_readonly( $t_bug_id ) ) {
-		return \Flickerbox\Lang::get( 'actiongroup_error_issue_is_readonly' );
+	if( \Core\Bug::is_readonly( $t_bug_id ) ) {
+		return \Core\Lang::get( 'actiongroup_error_issue_is_readonly' );
 	}
 
-	if( !\Flickerbox\Access::has_bug_level( $t_update_severity_threshold, $t_bug_id ) ) {
-		return \Flickerbox\Lang::get( 'access_denied' );
+	if( !\Core\Access::has_bug_level( $t_update_severity_threshold, $t_bug_id ) ) {
+		return \Core\Lang::get( 'access_denied' );
 	}
 
 	return null;
@@ -106,7 +106,7 @@ function action_update_severity_validate( $p_bug_id ) {
  * @return null Previous validation ensures that this function doesn't fail. Therefore we can always return null to indicate no errors occurred.
  */
 function action_update_severity_process( $p_bug_id ) {
-	$f_severity = \Flickerbox\GPC::get_string( 'severity' );
-	\Flickerbox\Bug::set_field( $p_bug_id, 'severity', $f_severity );
+	$f_severity = \Core\GPC::get_string( 'severity' );
+	\Core\Bug::set_field( $p_bug_id, 'severity', $f_severity );
 	return null;
 }

@@ -32,9 +32,9 @@ header( 'Content-type: ' );
 
 require_once( 'core.php' );
 
-$t_plugin_path = \Flickerbox\Config::mantis_get( 'plugin_path' );
+$t_plugin_path = \Core\Config::mantis_get( 'plugin_path' );
 
-$f_file = \Flickerbox\GPC::get_string( 'file' );
+$f_file = \Core\GPC::get_string( 'file' );
 
 $t_regex = '/^'
 	# File must start with plugin name, ending with /
@@ -46,13 +46,13 @@ $t_regex = '/^'
 	. ')$/';
 
 if( !preg_match( $t_regex, $f_file, $t_matches ) ) {
-	\Flickerbox\Error::parameters( $f_file );
+	\Core\Error::parameters( $f_file );
 	trigger_error( ERROR_PLUGIN_INVALID_FILE, ERROR );
 }
 
 $t_basename = $t_matches[1];
 $t_file = $t_matches[2];
 
-$t_plugin = \Flickerbox\Plugin::get( $t_basename );
+$t_plugin = \Core\Plugin::get( $t_basename );
 
-\Flickerbox\Plugin::file_include( $t_file, $t_basename );
+\Core\Plugin::file_include( $t_file, $t_basename );

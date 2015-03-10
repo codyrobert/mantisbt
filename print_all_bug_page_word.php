@@ -51,19 +51,19 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-\Flickerbox\Auth::ensure_user_authenticated();
+\Core\Auth::ensure_user_authenticated();
 
-$f_type_page	= \Flickerbox\GPC::get_string( 'type_page', 'word' );
-$f_search		= \Flickerbox\GPC::get_string( 'search', false ); # @todo need a better default
-$f_offset		= \Flickerbox\GPC::get_int( 'offset', 0 );
-$f_export		= \Flickerbox\GPC::get_string( 'export' );
-$f_show_flag	= \Flickerbox\GPC::get_bool( 'show_flag' );
+$f_type_page	= \Core\GPC::get_string( 'type_page', 'word' );
+$f_search		= \Core\GPC::get_string( 'search', false ); # @todo need a better default
+$f_offset		= \Core\GPC::get_int( 'offset', 0 );
+$f_export		= \Core\GPC::get_string( 'export' );
+$f_show_flag	= \Core\GPC::get_bool( 'show_flag' );
 
-\Flickerbox\Helper::begin_long_process();
+\Core\Helper::begin_long_process();
 
 # word or html export
 if( $f_type_page != 'html' ) {
-	$t_export_title = \Flickerbox\Helper::get_default_export_filename( '' );
+	$t_export_title = \Core\Helper::get_default_export_filename( '' );
 	$t_export_title = preg_replace( '/[\/:*?"<>|]/', '', $t_export_title );
 	$t_export_title .= '.doc';
 
@@ -72,68 +72,68 @@ if( $f_type_page != 'html' ) {
 
 	header( 'Content-Type: application/msword' );
 
-	\Flickerbox\HTTP::content_disposition_header( $t_export_title );
+	\Core\HTTP::content_disposition_header( $t_export_title );
 }
 
 # This is where we used to do the entire actual filter ourselves
-$t_page_number = \Flickerbox\GPC::get_int( 'page_number', 1 );
+$t_page_number = \Core\GPC::get_int( 'page_number', 1 );
 $t_per_page = -1;
 $t_bug_count = null;
 $t_page_count = null;
 
-$t_result = \Flickerbox\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
+$t_result = \Core\Filter::get_bug_rows( $t_page_number, $t_per_page, $t_page_count, $t_bug_count );
 $t_row_count = count( $t_result );
 
 # Headers depending on intended output
 if( $f_type_page == 'html' ) {
-	\Flickerbox\HTML::page_top1();
-	\Flickerbox\HTML::head_end();
-	\Flickerbox\HTML::body_begin();
+	\Core\HTML::page_top1();
+	\Core\HTML::head_end();
+	\Core\HTML::body_begin();
 } else {
 	echo '<html xmlns:o="urn:schemas-microsoft-com:office:office"
 		xmlns:w="urn:schemas-microsoft-com:office:word"
 		xmlns="http://www.w3.org/TR/REC-html40">';
-	\Flickerbox\HTML::body_begin();
+	\Core\HTML::body_begin();
 }
 
 $f_bug_arr = explode( ',', $f_export );
 $t_count_exported = 0;
-$t_date_format = \Flickerbox\Config::mantis_get( 'normal_date_format' );
-$t_short_date_format = \Flickerbox\Config::mantis_get( 'short_date_format' );
+$t_date_format = \Core\Config::mantis_get( 'normal_date_format' );
+$t_short_date_format = \Core\Config::mantis_get( 'short_date_format' );
 
-$t_lang_bug_view_title = \Flickerbox\Lang::get( 'bug_view_title' );
-$t_lang_id = \Flickerbox\Lang::get( 'id' );
-$t_lang_category = \Flickerbox\Lang::get( 'category' );
-$t_lang_severity = \Flickerbox\Lang::get( 'severity' );
-$t_lang_reproducibility = \Flickerbox\Lang::get( 'reproducibility' );
-$t_lang_date_submitted = \Flickerbox\Lang::get( 'date_submitted' );
-$t_lang_last_update = \Flickerbox\Lang::get( 'last_update' );
-$t_lang_reporter = \Flickerbox\Lang::get( 'reporter' );
-$t_lang_assigned_to = \Flickerbox\Lang::get( 'assigned_to' );
-$t_lang_platform = \Flickerbox\Lang::get( 'platform' );
-$t_lang_due_date = \Flickerbox\Lang::get( 'due_date' );
-$t_lang_os = \Flickerbox\Lang::get( 'os' );
-$t_lang_os_version = \Flickerbox\Lang::get( 'os_version' );
-$t_lang_fixed_in_version = \Flickerbox\Lang::get( 'fixed_in_version' );
-$t_lang_resolution = \Flickerbox\Lang::get( 'resolution' );
-$t_lang_priority = \Flickerbox\Lang::get( 'priority' );
-$t_lang_product_build = \Flickerbox\Lang::get( 'product_build' );
-$t_lang_eta = \Flickerbox\Lang::get( 'eta' );
-$t_lang_status = \Flickerbox\Lang::get( 'status' );
-$t_lang_product_version = \Flickerbox\Lang::get( 'product_version' );
-$t_lang_no_bugnotes_msg = \Flickerbox\Lang::get( 'no_bugnotes_msg' );
-$t_lang_projection = \Flickerbox\Lang::get( 'projection' );
-$t_lang_target_version = \Flickerbox\Lang::get( 'target_version' );
-$t_lang_summary = \Flickerbox\Lang::get( 'summary' );
-$t_lang_description = \Flickerbox\Lang::get( 'description' );
-$t_lang_steps_to_reproduce = \Flickerbox\Lang::get( 'steps_to_reproduce' );
-$t_lang_additional_information = \Flickerbox\Lang::get( 'additional_information' );
-$t_lang_bug_notes_title = \Flickerbox\Lang::get( 'bug_notes_title' );
-$t_lang_system_profile = \Flickerbox\Lang::get( 'system_profile' );
-$t_lang_attached_files = \Flickerbox\Lang::get( 'attached_files' );
+$t_lang_bug_view_title = \Core\Lang::get( 'bug_view_title' );
+$t_lang_id = \Core\Lang::get( 'id' );
+$t_lang_category = \Core\Lang::get( 'category' );
+$t_lang_severity = \Core\Lang::get( 'severity' );
+$t_lang_reproducibility = \Core\Lang::get( 'reproducibility' );
+$t_lang_date_submitted = \Core\Lang::get( 'date_submitted' );
+$t_lang_last_update = \Core\Lang::get( 'last_update' );
+$t_lang_reporter = \Core\Lang::get( 'reporter' );
+$t_lang_assigned_to = \Core\Lang::get( 'assigned_to' );
+$t_lang_platform = \Core\Lang::get( 'platform' );
+$t_lang_due_date = \Core\Lang::get( 'due_date' );
+$t_lang_os = \Core\Lang::get( 'os' );
+$t_lang_os_version = \Core\Lang::get( 'os_version' );
+$t_lang_fixed_in_version = \Core\Lang::get( 'fixed_in_version' );
+$t_lang_resolution = \Core\Lang::get( 'resolution' );
+$t_lang_priority = \Core\Lang::get( 'priority' );
+$t_lang_product_build = \Core\Lang::get( 'product_build' );
+$t_lang_eta = \Core\Lang::get( 'eta' );
+$t_lang_status = \Core\Lang::get( 'status' );
+$t_lang_product_version = \Core\Lang::get( 'product_version' );
+$t_lang_no_bugnotes_msg = \Core\Lang::get( 'no_bugnotes_msg' );
+$t_lang_projection = \Core\Lang::get( 'projection' );
+$t_lang_target_version = \Core\Lang::get( 'target_version' );
+$t_lang_summary = \Core\Lang::get( 'summary' );
+$t_lang_description = \Core\Lang::get( 'description' );
+$t_lang_steps_to_reproduce = \Core\Lang::get( 'steps_to_reproduce' );
+$t_lang_additional_information = \Core\Lang::get( 'additional_information' );
+$t_lang_bug_notes_title = \Core\Lang::get( 'bug_notes_title' );
+$t_lang_system_profile = \Core\Lang::get( 'system_profile' );
+$t_lang_attached_files = \Core\Lang::get( 'attached_files' );
 
-$t_current_user_id = \Flickerbox\Auth::get_current_user_id();
-$t_user_bugnote_order = \Flickerbox\User\Pref::get_pref( $t_current_user_id, 'bugnote_order' );
+$t_current_user_id = \Core\Auth::get_current_user_id();
+$t_user_bugnote_order = \Core\User\Pref::get_pref( $t_current_user_id, 'bugnote_order' );
 
 for( $j=0; $j < $t_row_count; $j++ ) {
 	$t_bug = $t_result[$j];
@@ -141,9 +141,9 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 
 	if( $j % 50 == 0 ) {
 		# to save ram as report will list data once, clear cache after 50 bugs
-		\Flickerbox\Bug::text_clear_cache();
-		\Flickerbox\Bug::clear_cache();
-		\Flickerbox\Bug\Note::clear_cache();
+		\Core\Bug::text_clear_cache();
+		\Core\Bug::clear_cache();
+		\Core\Bug\Note::clear_cache();
 	}
 
 	# display the available and selected bugs
@@ -157,8 +157,8 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		$t_last_updated = date( $g_short_date_format, $t_bug->last_updated );
 
 		# grab the project name
-		$t_project_name = \Flickerbox\Project::get_field( $t_bug->project_id, 'name' );
-		$t_category_name = \Flickerbox\Category::full_name( $t_bug->category_id, false );
+		$t_project_name = \Core\Project::get_field( $t_bug->project_id, 'name' );
+		$t_category_name = \Core\Category::full_name( $t_bug->category_id, false );
 ?>
 <br />
 <table class="width100" cellspacing="1">
@@ -174,22 +174,22 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 </tr>
 <tr class="print-category">
 	<td class="print" width="16%">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_id ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_id ) ?>
 	</td>
 	<td class="print" width="16%">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_category ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_category ) ?>
 	</td>
 	<td class="print" width="16%">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_severity ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_severity ) ?>
 	</td>
 	<td class="print" width="16%">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_reproducibility ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_reproducibility ) ?>
 	</td>
 	<td class="print" width="16%">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_date_submitted ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_date_submitted ) ?>
 	</td>
 	<td class="print" width="16%">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_last_update ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_last_update ) ?>
 	</td>
 </tr>
 <tr class="print">
@@ -197,13 +197,13 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		<?php echo $t_id ?>
 	</td>
 	<td class="print">
-		<?php echo '[' . \Flickerbox\String::display_line( $t_project_name ) . '] ' . \Flickerbox\String::display_line( $t_category_name ) ?>
+		<?php echo '[' . \Core\String::display_line( $t_project_name ) . '] ' . \Core\String::display_line( $t_category_name ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\Helper::get_enum_element( 'severity', $t_bug->severity, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Core\Helper::get_enum_element( 'severity', $t_bug->severity, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\Helper::get_enum_element( 'reproducibility', $t_bug->reproducibility, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Core\Helper::get_enum_element( 'reproducibility', $t_bug->reproducibility, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print">
 		<?php echo date( $t_date_format, $t_bug->date_submitted ) ?>
@@ -219,30 +219,30 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_reporter ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_reporter ) ?>
 	</td>
 	<td class="print">
-		<?php \Flickerbox\Print_Util::user_with_subject( $t_bug->reporter_id, $t_id ) ?>
+		<?php \Core\Print_Util::user_with_subject( $t_bug->reporter_id, $t_id ) ?>
 	</td>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_platform ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_platform ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\String::display_line( $t_bug->platform ) ?>
+		<?php echo \Core\String::display_line( $t_bug->platform ) ?>
 	</td>
-<?php if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'due_date_view_threshold' ), $t_id ) ) { ?>
+<?php if( \Core\Access::has_bug_level( \Core\Config::mantis_get( 'due_date_view_threshold' ), $t_id ) ) { ?>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_due_date ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_due_date ) ?>
 	</td>
 <?php
-		if( \Flickerbox\Bug::is_overdue( $t_id ) ) { ?>
+		if( \Core\Bug::is_overdue( $t_id ) ) { ?>
 		<td class="print-overdue">
 <?php
 		} else { ?>
 		<td class="print">
 <?php
 		}
-		if( !\Flickerbox\Date::is_null( $t_bug->due_date ) ) {
+		if( !\Core\Date::is_null( $t_bug->due_date ) ) {
 				echo date( $t_short_date_format, $t_bug->due_date );
 		print "\t\t</td>\n";
 		}
@@ -253,74 +253,74 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_assigned_to ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_assigned_to ) ?>
 	</td>
 	<td class="print">
 		<?php
-			if( \Flickerbox\Access::has_bug_level( \Flickerbox\Config::mantis_get( 'view_handler_threshold' ), $t_id ) ) {
-				\Flickerbox\Print_Util::user_with_subject( $t_bug->handler_id, $t_id );
+			if( \Core\Access::has_bug_level( \Core\Config::mantis_get( 'view_handler_threshold' ), $t_id ) ) {
+				\Core\Print_Util::user_with_subject( $t_bug->handler_id, $t_id );
 			}
 		?>
 	</td>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_os ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_os ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\String::display_line( $t_bug->os ) ?>
+		<?php echo \Core\String::display_line( $t_bug->os ) ?>
 	</td>
 	<td class="print" colspan="2">&#160;</td>
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_priority ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_priority ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\Helper::get_enum_element( 'priority', $t_bug->priority, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Core\Helper::get_enum_element( 'priority', $t_bug->priority, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_os_version ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_os_version ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\String::display_line( $t_bug->os_build ) ?>
+		<?php echo \Core\String::display_line( $t_bug->os_build ) ?>
 	</td>
 	<td class="print" colspan="2">&#160;</td>
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_status ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_status ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_product_version ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_product_version ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\String::display_line( $t_bug->version ) ?>
+		<?php echo \Core\String::display_line( $t_bug->version ) ?>
 	</td>
 	<td class="print" colspan="2">&#160;</td>
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_product_build ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_product_build ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\String::display_line( $t_bug->build ) ?>
+		<?php echo \Core\String::display_line( $t_bug->build ) ?>
 	</td>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_resolution ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_resolution ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print" colspan="2">&#160;</td>
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_projection ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_projection ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\Helper::get_enum_element( 'projection', $t_bug->projection, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Core\Helper::get_enum_element( 'projection', $t_bug->projection, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
 		&#160;
@@ -332,16 +332,16 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_eta ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_eta ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\Helper::get_enum_element( 'eta', $t_bug->eta, auth_get_current_user_id(), $t_bug->project_id ) ?>
+		<?php echo \Core\Helper::get_enum_element( 'eta', $t_bug->eta, auth_get_current_user_id(), $t_bug->project_id ) ?>
 	</td>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_fixed_in_version ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_fixed_in_version ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\String::display_line( $t_bug->fixed_in_version ) ?>
+		<?php echo \Core\String::display_line( $t_bug->fixed_in_version ) ?>
 	</td>
 	<td class="print" colspan="2">&#160;</td>
 
@@ -354,10 +354,10 @@ for( $j=0; $j < $t_row_count; $j++ ) {
 		&#160;
 	</td>
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_target_version ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_target_version ) ?>
 	</td>
 	<td class="print">
-		<?php echo \Flickerbox\String::display_line( $t_bug->target_version ) ?>
+		<?php echo \Core\String::display_line( $t_bug->target_version ) ?>
 	</td>
 	<td class="print" colspan="2">&#160;</td>
 </tr>
@@ -373,7 +373,7 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 ?>
 <tr class="print">
 	<td class="print-category">
-		<?php echo \Flickerbox\String::display_line( sprintf( \Flickerbox\Lang::get( 'label' ), \Flickerbox\Lang::get_defaulted( $t_def['name'] ) ) ) ?>
+		<?php echo \Core\String::display_line( sprintf( \Core\Lang::get( 'label' ), \Core\Lang::get_defaulted( $t_def['name'] ) ) ) ?>
 	</td>
 	<td class="print" colspan="5">
 		<?php print_custom_field_value( $t_def, $t_custom_field_id, $t_id ); ?>
@@ -389,41 +389,41 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_summary ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_summary ) ?>
 	</td>
 	<td class="print" colspan="5">
-		<?php echo \Flickerbox\String::display_line_links( $t_bug->summary ) ?>
+		<?php echo \Core\String::display_line_links( $t_bug->summary ) ?>
 	</td>
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_description ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_description ) ?>
 	</td>
 	<td class="print" colspan="5">
-		<?php echo \Flickerbox\String::display_links( $t_bug->description ) ?>
+		<?php echo \Core\String::display_links( $t_bug->description ) ?>
 	</td>
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_steps_to_reproduce ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_steps_to_reproduce ) ?>
 	</td>
 	<td class="print" colspan="5">
-		<?php echo \Flickerbox\String::display_links( $t_bug->steps_to_reproduce ) ?>
+		<?php echo \Core\String::display_links( $t_bug->steps_to_reproduce ) ?>
 	</td>
 </tr>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_additional_information ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_additional_information ) ?>
 	</td>
 	<td class="print" colspan="5">
-		<?php echo \Flickerbox\String::display_links( $t_bug->additional_information ) ?>
+		<?php echo \Core\String::display_links( $t_bug->additional_information ) ?>
 	</td>
 </tr>
 <?php
 	# account profile description
 	if( $t_bug->profile_id > 0 ) {
-		$t_profile_row = \Flickerbox\Profile::get_row_direct( $t_bug->profile_id );
-		$t_profile_description = \Flickerbox\String::display( $t_profile_row['description'] );
+		$t_profile_row = \Core\Profile::get_row_direct( $t_bug->profile_id );
+		$t_profile_description = \Core\String::display( $t_profile_row['description'] );
 
 ?>
 <tr class="print">
@@ -439,13 +439,13 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 ?>
 <tr class="print">
 	<td class="print-category">
-		<?php echo sprintf( \Flickerbox\Lang::get( 'label' ), $t_lang_attached_files ) ?>
+		<?php echo sprintf( \Core\Lang::get( 'label' ), $t_lang_attached_files ) ?>
 	</td>
 	<td class="print" colspan="5">
 		<?php
-			$t_attachments = \Flickerbox\File::get_visible_attachments( $t_id );
+			$t_attachments = \Core\File::get_visible_attachments( $t_id );
 			$t_first_attachment = true;
-			$t_path = \Flickerbox\Config::get_global( 'path' );
+			$t_path = \Core\Config::get_global( 'path' );
 
 			foreach ( $t_attachments as $t_attachment ) {
 				if( $t_first_attachment ) {
@@ -454,13 +454,13 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 					echo '<br />';
 				}
 
-				$c_filename = \Flickerbox\String::display_line( $t_attachment['display_name'] );
+				$c_filename = \Core\String::display_line( $t_attachment['display_name'] );
 				$c_download_url = htmlspecialchars( $t_attachment['download_url'] );
 				$c_filesize = number_format( $t_attachment['size'] );
 				$c_date_added = date( $t_date_format, $t_attachment['date_added'] );
-				echo $c_filename . ' (' . $c_filesize . ' ' . \Flickerbox\Lang::get( 'bytes' )
+				echo $c_filename . ' (' . $c_filesize . ' ' . \Core\Lang::get( 'bytes' )
 					. ') <span class="italic-small">' . $c_date_added . '</span><br />'
-					. \Flickerbox\String::display_links( $t_path . $c_download_url );
+					. \Core\String::display_links( $t_path . $c_download_url );
 
 				if( $t_attachment['preview'] && $t_attachment['type'] == 'image' && $f_type_page == 'html' ) {
 					echo '<br /><img src="', $c_download_url, '" alt="', $t_attachment['alt'], '" /><br />';
@@ -475,7 +475,7 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 <?php
 	$t_user_bugnote_limit = 0;
 
-	$t_bugnotes = \Flickerbox\Bug\Note::get_all_visible_bugnotes( $t_id, $t_user_bugnote_order, $t_user_bugnote_limit );
+	$t_bugnotes = \Core\Bug\Note::get_all_visible_bugnotes( $t_id, $t_user_bugnote_order, $t_user_bugnote_limit );
 ?>
 <tr><td class="print" colspan="6">
 <table class="width100" cellspacing="1">
@@ -502,7 +502,7 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 			$t_last_modified = date( $t_date_format, $t_bugnote->last_modified );
 
 			# grab the bugnote text and id and prefix with v3_
-			$t_note = \Flickerbox\String::display_links( $t_bugnote->note );
+			$t_note = \Core\String::display_links( $t_bugnote->note );
 	?>
 <tr>
 	<td class="print-spacer" colspan="2">
@@ -514,19 +514,19 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 		<table class="hide" cellspacing="1">
 		<tr>
 			<td class="print">
-				(<?php echo \Flickerbox\Bug\Note::format_id( $t_bugnote->id ) ?>)
+				(<?php echo \Core\Bug\Note::format_id( $t_bugnote->id ) ?>)
 			</td>
 		</tr>
 		<tr>
 			<td class="print">
-				<?php \Flickerbox\Print_Util::user( $t_bugnote->reporter_id ) ?>&#160;&#160;&#160;
+				<?php \Core\Print_Util::user( $t_bugnote->reporter_id ) ?>&#160;&#160;&#160;
 			</td>
 		</tr>
 		<tr>
 			<td class="print">
 				<?php echo $t_date_submitted ?>&#160;&#160;&#160;
 				<?php if( $t_bugnote->date_submitted != $t_bugnote->last_modified ) {
-					echo '<br />(' . \Flickerbox\Lang::get( 'last_edited' ) . \Flickerbox\Lang::get( 'word_separator' ) . $t_last_modified . ')';
+					echo '<br />(' . \Core\Lang::get( 'last_edited' ) . \Core\Lang::get( 'word_separator' ) . $t_last_modified . ')';
 				} ?>
 			</td>
 		</tr>
@@ -539,15 +539,15 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 				<?php
 					switch( $t_bugnote->note_type ) {
 						case REMINDER:
-							echo \Flickerbox\Lang::get( 'reminder_sent_to' ) . ': ';
+							echo \Core\Lang::get( 'reminder_sent_to' ) . ': ';
 							$t_note_attr = utf8_substr( $t_bugnote->note_attr, 1, utf8_strlen( $t_bugnote->note_attr ) - 2 );
 							$t_to = array();
 							foreach ( explode( '|', $t_note_attr ) as $t_recipient ) {
-								$t_to[] = \Flickerbox\Prepare::user_name( $t_recipient );
+								$t_to[] = \Core\Prepare::user_name( $t_recipient );
 							}
 							echo implode( ', ', $t_to ) . '<br />';
 						default:
-							echo \Flickerbox\String::display_links( $t_bugnote->note );
+							echo \Core\String::display_links( $t_bugnote->note );
 					}
 				?>
 			</td>
@@ -571,5 +571,5 @@ foreach( $t_related_custom_field_ids as $t_custom_field_id ) {
 	} # end in_array
 }  # end main loop
 
-\Flickerbox\HTML::body_end();
-\Flickerbox\HTML::end();
+\Core\HTML::body_end();
+\Core\HTML::end();

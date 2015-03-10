@@ -37,58 +37,58 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'manage_user_reset' );
+\Core\Form::security_validate( 'manage_user_reset' );
 
 auth_reauthenticate();
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'manage_user_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
-$f_user_id = \Flickerbox\GPC::get_int( 'user_id' );
+$f_user_id = \Core\GPC::get_int( 'user_id' );
 
-\Flickerbox\User::ensure_exists( $f_user_id );
+\Core\User::ensure_exists( $f_user_id );
 
-$t_user = \Flickerbox\User::get_row( $f_user_id );
+$t_user = \Core\User::get_row( $f_user_id );
 
 # Ensure that the account to be reset is of equal or lower access to the
 # current user.
-\Flickerbox\Access::ensure_global_level( $t_user['access_level'] );
+\Core\Access::ensure_global_level( $t_user['access_level'] );
 
 # If the password can be changed, we reset it, otherwise we unlock
 # the account (i.e. reset failed login count)
-$t_reset = \Flickerbox\Helper::call_custom_function( 'auth_can_change_password', array() );
+$t_reset = \Core\Helper::call_custom_function( 'auth_can_change_password', array() );
 if( $t_reset ) {
-	$t_result = \Flickerbox\User::reset_password( $f_user_id );
+	$t_result = \Core\User::reset_password( $f_user_id );
 } else {
-	$t_result = \Flickerbox\User::reset_failed_login_count_to_zero( $f_user_id );
+	$t_result = \Core\User::reset_failed_login_count_to_zero( $f_user_id );
 }
 
 $t_redirect_url = 'manage_user_page.php';
 
-\Flickerbox\Form::security_purge( 'manage_user_reset' );
+\Core\Form::security_purge( 'manage_user_reset' );
 
-\Flickerbox\HTML::page_top( null, $t_result ? $t_redirect_url : null );
+\Core\HTML::page_top( null, $t_result ? $t_redirect_url : null );
 
 echo '<div class="success-msg">';
 
 if( $t_reset ) {
 	if( false == $t_result ) {
 		# PROTECTED
-		echo \Flickerbox\Lang::get( 'account_reset_protected_msg' );
+		echo \Core\Lang::get( 'account_reset_protected_msg' );
 	} else {
 		# SUCCESSFUL RESET
-		if( ( ON == \Flickerbox\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Flickerbox\Config::mantis_get( 'enable_email_notification' ) ) ) {
+		if( ( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Core\Config::mantis_get( 'enable_email_notification' ) ) ) {
 			# send the new random password via email
-			echo \Flickerbox\Lang::get( 'account_reset_msg' );
+			echo \Core\Lang::get( 'account_reset_msg' );
 		} else {
 			# email notification disabled, then set the password to blank
-			echo \Flickerbox\Lang::get( 'account_reset_msg2' );
+			echo \Core\Lang::get( 'account_reset_msg2' );
 		}
 	}
 } else {
 	# UNLOCK
-	echo \Flickerbox\Lang::get( 'account_unlock_msg' );
+	echo \Core\Lang::get( 'account_unlock_msg' );
 }
 
 echo '<br />';
-\Flickerbox\Print_Util::bracket_link( $t_redirect_url, \Flickerbox\Lang::get( 'proceed' ) );
+\Core\Print_Util::bracket_link( $t_redirect_url, \Core\Lang::get( 'proceed' ) );
 echo '</div>';
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

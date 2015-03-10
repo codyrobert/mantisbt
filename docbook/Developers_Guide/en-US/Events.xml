@@ -55,7 +55,7 @@ $events = array(
 	...
 	);
 
-\Flickerbox\Event::declare_many( $events );
+\Core\Event::declare_many( $events );
 			</programlisting>
 		</blockquote>
 
@@ -69,7 +69,7 @@ $events = array(
 				be declared in the global namespace.
 			</para>
 
-			<programlisting>\Flickerbox\Event::hook( $event_name, $callback, [$plugin] );</programlisting>
+			<programlisting>\Core\Event::hook( $event_name, $callback, [$plugin] );</programlisting>
 
 			<para>
 				In order to hook many functions at once, using key/value pairs of name
@@ -83,7 +83,7 @@ $events = array(
 	...
 	);
 
-\Flickerbox\Event::hook( $events, [$plugin] );
+\Core\Event::hook( $events, [$plugin] );
 			</programlisting>
 		</blockquote>
 
@@ -96,7 +96,7 @@ $events = array(
 				for signalling an event uses the following structure:
 			</para>
 
-			<programlisting>$value = \Flickerbox\Event::signal( $event_name, [ array( $param, ... ), [ array( $static_param, ... ) ] ] );</programlisting>
+			<programlisting>$value = \Core\Event::signal( $event_name, [ array( $param, ... ), [ array( $static_param, ... ) ] ] );</programlisting>
 
 			<para>
 				Each type of event (and individual events themselves) will use different
@@ -139,7 +139,7 @@ $events = array(
 				hooked functions are ignored.  Example usage:
 			</para>
 
-			<programlisting>\Flickerbox\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
+			<programlisting>\Core\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
 		</blockquote>
 
 		<blockquote id="dev.events.types.output">
@@ -158,7 +158,7 @@ $events = array(
 				Example usage:
 			</para>
 
-			<programlisting>\Flickerbox\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
+			<programlisting>\Core\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
 		</blockquote>
 
 		<blockquote id="dev.events.types.chain">
@@ -186,7 +186,7 @@ $events = array(
 				immutable information to every callback in the chain.  Example usage:
 			</para>
 
-			<programlisting>$value = \Flickerbox\Event::signal( $event_name, $param, [ array( $static_param, ... ) ] );</programlisting>
+			<programlisting>$value = \Core\Event::signal( $event_name, $param, [ array( $static_param, ... ) ] );</programlisting>
 		</blockquote>
 
 		<blockquote id="dev.events.types.first">
@@ -207,7 +207,7 @@ $events = array(
 				callbacks are never executed.  Example usage:
 			</para>
 
-			<programlisting>$value = \Flickerbox\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
+			<programlisting>$value = \Core\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
 		</blockquote>
 
 		<blockquote id="dev.events.types.default">
@@ -225,7 +225,7 @@ $events = array(
 				name and hooked function name.  Example usage:
 			</para>
 
-			<programlisting>$values = \Flickerbox\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
+			<programlisting>$values = \Core\Event::signal( $event_name, [ array( $param, ... ) ] );</programlisting>
 		</blockquote>
 	</section>
 </chapter>

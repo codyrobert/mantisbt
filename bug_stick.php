@@ -34,22 +34,22 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Form::security_validate( 'bug_stick' );
+\Core\Form::security_validate( 'bug_stick' );
 
-$f_bug_id = \Flickerbox\GPC::get_int( 'bug_id' );
-$t_bug = \Flickerbox\Bug::get( $f_bug_id, true );
-$f_action = \Flickerbox\GPC::get_string( 'action' );
+$f_bug_id = \Core\GPC::get_int( 'bug_id' );
+$t_bug = \Core\Bug::get( $f_bug_id, true );
+$f_action = \Core\GPC::get_string( 'action' );
 
-if( $t_bug->project_id != \Flickerbox\Helper::get_current_project() ) {
+if( $t_bug->project_id != \Core\Helper::get_current_project() ) {
 	# in case the current project is not the same project of the bug we are viewing...
 	# ... override the current project. This to avoid problems with categories and handlers lists etc.
 	$g_project_override = $t_bug->project_id;
 }
 
-\Flickerbox\Access::ensure_bug_level( \Flickerbox\Config::mantis_get( 'set_bug_sticky_threshold' ), $f_bug_id );
+\Core\Access::ensure_bug_level( \Core\Config::mantis_get( 'set_bug_sticky_threshold' ), $f_bug_id );
 
-\Flickerbox\Bug::set_field( $f_bug_id, 'sticky', 'stick' == $f_action );
+\Core\Bug::set_field( $f_bug_id, 'sticky', 'stick' == $f_action );
 
-\Flickerbox\Form::security_purge( 'bug_stick' );
+\Core\Form::security_purge( 'bug_stick' );
 
-\Flickerbox\Print_Util::successful_redirect_to_bug( $f_bug_id );
+\Core\Print_Util::successful_redirect_to_bug( $f_bug_id );

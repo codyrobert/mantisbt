@@ -1,8 +1,8 @@
 <?php
-namespace Flickerbox\Controller;
+namespace Core\Controller;
 
 
-class Master extends \Flickerbox\Controller
+class Master extends \Core\Controller
 {
 	function __construct()
 	{

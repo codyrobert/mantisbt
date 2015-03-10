@@ -38,13 +38,13 @@
 
 require_once( 'core.php' );
 
-\Flickerbox\Access::ensure_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) );
+\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) );
 
-\Flickerbox\Compress::enable();
+\Core\Compress::enable();
 
-$t_can_edit = \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'tag_edit_threshold' ) );
-$f_filter = utf8_strtoupper( \Flickerbox\GPC::get_string( 'filter', \Flickerbox\Config::mantis_get( 'default_manage_tag_prefix' ) ) );
-$f_page_number = \Flickerbox\GPC::get_int( 'page_number', 1 );
+$t_can_edit = \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) );
+$f_filter = utf8_strtoupper( \Core\GPC::get_string( 'filter', \Core\Config::mantis_get( 'default_manage_tag_prefix' ) ) );
+$f_page_number = \Core\GPC::get_int( 'page_number', 1 );
 
 # Start Index Menu
 $t_prefix_array = array( 'ALL' );
@@ -67,7 +67,7 @@ $t_per_page = 20;
 $t_offset = (( $f_page_number - 1 ) * $t_per_page );
 
 # Determine number of tags in tag table
-$t_total_tag_count = \Flickerbox\Tag::count( $t_name_filter );
+$t_total_tag_count = \Core\Tag::count( $t_name_filter );
 
 #Number of pages from result
 $t_page_count = ceil( $t_total_tag_count / $t_per_page );
@@ -87,15 +87,15 @@ if( $f_page_number < 1 ) {
 }
 
 # Retrieve Tags from table
-$t_result = \Flickerbox\Tag::get_all( $t_name_filter, $t_per_page, $t_offset ) ;
+$t_result = \Core\Tag::get_all( $t_name_filter, $t_per_page, $t_offset ) ;
 
-\Flickerbox\HTML::page_top( \Flickerbox\Lang::get( 'manage_tags_link' ) );
-\Flickerbox\HTML::print_manage_menu( 'manage_tags_page.php' ); ?>
+\Core\HTML::page_top( \Core\Lang::get( 'manage_tags_link' ) );
+\Core\HTML::print_manage_menu( 'manage_tags_page.php' ); ?>
 
 <div id="manage-tags-filter-menu">
 	<ul class="menu"><?php
 	foreach ( $t_prefix_array as $t_prefix ) {
-		$t_caption = ( $t_prefix === 'ALL' ? \Flickerbox\Lang::get( 'show_all_tags' ) : $t_prefix );
+		$t_caption = ( $t_prefix === 'ALL' ? \Core\Lang::get( 'show_all_tags' ) : $t_prefix );
 		if( $t_prefix == $f_filter ) {
 			$t_link = '<strong>' . $t_caption . '</strong>';
 		} else {
@@ -107,25 +107,25 @@ $t_result = \Flickerbox\Tag::get_all( $t_name_filter, $t_per_page, $t_offset ) ;
 </div>
 
 <div class="table-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'manage_tags_link' ) ?> [<?php echo $t_total_tag_count ?>]</h2>
+	<h2><?php echo \Core\Lang::get( 'manage_tags_link' ) ?> [<?php echo $t_total_tag_count ?>]</h2>
 	<?php if( $t_can_edit ) { ?>
-	<div class="section-link"><?php \Flickerbox\Print_Util::link( '#tagcreate', \Flickerbox\Lang::get( 'tag_create' ) ) ?></div>
+	<div class="section-link"><?php \Core\Print_Util::link( '#tagcreate', \Core\Lang::get( 'tag_create' ) ) ?></div>
 	<?php } ?>
 	<table>
 		<thead>
 			<tr class="row-category">
-				<td><?php echo \Flickerbox\Lang::get( 'tag_name' ) ?></td>
-				<td><?php echo \Flickerbox\Lang::get( 'tag_creator' ) ?></td>
-				<td><?php echo \Flickerbox\Lang::get( 'tag_created' ) ?></td>
-				<td><?php echo \Flickerbox\Lang::get( 'tag_updated' ) ?></td>
+				<td><?php echo \Core\Lang::get( 'tag_name' ) ?></td>
+				<td><?php echo \Core\Lang::get( 'tag_creator' ) ?></td>
+				<td><?php echo \Core\Lang::get( 'tag_created' ) ?></td>
+				<td><?php echo \Core\Lang::get( 'tag_updated' ) ?></td>
 			</tr>
 		</thead>
 		<tbody>
 <?php
 		# Display all tags
-		while( $t_tag_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
-			$t_tag_name = \Flickerbox\String::display_line( $t_tag_row['name'] );
-			$t_tag_description = \Flickerbox\String::display( $t_tag_row['description'] );
+		while( $t_tag_row = \Core\Database::fetch_array( $t_result ) ) {
+			$t_tag_name = \Core\String::display_line( $t_tag_row['name'] );
+			$t_tag_description = \Core\String::display( $t_tag_row['description'] );
 ?>
 			<tr>
 			<?php if( $t_can_edit ) { ?>
@@ -133,9 +133,9 @@ $t_result = \Flickerbox\Tag::get_all( $t_name_filter, $t_per_page, $t_offset ) ;
 			<?php } else { ?>
 				<td><?php echo $t_tag_name ?></td>
 			<?php } ?>
-				<td><?php echo \Flickerbox\String::display_line( \Flickerbox\User::get_name( $t_tag_row['user_id'] ) ) ?></td>
-				<td><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></td>
-				<td><?php echo date( \Flickerbox\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></td>
+				<td><?php echo \Core\String::display_line( \Core\User::get_name( $t_tag_row['user_id'] ) ) ?></td>
+				<td><?php echo date( \Core\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_created'] ) ?></td>
+				<td><?php echo date( \Core\Config::mantis_get( 'normal_date_format' ), $t_tag_row['date_updated'] ) ?></td>
 			</tr>
 <?php
 		} # end while loop on tags
@@ -144,7 +144,7 @@ $t_result = \Flickerbox\Tag::get_all( $t_name_filter, $t_per_page, $t_offset ) ;
 	</table>
 	<div class="pager-links"><?php
 		# @todo hack - pass in the hide inactive filter via cheating the actual filter value
-		\Flickerbox\Print_Util::page_links( 'manage_tags_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter ); ?>
+		\Core\Print_Util::page_links( 'manage_tags_page.php', 1, $t_page_count, (int)$f_page_number, $f_filter ); ?>
 	</div>
 </div>
 
@@ -153,25 +153,25 @@ $t_result = \Flickerbox\Tag::get_all( $t_name_filter, $t_per_page, $t_offset ) ;
 	<a name="tagcreate" />
 	<form id="manage-tags-create-form" method="post" action="tag_create.php">
 		<fieldset class="has-required">
-			<legend><span><?php echo \Flickerbox\Lang::get( 'tag_create' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'tag_create' ); ?>
+			<legend><span><?php echo \Core\Lang::get( 'tag_create' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'tag_create' ); ?>
 			<div class="field-container">
-				<label for="tag-name" class="required"><span><?php echo \Flickerbox\Lang::get( 'tag_name' ) ?></span></label>
+				<label for="tag-name" class="required"><span><?php echo \Core\Lang::get( 'tag_name' ) ?></span></label>
 				<span class="input"><input type="text" id="tag-name" name="name" size="40" maxlength="100" />
-				<span><?php echo sprintf( \Flickerbox\Lang::get( 'tag_separate_by' ), \Flickerbox\Config::mantis_get( 'tag_separator' ) ); ?></span>
+				<span><?php echo sprintf( \Core\Lang::get( 'tag_separate_by' ), \Core\Config::mantis_get( 'tag_separator' ) ); ?></span>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="tag-description"><span><?php echo \Flickerbox\Lang::get( 'tag_description' ) ?></span></label>
+				<label for="tag-description"><span><?php echo \Core\Lang::get( 'tag_description' ) ?></span></label>
 				<span class="textarea"><textarea id="tag-description" name="description" cols="80" rows="6"></textarea></span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'tag_create' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'tag_create' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
 <?php
 } #End can Edit
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

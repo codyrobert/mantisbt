@@ -52,86 +52,86 @@ require_api( 'custom_field_api.php' );
 
 auth_reauthenticate();
 
-$f_project_id = \Flickerbox\GPC::get_int( 'project_id' );
-$f_show_global_users = \Flickerbox\GPC::get_bool( 'show_global_users' );
+$f_project_id = \Core\GPC::get_int( 'project_id' );
+$f_show_global_users = \Core\GPC::get_bool( 'show_global_users' );
 
-\Flickerbox\Project::ensure_exists( $f_project_id );
+\Core\Project::ensure_exists( $f_project_id );
 $g_project_override = $f_project_id;
-\Flickerbox\Access::ensure_project_level( \Flickerbox\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
+\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'manage_project_threshold' ), $f_project_id );
 
-$t_row = \Flickerbox\Project::get_row( $f_project_id );
+$t_row = \Core\Project::get_row( $f_project_id );
 
-$t_can_manage_users = \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'project_user_threshold' ), $f_project_id );
+$t_can_manage_users = \Core\Access::has_project_level( \Core\Config::mantis_get( 'project_user_threshold' ), $f_project_id );
 
-\Flickerbox\HTML::page_top( \Flickerbox\Project::get_field( $f_project_id, 'name' ) );
+\Core\HTML::page_top( \Core\Project::get_field( $f_project_id, 'name' ) );
 
-\Flickerbox\HTML::print_manage_menu( 'manage_proj_edit_page.php' );
+\Core\HTML::print_manage_menu( 'manage_proj_edit_page.php' );
 ?>
 
 <!-- PROJECT PROPERTIES -->
 <div id="manage-proj-update-div" class="form-container">
 	<form id="manage-proj-update-form" method="post" action="manage_proj_update.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'edit_project_title' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_update' ) ?>
+			<legend><span><?php echo \Core\Lang::get( 'edit_project_title' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'manage_proj_update' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<div class="field-container">
-				<label for="project-name" class="required"><span><?php echo \Flickerbox\Lang::get( 'project_name' ) ?></span></label>
-				<span class="input"><input type="text" id="project-name" name="name" size="60" maxlength="128" value="<?php echo \Flickerbox\String::attribute( $t_row['name'] ) ?>" /></span>
+				<label for="project-name" class="required"><span><?php echo \Core\Lang::get( 'project_name' ) ?></span></label>
+				<span class="input"><input type="text" id="project-name" name="name" size="60" maxlength="128" value="<?php echo \Core\String::attribute( $t_row['name'] ) ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="project-status"><span><?php echo \Flickerbox\Lang::get( 'status' ) ?></span></label>
+				<label for="project-status"><span><?php echo \Core\Lang::get( 'status' ) ?></span></label>
 				<span class="select">
 					<select id="project-status" name="status">
-						<?php \Flickerbox\Print_Util::enum_string_option_list( 'project_status', (int)$t_row['status'] ) ?>
+						<?php \Core\Print_Util::enum_string_option_list( 'project_status', (int)$t_row['status'] ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="project-enabled"><span><?php echo \Flickerbox\Lang::get( 'enabled' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="project-enabled" name="enabled" <?php \Flickerbox\Helper::check_checked( (int)$t_row['enabled'], ON ); ?> /></span>
+				<label for="project-enabled"><span><?php echo \Core\Lang::get( 'enabled' ) ?></span></label>
+				<span class="checkbox"><input type="checkbox" id="project-enabled" name="enabled" <?php \Core\Helper::check_checked( (int)$t_row['enabled'], ON ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="project-inherit-global"><span><?php echo \Flickerbox\Lang::get( 'inherit_global' ) ?></span></label>
-				<span class="checkbox"><input type="checkbox" id="project-inherit-global" name="inherit_global" <?php \Flickerbox\Helper::check_checked( (int)$t_row['inherit_global'], ON ); ?> /></span>
+				<label for="project-inherit-global"><span><?php echo \Core\Lang::get( 'inherit_global' ) ?></span></label>
+				<span class="checkbox"><input type="checkbox" id="project-inherit-global" name="inherit_global" <?php \Core\Helper::check_checked( (int)$t_row['inherit_global'], ON ); ?> /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="project-view-state"><span><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></span></label>
+				<label for="project-view-state"><span><?php echo \Core\Lang::get( 'view_status' ) ?></span></label>
 				<span class="select">
 					<select id="project-view-state" name="view_state">
-						<?php \Flickerbox\Print_Util::enum_string_option_list( 'view_state', (int)$t_row['view_state'] ) ?>
+						<?php \Core\Print_Util::enum_string_option_list( 'view_state', (int)$t_row['view_state'] ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
 			<?php
 			$g_project_override = $f_project_id;
-			if( \Flickerbox\File::is_uploading_enabled() && DATABASE !== \Flickerbox\Config::mantis_get( 'file_upload_method' ) ) {
+			if( \Core\File::is_uploading_enabled() && DATABASE !== \Core\Config::mantis_get( 'file_upload_method' ) ) {
 				$t_file_path = $t_row['file_path'];
 				# Don't reveal the absolute path to non-administrators for security reasons
-				if( \Flickerbox\Utility::is_blank( $t_file_path ) && \Flickerbox\Current_User::is_administrator() ) {
-					$t_file_path = \Flickerbox\Config::mantis_get( 'absolute_path_default_upload_folder' );
+				if( \Core\Utility::is_blank( $t_file_path ) && \Core\Current_User::is_administrator() ) {
+					$t_file_path = \Core\Config::mantis_get( 'absolute_path_default_upload_folder' );
 				}
 				?>
 				<div class="field-container">
-					<label for="project-file-path"><span><?php echo \Flickerbox\Lang::get( 'upload_file_path' ) ?></span></label>
-					<span class="input"><input type="text" id="project-file-path" name="file_path" size="60" maxlength="250" value="<?php echo \Flickerbox\String::attribute( $t_file_path ) ?>" /></span>
+					<label for="project-file-path"><span><?php echo \Core\Lang::get( 'upload_file_path' ) ?></span></label>
+					<span class="input"><input type="text" id="project-file-path" name="file_path" size="60" maxlength="250" value="<?php echo \Core\String::attribute( $t_file_path ) ?>" /></span>
 					<span class="label-style"></span>
 				</div><?php
 			} ?>
 			<div class="field-container">
-				<label for="project-description"><span><?php echo \Flickerbox\Lang::get( 'description' ) ?></span></label>
-				<span class="textarea"><textarea id="project-description" name="description" cols="70" rows="5"><?php echo \Flickerbox\String::textarea( $t_row['description'] ) ?></textarea></span>
+				<label for="project-description"><span><?php echo \Core\Lang::get( 'description' ) ?></span></label>
+				<span class="textarea"><textarea id="project-description" name="description" cols="70" rows="5"><?php echo \Core\String::textarea( $t_row['description'] ) ?></textarea></span>
 				<span class="label-style"></span>
 			</div>
 
-			<?php \Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_UPDATE_FORM', array( $f_project_id ) ); ?>
+			<?php \Core\Event::signal( 'EVENT_MANAGE_PROJECT_UPDATE_FORM', array( $f_project_id ) ); ?>
 
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_project_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_project_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 </div>
@@ -139,13 +139,13 @@ $t_can_manage_users = \Flickerbox\Access::has_project_level( \Flickerbox\Config:
 <!-- PROJECT DELETE -->
 <?php
 # You must have global permissions to delete projects
-if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delete_project_threshold' ) ) ) { ?>
+if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'delete_project_threshold' ) ) ) { ?>
 <div id="project-delete-div" class="form-container">
 	<form id="project-delete-form" method="post" action="manage_proj_delete.php" class="action-button">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_delete' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_delete' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'delete_project_button' ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'delete_project_button' ) ?>" />
 		</fieldset>
 	</form>
 </div>
@@ -153,70 +153,70 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 
 <!-- SUBPROJECTS -->
 <div id="manage-project-update-subprojects-div" class="form-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'subprojects' ); ?></h2>
+	<h2><?php echo \Core\Lang::get( 'subprojects' ); ?></h2>
 	<?php
 		# Check the user's global access level before allowing project creation
-		if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'create_project_threshold' ) ) ) {
-			\Flickerbox\Print_Util::button( 'manage_proj_create_page.php?parent_id=' . $f_project_id, \Flickerbox\Lang::get( 'create_new_subproject_link' ) );
+		if( \Core\Access::has_global_level( \Core\Config::mantis_get( 'create_project_threshold' ) ) ) {
+			\Core\Print_Util::button( 'manage_proj_create_page.php?parent_id=' . $f_project_id, \Core\Lang::get( 'create_new_subproject_link' ) );
 		} ?>
 		<form id="manage-project-subproject-add-form" method="post" action="manage_proj_subproj_add.php">
 			<fieldset>
-				<?php echo \Flickerbox\Form::security_field( 'manage_proj_subproj_add' ) ?>
+				<?php echo \Core\Form::security_field( 'manage_proj_subproj_add' ) ?>
 				<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 				<select name="subproject_id"><?php
-				$t_all_subprojects = \Flickerbox\Project\Hierarchy::get_subprojects( $f_project_id, true );
+				$t_all_subprojects = \Core\Project\Hierarchy::get_subprojects( $f_project_id, true );
 				$t_all_subprojects[] = $f_project_id;
-				$t_manage_access = \Flickerbox\Config::mantis_get( 'manage_project_threshold' );
-				$t_projects = \Flickerbox\Project::get_all_rows();
-				$t_projects = \Flickerbox\Utility::multi_sort( $t_projects, 'name', ASCENDING );
+				$t_manage_access = \Core\Config::mantis_get( 'manage_project_threshold' );
+				$t_projects = \Core\Project::get_all_rows();
+				$t_projects = \Core\Utility::multi_sort( $t_projects, 'name', ASCENDING );
 				foreach ( $t_projects as $t_project ) {
 					if( in_array( $t_project['id'], $t_all_subprojects ) ||
-						in_array( $f_project_id, \Flickerbox\Project\Hierarchy::get_all_subprojects( $t_project['id'] ) ) ||
-						!\Flickerbox\Access::has_project_level( $t_manage_access, $t_project['id'] ) ) {
+						in_array( $f_project_id, \Core\Project\Hierarchy::get_all_subprojects( $t_project['id'] ) ) ||
+						!\Core\Access::has_project_level( $t_manage_access, $t_project['id'] ) ) {
 						continue;
 					} ?>
-					<option value="<?php echo $t_project['id'] ?>"><?php echo \Flickerbox\String::attribute( $t_project['name'] ) ?></option><?php
+					<option value="<?php echo $t_project['id'] ?>"><?php echo \Core\String::attribute( $t_project['name'] ) ?></option><?php
 				} # End looping over projects ?>
 				</select>
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_subproject' ); ?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_subproject' ); ?>" />
 			</fieldset>
 		</form>
 	<?php
 
-	$t_subproject_ids = \Flickerbox\Current_User::get_accessible_subprojects( $f_project_id, true );
+	$t_subproject_ids = \Core\Current_User::get_accessible_subprojects( $f_project_id, true );
 	if( array() != $t_subproject_ids ) { ?>
 	<form id="manage-project-update-subprojects-form" action="manage_proj_update_children.php" method="post">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_update_children' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_update_children' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<table>
 				<thead>
 					<tr class="row-category">
-						<th><?php echo \Flickerbox\Lang::get( 'name' ) ?></th>
-						<th><?php echo \Flickerbox\Lang::get( 'status' ) ?></th>
-						<th><?php echo \Flickerbox\Lang::get( 'enabled' ) ?></th>
-						<th><?php echo \Flickerbox\Lang::get( 'inherit' ) ?></th>
-						<th><?php echo \Flickerbox\Lang::get( 'view_status' ) ?></th>
-						<th><?php echo \Flickerbox\Lang::get( 'description' ) ?></th>
-						<th colspan="2"><?php echo \Flickerbox\Lang::get( 'actions' ) ?></th>
+						<th><?php echo \Core\Lang::get( 'name' ) ?></th>
+						<th><?php echo \Core\Lang::get( 'status' ) ?></th>
+						<th><?php echo \Core\Lang::get( 'enabled' ) ?></th>
+						<th><?php echo \Core\Lang::get( 'inherit' ) ?></th>
+						<th><?php echo \Core\Lang::get( 'view_status' ) ?></th>
+						<th><?php echo \Core\Lang::get( 'description' ) ?></th>
+						<th colspan="2"><?php echo \Core\Lang::get( 'actions' ) ?></th>
 					</tr>
 				</thead>
 				<tbody>
 <?php
 		foreach ( $t_subproject_ids as $t_subproject_id ) {
-			$t_subproject = \Flickerbox\Project::get_row( $t_subproject_id );
-			$t_inherit_parent = \Flickerbox\Project\Hierarchy::inherit_parent( $t_subproject_id, $f_project_id, true ); ?>
+			$t_subproject = \Core\Project::get_row( $t_subproject_id );
+			$t_inherit_parent = \Core\Project\Hierarchy::inherit_parent( $t_subproject_id, $f_project_id, true ); ?>
 					<tr>
 						<td>
 							<a href="manage_proj_edit_page.php?project_id=<?php echo $t_subproject['id'] ?>">
-								<?php echo \Flickerbox\String::display( $t_subproject['name'] ) ?>
+								<?php echo \Core\String::display( $t_subproject['name'] ) ?>
 							</a>
 						</td>
 						<td class="center">
-							<?php echo \Flickerbox\Helper::get_enum_element( 'project_status', $t_subproject['status'] ) ?>
+							<?php echo \Core\Helper::get_enum_element( 'project_status', $t_subproject['status'] ) ?>
 						</td>
 						<td class="center">
-							<?php echo \Flickerbox\Utility::trans_bool( $t_subproject['enabled'] ) ?>
+							<?php echo \Core\Utility::trans_bool( $t_subproject['enabled'] ) ?>
 						</td>
 						<td class="center">
 							<input type="checkbox"
@@ -225,19 +225,19 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 							/>
 						</td>
 						<td class="center">
-							<?php echo \Flickerbox\Helper::get_enum_element( 'project_view_state', $t_subproject['view_state'] ) ?>
+							<?php echo \Core\Helper::get_enum_element( 'project_view_state', $t_subproject['view_state'] ) ?>
 						</td>
 						<td>
-							<?php echo \Flickerbox\String::display_links( $t_subproject['description'] ) ?>
+							<?php echo \Core\String::display_links( $t_subproject['description'] ) ?>
 						</td>
 						<td class="center">
-							<?php \Flickerbox\Print_Util::bracket_link(
+							<?php \Core\Print_Util::bracket_link(
 								'manage_proj_edit_page.php?project_id=' . $t_subproject['id'],
-								\Flickerbox\Lang::get( 'edit_link' ) );
+								\Core\Lang::get( 'edit_link' ) );
 							?>
-							<?php \Flickerbox\Print_Util::bracket_link(
-								'manage_proj_subproj_delete.php?project_id=' . $f_project_id . '&subproject_id=' . $t_subproject['id'] . \Flickerbox\Form::security_param( 'manage_proj_subproj_delete' ),
-								\Flickerbox\Lang::get( 'unlink_link' ) );
+							<?php \Core\Print_Util::bracket_link(
+								'manage_proj_subproj_delete.php?project_id=' . $f_project_id . '&subproject_id=' . $t_subproject['id'] . \Core\Form::security_param( 'manage_proj_subproj_delete' ),
+								\Core\Lang::get( 'unlink_link' ) );
 							?>
 						</td>
 					</tr>
@@ -247,7 +247,7 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 				</tbody>
 			</table>
 			<span class="submit-button">
-				<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'update_subproject_inheritance' ) ?>" />
+				<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'update_subproject_inheritance' ) ?>" />
 			</span>
 		</fieldset>
 	</form>
@@ -262,26 +262,26 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 </div>
 
 <div id="categories" class="form-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'categories' ); ?></h2>
+	<h2><?php echo \Core\Lang::get( 'categories' ); ?></h2>
 	<form id="manage-project-category-copy-form" method="post" action="manage_proj_cat_copy.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_cat_copy' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_cat_copy' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<select name="other_project_id">
-				<?php \Flickerbox\Print_Util::project_option_list( null, false, $f_project_id ); ?>
+				<?php \Core\Print_Util::project_option_list( null, false, $f_project_id ); ?>
 			</select>
-			<input type="submit" name="copy_from" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_categories_from' ) ?>" />
-			<input type="submit" name="copy_to" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_categories_to' ) ?>" />
+			<input type="submit" name="copy_from" class="button" value="<?php echo \Core\Lang::get( 'copy_categories_from' ) ?>" />
+			<input type="submit" name="copy_to" class="button" value="<?php echo \Core\Lang::get( 'copy_categories_to' ) ?>" />
 		</fieldset>
 	</form><?php
-	$t_categories = \Flickerbox\Category::get_all_rows( $f_project_id );
+	$t_categories = \Core\Category::get_all_rows( $f_project_id );
 	if( count( $t_categories ) > 0 ) { ?>
 	<table>
 		<thead>
 			<tr class="row-category">
-				<th><?php echo \Flickerbox\Lang::get( 'category' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'assign_to' ) ?></th>
-				<th colspan="2" class="center"><?php echo \Flickerbox\Lang::get( 'actions' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'category' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'assign_to' ) ?></th>
+				<th colspan="2" class="center"><?php echo \Core\Lang::get( 'actions' ) ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -291,17 +291,17 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 			$t_inherited = ( $t_category['project_id'] != $f_project_id );
 ?>
 			<tr>
-				<td><?php echo \Flickerbox\String::display( \Flickerbox\Category::full_name( $t_id, $t_inherited, $f_project_id ) )  ?></td>
-				<td><?php echo \Flickerbox\Prepare::user_name( $t_category['user_id'] ) ?></td>
+				<td><?php echo \Core\String::display( \Core\Category::full_name( $t_id, $t_inherited, $f_project_id ) )  ?></td>
+				<td><?php echo \Core\Prepare::user_name( $t_category['user_id'] ) ?></td>
 				<td class="center">
 					<?php if( !$t_inherited ) {
 						$t_id = urlencode( $t_id );
 						$t_project_id = urlencode( $f_project_id );
 
-						\Flickerbox\Print_Util::button( 'manage_proj_cat_edit_page.php?id=' . $t_id . '&project_id=' . $t_project_id, \Flickerbox\Lang::get( 'edit_link' ) );
+						\Core\Print_Util::button( 'manage_proj_cat_edit_page.php?id=' . $t_id . '&project_id=' . $t_project_id, \Core\Lang::get( 'edit_link' ) );
 					} ?>
 					<?php if( !$t_inherited ) {
-						\Flickerbox\Print_Util::button( 'manage_proj_cat_delete.php?id=' . $t_id . '&project_id=' . $t_project_id, \Flickerbox\Lang::get( 'delete_link' ) );
+						\Core\Print_Util::button( 'manage_proj_cat_delete.php?id=' . $t_id . '&project_id=' . $t_project_id, \Core\Lang::get( 'delete_link' ) );
 					} ?>
 				</td>
 			</tr>
@@ -314,68 +314,68 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 
 	<form id="project-add-category-form" method="post" action="manage_proj_cat_add.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_cat_add' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_cat_add' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<input type="text" name="name" size="32" maxlength="128" />
-			<input type="submit" name="add_category" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_category_button' ) ?>" />
-			<input type="submit" name="add_and_edit_category" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_and_edit_category_button' ) ?>" />
+			<input type="submit" name="add_category" class="button" value="<?php echo \Core\Lang::get( 'add_category_button' ) ?>" />
+			<input type="submit" name="add_and_edit_category" class="button" value="<?php echo \Core\Lang::get( 'add_and_edit_category_button' ) ?>" />
 		</fieldset>
 	</form>
 </div>
 
 <div id="project-versions-div" class="form-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'versions' ); ?></h2>
+	<h2><?php echo \Core\Lang::get( 'versions' ); ?></h2>
 	<form id="manage-project-version-copy-form" method="post" action="manage_proj_ver_copy.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_ver_copy' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_ver_copy' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<select name="other_project_id">
-				<?php \Flickerbox\Print_Util::project_option_list( null, false, $f_project_id ); ?>
+				<?php \Core\Print_Util::project_option_list( null, false, $f_project_id ); ?>
 			</select>
-			<input type="submit" name="copy_from" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_versions_from' ) ?>" />
-			<input type="submit" name="copy_to" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_versions_to' ) ?>" />
+			<input type="submit" name="copy_from" class="button" value="<?php echo \Core\Lang::get( 'copy_versions_from' ) ?>" />
+			<input type="submit" name="copy_to" class="button" value="<?php echo \Core\Lang::get( 'copy_versions_to' ) ?>" />
 		</fieldset>
 	</form><?php
 
-	$t_versions = \Flickerbox\Version::get_all_rows( $f_project_id, null, null );
+	$t_versions = \Core\Version::get_all_rows( $f_project_id, null, null );
 	if( count( $t_versions ) > 0 ) { ?>
 	<table id="versions">
 		<thead>
 			<tr class="row-category">
-				<th><?php echo \Flickerbox\Lang::get( 'version' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'released' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'obsolete' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'timestamp' ) ?></th>
-				<th colspan="2"><?php echo \Flickerbox\Lang::get( 'actions' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'version' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'released' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'obsolete' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'timestamp' ) ?></th>
+				<th colspan="2"><?php echo \Core\Lang::get( 'actions' ) ?></th>
 			</tr>
 		</thead>
 		<tbody>
 <?php
 		foreach ( $t_versions as $t_version ) {
 			$t_inherited = ( $t_version['project_id'] != $f_project_id ?  true : false );
-			$t_name = \Flickerbox\Version::full_name( $t_version['id'], $t_inherited, $f_project_id );
+			$t_name = \Core\Version::full_name( $t_version['id'], $t_inherited, $f_project_id );
 			$t_released = $t_version['released'];
 			$t_obsolete = $t_version['obsolete'];
-			if( !\Flickerbox\Date::is_null( $t_version['date_order'] ) ) {
-				$t_date_formatted = date( \Flickerbox\Config::mantis_get( 'complete_date_format' ), $t_version['date_order'] );
+			if( !\Core\Date::is_null( $t_version['date_order'] ) ) {
+				$t_date_formatted = date( \Core\Config::mantis_get( 'complete_date_format' ), $t_version['date_order'] );
 			} else {
 				$t_date_formatted = ' ';
 			} ?>
 
 			<tr>
-				<td><?php echo \Flickerbox\String::display( $t_name ) ?></td>
-				<td><?php echo \Flickerbox\Utility::trans_bool( $t_released ) ?></td>
-				<td><?php echo \Flickerbox\Utility::trans_bool( $t_obsolete ) ?></td>
+				<td><?php echo \Core\String::display( $t_name ) ?></td>
+				<td><?php echo \Core\Utility::trans_bool( $t_released ) ?></td>
+				<td><?php echo \Core\Utility::trans_bool( $t_obsolete ) ?></td>
 				<td><?php echo $t_date_formatted ?></td>
 				<td><?php
-					$t_version_id = \Flickerbox\Version::get_id( $t_name, $f_project_id );
+					$t_version_id = \Core\Version::get_id( $t_name, $f_project_id );
 					if( !$t_inherited ) {
-						\Flickerbox\Print_Util::button( 'manage_proj_ver_edit_page.php?version_id=' . $t_version_id, \Flickerbox\Lang::get( 'edit_link' ) );
+						\Core\Print_Util::button( 'manage_proj_ver_edit_page.php?version_id=' . $t_version_id, \Core\Lang::get( 'edit_link' ) );
 					} ?>
 				</td>
 				<td><?php
 					if( !$t_inherited ) {
-						\Flickerbox\Print_Util::button( 'manage_proj_ver_delete.php?version_id=' . $t_version_id, \Flickerbox\Lang::get( 'delete_link' ) );
+						\Core\Print_Util::button( 'manage_proj_ver_delete.php?version_id=' . $t_version_id, \Core\Lang::get( 'delete_link' ) );
 					} ?>
 				</td>
 			</tr>
@@ -389,11 +389,11 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 ?>
 	<form id="manage-project-add-version-form" method="post" action="manage_proj_ver_add.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_ver_add' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_ver_add' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<input type="text" name="version" size="32" maxlength="64" />
-			<input type="submit" name="add_version" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_version_button' ) ?>" />
-			<input type="submit" name="add_and_edit_version" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_and_edit_version_button' ) ?>" />
+			<input type="submit" name="add_version" class="button" value="<?php echo \Core\Lang::get( 'add_version_button' ) ?>" />
+			<input type="submit" name="add_and_edit_version" class="button" value="<?php echo \Core\Lang::get( 'add_and_edit_version_button' ) ?>" />
 		</fieldset>
 	</form>
 </div><?php
@@ -401,20 +401,20 @@ if( \Flickerbox\Access::has_global_level( \Flickerbox\Config::mantis_get( 'delet
 # You need either global permissions or project-specific permissions to link
 #  custom fields
 $t_custom_field_count = count( custom_field_get_ids() );
-if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'custom_field_link_threshold' ), $f_project_id ) &&
+if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'custom_field_link_threshold' ), $f_project_id ) &&
 	( $t_custom_field_count > 0 ) ) {
 ?>
 <div id="customfields" class="form-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'custom_fields_setup' ) ?></h2>
+	<h2><?php echo \Core\Lang::get( 'custom_fields_setup' ) ?></h2>
 	<form id="manage-project-custom-field-copy-form" method="post" action="manage_proj_custom_field_copy.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_custom_field_copy' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_custom_field_copy' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<select name="other_project_id">
-				<?php \Flickerbox\Print_Util::project_option_list( null, false, $f_project_id ); ?>
+				<?php \Core\Print_Util::project_option_list( null, false, $f_project_id ); ?>
 			</select>
-			<input type="submit" name="copy_from" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_from' ) ?>" />
-			<input type="submit" name="copy_to" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_to' ) ?>" />
+			<input type="submit" name="copy_from" class="button" value="<?php echo \Core\Lang::get( 'copy_from' ) ?>" />
+			<input type="submit" name="copy_to" class="button" value="<?php echo \Core\Lang::get( 'copy_to' ) ?>" />
 		</fieldset>
 	</form><?php
 	$t_custom_fields = custom_field_get_linked_ids( $f_project_id );
@@ -423,9 +423,9 @@ if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'cust
 	<table cellspacing="1" cellpadding="5" border="1">
 		<thead>
 			<tr class="row-category">
-				<th><?php echo \Flickerbox\Lang::get( 'custom_field' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'custom_field_sequence' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'actions' ); ?></th>
+				<th><?php echo \Core\Lang::get( 'custom_field' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'custom_field_sequence' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'actions' ); ?></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -437,17 +437,17 @@ if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'cust
 				<td class="center">
 					<form method="post" action="manage_proj_custom_field_update.php">
 						<fieldset>
-							<?php echo \Flickerbox\Form::security_field( 'manage_proj_custom_field_update' ) ?>
+							<?php echo \Core\Form::security_field( 'manage_proj_custom_field_update' ) ?>
 							<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 							<input type="hidden" name="field_id" value="<?php echo $t_field_id ?>" />
 							<input type="text" name="sequence" value="<?php echo custom_field_get_sequence( $t_field_id, $f_project_id ) ?>" size="2" />
-							<input type="submit" class="button-small" value="<?php echo \Flickerbox\Lang::get( 'update' ) ?>" />
+							<input type="submit" class="button-small" value="<?php echo \Core\Lang::get( 'update' ) ?>" />
 						</fieldset>
 					</form>
 				</td>
 				<td class="center"><?php
 					# You need global permissions to edit custom field defs
-					\Flickerbox\Print_Util::button( 'manage_proj_custom_field_remove.php?field_id=' . $t_field_id . '&project_id=' . $f_project_id, \Flickerbox\Lang::get( 'remove_link' ) ); ?>
+					\Core\Print_Util::button( 'manage_proj_custom_field_remove.php?field_id=' . $t_field_id . '&project_id=' . $f_project_id, \Core\Lang::get( 'remove_link' ) ); ?>
 				</td>
 			</tr>
 <?php
@@ -461,7 +461,7 @@ if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'cust
 	if( $t_custom_field_count > $t_linked_count ) { ?>
 	<form method="post" action="manage_proj_custom_field_add_existing.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_custom_field_add_existing' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_custom_field_add_existing' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<select name="field_id">
 				<?php
@@ -471,64 +471,64 @@ if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'cust
 					{
 						if( !custom_field_is_linked( $t_field_id, $f_project_id ) ) {
 							$t_desc = custom_field_get_definition( $t_field_id );
-							echo '<option value="' . $t_field_id . '">' . \Flickerbox\String::attribute( \Flickerbox\Lang::get_defaulted( $t_desc['name'] ) ) . '</option>' ;
+							echo '<option value="' . $t_field_id . '">' . \Core\String::attribute( \Core\Lang::get_defaulted( $t_desc['name'] ) ) . '</option>' ;
 						}
 					}
 				?>
 			</select>
-			<input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_existing_custom_field' ) ?>" />
+			<input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_existing_custom_field' ) ?>" />
 		</fieldset>
 	</form><?php
 	} ?>
 </div><?php
 }
 
-\Flickerbox\Event::signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
+\Core\Event::signal( 'EVENT_MANAGE_PROJECT_PAGE', array( $f_project_id ) );
 ?>
 
 <div class="important-msg center"><?php
-	if( VS_PUBLIC == \Flickerbox\Project::get_field( $f_project_id, 'view_state' ) ) {
-		echo \Flickerbox\Lang::get( 'public_project_msg' );
+	if( VS_PUBLIC == \Core\Project::get_field( $f_project_id, 'view_state' ) ) {
+		echo \Core\Lang::get( 'public_project_msg' );
 	} else {
-		echo \Flickerbox\Lang::get( 'private_project_msg' );
+		echo \Core\Lang::get( 'private_project_msg' );
 	} ?>
 </div>
 
 <div id="manage-project-users-div" class="form-container">
-	<h2><?php echo \Flickerbox\Lang::get( 'manage_accounts_title' ) ?></h2>
+	<h2><?php echo \Core\Lang::get( 'manage_accounts_title' ) ?></h2>
 	<form id="manage-project-users-copy-form" method="post" action="manage_proj_user_copy.php">
 		<fieldset>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_user_copy' ) ?>
+			<?php echo \Core\Form::security_field( 'manage_proj_user_copy' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<select name="other_project_id">
-				<?php \Flickerbox\Print_Util::project_option_list( null, false, $f_project_id ); ?>
+				<?php \Core\Print_Util::project_option_list( null, false, $f_project_id ); ?>
 			</select>
 			<span class="action-button">
-				<input type="submit" name="copy_from" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_users_from' ) ?>" />
-				<input type="submit" name="copy_to" class="button" value="<?php echo \Flickerbox\Lang::get( 'copy_users_to' ) ?>" />
+				<input type="submit" name="copy_from" class="button" value="<?php echo \Core\Lang::get( 'copy_users_from' ) ?>" />
+				<input type="submit" name="copy_to" class="button" value="<?php echo \Core\Lang::get( 'copy_users_to' ) ?>" />
 			</span>
 		</fieldset>
 	</form>
 	<table>
 		<thead>
 			<tr class="row-category">
-				<th><?php echo \Flickerbox\Lang::get( 'username' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'email' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'access_level' ) ?></th>
-				<th><?php echo \Flickerbox\Lang::get( 'actions' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'username' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'email' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'access_level' ) ?></th>
+				<th><?php echo \Core\Lang::get( 'actions' ) ?></th>
 			</tr>
 		</thead>
 		<tbody>
 <?php
-	$t_users = \Flickerbox\Project::get_all_user_rows( $f_project_id, ANYBODY, $f_show_global_users );
+	$t_users = \Core\Project::get_all_user_rows( $f_project_id, ANYBODY, $f_show_global_users );
 	$t_display = array();
 	$t_sort = array();
 	foreach ( $t_users as $t_user ) {
-		$t_user_name = \Flickerbox\String::attribute( $t_user['username'] );
+		$t_user_name = \Core\String::attribute( $t_user['username'] );
 		$t_sort_name = utf8_strtolower( $t_user_name );
-		if( ( isset( $t_user['realname'] ) ) && ( $t_user['realname'] > '' ) && ( ON == \Flickerbox\Config::mantis_get( 'show_realname' ) ) ) {
-			$t_user_name = \Flickerbox\String::attribute( $t_user['realname'] ) . ' (' . $t_user_name . ')';
-			if( ON == \Flickerbox\Config::mantis_get( 'sort_by_last_name' ) ) {
+		if( ( isset( $t_user['realname'] ) ) && ( $t_user['realname'] > '' ) && ( ON == \Core\Config::mantis_get( 'show_realname' ) ) ) {
+			$t_user_name = \Core\String::attribute( $t_user['realname'] ) . ' (' . $t_user_name . ')';
+			if( ON == \Core\Config::mantis_get( 'sort_by_last_name' ) ) {
 				$t_sort_name_bits = explode( ' ', utf8_strtolower( $t_user_name ), 2 );
 				$t_sort_name = $t_sort_name_bits[1] . ', ' . $t_sort_name_bits[1];
 			} else {
@@ -555,17 +555,17 @@ if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'cust
 				</td>
 				<td>
 				<?php
-					$t_email = \Flickerbox\User::get_email( $t_user['id'] );
-					\Flickerbox\Print_Util::email_link( $t_email, $t_email );
+					$t_email = \Core\User::get_email( $t_user['id'] );
+					\Core\Print_Util::email_link( $t_email, $t_email );
 				?>
 				</td>
-				<td><?php echo \Flickerbox\Helper::get_enum_element( 'access_levels', $t_user['access_level'] ) ?></td>
+				<td><?php echo \Core\Helper::get_enum_element( 'access_levels', $t_user['access_level'] ) ?></td>
 				<td class="center"><?php
 					# You need global or project-specific permissions to remove users
 					#  from this project
-					if( $t_can_manage_users && \Flickerbox\Access::has_project_level( $t_user['access_level'], $f_project_id ) ) {
-						if( \Flickerbox\Project::includes_user( $f_project_id, $t_user['id'] ) ) {
-							\Flickerbox\Print_Util::button( 'manage_proj_user_remove.php?project_id=' . $f_project_id . '&user_id=' . $t_user['id'], \Flickerbox\Lang::get( 'remove_link' ) );
+					if( $t_can_manage_users && \Core\Access::has_project_level( $t_user['access_level'], $f_project_id ) ) {
+						if( \Core\Project::includes_user( $f_project_id, $t_user['id'] ) ) {
+							\Core\Print_Util::button( 'manage_proj_user_remove.php?project_id=' . $f_project_id . '&user_id=' . $t_user['id'], \Core\Lang::get( 'remove_link' ) );
 							$t_removable_users_exist = true;
 						}
 					} ?>
@@ -580,28 +580,28 @@ if( \Flickerbox\Access::has_project_level( \Flickerbox\Config::mantis_get( 'cust
 	# You need global or project-specific permissions to remove users
 	#  from this project
 	if( !$f_show_global_users ) {
-		\Flickerbox\Print_Util::button( 'manage_proj_edit_page.php?project_id=' . $f_project_id . '&show_global_users=true', \Flickerbox\Lang::get( 'show_global_users' ) );
+		\Core\Print_Util::button( 'manage_proj_edit_page.php?project_id=' . $f_project_id . '&show_global_users=true', \Core\Lang::get( 'show_global_users' ) );
 	} else {
-		\Flickerbox\Print_Util::button( 'manage_proj_edit_page.php?project_id=' . $f_project_id, \Flickerbox\Lang::get( 'hide_global_users' ) );
+		\Core\Print_Util::button( 'manage_proj_edit_page.php?project_id=' . $f_project_id, \Core\Lang::get( 'hide_global_users' ) );
 	}
 
 	if( $t_removable_users_exist ) {
 		echo '&#160;';
-		\Flickerbox\Print_Util::button( 'manage_proj_user_remove.php?project_id=' . $f_project_id, \Flickerbox\Lang::get( 'remove_all_link' ) );
+		\Core\Print_Util::button( 'manage_proj_user_remove.php?project_id=' . $f_project_id, \Core\Lang::get( 'remove_all_link' ) );
 	}
 
 # We want to allow people with global permissions and people with high enough
 #  permissions on the project we are editing
 if( $t_can_manage_users ) {
-	$t_users = \Flickerbox\User::get_unassigned_by_project_id( $f_project_id );
+	$t_users = \Core\User::get_unassigned_by_project_id( $f_project_id );
 	if( count( $t_users ) > 0 ) { ?>
 	<form id="manage-project-add-user-form" method="post" action="manage_proj_user_add.php">
 		<fieldset>
-			<legend><span><?php echo \Flickerbox\Lang::get( 'add_user_title' ) ?></span></legend>
-			<?php echo \Flickerbox\Form::security_field( 'manage_proj_user_add' ) ?>
+			<legend><span><?php echo \Core\Lang::get( 'add_user_title' ) ?></span></legend>
+			<?php echo \Core\Form::security_field( 'manage_proj_user_add' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $f_project_id ?>" />
 			<div class="field-container">
-				<label for="project-add-users-username"><span><?php echo \Flickerbox\Lang::get( 'username' ) ?></span></label>
+				<label for="project-add-users-username"><span><?php echo \Core\Lang::get( 'username' ) ?></span></label>
 				<span class="select">
 					<select id="project-add-users-username" name="user_id[]" multiple="multiple" size="10"><?php
 						foreach( $t_users as $t_user_id=>$t_display_name ) {
@@ -612,16 +612,16 @@ if( $t_can_manage_users ) {
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
-				<label for="project-add-users-access-level"><span><?php echo \Flickerbox\Lang::get( 'access_level' ) ?></span></label>
+				<label for="project-add-users-access-level"><span><?php echo \Core\Lang::get( 'access_level' ) ?></span></label>
 				<span class="select">
 					<select id="project-add-users-access-level" name="access_level"><?php
 						# only access levels that are less than or equal current user access level for current project
-						\Flickerbox\Print_Util::project_access_levels_option_list( \Flickerbox\Config::mantis_get( 'default_new_account_access_level' ), $f_project_id ); ?>
+						\Core\Print_Util::project_access_levels_option_list( \Core\Config::mantis_get( 'default_new_account_access_level' ), $f_project_id ); ?>
 					</select>
 				</span>
 				<span class="label-style"></span>
 			</div>
-			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Flickerbox\Lang::get( 'add_user_button' ) ?>" /></span>
+			<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'add_user_button' ) ?>" /></span>
 		</fieldset>
 	</form>
 <?php
@@ -630,4 +630,4 @@ if( $t_can_manage_users ) {
 ?>
 </div><?php
 
-\Flickerbox\HTML::page_bottom();
+\Core\HTML::page_bottom();

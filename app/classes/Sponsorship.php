@@ -1,5 +1,5 @@
 <?php
-namespace Flickerbox;
+namespace Core;
 
 
 # MantisBT - A PHP based bugtracking system
@@ -59,16 +59,16 @@ class Sponsorship
 			return $g_cache_sponsorships[$c_sponsorship_id];
 		}
 	
-		$t_query = 'SELECT * FROM {sponsorship} WHERE id=' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_sponsorship_id ) );
+		$t_query = 'SELECT * FROM {sponsorship} WHERE id=' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_sponsorship_id ) );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			$g_cache_sponsorships[$c_sponsorship_id] = false;
 	
 			if( $p_trigger_errors ) {
-				\Flickerbox\Error::parameters( $p_sponsorship_id );
+				\Core\Error::parameters( $p_sponsorship_id );
 				trigger_error( ERROR_SPONSORSHIP_NOT_FOUND, ERROR );
 			} else {
 				return false;
@@ -102,7 +102,7 @@ class Sponsorship
 	 * @return boolean
 	 */
 	static function exists( $p_sponsorship_id ) {
-		return \Flickerbox\Sponsorship::cache_row( $p_sponsorship_id, false ) !== false;
+		return \Core\Sponsorship::cache_row( $p_sponsorship_id, false ) !== false;
 	}
 	
 	/**
@@ -114,15 +114,15 @@ class Sponsorship
 	 */
 	static function get_id( $p_bug_id, $p_user_id = null ) {
 		if( $p_user_id === null ) {
-			$c_user_id = \Flickerbox\Auth::get_current_user_id();
+			$c_user_id = \Core\Auth::get_current_user_id();
 		} else {
 			$c_user_id = (int)$p_user_id;
 		}
 	
-		$t_query = 'SELECT id FROM {sponsorship} WHERE bug_id=' . \Flickerbox\Database::param() . ' AND user_id = ' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( (int)$p_bug_id, $c_user_id ), 1 );
+		$t_query = 'SELECT id FROM {sponsorship} WHERE bug_id=' . \Core\Database::param() . ' AND user_id = ' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( (int)$p_bug_id, $c_user_id ), 1 );
 	
-		$t_row = \Flickerbox\Database::fetch_array( $t_result );
+		$t_row = \Core\Database::fetch_array( $t_result );
 	
 		if( !$t_row ) {
 			return false;
@@ -137,7 +137,7 @@ class Sponsorship
 	 * @return array
 	 */
 	static function get( $p_sponsorship_id ) {
-		$t_row = \Flickerbox\Sponsorship::cache_row( $p_sponsorship_id );
+		$t_row = \Core\Sponsorship::cache_row( $p_sponsorship_id );
 	
 		$t_sponsorship_data = new SponsorShipData;
 		$t_row_keys = array_keys( $t_row );
@@ -170,11 +170,11 @@ class Sponsorship
 			return $s_cache_sponsorship_bug_ids[$c_bug_id];
 		}
 	
-		$t_query = 'SELECT * FROM {sponsorship} WHERE bug_id = ' . \Flickerbox\Database::param();
-		$t_result = \Flickerbox\Database::query( $t_query, array( $c_bug_id ) );
+		$t_query = 'SELECT * FROM {sponsorship} WHERE bug_id = ' . \Core\Database::param();
+		$t_result = \Core\Database::query( $t_query, array( $c_bug_id ) );
 	
 		$t_sponsorship_ids = array();
-		while( $t_row = \Flickerbox\Database::fetch_array( $t_result ) ) {
+		while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
 			$t_sponsorship_ids[] = $t_row['id'];
 			$g_cache_sponsorships[(int)$t_row['id']] = $t_row;
 		}
@@ -195,12 +195,12 @@ class Sponsorship
 			$t_total = 0;
 	
 			foreach( $p_sponsorship_id as $t_id ) {
-				$t_total += \Flickerbox\Sponsorship::get_amount( $t_id );
+				$t_total += \Core\Sponsorship::get_amount( $t_id );
 			}
 	
 			return $t_total;
 		} else {
-			$t_sponsorship = \Flickerbox\Sponsorship::get( $p_sponsorship_id );
+			$t_sponsorship = \Core\Sponsorship::get( $p_sponsorship_id );
 			return $t_sponsorship->amount;
 		}
 	}
@@ -210,7 +210,7 @@ class Sponsorship
 	 * @return string
 	 */
 	static function get_currency() {
-		return \Flickerbox\Config::mantis_get( 'sponsorship_currency' );
+		return \Core\Config::mantis_get( 'sponsorship_currency' );
 	}
 	
 	/**
@@ -220,7 +220,7 @@ class Sponsorship
 	 * @todo add some currency formatting in the future
 	 */
 	static function format_amount( $p_amount ) {
-		$t_currency = \Flickerbox\Sponsorship::get_currency();
+		$t_currency = \Core\Sponsorship::get_currency();
 		return $t_currency . ' ' . $p_amount;
 	}
 	
@@ -231,9 +231,9 @@ class Sponsorship
 	 * @return void
 	 */
 	static function update_bug( $p_bug_id ) {
-		$t_total_amount = \Flickerbox\Sponsorship::get_amount( \Flickerbox\Sponsorship::get_all_ids( $p_bug_id ) );
-		\Flickerbox\Bug::set_field( $p_bug_id, 'sponsorship_total', $t_total_amount );
-		\Flickerbox\Bug::update_date( $p_bug_id );
+		$t_total_amount = \Core\Sponsorship::get_amount( \Core\Sponsorship::get_all_ids( $p_bug_id ) );
+		\Core\Bug::set_field( $p_bug_id, 'sponsorship_total', $t_total_amount );
+		\Core\Bug::update_date( $p_bug_id );
 	}
 	
 	/**
@@ -243,16 +243,16 @@ class Sponsorship
 	 * @param SponsorshipData $p_sponsorship The sponsorship data object to set.
 	 * @return integer
 	 */
-	static function set( \Flickerbox\SponsorshipData $p_sponsorship ) {
-		$t_min_sponsorship = \Flickerbox\Config::mantis_get( 'minimum_sponsorship_amount' );
+	static function set( \Core\SponsorshipData $p_sponsorship ) {
+		$t_min_sponsorship = \Core\Config::mantis_get( 'minimum_sponsorship_amount' );
 		if( $p_sponsorship->amount < $t_min_sponsorship ) {
-			\Flickerbox\Error::parameters( $p_sponsorship->amount, $t_min_sponsorship );
+			\Core\Error::parameters( $p_sponsorship->amount, $t_min_sponsorship );
 			trigger_error( ERROR_SPONSORSHIP_AMOUNT_TOO_LOW, ERROR );
 		}
 	
 		# if id == 0, check if the specified user is already sponsoring the bug, if so, overwrite
 		if( $p_sponsorship->id == 0 ) {
-			$t_sponsorship_id = \Flickerbox\Sponsorship::get_id( $p_sponsorship->bug_id, $p_sponsorship->user_id );
+			$t_sponsorship_id = \Core\Sponsorship::get_id( $p_sponsorship->bug_id, $p_sponsorship->user_id );
 			if( $t_sponsorship_id !== false ) {
 				$p_sponsorship->id = $t_sponsorship_id;
 			}
@@ -264,7 +264,7 @@ class Sponsorship
 		$c_amount = (int)$p_sponsorship->amount;
 		$c_logo = $p_sponsorship->logo;
 		$c_url = $p_sponsorship->url;
-		$c_now = \Flickerbox\Database::now();
+		$c_now = \Core\Database::now();
 	
 		# if new sponsorship
 		if( $c_id == 0 ) {
@@ -272,15 +272,15 @@ class Sponsorship
 			$t_query = 'INSERT INTO {sponsorship}
 					    ( bug_id, user_id, amount, logo, url, date_submitted, last_updated )
 					  VALUES
-					    (' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ',' . \Flickerbox\Database::param() . ')';
+					    (' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ',' . \Core\Database::param() . ')';
 	
-			\Flickerbox\Database::query( $t_query, array( $c_bug_id, $c_user_id, $c_amount, $c_logo, $c_url, $c_now, $c_now ) );
+			\Core\Database::query( $t_query, array( $c_bug_id, $c_user_id, $c_amount, $c_logo, $c_url, $c_now, $c_now ) );
 	
-			$t_sponsorship_id = \Flickerbox\Database::insert_id( \Flickerbox\Database::get_table( 'sponsorship' ) );
+			$t_sponsorship_id = \Core\Database::insert_id( \Core\Database::get_table( 'sponsorship' ) );
 	
-			\Flickerbox\History::log_event_special( $c_bug_id, BUG_ADD_SPONSORSHIP, $c_user_id, $c_amount );
+			\Core\History::log_event_special( $c_bug_id, BUG_ADD_SPONSORSHIP, $c_user_id, $c_amount );
 		} else {
-			$t_old_amount = \Flickerbox\Sponsorship::get_amount( $c_id );
+			$t_old_amount = \Core\Sponsorship::get_amount( $c_id );
 			$t_sponsorship_id = $c_id;
 	
 			if( $t_old_amount == $c_amount ) {
@@ -289,28 +289,28 @@ class Sponsorship
 	
 			# Update
 			$t_query = 'UPDATE {sponsorship}
-						SET	bug_id = ' . \Flickerbox\Database::param() . ',
-							user_id = ' . \Flickerbox\Database::param() . ',
-							amount = ' . \Flickerbox\Database::param() . ',
-							logo = ' . \Flickerbox\Database::param() . ',
-							url = ' . \Flickerbox\Database::param() . ',
-							last_updated = ' . \Flickerbox\Database::param() . '
-						WHERE	id = ' . \Flickerbox\Database::param();
+						SET	bug_id = ' . \Core\Database::param() . ',
+							user_id = ' . \Core\Database::param() . ',
+							amount = ' . \Core\Database::param() . ',
+							logo = ' . \Core\Database::param() . ',
+							url = ' . \Core\Database::param() . ',
+							last_updated = ' . \Core\Database::param() . '
+						WHERE	id = ' . \Core\Database::param();
 	
-			\Flickerbox\Sponsorship::clear_cache( $c_id );
+			\Core\Sponsorship::clear_cache( $c_id );
 	
-			\Flickerbox\Database::query( $t_query, array( $c_bug_id, $c_user_id, $c_amount, $c_logo, $c_url, $c_now, $c_id ) );
+			\Core\Database::query( $t_query, array( $c_bug_id, $c_user_id, $c_amount, $c_logo, $c_url, $c_now, $c_id ) );
 	
-			\Flickerbox\History::log_event_special( $c_bug_id, BUG_UPDATE_SPONSORSHIP, $c_user_id, $c_amount );
+			\Core\History::log_event_special( $c_bug_id, BUG_UPDATE_SPONSORSHIP, $c_user_id, $c_amount );
 		}
 	
-		\Flickerbox\Sponsorship::update_bug( $c_bug_id );
-		\Flickerbox\Bug::monitor( $c_bug_id, $c_user_id );
+		\Core\Sponsorship::update_bug( $c_bug_id );
+		\Core\Bug::monitor( $c_bug_id, $c_user_id );
 	
 		if( $c_id == 0 ) {
-			\Flickerbox\Email::generic( $c_bug_id, 'sponsor', 'email_notification_title_for_action_sponsorship_added' );
+			\Core\Email::generic( $c_bug_id, 'sponsor', 'email_notification_title_for_action_sponsorship_added' );
 		} else {
-			\Flickerbox\Email::generic( $c_bug_id, 'sponsor', 'email_notification_title_for_action_sponsorship_updated' );
+			\Core\Email::generic( $c_bug_id, 'sponsor', 'email_notification_title_for_action_sponsorship_updated' );
 		}
 	
 		return $t_sponsorship_id;
@@ -322,10 +322,10 @@ class Sponsorship
 	 * @return void
 	 */
 	static function delete_all( $p_bug_id ) {
-		$t_query = 'DELETE FROM {sponsorship} WHERE bug_id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_bug_id ) );
+		$t_query = 'DELETE FROM {sponsorship} WHERE bug_id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_bug_id ) );
 	
-		\Flickerbox\Sponsorship::clear_cache( );
+		\Core\Sponsorship::clear_cache( );
 	}
 	
 	/**
@@ -338,23 +338,23 @@ class Sponsorship
 		# handle the case of array of ids
 		if( is_array( $p_sponsorship_id ) ) {
 			foreach( $p_sponsorship_id as $t_id ) {
-				\Flickerbox\Sponsorship::delete( $t_id );
+				\Core\Sponsorship::delete( $t_id );
 			}
 			return;
 		}
 	
-		$t_sponsorship = \Flickerbox\Sponsorship::get( $p_sponsorship_id );
+		$t_sponsorship = \Core\Sponsorship::get( $p_sponsorship_id );
 	
 		# Delete the bug entry
-		$t_query = 'DELETE FROM {sponsorship} WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( (int)$p_sponsorship_id ) );
+		$t_query = 'DELETE FROM {sponsorship} WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( (int)$p_sponsorship_id ) );
 	
-		\Flickerbox\Sponsorship::clear_cache( $p_sponsorship_id );
+		\Core\Sponsorship::clear_cache( $p_sponsorship_id );
 	
-		\Flickerbox\History::log_event_special( $t_sponsorship->bug_id, BUG_DELETE_SPONSORSHIP, $t_sponsorship->user_id, $t_sponsorship->amount );
-		\Flickerbox\Sponsorship::update_bug( $t_sponsorship->bug_id );
+		\Core\History::log_event_special( $t_sponsorship->bug_id, BUG_DELETE_SPONSORSHIP, $t_sponsorship->user_id, $t_sponsorship->amount );
+		\Core\Sponsorship::update_bug( $t_sponsorship->bug_id );
 	
-		\Flickerbox\Email::generic( $t_sponsorship->bug_id, 'sponsor', 'A sponsorship of the following issue was withdrawn.' );
+		\Core\Email::generic( $t_sponsorship->bug_id, 'sponsor', 'A sponsorship of the following issue was withdrawn.' );
 	}
 	
 	/**
@@ -364,13 +364,13 @@ class Sponsorship
 	 * @return boolean
 	 */
 	static function update_paid( $p_sponsorship_id, $p_paid ) {
-		$t_sponsorship = \Flickerbox\Sponsorship::get( $p_sponsorship_id );
+		$t_sponsorship = \Core\Sponsorship::get( $p_sponsorship_id );
 	
-		$t_query = 'UPDATE {sponsorship} SET last_updated=' . \Flickerbox\Database::param() . ', paid=' . \Flickerbox\Database::param() . ' WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now(), (int)$p_paid, (int)$p_sponsorship_id ) );
+		$t_query = 'UPDATE {sponsorship} SET last_updated=' . \Core\Database::param() . ', paid=' . \Core\Database::param() . ' WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( \Core\Database::now(), (int)$p_paid, (int)$p_sponsorship_id ) );
 	
-		\Flickerbox\History::log_event_special( $t_sponsorship->bug_id, BUG_PAID_SPONSORSHIP, $t_sponsorship->user_id, $p_paid );
-		\Flickerbox\Sponsorship::clear_cache( $p_sponsorship_id );
+		\Core\History::log_event_special( $t_sponsorship->bug_id, BUG_PAID_SPONSORSHIP, $t_sponsorship->user_id, $p_paid );
+		\Core\Sponsorship::clear_cache( $p_sponsorship_id );
 	
 		return true;
 	}
@@ -381,10 +381,10 @@ class Sponsorship
 	 * @return boolean
 	 */
 	static function update_date( $p_sponsorship_id ) {
-		$t_query = 'UPDATE {sponsorship} SET last_updated=' . \Flickerbox\Database::param() . ' WHERE id=' . \Flickerbox\Database::param();
-		\Flickerbox\Database::query( $t_query, array( \Flickerbox\Database::now(), (int)$p_sponsorship_id ) );
+		$t_query = 'UPDATE {sponsorship} SET last_updated=' . \Core\Database::param() . ' WHERE id=' . \Core\Database::param();
+		\Core\Database::query( $t_query, array( \Core\Database::now(), (int)$p_sponsorship_id ) );
 	
-		\Flickerbox\Sponsorship::clear_cache( $p_sponsorship_id );
+		\Core\Sponsorship::clear_cache( $p_sponsorship_id );
 	
 		return true;
 	}
