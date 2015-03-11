@@ -43,7 +43,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_user_create' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
 $f_username        = \Core\GPC::get_string( 'username' );
@@ -97,7 +97,7 @@ if( ( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) && ( ON == \Core
 \Core\Lang::push( \Core\Config::mantis_get( 'default_language' ) );
 
 # create the user
-$t_admin_name = \Core\User::get_name( auth_get_current_user_id() );
+$t_admin_name = \Core\User::get_name( \Core\Auth::get_current_user_id() );
 $t_cookie = \Core\User::create( $f_username, $f_password, $f_email, $f_access_level, $f_protected, $f_enabled, $t_realname, $t_admin_name );
 
 # set language back to user language

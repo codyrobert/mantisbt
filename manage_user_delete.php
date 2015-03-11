@@ -40,7 +40,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_user_delete' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
 $f_user_id	= \Core\GPC::get_int( 'user_id' );
@@ -61,7 +61,7 @@ if( \Core\User::is_administrator( $f_user_id ) &&
 # If an administrator is trying to delete their own account, use
 # account_delete.php instead as it is handles logging out and redirection
 # of users who have just deleted their own accounts.
-if( auth_get_current_user_id() == $f_user_id ) {
+if( \Core\Auth::get_current_user_id() == $f_user_id ) {
 	\Core\Form::security_purge( 'manage_user_delete' );
 	\Core\Print_Util::header_redirect( 'account_delete.php?account_delete_token=' . \Core\Form::security_token( 'account_delete' ), true, false );
 }

@@ -52,7 +52,7 @@ $t_user = \Core\User::get_row( $f_user_id );
 # This page is currently called from the manage_* namespace and thus we
 # have to allow authorised users to update the accounts of other users.
 # TODO: split this functionality into manage_user_prefs_update.php
-if( auth_get_current_user_id() != $f_user_id ) {
+if( \Core\Auth::get_current_user_id() != $f_user_id ) {
 	\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 	\Core\Access::ensure_global_level( $t_user['access_level'] );
 } else {

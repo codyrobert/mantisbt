@@ -38,7 +38,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_plugin_install' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 $f_basename = \Core\GPC::get_string( 'name' );

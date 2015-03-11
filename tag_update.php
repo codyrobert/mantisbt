@@ -43,7 +43,7 @@ $f_tag_id = \Core\GPC::get_int( 'tag_id' );
 $t_tag_row = \Core\Tag::get( $f_tag_id );
 
 if( !( \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) )
-	|| ( auth_get_current_user_id() == $t_tag_row['user_id'] )
+	|| ( \Core\Auth::get_current_user_id() == $t_tag_row['user_id'] )
 		&& \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
 	\Core\Access::denied();
 }

@@ -91,7 +91,7 @@ class RSS
 			return false;
 		}
 	
-		if( !auth_attempt_script_login( $p_username ) ) {
+		if( !\Core\Auth::attempt_script_login( $p_username ) ) {
 			return false;
 		}
 	

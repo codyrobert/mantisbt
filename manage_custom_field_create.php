@@ -40,7 +40,7 @@ require_api( 'custom_field_api.php' );
 
 \Core\Form::security_validate( 'manage_custom_field_create' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 
 $f_name	= \Core\GPC::get_string( 'name' );

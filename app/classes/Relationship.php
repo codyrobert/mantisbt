@@ -532,8 +532,8 @@ class Relationship
 	
 		# get the information from the related bug and prepare the link
 		$t_bug = \Core\Bug::get( $t_related_bug_id, false );
-		$t_status_string = \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
-		$t_resolution_string = \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id );
+		$t_status_string = \Core\Helper::get_enum_element( 'status', $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id );
+		$t_resolution_string = \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, \Core\Auth::get_current_user_id(), $t_bug->project_id );
 	
 		$t_relationship_info_html = $t_td . \Core\String::no_break( $t_relationship_descr ) . '&#160;</td>';
 		if( $p_html_preview == false ) {
@@ -585,7 +585,7 @@ class Relationship
 	
 		if( $p_html_preview == false ) {
 			# choose color based on status
-			$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+			$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id );
 	
 			$t_relationship_info_html = '<tr class="' . $t_status_label . '">' . $t_relationship_info_html . '</tr>' . "\n";
 		} else {

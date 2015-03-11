@@ -54,7 +54,7 @@ if( \Core\Profile::is_global( $f_profile_id ) ) {
 
 	$t_row = \Core\Profile::get_row( ALL_USERS, $f_profile_id );
 } else {
-	$t_row = \Core\Profile::get_row( auth_get_current_user_id(), $f_profile_id );
+	$t_row = \Core\Profile::get_row( \Core\Auth::get_current_user_id(), $f_profile_id );
 }
 
 extract( $t_row, EXTR_PREFIX_ALL, 'v' );

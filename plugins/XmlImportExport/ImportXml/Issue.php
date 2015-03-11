@@ -73,7 +73,7 @@ class ImportXml_Issue implements ImportXml_Interface {
 	public function process( XMLreader $t_reader ) {
 		# print "\nImportIssue process()\n";
 		$t_project_id = \Core\Helper::get_current_project(); # TODO: category_get_id_by_name could work by default on current project
-		$t_user_id = auth_get_current_user_id( );
+		$t_user_id = \Core\Auth::get_current_user_id( );
 
 		$t_custom_fields = array();
 		$t_bugnotes = array();

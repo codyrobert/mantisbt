@@ -233,7 +233,7 @@ function mc_enum_get( $p_username, $p_password, $p_enumeration ) {
 function mci_explode_to_objectref( $p_enumeration_name ) {
 	$t_config_var_name = $p_enumeration_name . '_enum_string';
 	$t_config_var_value = \Core\Config::mantis_get( $t_config_var_name );
-	$t_translated_values = \Core\Lang::get( $t_config_var_name, mci_get_user_lang( auth_get_current_user_id() ) );
+	$t_translated_values = \Core\Lang::get( $t_config_var_name, mci_get_user_lang( \Core\Auth::get_current_user_id() ) );
 
 	$t_enum_values = \Core\MantisEnum::getValues( $t_config_var_value );
 

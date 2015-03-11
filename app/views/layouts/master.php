@@ -7,6 +7,7 @@ use Core\Event;
 use Core\Helper;
 use Core\HTML;
 use Core\String;
+use Core\URL;
 use Core\Utility;
 ?><!doctype html>
 <html class="no-js" lang="">
@@ -50,9 +51,25 @@ use Core\Utility;
 	<?php
 	global $g_error_send_page_header;
 	$g_error_send_page_header = false;
+	?>
 	
-	HTML::top_banner();
+	<header id="top">
 	
+		<h1<?php if (Config::mantis_get('logo_image')): ?> class="logo" style="background-image:url('<?php echo URL::get(Config::mantis_get('logo_image')); ?>');"<?php endif; ?>>
+			<a href="<?php echo URL::home(); ?>"><?php echo Config::get('app')['site_name']; ?></a>
+		</h1>
+		
+		<?php
+		if(Auth::is_user_authenticated()) 
+		{
+			$this->insert('Partials/Menus/Main_Menu');
+			$this->insert('Partials/Forms/Jump_To_Bug');
+		}
+		?>
+		
+	</header>
+	
+	<?php
 	if( Auth::is_user_authenticated() ) {
 		HTML::login_info();
 
@@ -62,7 +79,6 @@ use Core\Utility;
 		}
 	}
 	
-	HTML::print_menu();
 	echo '<div id="content">', "\n";
 	Event::signal( 'EVENT_LAYOUT_CONTENT_BEGIN' );
 	?>

@@ -42,7 +42,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_proj_create' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'create_project_threshold' ) );
 
 $f_name 		= \Core\GPC::get_string( 'name' );

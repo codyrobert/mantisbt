@@ -10,4 +10,6 @@ abstract class Controller
 	{
 		$this->parameters = (array)$params;
 	}
+	
+	function render() {}
 }

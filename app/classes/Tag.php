@@ -378,7 +378,7 @@ class Tag
 	
 		\Core\User::ensure_exists( $p_user_id );
 	
-		if( auth_get_current_user_id() == $t_tag_row['user_id'] ) {
+		if( \Core\Auth::get_current_user_id() == $t_tag_row['user_id'] ) {
 			$t_update_level = \Core\Config::mantis_get( 'tag_edit_own_threshold' );
 		} else {
 			$t_update_level = \Core\Config::mantis_get( 'tag_edit_threshold' );
@@ -681,8 +681,8 @@ class Tag
 	
 		echo \Core\Tag::get_link( $p_tag_row );
 	
-		if( isset( $p_tag_row['user_attached'] ) && auth_get_current_user_id() == $p_tag_row['user_attached']
-		 || auth_get_current_user_id() == $p_tag_row['user_id']
+		if( isset( $p_tag_row['user_attached'] ) && \Core\Auth::get_current_user_id() == $p_tag_row['user_attached']
+		 || \Core\Auth::get_current_user_id() == $p_tag_row['user_id']
 		) {
 			$t_detach = \Core\Config::mantis_get( 'tag_detach_own_threshold' );
 		} else {

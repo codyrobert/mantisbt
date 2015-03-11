@@ -50,7 +50,7 @@ $t_user_id = \Core\Auth::get_current_user_id();
 # not we need to reauthenticate the user
 $t_account_verification = \Core\Token::get_value( TOKEN_ACCOUNT_VERIFY, $t_user_id );
 if( !$t_account_verification ) {
-	auth_reauthenticate();
+	\Core\Auth::reauthenticate();
 }
 
 \Core\Auth::ensure_user_authenticated();
@@ -101,11 +101,11 @@ if( !\Core\Utility::is_blank( $f_password ) ) {
 	if( $f_password != $f_password_confirm ) {
 		trigger_error( ERROR_USER_CREATE_PASSWORD_MISMATCH, ERROR );
 	} else {
-		if( !$t_account_verification && !auth_does_password_match( $t_user_id, $f_password_current ) ) {
+		if( !$t_account_verification && !\Core\Auth::does_password_match( $t_user_id, $f_password_current ) ) {
 			trigger_error( ERROR_USER_CURRENT_PASSWORD_MISMATCH, ERROR );
 		}
 
-		if( !auth_does_password_match( $t_user_id, $f_password ) ) {
+		if( !\Core\Auth::does_password_match( $t_user_id, $f_password ) ) {
 			\Core\User::set_password( $t_user_id, $f_password );
 			$t_password_updated = true;
 		}

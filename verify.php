@@ -48,8 +48,8 @@ $f_user_id = \Core\GPC::get_string( 'id' );
 $f_confirm_hash = \Core\GPC::get_string( 'confirm_hash' );
 
 # force logout on the current user if already authenticated
-if( auth_is_user_authenticated() ) {
-	auth_logout();
+if( \Core\Auth::is_user_authenticated() ) {
+	\Core\Auth::logout();
 
 	# reload the page after logout
 	\Core\Print_Util::header_redirect( 'verify.php?id=' . $f_user_id . '&confirm_hash=' . $f_confirm_hash );
@@ -68,7 +68,7 @@ auth_set_cookies( $f_user_id, false );
 \Core\User::reset_lost_password_in_progress_count_to_zero( $f_user_id );
 
 # fake login so the user can set their password
-auth_attempt_script_login( \Core\User::get_field( $f_user_id, 'username' ) );
+\Core\Auth::attempt_script_login( \Core\User::get_field( $f_user_id, 'username' ) );
 
 \Core\User::increment_login_count( $f_user_id );
 

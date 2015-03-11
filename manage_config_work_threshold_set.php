@@ -39,7 +39,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_config_work_threshold_set' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $t_redirect_url = 'manage_config_work_threshold_page.php';
 

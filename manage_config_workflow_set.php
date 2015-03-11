@@ -40,7 +40,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_config_workflow_set' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 /**
  * Retrieves the value of configuration option for the project's parent

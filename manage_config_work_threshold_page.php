@@ -39,7 +39,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 \Core\HTML::page_top( \Core\Lang::get( 'manage_threshold_config' ) );
 

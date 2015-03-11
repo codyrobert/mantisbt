@@ -13,21 +13,25 @@ use Core\GPC;
 use Core\Helper;
 use Core\HTML;
 use Core\Lang;
+use Core\URL;
 
 
 class View_Issues extends Page
 {
+	function __construct($params)
+	{
+		parent::__construct();
+		
+		App::queue_css(URL::get('css/status_config.php'));
+		Auth::ensure_user_authenticated();
+	}
+	
 	function action_my_view()
 	{
 		$this->set([
 			'page_title'	=> Lang::get( 'my_view_link' ),
 			'view'			=> 'My_View',
 		]);
-		
-		
-		HTML::require_css('status_config.php');
-		
-		Auth::ensure_user_authenticated();
 		
 		$t_current_user_id = Auth::get_current_user_id();
 		

@@ -219,7 +219,7 @@ class Profile
 	 * @return array
 	 */
 	static function get_field_all_for_user( $p_field, $p_user_id = null ) {
-		$c_user_id = ( $p_user_id === null ) ? auth_get_current_user_id() : $p_user_id;
+		$c_user_id = ( $p_user_id === null ) ? \Core\Auth::get_current_user_id() : $p_user_id;
 	
 		switch( $p_field ) {
 			case 'id':

@@ -24,7 +24,7 @@
 
 \Core\Form::security_validate( 'plugin_format_config_edit' );
 
-auth_reauthenticate( );
+\Core\Auth::reauthenticate( );
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 $f_process_text = \Core\GPC::get_int( 'process_text', ON );

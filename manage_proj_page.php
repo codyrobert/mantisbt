@@ -44,7 +44,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_sort	= \Core\GPC::get_string( 'sort', 'name' );
 $f_dir	= \Core\GPC::get_string( 'dir', 'ASC' );
@@ -98,7 +98,7 @@ if( 'ASC' == $f_dir ) {
 		<tbody>
 <?php
 		$t_manage_project_threshold = \Core\Config::mantis_get( 'manage_project_threshold' );
-		$t_projects = \Core\User::get_accessible_projects( auth_get_current_user_id(), true );
+		$t_projects = \Core\User::get_accessible_projects( \Core\Auth::get_current_user_id(), true );
 		$t_full_projects = array();
 		foreach ( $t_projects as $t_project_id ) {
 			$t_full_projects[] = \Core\Project::get_row( $t_project_id );
@@ -118,7 +118,7 @@ if( 'ASC' == $f_dir ) {
 			$t_level      = count( $t_stack );
 
 			# only print row if user has project management privileges
-			if( \Core\Access::has_project_level( $t_manage_project_threshold, $t_project_id, auth_get_current_user_id() ) ) { ?>
+			if( \Core\Access::has_project_level( $t_manage_project_threshold, $t_project_id, \Core\Auth::get_current_user_id() ) ) { ?>
 			<tr>
 				<td>
 					<a href="manage_proj_edit_page.php?project_id=<?php echo $t_project['id'] ?>"><?php echo str_repeat( '&raquo; ', $t_level ) . \Core\String::display( $t_project['name'] ) ?></a>

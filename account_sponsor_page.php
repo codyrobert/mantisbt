@@ -157,8 +157,8 @@ if( $t_sponsor_count === 0 ) {
 		$t_sponsor = \Core\Sponsorship::get( $t_sponsor_row['sponsor'] );
 
 		# describe bug
-		$t_status = \Core\String::attribute( \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_resolution = \Core\String::attribute( \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_status = \Core\String::attribute( \Core\Helper::get_enum_element( 'status', $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id ) );
+		$t_resolution = \Core\String::attribute( \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, \Core\Auth::get_current_user_id(), $t_bug->project_id ) );
 		$t_version_id = \Core\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
 		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Core\Version::get_field( $t_version_id, 'released' ) ) ) {
 			$t_released_label = '<a title="' . \Core\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
@@ -167,7 +167,7 @@ if( $t_sponsor_count === 0 ) {
 		}
 
 		# choose color based on status
-		$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id );
 
 		echo '<tr class="' . $t_status_label .  '">';
 		echo '<td><a href="' . \Core\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Core\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';
@@ -285,8 +285,8 @@ if( $t_sponsor_count === 0 ) {
 		$t_buglist[] = $t_sponsor_row['bug'] . ':' . $t_sponsor_row['sponsor'];
 
 		# describe bug
-		$t_status = \Core\String::attribute( \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id ) );
-		$t_resolution = \Core\String::attribute( \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, auth_get_current_user_id(), $t_bug->project_id ) );
+		$t_status = \Core\String::attribute( \Core\Helper::get_enum_element( 'status', $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id ) );
+		$t_resolution = \Core\String::attribute( \Core\Helper::get_enum_element( 'resolution', $t_bug->resolution, \Core\Auth::get_current_user_id(), $t_bug->project_id ) );
 		$t_version_id = \Core\Version::get_id( $t_bug->fixed_in_version, $t_bug->project_id );
 		if( ( false !== $t_version_id ) && ( VERSION_RELEASED == \Core\Version::get_field( $t_version_id, 'released' ) ) ) {
 			$t_released_label = '<a title="' . \Core\Lang::get( 'released' ) . '">' . $t_bug->fixed_in_version . '</a>';
@@ -295,7 +295,7 @@ if( $t_sponsor_count === 0 ) {
 		}
 
 		# choose color based on status
-		$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id );
 
 		echo '<tr class="' . $t_status_label .  '">';
 		echo '<td><a href="' . \Core\String::get_bug_view_url( $t_sponsor_row['bug'] ) . '">' . \Core\Bug::format_id( $t_sponsor_row['bug'] ) . '</a></td>';

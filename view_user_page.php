@@ -43,7 +43,7 @@ require_once( 'core.php' );
 
 # extracts the user information for the currently logged in user
 # and prefixes it with u_
-$f_user_id = \Core\GPC::get_int( 'id', auth_get_current_user_id() );
+$f_user_id = \Core\GPC::get_int( 'id', \Core\Auth::get_current_user_id() );
 $t_row = \Core\User::get_row( $f_user_id );
 
 extract( $t_row, EXTR_PREFIX_ALL, 'u' );

@@ -150,12 +150,12 @@ if( $t_existing_bug->status !== $t_updated_bug->status ) {
 		$t_can_bypass_status_access_thresholds = false;
 		if( $t_close_issue &&
 		     $t_existing_bug->status >= $t_resolved_status &&
-		     $t_existing_bug->reporter_id === auth_get_current_user_id() &&
+		     $t_existing_bug->reporter_id === \Core\Auth::get_current_user_id() &&
 		     \Core\Config::mantis_get( 'allow_reporter_close' ) ) {
 			$t_can_bypass_status_access_thresholds = true;
 		} else if( $t_reopen_issue &&
 		            $t_existing_bug->status < $t_closed_status &&
-		            $t_existing_bug->reporter_id === auth_get_current_user_id() &&
+		            $t_existing_bug->reporter_id === \Core\Auth::get_current_user_id() &&
 		            \Core\Config::mantis_get( 'allow_reporter_reopen' ) ) {
 			$t_can_bypass_status_access_thresholds = true;
 		}
@@ -321,8 +321,8 @@ if( $t_bug_note->note &&
 	 \Core\Config::mantis_get( 'reassign_on_feedback' ) &&
 	 $t_existing_bug->status === \Core\Config::mantis_get( 'bug_feedback_status' ) &&
 	 $t_updated_bug->status !== $t_existing_bug->status &&
-	 $t_updated_bug->handler_id !== auth_get_current_user_id() &&
-	 $t_updated_bug->reporter_id === auth_get_current_user_id() ) {
+	 $t_updated_bug->handler_id !== \Core\Auth::get_current_user_id() &&
+	 $t_updated_bug->reporter_id === \Core\Auth::get_current_user_id() ) {
 	if( $t_updated_bug->handler_id !== NO_USER ) {
 		$t_updated_bug->status = \Core\Config::mantis_get( 'bug_assigned_status' );
 	} else {

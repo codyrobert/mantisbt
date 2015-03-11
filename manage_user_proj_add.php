@@ -36,7 +36,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_user_proj_add' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_user_id		= \Core\GPC::get_int( 'user_id' );
 $f_access_level	= \Core\GPC::get_int( 'access_level' );

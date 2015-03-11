@@ -50,7 +50,7 @@ $t_name = \Core\String::display_line( $t_tag_row['name'] );
 $t_description = \Core\String::display( $t_tag_row['description'] );
 
 if( !( \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) )
-	|| ( auth_get_current_user_id() == $t_tag_row['user_id'] )
+	|| ( \Core\Auth::get_current_user_id() == $t_tag_row['user_id'] )
 		&& \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_own_threshold' ) ) ) ) {
 	\Core\Access::denied();
 }

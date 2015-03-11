@@ -338,7 +338,7 @@ class Email
 		# and put email address to $t_recipients[user_id]
 		foreach( $t_recipients as $t_id => $t_ignore ) {
 			# Possibly eliminate the current user
-			if( ( auth_get_current_user_id() == $t_id ) && ( OFF == \Core\Config::mantis_get( 'email_receive_own' ) ) ) {
+			if( ( \Core\Auth::get_current_user_id() == $t_id ) && ( OFF == \Core\Config::mantis_get( 'email_receive_own' ) ) ) {
 				\Core\Log::event( LOG_EMAIL_RECIPIENT, 'Issue = #%d, drop @U%d (own)', $p_bug_id, $t_id );
 				continue;
 			}

@@ -48,7 +48,7 @@ $f_headline		= \Core\GPC::get_string( 'headline' );
 $f_announcement	= \Core\GPC::get_bool( 'announcement' );
 $f_body			= \Core\GPC::get_string( 'body' );
 
-$t_news_id = \Core\News::create( \Core\Helper::get_current_project(), auth_get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
+$t_news_id = \Core\News::create( \Core\Helper::get_current_project(), \Core\Auth::get_current_user_id(), $f_view_state, $f_announcement, $f_headline, $f_body );
 
 \Core\Form::security_purge( 'news_add' );
 

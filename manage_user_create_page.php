@@ -36,7 +36,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
@@ -76,12 +76,12 @@ $t_ldap = ( LDAP == \Core\Config::mantis_get( 'login_method' ) );
 			if( OFF == \Core\Config::mantis_get( 'send_reset_password' ) ) { ?>
 			<div class="field-container">
 				<label for="user-password"><span><?php echo \Core\Lang::get( 'password' ) ?></span></label>
-				<span class="input"><input type="password" id="user-password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" /></span>
+				<span class="input"><input type="password" id="user-password" name="password" size="32" maxlength="<?php echo \Core\Auth::get_password_max_size(); ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<div class="field-container">
 				<label for="user-verify-password"><span><?php echo \Core\Lang::get( 'verify_password' ) ?></span></label>
-				<span class="input"><input type="password" id="user-verify-password" name="password_verify" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" /></span>
+				<span class="input"><input type="password" id="user-verify-password" name="password_verify" size="32" maxlength="<?php echo \Core\Auth::get_password_max_size(); ?>" /></span>
 				<span class="label-style"></span>
 			</div><?php
 			} ?>

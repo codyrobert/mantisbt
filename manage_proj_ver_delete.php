@@ -39,7 +39,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_proj_ver_delete' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_version_id = \Core\GPC::get_int( 'version_id' );
 

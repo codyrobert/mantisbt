@@ -181,7 +181,7 @@ function mci_check_login( $p_username, $p_password ) {
 	# Must not pass in password, otherwise, authentication will be by-passed.
 	$t_password = ( $p_password === null ) ? '' : $p_password;
 
-	if( false === auth_attempt_script_login( $p_username, $t_password ) ) {
+	if( false === \Core\Auth::attempt_script_login( $p_username, $t_password ) ) {
 		return false;
 	}
 

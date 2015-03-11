@@ -40,7 +40,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_plugin_uninstall' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 # register plugins and metadata without initializing

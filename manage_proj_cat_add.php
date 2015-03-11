@@ -40,7 +40,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_proj_cat_add' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_project_id	= \Core\GPC::get_int( 'project_id' );
 $f_name			= \Core\GPC::get_string( 'name' );

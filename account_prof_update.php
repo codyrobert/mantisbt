@@ -105,7 +105,7 @@ switch( $f_action ) {
 			\Core\Form::security_purge( 'profile_update' );
 			\Core\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
 		} else {
-			\Core\Profile::update( auth_get_current_user_id(), $f_profile_id, $f_platform, $f_os, $f_os_build, $f_description );
+			\Core\Profile::update( \Core\Auth::get_current_user_id(), $f_profile_id, $f_platform, $f_os, $f_os_build, $f_description );
 			\Core\Form::security_purge( 'profile_update' );
 			\Core\Print_Util::header_redirect( 'account_prof_menu_page.php' );
 		}
@@ -119,7 +119,7 @@ switch( $f_action ) {
 			\Core\Form::security_purge( 'profile_update' );
 			\Core\Print_Util::header_redirect( 'manage_prof_menu_page.php' );
 		} else {
-			\Core\Profile::delete( auth_get_current_user_id(), $f_profile_id );
+			\Core\Profile::delete( \Core\Auth::get_current_user_id(), $f_profile_id );
 			\Core\Form::security_purge( 'profile_update' );
 			\Core\Print_Util::header_redirect( 'account_prof_menu_page.php' );
 		}

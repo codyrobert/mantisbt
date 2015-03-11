@@ -38,7 +38,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_category_id		= \Core\GPC::get_int( 'id' );
 $f_project_id		= \Core\GPC::get_int( 'project_id' );

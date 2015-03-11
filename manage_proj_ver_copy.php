@@ -39,7 +39,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_proj_ver_copy' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_project_id		= \Core\GPC::get_int( 'project_id' );
 $f_other_project_id	= \Core\GPC::get_int( 'other_project_id' );

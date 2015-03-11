@@ -45,7 +45,7 @@ class Form
 	/**
 	 * Helper function to generate a form action value when forms are designed
 	 * to be submitted to the same url that's is currently being used, such as
-	 * \Core\Helper::ensure_confirmed() or auth_reauthenticate().
+	 * \Core\Helper::ensure_confirmed() or \Core\Auth::reauthenticate().
 	 * @return string Form action value
 	 */
 	static function action_self() {

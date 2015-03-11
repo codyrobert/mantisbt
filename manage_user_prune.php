@@ -39,7 +39,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_user_prune' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 

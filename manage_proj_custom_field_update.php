@@ -39,7 +39,7 @@ require_api( 'custom_field_api.php' );
 
 \Core\Form::security_validate( 'manage_proj_custom_field_update' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_field_id	= \Core\GPC::get_int( 'field_id' );
 $f_project_id	= \Core\GPC::get_int( 'project_id' );

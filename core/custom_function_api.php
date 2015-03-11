@@ -86,7 +86,7 @@ function custom_function_default_changelog_print_issue( $p_issue_id, $p_issue_le
 	}
 
 	if( !isset( $s_status[$t_bug->status] ) ) {
-		$s_status[$t_bug->status] = \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$s_status[$t_bug->status] = \Core\Helper::get_enum_element( 'status', $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id );
 	}
 	echo ' - ', $s_status[$t_bug->status], '.<br />';
 }
@@ -136,7 +136,7 @@ function custom_function_default_roadmap_print_issue( $p_issue_id, $p_issue_leve
 	}
 
 	if( !isset( $s_status[$t_bug->status] ) ) {
-		$s_status[$t_bug->status] = \Core\Helper::get_enum_element( 'status', $t_bug->status, auth_get_current_user_id(), $t_bug->project_id );
+		$s_status[$t_bug->status] = \Core\Helper::get_enum_element( 'status', $t_bug->status, \Core\Auth::get_current_user_id(), $t_bug->project_id );
 	}
 	echo ' - ', $s_status[$t_bug->status], $t_strike_end, '.<br />';
 }

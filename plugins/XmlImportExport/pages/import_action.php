@@ -27,7 +27,7 @@ require_once( $t_plugin_path . 'XmlImportExport/ImportXml.php' );
 
 \Core\Form::security_validate( 'plugin_xml_import_action' );
 
-auth_reauthenticate( );
+\Core\Auth::reauthenticate( );
 
 $f_file = gpc_get_file( 'file', -1 );
 $f_strategy = \Core\GPC::get_string( 'strategy' );

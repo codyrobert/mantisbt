@@ -107,7 +107,7 @@ class Group
 	
 		foreach( $p_bug_ids_array as $t_bug_id ) {
 			# choose color based on status
-			$t_status_label = \Core\HTML::get_status_css_class( \Core\Bug::get_field( $t_bug_id, 'status' ), auth_get_current_user_id(), \Core\Bug::get_field( $t_bug_id, 'project_id' ) );
+			$t_status_label = \Core\HTML::get_status_css_class( \Core\Bug::get_field( $t_bug_id, 'status' ), \Core\Auth::get_current_user_id(), \Core\Bug::get_field( $t_bug_id, 'project_id' ) );
 	
 			echo sprintf( "<tr class=\"%s\"> <td>%s</td> <td>%s</td> </tr>\n", $t_status_label, \Core\String::get_bug_view_link( $t_bug_id ), \Core\String::attribute( \Core\Bug::get_field( $t_bug_id, 'summary' ) ) );
 		}

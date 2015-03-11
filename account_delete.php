@@ -80,7 +80,7 @@ if( \Core\Current_User::is_administrator() &&
 
 $t_user_id = \Core\Auth::get_current_user_id();
 
-auth_logout();
+\Core\Auth::logout();
 
 \Core\User::delete( $t_user_id );
 

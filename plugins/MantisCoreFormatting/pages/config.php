@@ -22,7 +22,7 @@
  * @link http://www.mantisbt.org
  */
 
-auth_reauthenticate( );
+\Core\Auth::reauthenticate( );
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );
 
 \Core\HTML::page_top( \Core\Lang::get( 'plugin_format_title' ) );

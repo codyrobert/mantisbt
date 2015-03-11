@@ -50,8 +50,8 @@ if( OFF == \Core\Config::mantis_get( 'lost_password_feature' ) ||
 }
 
 # force logout on the current user if already authenticated
-if( auth_is_user_authenticated() ) {
-	auth_logout();
+if( \Core\Auth::is_user_authenticated() ) {
+	\Core\Auth::logout();
 }
 
 $f_username = \Core\GPC::get_string( 'username' );

@@ -100,8 +100,8 @@ class Lang
 		$t_lang = false;
 	
 		# Confirm that the user's language can be determined
-		if( function_exists( 'auth_is_user_authenticated' ) && auth_is_user_authenticated() ) {
-			$t_lang = \Core\User\Pref::get_language( auth_get_current_user_id() );
+		if( function_exists( '\Core\Auth::is_user_authenticated' ) && \Core\Auth::is_user_authenticated() ) {
+			$t_lang = \Core\User\Pref::get_language( \Core\Auth::get_current_user_id() );
 		}
 	
 		# Otherwise fall back to default

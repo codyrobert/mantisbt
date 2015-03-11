@@ -35,7 +35,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_site_threshold' ) );
 
 $t_version_suffix = \Core\Config::get_global( 'version_suffix' );

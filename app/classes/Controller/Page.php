@@ -20,9 +20,9 @@ abstract class Page extends Controller
 		parent::__construct($params);
 		
 		App::queue_css(URL::get('css/default.css'));
+		App::queue_css(URL::get('media/css/master.css'));
 		App::queue_css(URL::get('css/jquery-ui-1.11.2.min.css'));
 		App::queue_css(URL::get('css/common_config.php'));
-		App::queue_css(URL::get('css/status_config.php'));
 		
 		App::queue_js(URL::get('javascript_config.php'), true);
 		App::queue_js(URL::get('javascript_translations.php'), true);

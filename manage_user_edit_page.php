@@ -41,7 +41,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
@@ -163,7 +163,7 @@ $t_ldap = ( LDAP == \Core\Config::mantis_get( 'login_method' ) );
 <?php
 # User action buttons: RESET/UNLOCK and DELETE
 
-$t_reset = $t_user['id'] != auth_get_current_user_id()
+$t_reset = $t_user['id'] != \Core\Auth::get_current_user_id()
 	&& \Core\Helper::call_custom_function( 'auth_can_change_password', array() );
 $t_unlock = OFF != \Core\Config::mantis_get( 'max_failed_login_count' ) && $t_user['failed_login_count'] > 0;
 $t_delete = !( ( \Core\User::is_administrator( $t_user_id ) && ( \Core\User::count_level( \Core\Config::get_global( 'admin_site_threshold' ) ) <= 1 ) ) );

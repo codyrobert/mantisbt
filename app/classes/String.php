@@ -399,11 +399,11 @@ class String
 							if( \Core\Bug::exists( $t_bug_id ) ) {
 								$g_project_override = \Core\Bug::get_field( $t_bug_id, \'project_id\' );
 								if(   \Core\Access::compare_level(
-											\Core\User::get_access_level( auth_get_current_user_id(),
+											\Core\User::get_access_level( \Core\Auth::get_current_user_id(),
 											\Core\Bug::get_field( $t_bug_id, \'project_id\' ) ),
 											\Core\Config::mantis_get( \'private_bugnote_threshold\' )
 									   )
-									|| \Core\Bug\Note::get_field( (int)$p_array[2], \'reporter_id\' ) == auth_get_current_user_id()
+									|| \Core\Bug\Note::get_field( (int)$p_array[2], \'reporter_id\' ) == \Core\Auth::get_current_user_id()
 									|| \Core\Bug\Note::get_field( (int)$p_array[2], \'view_state\' ) == VS_PUBLIC
 								) {
 									$g_project_override = null;

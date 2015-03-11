@@ -40,7 +40,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_config_email_set' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $t_can_change_level = min( \Core\Config::get_access( 'notify_flags' ), \Core\Config::get_access( 'default_notify_flags' ) );
 \Core\Access::ensure_project_level( $t_can_change_level );

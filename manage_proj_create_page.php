@@ -37,7 +37,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'create_project_threshold' ) );
 

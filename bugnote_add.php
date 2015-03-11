@@ -78,8 +78,8 @@ if( !$t_bugnote_id ) {
 # have one feedback, assigned and submitted status.
 if( \Core\Config::mantis_get( 'reassign_on_feedback' ) &&
 	 $t_bug->status === \Core\Config::mantis_get( 'bug_feedback_status' ) &&
-	 $t_bug->handler_id !== auth_get_current_user_id() &&
-	 $t_bug->reporter_id === auth_get_current_user_id() ) {
+	 $t_bug->handler_id !== \Core\Auth::get_current_user_id() &&
+	 $t_bug->reporter_id === \Core\Auth::get_current_user_id() ) {
 	if( $t_bug->handler_id !== NO_USER ) {
 		\Core\Bug::set_field( $t_bug->id, 'status', \Core\Config::mantis_get( 'bug_assigned_status' ) );
 	} else {

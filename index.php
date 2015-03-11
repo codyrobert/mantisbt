@@ -29,7 +29,6 @@ foreach ((array)\Core\Config::get('routes') as $row)
 	}
 }
 
-
 if ($match = $router->match())
 {
 	if (strstr($match['target'], '->'))

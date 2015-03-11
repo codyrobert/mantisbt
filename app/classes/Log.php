@@ -161,7 +161,7 @@ class Log
 	 * @return void
 	 */
 	static function print_to_page() {
-		if( \Core\Config::get_global( 'log_destination' ) === 'page' && auth_is_user_authenticated() && \Core\Access::has_global_level( \Core\Config::mantis_get( 'show_log_threshold' ) ) ) {
+		if( \Core\Config::get_global( 'log_destination' ) === 'page' && \Core\Auth::is_user_authenticated() && \Core\Access::has_global_level( \Core\Config::mantis_get( 'show_log_threshold' ) ) ) {
 			global $g_log_events, $g_log_levels, $g_email_stored;
 	
 			if( $g_email_stored ) {

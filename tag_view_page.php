@@ -48,7 +48,7 @@ $t_tag_row = \Core\Tag::get( $f_tag_id );
 $t_name = \Core\String::display_line( $t_tag_row['name'] );
 $t_description = \Core\String::display( $t_tag_row['description'] );
 $t_can_edit = \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) );
-$t_can_edit_own = $t_can_edit || auth_get_current_user_id() == \Core\Tag::get_field( $f_tag_id, 'user_id' )
+$t_can_edit_own = $t_can_edit || \Core\Auth::get_current_user_id() == \Core\Tag::get_field( $f_tag_id, 'user_id' )
 	&& \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_edit_own_threshold' ) );
 
 

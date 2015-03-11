@@ -49,12 +49,12 @@ if( $f_install ) {
 	$t_return = 'admin/install.php';
 }
 
-$f_username = auth_prepare_username( $f_username );
-$f_password = auth_prepare_password( $f_password );
+$f_username = \Core\Auth::prepare_username( $f_username );
+$f_password = \Core\Auth::prepare_password( $f_password );
 
 \Core\GPC::set_cookie( \Core\Config::get_global( 'cookie_prefix' ) . '_secure_session', $f_secure_session ? '1' : '0' );
 
-if( auth_attempt_login( $f_username, $f_password, $f_perm_login ) ) {
+if( \Core\Auth::attempt_login( $f_username, $f_password, $f_perm_login ) ) {
 	\Core\Session::set( 'secure_session', $f_secure_session );
 
 	if( $f_username == 'administrator' && $f_password == 'root' && ( \Core\Utility::is_blank( $t_return ) || $t_return == 'index.php' ) ) {

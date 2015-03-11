@@ -50,7 +50,7 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_project_id = \Core\GPC::get_int( 'project_id' );
 $f_show_global_users = \Core\GPC::get_bool( 'show_global_users' );

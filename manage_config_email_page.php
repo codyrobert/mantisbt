@@ -38,7 +38,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 /**
  * array_merge_recursive2()

@@ -57,7 +57,7 @@ if( !\Core\User::is_name_valid( $f_username ) ) {
 $t_session_validation = ( ON == \Core\Config::get_global( 'session_validation' ) );
 
 # If user is already authenticated and not anonymous
-if( auth_is_user_authenticated() && !\Core\Current_User::is_anonymous() ) {
+if( \Core\Auth::is_user_authenticated() && !\Core\Current_User::is_anonymous() ) {
 	# If return URL is specified redirect to it; otherwise use default page
 	if( !\Core\Utility::is_blank( $f_return ) ) {
 		\Core\Print_Util::header_redirect( $f_return, false, false, true );
@@ -67,7 +67,7 @@ if( auth_is_user_authenticated() && !\Core\Current_User::is_anonymous() ) {
 }
 
 # Check for automatic logon methods where we want the logon to just be handled by login.php
-if( auth_automatic_logon_bypass_form() ) {
+if( \Core\Auth::automatic_logon_bypass_form() ) {
 	$t_uri = 'login.php';
 
 	if( ON == \Core\Config::mantis_get( 'allow_anonymous_login' ) ) {
@@ -132,7 +132,7 @@ if( \Core\Config::get_global( 'admin_checks' ) == ON && file_exists( dirname( __
 	# Generate a warning if default user administrator/root is valid.
 	$t_admin_user_id = \Core\User::get_id_by_name( 'administrator' );
 	if( $t_admin_user_id !== false ) {
-		if( \Core\User::is_enabled( $t_admin_user_id ) && auth_does_password_match( $t_admin_user_id, 'root' ) ) {
+		if( \Core\User::is_enabled( $t_admin_user_id ) && \Core\Auth::does_password_match( $t_admin_user_id, 'root' ) ) {
 			$t_warnings[] = \Core\Lang::get( 'warning_default_administrator_account_present' );
 		}
 	}
@@ -232,7 +232,7 @@ if( \Core\Config::get_global( 'admin_checks' ) == ON && file_exists( dirname( __
 			</div>
 			<div class="field-container">
 				<label for="password"><span><?php echo \Core\Lang::get( 'password' ) ?></span></label>
-				<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo auth_get_password_max_size(); ?>" class="<?php echo $t_password_field_autofocus ?>" /></span>
+				<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo \Core\Auth::get_password_max_size(); ?>" class="<?php echo $t_password_field_autofocus ?>" /></span>
 				<span class="label-style"></span>
 			</div>
 			<?php if( ON == \Core\Config::mantis_get( 'allow_permanent_cookie' ) ) { ?>

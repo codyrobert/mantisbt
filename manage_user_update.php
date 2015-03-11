@@ -45,7 +45,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_user_update' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_user_threshold' ) );
 
 $f_protected	= \Core\GPC::get_bool( 'protected' );

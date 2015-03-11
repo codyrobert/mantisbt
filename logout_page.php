@@ -29,6 +29,6 @@
 
 require_once( 'core.php' );
 
-auth_logout();
+\Core\Auth::logout();
 
 \Core\Print_Util::header_redirect( \Core\Config::mantis_get( 'logout_redirect_page' ), true, false );

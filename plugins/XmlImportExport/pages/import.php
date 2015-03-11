@@ -24,7 +24,7 @@
 
 \Core\Access::ensure_project_level( \Core\Plugin::config_get( 'import_threshold' ) );
 
-auth_reauthenticate( );
+\Core\Auth::reauthenticate( );
 
 \Core\HTML::page_top( \Core\Plugin::langget( 'import' ) );
 

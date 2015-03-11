@@ -148,7 +148,7 @@ class Excel
 		$t_current_project_id = \Core\Helper::get_current_project();
 	
 		if( ALL_PROJECTS == $t_current_project_id ) {
-			$t_filename = \Core\User::get_name( auth_get_current_user_id() );
+			$t_filename = \Core\User::get_name( \Core\Auth::get_current_user_id() );
 		} else {
 			$t_filename = \Core\Project::get_field( $t_current_project_id, 'name' );
 		}
@@ -265,7 +265,7 @@ class Excel
 	 * @return string the priority text.
 	 */
 	function excel_format_priority( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'priority', $p_bug->priority, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'priority', $p_bug->priority, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
@@ -274,7 +274,7 @@ class Excel
 	 * @return string the severity text.
 	 */
 	function excel_format_severity( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'severity', $p_bug->severity, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'severity', $p_bug->severity, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
@@ -283,7 +283,7 @@ class Excel
 	 * @return string the reproducibility text.
 	 */
 	function excel_format_reproducibility( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'reproducibility', $p_bug->reproducibility, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'reproducibility', $p_bug->reproducibility, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
@@ -292,7 +292,7 @@ class Excel
 	 * @return string The view state
 	 */
 	function excel_format_view_state( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'view_state', $p_bug->view_state, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'view_state', $p_bug->view_state, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
@@ -301,7 +301,7 @@ class Excel
 	 * @return string the projection text.
 	 */
 	function excel_format_projection( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'projection', $p_bug->projection, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'projection', $p_bug->projection, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
@@ -310,7 +310,7 @@ class Excel
 	 * @return string the eta text.
 	 */
 	function excel_format_eta( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'eta', $p_bug->eta, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'eta', $p_bug->eta, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
@@ -319,7 +319,7 @@ class Excel
 	 * @return string the formatted status.
 	 */
 	function excel_format_status( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'status', $p_bug->status, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'status', $p_bug->status, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**
@@ -328,7 +328,7 @@ class Excel
 	 * @return string the formatted resolution.
 	 */
 	function excel_format_resolution( \Core\BugData $p_bug ) {
-		return excel_prepare_string( \Core\Helper::get_enum_element( 'resolution', $p_bug->resolution, auth_get_current_user_id(), $p_bug->project_id ) );
+		return excel_prepare_string( \Core\Helper::get_enum_element( 'resolution', $p_bug->resolution, \Core\Auth::get_current_user_id(), $p_bug->project_id ) );
 	}
 	
 	/**

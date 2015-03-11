@@ -39,7 +39,7 @@
 require_once( 'core.php' );
 require_api( 'custom_field_api.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_custom_fields_threshold' ) );
 

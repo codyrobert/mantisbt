@@ -41,7 +41,7 @@ require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_proj_ver_add' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_project_id	= \Core\GPC::get_int( 'project_id' );
 $f_version		= \Core\GPC::get_string( 'version' );

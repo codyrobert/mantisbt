@@ -39,7 +39,7 @@
 
 require_once( 'core.php' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 if( !\Core\Config::mantis_get( 'relationship_graph_enable' ) ) {
 	\Core\Access::denied();

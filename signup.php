@@ -49,8 +49,8 @@ $f_email = trim( $f_email );
 $f_captcha = utf8_strtolower( trim( $f_captcha ) );
 
 # force logout on the current user if already authenticated
-if( auth_is_user_authenticated() ) {
-	auth_logout();
+if( \Core\Auth::is_user_authenticated() ) {
+	\Core\Auth::logout();
 }
 
 # Check to see if signup is allowed

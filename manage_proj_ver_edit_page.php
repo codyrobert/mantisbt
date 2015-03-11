@@ -44,7 +44,7 @@ require_once( 'core.php' );
 \Core\HTML::require_js( 'jscalendar/calendar-setup.js' );
 \Core\HTML::require_css( 'calendar-blue.css' );
 
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_version_id = \Core\GPC::get_int( 'version_id' );
 

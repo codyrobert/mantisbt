@@ -61,7 +61,7 @@ if( \Core\Bug::is_readonly( $t_bug_id ) ) {
 
 # Check if the current user is allowed to change the view state of this bugnote
 $t_user_id = \Core\Bug\Note::get_field( $f_bugnote_id, 'reporter_id' );
-if( $t_user_id == auth_get_current_user_id() ) {
+if( $t_user_id == \Core\Auth::get_current_user_id() ) {
 	\Core\Access::ensure_bugnote_level( \Core\Config::mantis_get( 'bugnote_user_change_view_state_threshold' ), $f_bugnote_id );
 } else {
 	\Core\Access::ensure_bugnote_level( \Core\Config::mantis_get( 'update_bugnote_threshold' ), $f_bugnote_id );

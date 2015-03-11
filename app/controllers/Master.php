@@ -1,17 +1,25 @@
 <?php
-namespace Core\Controller;
+namespace Controller;
 
 
-class Master extends \Core\Controller
+use Core\Auth;
+use Core\Config;
+use Core\Controller;
+use Core\Print_Util;
+
+
+class Master extends Controller
 {
-	function __construct()
-	{
-		echo 'hello construct';
-	}
-	
 	function action_index()
 	{
-		echo 'hello action';
-		d($this->parameters);
+		if(Auth::is_user_authenticated()) 
+		{
+			Print_Util::header_redirect(Config::mantis_get('default_home_page'));
+		}
+		else
+		{
+			Print_Util::header_redirect('login_page.php');
+		}
+
 	}
 }

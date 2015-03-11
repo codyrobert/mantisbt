@@ -39,7 +39,7 @@
 require_once( 'core.php' );
 
 \Core\Form::security_validate( 'manage_proj_user_remove' );
-auth_reauthenticate();
+\Core\Auth::reauthenticate();
 
 $f_project_id = \Core\GPC::get_int( 'project_id' );
 $f_user_id = \Core\GPC::get_int( 'user_id', 0 );
