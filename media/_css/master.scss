@@ -1,21 +1,55 @@
+@import "variables";
+@import "mixins";
 @import "reset";
+@import "forms";
+@import "typography";
 
+
+html {
+	background: mix($colorGreyLighter, $colorGrey, 90%);
+}
 
 body {
+	background: $colorGreyLighter;
 	color: #000;
 	font-family: Helvetica, Verdana, sans-serif;
 	font-size: 14px;
 	font-weight: 300;
-	line-height: 1.4em;
-	padding-top: 80px;
+	line-height: 20px;
+	padding-top: 90px;
 }
 
-#top {
-	$height: 60px;
+p {
+	margin: 20px 0;
 	
-	background: #f8f8f8;
-	background: rgba(248, 248, 248, .9);
-	border-bottom: 1px solid #e7e7e7;
+	&:first-child {
+		margin-top: 0;
+	}
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.error {
+	background: #ffd4d9;
+	border: 1px solid #e97a87;
+	font-weight: 600;
+	color: #460910;
+	border-radius: 3px;
+	padding: 10px;
+}
+
+
+
+
+#head {
+	$height: 90px;
+	
+	@include materialObjectShadow(10);
+	
+	background: $colorGreyLighter;
+	color: $colorGrey;
 	height: $height;
 	left: 0;
 	overflow: hidden;
@@ -24,34 +58,75 @@ body {
 	top: 0;
 	z-index: 200;
 	
+	.login-bar {
+		background: #fff;
+		border: solid $colorGreyLight;
+		border-width: 1px 0;
+		clear: both;
+		height: 28px;
+		line-height: 28px;
+		padding: 0 30px;
+		
+		#login-info {
+			float: left;
+		}
+		
+		#rss-feed, #project-selector-div {
+			float: right;
+		}
+		
+		#project-selector-div select {
+			margin: 0 10px;
+		}
+		
+		#rss-feed img {
+			display: inline-block;
+			vertical-align: middle;
+		}
+		
+		#current-time {
+			display: none;
+		}
+	}
+	
+	#bug-jump {
+		position: absolute;
+		right: 30px;
+		top: 20px;
+	}
+	
+	.recently-visited {
+		margin: 0 auto;
+		text-align: center;
+	}
+	
 	h1 {
 		background: no-repeat center;
-		background-size: 145px 50px;
-		box-sizing: border-box;
+		background-size: auto 42px;
 		float: left;
-		height: $height;
-		line-height: $height;
+		height: $height - 30;
+		line-height: $height - 30;
 		margin: 0;
-		padding: 0;
-		width: 175px;
+		padding: 0 30px;
+		width: 122px;
 		
 		a {
-			color: #777;
+			color: $colorGrey;
 			display: block;
 			text-decoration: none;
 		}
 		
 		&.logo a {
 			overflow: hidden;
-			text-indent: 240px;
+			text-indent: 100%;
 			white-space: nowrap;
 		}
 	}
 	
 	nav {
-		border-right: 1px solid #e7e7e7;
+		border-right: 1px solid $colorGreyLight;
 		float: left;
-		line-height: $height;
+		line-height: $height - 30;
 	}
 	
 	ul {
@@ -61,22 +136,22 @@ body {
 	}
 	
 	li {
-		border-left: 1px solid #e7e7e7;
+		border-left: 1px solid $colorGreyLight;
 		float: left;
 		
 		a {
 			display: block;
-			height: $height;
+			height: $height - 30;
 			padding: 0 20px;
 			
 			&:active, &:focus, &:hover {
-				background: #e7e7e7;
+				background: $colorGreyLight;
 			}
 		}
 	}
 	
 	a {
-		color: #777;
+		color: $colorGrey;
 		text-decoration: none;
 		transition: 0.3s all;
 		
@@ -86,8 +161,78 @@ body {
 	}
 }
 
-#bug-jump {
-	position: absolute;
-	right: 10px;
-	top: 10px;
+.wrap {
+	box-sizing: border-box;
+	margin: 0 auto;
+	max-width: 1400px;
+}
+
+#content {
+	padding: 60px 30px 0;
+}
+
+.page-title {
+	border-bottom: 1px solid mix($colorGrey, $colorGreyLight, 10%);
+	margin-bottom: 30px;
+	overflow: auto;
+	zoom: 1;
+	
+	h2 {
+		margin: 0;
+	}
+	
+	nav {
+		float: right;
+		line-height: 33px;
+	}
+	
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	
+	li {
+		float: left;
+		height: 33px;
+		padding: 0 20px;
+		
+		+ li {
+			border-left: 1px solid mix($colorGrey, $colorGreyLight, 10%);
+		}
+		
+		&.active {
+			background: mix($colorGrey, $colorGreyLight, 10%);
+			
+			a, a:active, a:focus, a:hover {
+				color: $colorGreyDark;
+				font-weight: 600;
+			}
+		}
+		
+		&.active, &.active + li {
+			border-left: 0;
+		}
+	}
+	
+	a {
+		color: $colorGrey;
+		
+		&:active, &:focus, &:hover {
+			color: #333;
+		}
+	}
+}
+
+#floor {
+	background: mix($colorGreyLighter, $colorGrey, 90%);
+	margin: 120px 0 0;
+	
+	.wrap {
+		padding: 30px;
+	}
+	
+	hr {
+		display: none;
+	}
 }

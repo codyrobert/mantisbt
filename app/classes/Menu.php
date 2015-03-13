@@ -2,13 +2,51 @@
 namespace Core;
 
 
+use Core\Access;
 use Core\Config;
+use Core\Current_User;
+use Core\Lang;
 use Core\String;
 use Core\URL;
 
 
 class Menu
 {
+	static function account()
+	{
+		$menu_items[URL::get('account')] = Lang::get('account_link');
+		$menu_items[URL::get('account/preferences')] = Lang::get('change_preferences_link');
+		$menu_items[URL::get('account_manage_columns_page.php')] = Lang::get('manage_columns_config');
+	
+		if (Config::mantis_get('enable_profiles') == ON && Access::has_project_level(Config::mantis_get('add_profile_threshold')))
+		{
+			$menu_items[URL::get('account_prof_menu_page.php')] = Lang::get('manage_profiles_link');
+		}
+	
+		if (Config::mantis_get('enable_sponsorship') == ON && Access::has_project_level(Config::mantis_get('view_sponsorship_total_threshold')) && !Current_User::is_anonymous())
+		{
+			$menu_items[URL::get('account_sponsor_page.php')] = Lang::get('my_sponsorship');
+		}
+		
+		# Plugin / Event added options
+		/*$t_event_menu_options = \Core\Event::signal( 'EVENT_MENU_ACCOUNT' );
+		$t_menu_options = array();
+		foreach( $t_event_menu_options as $t_plugin => $t_plugin_menu_options ) {
+			foreach( $t_plugin_menu_options as $t_callback => $t_callback_menu_options ) {
+				if( is_array( $t_callback_menu_options ) ) {
+					$t_menu_options = array_merge( $t_menu_options, $t_callback_menu_options );
+				} else {
+					if( !is_null( $t_callback_menu_options ) ) {
+						$t_menu_options[] = $t_callback_menu_options;
+					}
+				}
+			}
+		}*/
+		
+		return $menu_items;
+	}
+	
+	
 	static function main()
 	{
 		if( Config::mantis_get( 'news_enabled' ) == ON )
@@ -137,7 +175,7 @@ class Menu
 		# Account Page (only show accounts that are NOT protected)
 		if (Current_User::get_field('protected') == OFF)
 		{
-			$menu_items[URL::get('account_page.php')] = Lang::get('account_link');
+			$menu_items[URL::get('account')] = Lang::get('account_link');
 		}
 		
 		# Add custom options

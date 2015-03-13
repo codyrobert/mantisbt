@@ -74,18 +74,19 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 # Account Preferences Form BEGIN
 ?>
 
+<header class="page-title">
+	<?php $engine = \Core\Template::engine(); ?>
+	<?php echo $engine->render('Partials/Menu', array('items' => \Core\Menu::account())); ?>
+	<h2><?php echo \Core\Lang::get( 'default_account_preferences_title' ); ?></h2>
+</header>
+
 <div id="account-prefs-update-div" class="form-container">
 	<form id="account-prefs-update-form" method="post" action="account_prefs_update.php">
 		<fieldset>
-			<legend><span><?php echo \Core\Lang::get( 'default_account_preferences_title' ) ?></span></legend>
 			<?php echo \Core\Form::security_field( 'account_prefs_update' ) ?>
 			<input type="hidden" name="user_id" value="<?php echo $p_user_id ?>" />
 			<input type="hidden" name="redirect_url" value="<?php echo $t_redirect_url ?>" />
-		<?php
-			if( $p_accounts_menu ) {
-				\Core\HTML::print_account_menu( 'account_prefs_page.php' );
-			}
-		?>
+			
 			<div class="field-container">
 				<label for="default-project-id"><span><?php echo \Core\Lang::get( 'default_project' ) ?></span></label>
 				<span class="select">
@@ -270,7 +271,7 @@ function edit_account_prefs( $p_user_id = null, $p_error_if_protected = true, $p
 				<label for="timezone"><span><?php echo \Core\Lang::get( 'timezone' ) ?></span></label>
 				<span class="select">
 					<select id="timezone" name="timezone">
-						<?php print_timezone_option_list( $t_pref->timezone ?  $t_pref->timezone  : \Core\Config::get_global( 'default_timezone' ) ) ?>
+						<?php \Core\Print_Util::timezone_option_list( $t_pref->timezone ?  $t_pref->timezone  : \Core\Config::get_global( 'default_timezone' ) ) ?>
 					</select>
 				</span>
 				<span class="label-style"></span>

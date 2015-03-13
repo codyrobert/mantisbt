@@ -1,0 +1,67 @@
+@import "variables";
+@import "mixins";
+
+
+html {
+	background: $colorGreyLighter;
+}
+
+body {
+	padding: 90px 30px;
+}
+
+#head {
+	background: none;
+	box-shadow: none;
+	height: auto;
+	position: static;
+	text-align: center;
+	
+	h1 {
+		background-size: auto 80px;
+		float: none;
+		height: 80px;
+		margin: 0 auto;
+		width: 100%;
+	}
+}
+
+.wrap {
+	max-width: 740px;
+}
+
+#content {
+	margin: 30px 0;
+	padding: 0;
+	
+	.wrap {
+		@include materialObjectShadow(8);
+		
+		background: #fff;
+		padding: 30px;
+	}
+}
+
+.field-container:nth-child(2n+1) .field-input {
+	background: #fff;
+}
+
+.field-submit a {
+	display: inline-block;
+	line-height: 30px;
+	padding: 0 20px;
+	
+	+ a {
+		border-left: 1px solid $colorGreyLight;
+	}
+}
+
+#floor {
+	background: none;
+	margin: 0;
+	
+	.wrap {
+		border-top: 1px solid $colorGreyLight;
+		padding: 30px 0 0;
+	}
+}

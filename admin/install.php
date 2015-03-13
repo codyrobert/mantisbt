@@ -677,7 +677,7 @@ if( !$g_database_upgrade ) {
 	</td>
 	<td>
 		<select id="timezone" name="timezone">
-			<?php print_timezone_option_list( $t_tz ) ?>
+			<?php \Core\Print_Util::timezone_option_list( $t_tz ) ?>
 		</select>
 	</td>
 </tr>

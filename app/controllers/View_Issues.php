@@ -7,41 +7,41 @@ use Core\App;
 use Core\Auth;
 use Core\Category;
 use Core\Config;
-use Core\Controller\Page;
+use Core\Controller\Authenticated_Page;
 use Core\Current_User;
 use Core\GPC;
 use Core\Helper;
 use Core\HTML;
 use Core\Lang;
+use Core\Request;
 use Core\URL;
 
 
-class View_Issues extends Page
+class View_Issues extends Authenticated_Page
 {
 	function __construct($params)
 	{
 		parent::__construct();
 		
 		App::queue_css(URL::get('css/status_config.php'));
-		Auth::ensure_user_authenticated();
+		Category::get_all_rows(Helper::get_current_project());
 	}
 	
 	function action_my_view()
 	{
+		$user_id	= Auth::get_current_user_id();
+		$project_id	= Helper::get_current_project();
+		
+		
 		$this->set([
 			'page_title'	=> Lang::get( 'my_view_link' ),
-			'view'			=> 'My_View',
+			'view'			=> 'Pages/My_View',
+			
+			'section_title'	=> Lang::get('my_view_title_assigned'),
+			'per_page'		=> Config::mantis_get('my_view_bug_count'),
 		]);
 		
-		$t_current_user_id = Auth::get_current_user_id();
-		
 		# Improve performance by caching category data in one pass
-		Category::get_all_rows( Helper::get_current_project() );
-		
-		if( Current_User::get_pref( 'refresh_delay' ) > 0 ) {
-			HTML::meta_redirect( 'my_view_page.php?refresh=true', Current_User::get_pref( 'refresh_delay' ) * 60 );
-		}
-		
 		$f_page_number		= GPC::get_int( 'page_number', 1 );
 		
 		$t_per_page = Config::mantis_get( 'my_view_bug_count' );
@@ -57,7 +57,6 @@ class View_Issues extends Page
 		?>
 		
 		<div>
-		<?php include( ROOT . 'core/timeline_inc.php' ); ?>
 		
 		<div class="myview_boxes_area">
 		
@@ -72,14 +71,14 @@ class View_Issues extends Page
 				# don't display bugs that are set as 0
 				$t_number_of_boxes = $t_number_of_boxes - 1;
 			} else if( $t_box_title == 'assigned' && ( Current_User::is_anonymous()
-				|| !Access::has_project_level( Config::mantis_get( 'handle_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
+				|| !Access::has_project_level( Config::mantis_get( 'handle_bug_threshold' ), $t_project_id, $user_id ) ) ) {
 				# don't display "Assigned to Me" bugs to users that bugs can't be assigned to
 				$t_number_of_boxes = $t_number_of_boxes - 1;
-			} else if( $t_box_title == 'monitored' && ( Current_User::is_anonymous() or !Access::has_project_level( Config::mantis_get( 'monitor_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
+			} else if( $t_box_title == 'monitored' && ( Current_User::is_anonymous() or !Access::has_project_level( Config::mantis_get( 'monitor_bug_threshold' ), $t_project_id, $user_id ) ) ) {
 				# don't display "Monitored by Me" bugs to users that can't monitor bugs
 				$t_number_of_boxes = $t_number_of_boxes - 1;
 			} else if( in_array( $t_box_title, array( 'reported', 'feedback', 'verify' ) ) &&
-				( Current_User::is_anonymous() or !Access::has_project_level( Config::mantis_get( 'report_bug_threshold' ), $t_project_id, $t_current_user_id ) ) ) {
+				( Current_User::is_anonymous() or !Access::has_project_level( Config::mantis_get( 'report_bug_threshold' ), $t_project_id, $user_id ) ) ) {
 				# don't display "Reported by Me" bugs to users that can't report bugs
 				$t_number_of_boxes = $t_number_of_boxes - 1;
 			} else {

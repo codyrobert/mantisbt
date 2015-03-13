@@ -66,7 +66,7 @@ class Graph
 	 * @param integer $p_bug_id ID of the bug to pretty format.
 	 * @return string Pretty formatted bug ID
 	 */
-	static function \Core\Bug::format_id( $p_bug_id ) {
+	static function bug_format_id( $p_bug_id ) {
 		$t_pretty_bug_id = \Core\Bug::format_id( $p_bug_id );
 		if( !preg_match( '/^(([a-zA-z_][0-9a-zA-Z_]*)|(\d+))$/', $t_pretty_bug_id ) ) {
 			$t_pretty_bug_id = $p_bug_id;
@@ -150,7 +150,7 @@ class Graph
 		# We have already collected all the information we need to generate
 		# the graph. Now it is the matter to create a Digraph object and
 		# store the information there, along with graph formatting attributes.
-		$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $p_bug_id );
+		$t_id_string = \Core\Relationship\Graph::bug_format_id( $p_bug_id );
 		$t_graph_fontname = \Core\Config::mantis_get( 'relationship_graph_fontname' );
 		$t_graph_fontsize = \Core\Config::mantis_get( 'relationship_graph_fontsize' );
 		$t_graph_fontpath = \Core\Utility::get_font_path();
@@ -183,7 +183,7 @@ class Graph
 		# Add all issue nodes and edges to the graph.
 		ksort( $v_bug_list );
 		foreach( $v_bug_list as $t_id => $t_bug ) {
-			$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $t_id );
+			$t_id_string = \Core\Relationship\Graph::bug_format_id( $t_id );
 	
 			if( $t_view_on_click ) {
 				$t_url = \Core\String::get_bug_view_url( $t_id );
@@ -207,7 +207,7 @@ class Graph
 						continue;
 					}
 	
-					$t_related_id = \Core\Relationship\Graph::\Core\Bug::format_id( $t_dst );
+					$t_related_id = \Core\Relationship\Graph::bug_format_id( $t_dst );
 	
 					global $g_relationships;
 					if( isset( $g_relationships[$t_relation] ) && isset( $g_relationships[$t_relation]['#edge_style'] ) ) {
@@ -274,7 +274,7 @@ class Graph
 		# We have already collected all the information we need to generate
 		# the graph. Now it is the matter to create a Digraph object and
 		# store the information there, along with graph formatting attributes.
-		$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $p_bug_id );
+		$t_id_string = \Core\Relationship\Graph::bug_format_id( $p_bug_id );
 		$t_graph_fontname = \Core\Config::mantis_get( 'relationship_graph_fontname' );
 		$t_graph_fontsize = \Core\Config::mantis_get( 'relationship_graph_fontsize' );
 		$t_graph_fontpath = \Core\Utility::get_font_path();
@@ -313,7 +313,7 @@ class Graph
 	
 		# Add all issue nodes and edges to the graph.
 		foreach( $v_bug_list as $t_related_bug_id => $t_related_bug ) {
-			$t_id_string = \Core\Relationship\Graph::\Core\Bug::format_id( $t_related_bug_id );
+			$t_id_string = \Core\Relationship\Graph::bug_format_id( $t_related_bug_id );
 	
 			if( $t_view_on_click ) {
 				$t_url = \Core\String::get_bug_view_url( $t_related_bug_id );
@@ -331,7 +331,7 @@ class Graph
 					continue;
 				}
 	
-				$t_parent_node = \Core\Relationship\Graph::\Core\Bug::format_id( $t_parent_id );
+				$t_parent_node = \Core\Relationship\Graph::bug_format_id( $t_parent_id );
 				$t_graph->add_edge( $t_parent_node, $t_id_string );
 			}
 		}

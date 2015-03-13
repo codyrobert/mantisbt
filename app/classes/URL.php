@@ -54,6 +54,21 @@ class URL
 		return rtrim(self::base().'/'.trim($path, '/'), '/');
 	}
 	
+	static function is_current($path = null)
+	{
+		return (bool)(self::current() == parse_url($path, PHP_URL_PATH));
+	}
+	
+	static function current()
+	{
+		return rtrim($_SERVER['REQUEST_URI'], '/');
+	}
+	
+	static function redirect($path = null)
+	{
+		header('location: '.URL::get($path));
+	}
+	
 	/**
 	 * Retrieve the contents of a remote URL.
 	 * First tries using built-in PHP modules (OpenSSL and cURL), then attempts

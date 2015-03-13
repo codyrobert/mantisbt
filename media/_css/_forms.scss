@@ -1,0 +1,95 @@
+form {
+	overflow: auto;
+	position: relative;
+	zoom: 1;
+}
+
+.field-container {
+	overflow: hidden;
+	zoom: 1;
+	
+	&:nth-child(2n) {
+		.field-label {
+			background: mix($colorGreenLighter, $colorGreyLighter, 70%);
+		}
+		
+		.field-input {
+			background: mix($colorGreenLighter, $colorGreyLighter, 10%);
+		}
+	}
+}
+
+.field-label {
+	background: mix($colorGreenLighter, $colorGreyLighter, 50%);
+	color: mix($colorGreen, $colorGreenLighter, 90%);
+	float: left;
+	font-weight: 600;
+	margin-bottom: -989px;
+	padding: 10px 20px 999px 20px;
+	text-align: right;
+	width: 280px;
+}
+
+.field-input {
+	margin-left: 320px;
+	padding: 10px 20px;
+	
+	input, select, textarea {
+		border: 1px solid mix($colorGrey, $colorGreyLight, 25%);
+		display: block;
+		font-size: 14px;
+		line-height: 20px;
+		transition: 0.3s all;
+		
+		&:focus, &:hover {
+			border-color: $colorGrey;
+			outline: none;
+		}
+	}
+	
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		
+		li + li {
+			margin-top: 10px;
+		}
+	}
+}
+
+.field-submit { 
+	height: 40px;
+	line-height: 40px;
+	padding-top: 10px;
+	text-align: right;
+}
+
+.button {
+	@include materialObjectShadow(2);
+	
+	background: $colorGreenLight;
+	border: 0;
+	color: #fff;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 14px;
+	height: 40px;
+	line-height: 40px;
+	outline: none;
+	padding: 0 20px;
+	text-decoration: none;
+	transition: 0.3s all;
+	
+	&:active, &:focus, &:hover {
+		background: mix($colorGreenLight, $colorGreenLighter, 50%);
+	}
+	
+	&:active {
+		transform: scale((38px / 40px));
+	}
+}
+
+.access-level, .view-state {
+	padding-left: 10px;
+}

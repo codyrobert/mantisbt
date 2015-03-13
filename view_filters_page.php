@@ -185,11 +185,11 @@ $t_show_tags = \Core\Access::has_global_level( \Core\Config::mantis_get( 'tag_vi
 <tr class="row-1">
 	<!-- Reporter -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Core\Filter::\Core\Filter::\Core\Filter::print_filter_user_monitor(); ?>
+		<?php \Core\Filter::print_filter_user_monitor(); ?>
 	</td>
 	<!-- Monitored by -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">
-		<?php \Core\Filter::\Core\Filter::print_filter_user_monitor(); ?>
+		<?php \Core\Filter::print_filter_user_monitor(); ?>
 	</td>
 	<!-- Handler -->
 	<td colspan="<?php echo ( 1 * $t_custom_cols ); ?>">

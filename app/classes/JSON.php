@@ -69,7 +69,7 @@ class JSON
 	 * @param array   $p_context The active symbol table at the point the error occurred (optional).
 	 * @return void
 	 */
-	static function \Core\Error::handler( $p_type, $p_error, $p_file, $p_line, array $p_context ) {
+	static function error_handler( $p_type, $p_error, $p_file, $p_line, array $p_context ) {
 		# flush any language overrides to return to user's natural default
 		if( function_exists( 'db_is_connected' ) ) {
 			if( \Core\Database::is_connected() ) {

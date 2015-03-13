@@ -62,7 +62,7 @@ class Access
 					$t_return_page .= '?' . $_SERVER['QUERY_STRING'];
 				}
 				$t_return_page = \Core\String::url( \Core\String::sanitize_url( $t_return_page ) );
-				\Core\Print_Util::header_redirect( 'login_page.php?return=' . $t_return_page );
+				\Core\Print_Util::header_redirect( 'login?return=' . $t_return_page );
 			}
 		} else {
 			if( \Core\Current_User::is_anonymous() ) {

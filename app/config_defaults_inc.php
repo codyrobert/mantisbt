@@ -3365,13 +3365,13 @@ $g_meta_include_file = '';
  * Default page after Login or Set Project
  * @global string $g_default_home_page
  */
-$g_default_home_page = 'my_view_page.php';
+$g_default_home_page = 'my_view';
 
 /**
  * Specify where the user should be sent after logging out.
  * @global string $g_logout_redirect_page
  */
-$g_logout_redirect_page = 'login_page.php';
+$g_logout_redirect_page = 'login';
 
 ###########
 # Headers #

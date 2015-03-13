@@ -95,7 +95,7 @@ $t_verify = \Core\Utility::is_page_name( 'verify.php' );
 $t_force_pw_reset = false;
 
 if( $t_verify || $t_reset_password ) {
-	$t_can_change_password = \Core\Helper::call_custom_function( '\\Core\\Auth::can_change_password', array() );
+	$t_can_change_password = \Core\Helper::call_custom_function( 'auth_can_change_password', array() );
 
 	echo '<div id="reset-passwd-msg" class="important-msg">';
 	echo '<ul>';

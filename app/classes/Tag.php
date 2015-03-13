@@ -508,7 +508,7 @@ class Tag
 	 * @param integer $p_bug_id The bug ID to check.
 	 * @return array Tag attachment row
 	 */
-	static function \Core\Bug::get_row( $p_tag_id, $p_bug_id ) {
+	static function bug_get_row( $p_tag_id, $p_bug_id ) {
 		$t_query = 'SELECT * FROM {bug_tag} WHERE tag_id=' . \Core\Database::param() . ' AND bug_id=' . \Core\Database::param();
 		$t_result = \Core\Database::query( $t_query, array( $p_tag_id, $p_bug_id ) );
 	
@@ -614,7 +614,7 @@ class Tag
 			trigger_error( TAG_NOT_ATTACHED, ERROR );
 		}
 	
-		$t_tag_row = \Core\Tag::\Core\Bug::get_row( $p_tag_id, $p_bug_id );
+		$t_tag_row = \Core\Tag::bug_get_row( $p_tag_id, $p_bug_id );
 		if( $t_user_id == \Core\Tag::get_field( $p_tag_id, 'user_id' ) || $t_user_id == $t_tag_row['user_id'] ) {
 			$t_detach_level = \Core\Config::mantis_get( 'tag_detach_own_threshold' );
 		} else {

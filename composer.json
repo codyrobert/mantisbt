@@ -4,6 +4,8 @@
     	"codyrobert/redbean-single-file": "dev-master",
         "league/plates": "3.*",
         "google/apiclient": "1.0.*@beta",
-        "raveren/kint": "v0.9"
+        "raveren/kint": "v0.9",
+        "cocur/slugify": "dev-master",
+        "wixel/gump": "dev-master"
     }
 }

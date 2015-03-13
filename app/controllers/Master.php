@@ -18,7 +18,7 @@ class Master extends Controller
 		}
 		else
 		{
-			Print_Util::header_redirect('login_page.php');
+			Print_Util::header_redirect('login');
 		}
 
 	}

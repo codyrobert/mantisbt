@@ -60,24 +60,29 @@ class Auth
 	 * @access public
 	 * @return void
 	 */
-	static function ensure_user_authenticated( $p_return_page = '' ) {
+	static function ensure_user_authenticated($p_return_page = '') 
+	{
 		# if logged in
-		if( \Core\Auth::is_user_authenticated() ) {
+		if (self::is_user_authenticated()) 
+		{
 			# check for access enabled
 			#  This also makes sure the cookie is valid
-			if( OFF == \Core\Current_User::get_field( 'enabled' ) ) {
-				\Core\Print_Util::header_redirect( 'logout_page.php' );
+			if(\Core\Current_User::get_field('enabled') == OFF) 
+			{
+				\Core\URL::redirect('logout');
 			}
-		} else {
-			# not logged in
-			if( \Core\Utility::is_blank( $p_return_page ) ) {
-				if( !isset( $_SERVER['REQUEST_URI'] ) ) {
-					$_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'] . '?' . $_SERVER['QUERY_STRING'];
-				}
-				$p_return_page = $_SERVER['REQUEST_URI'];
-			}
-			$p_return_page = \Core\String::url( $p_return_page );
-			\Core\Print_Util::header_redirect( 'login_page.php?return=' . $p_return_page );
+		}
+		else
+		{
+			$request = new Request('GET', [
+				'return' => Config::mantis_get('default_home_page'),
+			], [], [
+				'return' => 'trim|sanitize_url',
+			]);
+			
+			$request->run();
+			
+			\Core\URL::redirect($request->return);
 		}
 	}
 	
@@ -92,7 +97,7 @@ class Auth
 		if( $g_cache_cookie_valid == true ) {
 			return $g_cache_cookie_valid;
 		}
-		$g_cache_cookie_valid = \Core\Auth::is_cookie_valid( \Core\Auth::get_current_user_cookie( $g_login_anonymous ) );
+		$g_cache_cookie_valid = self::is_cookie_valid( self::get_current_user_cookie( $g_login_anonymous ) );
 		return $g_cache_cookie_valid;
 	}
 	
@@ -109,13 +114,13 @@ class Auth
 				$f_username = $_SERVER['REMOTE_USER'];
 				break;
 			case HTTP_AUTH:
-				if( !\Core\Auth::http_is_logout_pending() ) {
+				if( !self::http_is_logout_pending() ) {
 					if( isset( $_SERVER['PHP_AUTH_USER'] ) ) {
 						$f_username = $_SERVER['PHP_AUTH_USER'];
 					}
 				} else {
-					\Core\Auth::http_set_logout_pending( false );
-					\Core\Auth::http_prompt();
+					self::http_set_logout_pending( false );
+					self::http_prompt();
 	
 					# calls exit
 					return null;
@@ -141,15 +146,15 @@ class Auth
 				$f_password = $_SERVER['PHP_AUTH_PW'];
 				break;
 			case HTTP_AUTH:
-				if( !\Core\Auth::http_is_logout_pending() ) {
+				if( !self::http_is_logout_pending() ) {
 	
 					# this will never get hit - see auth_prepare_username
 					if( isset( $_SERVER['PHP_AUTH_PW'] ) ) {
 						$f_password = $_SERVER['PHP_AUTH_PW'];
 					}
 				} else {
-					\Core\Auth::http_set_logout_pending( false );
-					\Core\Auth::http_prompt();
+					self::http_set_logout_pending( false );
+					self::http_prompt();
 	
 					# calls exit
 					return null;
@@ -214,7 +219,7 @@ class Auth
 		$t_user_id = \Core\User::get_id_by_name( $p_username );
 	
 		if( $t_user_id === false ) {
-			$t_user_id = \Core\Auth::auto_create_user( $p_username, $p_password );
+			$t_user_id = self::auto_create_user( $p_username, $p_password );
 			if( $t_user_id === false ) {
 				return false;
 			}
@@ -234,7 +239,7 @@ class Auth
 		if( !\Core\User::is_anonymous( $t_user_id ) ) {
 			# anonymous login didn't work, so check the password
 	
-			if( !\Core\Auth::does_password_match( $t_user_id, $p_password ) ) {
+			if( !self::does_password_match( $t_user_id, $p_password ) ) {
 				\Core\User::increment_failed_login_count( $t_user_id );
 				return false;
 			}
@@ -248,8 +253,8 @@ class Auth
 		\Core\User::reset_lost_password_in_progress_count_to_zero( $t_user_id );
 	
 		# set the cookies
-		\Core\Auth::set_cookies( $t_user_id, $p_perm_login );
-		\Core\Auth::set_tokens( $t_user_id );
+		self::set_cookies( $t_user_id, $p_perm_login );
+		self::set_tokens( $t_user_id );
 	
 		return true;
 	}
@@ -297,7 +302,7 @@ class Auth
 	
 		$t_user_id = \Core\User::get_id_by_name( $t_username );
 		if( $t_user_id === false ) {
-			$t_user_id = \Core\Auth::auto_create_user( $t_username, $p_password );
+			$t_user_id = self::auto_create_user( $t_username, $p_password );
 			if( $t_user_id === false ) {
 				return false;
 			}
@@ -312,7 +317,7 @@ class Auth
 	
 		# validate password if supplied
 		if( null !== $t_password ) {
-			if( !\Core\Auth::does_password_match( $t_user_id, $t_password ) ) {
+			if( !self::does_password_match( $t_user_id, $t_password ) ) {
 				return false;
 			}
 		}
@@ -346,12 +351,12 @@ class Auth
 		$g_cache_cookie_valid = null;
 	
 		# clear cookies, if they were set
-		if( \Core\Auth::clear_cookies() ) {
+		if( self::clear_cookies() ) {
 			\Core\Helper::clear_pref_cookies();
 		}
 	
 		if( HTTP_AUTH == \Core\Config::mantis_get( 'login_method' ) ) {
-			\Core\Auth::http_set_logout_pending( true );
+			self::http_set_logout_pending( true );
 		}
 	
 		\Core\Session::clean();
@@ -415,7 +420,7 @@ class Auth
 	
 		foreach( $t_login_methods as $t_login_method ) {
 			# pass the stored password in as the salt
-			if( \Core\Auth::process_plain_password( $p_test_password, $t_password, $t_login_method ) == $t_password ) {
+			if( self::process_plain_password( $p_test_password, $t_password, $t_login_method ) == $t_password ) {
 				# Do not support migration to PLAIN, since this would be a crazy thing to do.
 				# Also if we do, then a user will be able to login by providing the MD5 value
 				# that is copied from the database.  See #8467 for more details.
@@ -563,7 +568,7 @@ class Auth
 	static function generate_unique_cookie_string() {
 		do {
 			$t_cookie_string = \Core\Crypto::generate_uri_safe_nonce( 64 );
-		} while( !\Core\Auth::is_cookie_string_unique( $t_cookie_string ) );
+		} while( !self::is_cookie_string_unique( $t_cookie_string ) );
 	
 		return $t_cookie_string;
 	}
@@ -675,7 +680,7 @@ class Auth
 			$t_anon_account = \Core\Config::mantis_get( 'anonymous_account' );
 			$t_anon_allowed = \Core\Config::mantis_get( 'allow_anonymous_login' );
 	
-			$t_user_id = \Core\Auth::get_current_user_id();
+			$t_user_id = self::get_current_user_id();
 			$t_username = \Core\User::get_field( $t_user_id, 'username' );
 	
 			# check for anonymous login
@@ -683,7 +688,7 @@ class Auth
 				return true;
 			}
 	
-			return \Core\Auth::reauthenticate_page( $t_user_id, $t_username );
+			return self::reauthenticate_page( $t_user_id, $t_username );
 		}
 	}
 	
@@ -700,8 +705,8 @@ class Auth
 		if( true == \Core\GPC::get_bool( '_authenticate' ) ) {
 			$f_password = \Core\GPC::get_string( 'password', '' );
 	
-			if( \Core\Auth::attempt_login( $p_username, $f_password ) ) {
-				\Core\Auth::set_tokens( $p_user_id );
+			if( self::attempt_login( $p_username, $f_password ) ) {
+				self::set_tokens( $p_user_id );
 				return true;
 			} else {
 				$t_error = true;
@@ -739,7 +744,7 @@ class Auth
 				</div>
 				<div class="field-container">
 					<label for="password"><span><?php echo \Core\Lang::get( 'password' );?></span></label>
-					<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo \Core\Auth::get_password_max_size(); ?>" class="autofocus" /></span>
+					<span class="input"><input id="password" type="password" name="password" size="32" maxlength="<?php echo self::get_password_max_size(); ?>" class="autofocus" /></span>
 					<span class="label-style"></span>
 				</div>
 				<span class="submit-button"><input type="submit" class="button" value="<?php echo \Core\Lang::get( 'login_button' );?>" /></span>
@@ -805,7 +810,7 @@ class Auth
 			return $g_cache_current_user_id;
 		}
 	
-		$t_cookie_string = \Core\Auth::get_current_user_cookie();
+		$t_cookie_string = self::get_current_user_cookie();
 	
 		if( $t_result = \Core\User::search_cache( 'cookie_string', $t_cookie_string ) ) {
 			$t_user_id = (int)$t_result['id'];
@@ -822,7 +827,7 @@ class Auth
 		# The cookie was invalid. Clear the cookie (to allow people to log in again)
 		# and give them an Access Denied message.
 		if( !$t_user_id ) {
-			\Core\Auth::clear_cookies();
+			self::clear_cookies();
 			\Core\Access::denied();
 			exit();
 		}

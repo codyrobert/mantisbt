@@ -1690,7 +1690,7 @@ class Print_Util
 	 */
 	static function recently_visited() {
 		$t_ids = \Core\Last_Visited::get_array();
-	
+		
 		if( count( $t_ids ) == 0 ) {
 			return;
 		}
@@ -1896,7 +1896,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function timezone_option_list( $p_timezone ) {
-		$t_identifiers = timezone_identifiers_list( DateTimeZone::ALL );
+		$t_identifiers = timezone_identifiers_list( \DateTimeZone::ALL );
 	
 		foreach( $t_identifiers as $t_identifier ) {
 			$t_zone = explode( '/', $t_identifier, 2 );
