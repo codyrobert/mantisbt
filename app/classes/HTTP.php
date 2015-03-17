@@ -160,7 +160,7 @@ class HTTP
 					$t_avatar_img_allow = "; img-src 'self' http://www.gravatar.com:80";
 				}
 			}
-			header( 'Content-Security-Policy: default-src \'self\'; style-src \'self\' \'unsafe-inline\'; ' . $t_avatar_img_allow . '; frame-ancestors \'none\'' );
+			header( 'Content-Security-Policy: default-src \'self\' \'unsafe-inline\'; script-src \'self\' \'unsafe-inline\' \'unsafe-eval\' http://ajax.googleapis.com/ ' . $t_avatar_img_allow . '; frame-ancestors \'none\'' );
 			if( \Core\HTTP::is_protocol_https() ) {
 				header( 'Strict-Transport-Security: max-age=7776000' );
 			}

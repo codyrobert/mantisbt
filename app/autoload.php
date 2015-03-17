@@ -6,6 +6,11 @@ spl_autoload_register(function($class)
 	 	$class = str_replace('\\', '/', substr($class, 11));
 	 	require APP.'controllers/'.$class.'.php';
 	 }
+	 elseif (substr($class, 0, 6) == 'Model\\')
+	 {
+	 	$class = str_replace('\\', '/', substr($class, 6));
+	 	require APP.'models/'.$class.'.php';
+	 }
 	 elseif (substr($class, 0, 5) == 'Core\\')
 	 {
 	 	if (strstr($class, 'View_Issues')) echo $class;

@@ -668,7 +668,7 @@ class String
 	 * @return string
 	 */
 	static function get_bug_view_url( $p_bug_id ) {
-		return 'view.php?id=' . $p_bug_id;
+		return 'ticket/'.$p_bug_id.'/';
 	}
 	
 	/**

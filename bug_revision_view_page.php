@@ -50,7 +50,7 @@ $t_title = '';
 if( $f_bug_id ) {
 	$t_bug_id = $f_bug_id;
 	$t_bug_data = \Core\Bug::get( $t_bug_id, true );
-	$t_bug_revisions = array_reverse( \Core\Bug\Revision::list( $t_bug_id ), true );
+	$t_bug_revisions = array_reverse( \Core\Bug\Revision::list_changes( $t_bug_id ), true );
 
 	$t_title = \Core\Lang::get( 'issue_id' ) . $t_bug_id;
 
@@ -58,7 +58,7 @@ if( $f_bug_id ) {
 	$t_bug_id = \Core\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );
 	$t_bug_data = \Core\Bug::get( $t_bug_id, true );
 
-	$t_bug_revisions = \Core\Bug\Revision::list( $t_bug_id, REV_ANY, $f_bugnote_id );
+	$t_bug_revisions = \Core\Bug\Revision::list_changes( $t_bug_id, REV_ANY, $f_bugnote_id );
 
 	$t_title = \Core\Lang::get( 'bugnote' ) . ' ' . $f_bugnote_id;
 

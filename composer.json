@@ -1,11 +1,11 @@
 {
-    "require": {
-        "altorouter/altorouter": "dev-master",
-    	"codyrobert/redbean-single-file": "dev-master",
-        "league/plates": "3.*",
-        "google/apiclient": "1.0.*@beta",
-        "raveren/kint": "v0.9",
-        "cocur/slugify": "dev-master",
-        "wixel/gump": "dev-master"
-    }
+	"require": {
+		"altorouter/altorouter": "dev-master",
+		"league/plates": "3.*",
+		"google/apiclient": "1.0.*@beta",
+		"raveren/kint": "v0.9",
+		"cocur/slugify": "dev-master",
+		"wixel/gump": "dev-master",
+		"symfony/yaml": "2.*"
+	}
 }

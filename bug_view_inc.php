@@ -1,63 +1,8 @@
 <?php
-# MantisBT - A PHP based bugtracking system
-
-# MantisBT is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-#
-# MantisBT is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with MantisBT.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * This include file prints out the bug information
- * $f_bug_id MUST be specified before the file is included
- *
- * @package MantisBT
- * @copyright Copyright 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- * @copyright Copyright 2002  MantisBT Team - mantisbt-dev@lists.sourceforge.net
- * @link http://www.mantisbt.org
- *
- * @uses access_api.php
- * @uses authentication_api.php
- * @uses bug_api.php
- * @uses category_api.php
- * @uses columns_api.php
- * @uses compress_api.php
- * @uses config_api.php
- * @uses constant_inc.php
- * @uses current_user_api.php
- * @uses custom_field_api.php
- * @uses date_api.php
- * @uses event_api.php
- * @uses gpc_api.php
- * @uses helper_api.php
- * @uses html_api.php
- * @uses lang_api.php
- * @uses last_visited_api.php
- * @uses prepare_api.php
- * @uses print_api.php
- * @uses project_api.php
- * @uses string_api.php
- * @uses tag_api.php
- * @uses utility_api.php
- * @uses version_api.php
- */
-
-if( !defined( 'BUG_VIEW_INC_ALLOW' ) ) {
-	return;
-}
-
 require_api( 'custom_field_api.php' );
 
-\Core\HTML::require_css( 'status_config.php' );
 
-$f_bug_id = \Core\GPC::get_int( 'id' );
+$f_bug_id = $bug_id ? $bug_id : \Core\GPC::get_int( 'id' );
 
 \Core\Bug::ensure_exists( $f_bug_id );
 
@@ -74,13 +19,6 @@ $f_history = \Core\GPC::get_bool( 'history', \Core\Config::mantis_get( 'history_
 
 $t_fields = \Core\Config::mantis_get( $t_fields_config_option );
 $t_fields = \Core\Columns::filter_disabled( $t_fields );
-
-\Core\Compress::enable();
-
-if( $t_show_page_header ) {
-	\Core\HTML::page_top( \Core\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
-	\Core\Print_Util::recently_visited();
-}
 
 $t_action_button_position = \Core\Config::mantis_get( 'action_button_position' );
 
@@ -778,7 +716,5 @@ if( $t_show_history ) {
 	define( 'HISTORY_INC_ALLOW', true );
 	include( $t_mantis_dir . 'history_inc.php' );
 }
-
-\Core\HTML::page_bottom();
 
 \Core\Last_Visited::issue( $t_bug_id );

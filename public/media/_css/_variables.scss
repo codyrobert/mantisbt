@@ -1,0 +1,14 @@
+$colorGrey: #777;
+$colorGreyDark: #333;
+$colorGreyLight: #e7e7e7;
+$colorGreyLighter: #f8f8f8;
+
+$colorGreen: #06482f;
+$colorGreenLight: #368745;
+$colorGreenLighter: mix($colorGreenLight, $colorGreyLighter, 50%);
+
+$fontColor: $colorGreyDark;
+$fontFamily: Helvetica, Verdana, sans-serif;
+$fontSize: 14px;
+$fontWeight: 300;
+$lineHeight: 20px;

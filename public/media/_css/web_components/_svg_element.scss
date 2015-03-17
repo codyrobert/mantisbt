@@ -1,0 +1,13 @@
+svg-element,	
+html /deep/ svg-element {
+	display: inline-block;
+	position: relative;
+	
+	&::shadow svg {
+		display: block;
+		height: auto !important;
+		max-height: 100%;
+		max-width: 100%;
+		width: auto !important;
+	}
+}

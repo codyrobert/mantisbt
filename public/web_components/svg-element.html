@@ -1,0 +1,28 @@
+<polymer-element name="svg-element" attributes="src">
+
+	<template></template>
+	
+	<script>
+	Polymer({
+	
+		ready: function()
+		{
+			if (this.src)
+			{
+				xhr = new XMLHttpRequest();
+				xhr.open("GET", this.src, false);
+				
+				xhr.overrideMimeType("image/svg+xml");
+				xhr.send("");
+				
+				if (xhr.responseXML)
+				{
+					this.shadowRoot.appendChild(xhr.responseXML.documentElement);
+				}
+			}
+		}
+				
+	});
+	</script>
+	
+</polymer-element>

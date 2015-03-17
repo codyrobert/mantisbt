@@ -14,10 +14,13 @@ use Core\URL;
 use Core\Utility;
 
 ?><!doctype html>
-<html class="no-js" lang="">
+<html>
 <head>
 	
 	<?php $this->insert('Partials/Head'); ?>
+	
+	<link rel="import" href="<?php echo URL::get('web_components/dropdown-menu.html'); ?>" />
+	<link rel="import" href="<?php echo URL::get('web_components/svg-element.html'); ?>" />
 	
 </head>
 <body class="<?php echo $this->body_class(); ?>">

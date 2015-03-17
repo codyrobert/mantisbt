@@ -1,0 +1,228 @@
+<polymer-element name="dropdown-menu" attributes="label icon structure child">
+	
+	<template>
+		
+		<template if="{{ child === false }}">
+			
+			<svg-element id="toggle" on-tap="{{ toggle }}" src="/media/svgs/{{ icon }}.svg"></svg-element>
+			
+			<div id="menu">
+				<div style="overflow:hidden;">
+					<div id="wrap">
+						<h3>
+							<template if="{{ child !== false }}">
+								<svg-element on-click="{{ goBack }}" src="/media/svgs/arrow-left.svg"></svg-element>
+							</template>
+							{{ label }}
+						</h3>
+						
+						<template repeat="{{ item in structure }}">
+						
+							<div on-click="{{ drillDown }}">
+								<template if="{{ item.href }}">
+								<a on-click="{{ selectItem }}" href="{{ item.href }}">
+									<svg-element src="/media/svgs/{{ item.icon }}.svg"></svg-element>
+									{{ item.label }}
+								</a>
+								</template>
+								<template if="{{ !item.href }}">
+								<a on-click="{{ selectItem }}">
+									<svg-element src="/media/svgs/{{ item.icon }}.svg"></svg-element>
+									{{ item.label }}
+								</a>
+								</template>
+								
+								<template if="{{ item.structure && item.structure.length > 0 }}">
+									<dropdown-menu label="{{ item.label }}" icon="{{ item.icon }}" structure="{{ item.structure }}" child open></dropdown-menu>
+								</template>
+							</div>
+							
+						</template>
+					</div>
+				</div>
+			</div>
+			
+		</template>
+		
+		<template if="{{ child !== false }}">
+			
+			<div id="wrap">
+				<h3>
+					<template if="{{ child !== false }}">
+						<svg-element on-click="{{ goBack }}" src="/media/svgs/arrow-left.svg"></svg-element>
+					</template>
+					{{ label }}
+				</h3>
+				
+				<template repeat="{{ item in structure }}">
+	
+					<template if="{{ item.href }}">
+					<a on-click="{{ selectItem }}" href="{{ item.href }}">
+						<svg-element src="/media/svgs/{{ item.icon }}.svg"></svg-element>
+						{{ item.label }}
+					</a>
+					</template>
+					<template if="{{ !item.href }}">
+					<a on-click="{{ selectItem }}">
+						<svg-element src="/media/svgs/{{ item.icon }}.svg"></svg-element>
+						{{ item.label }}
+					</a>
+					</template>
+					
+				</template>
+			</div>
+			
+		</template>
+		
+	</template>
+	
+	<script>
+	Polymer("dropdown-menu", {
+	
+		created: function()
+		{
+			this.child = false;
+			this.hasBeenOpened = false;
+			this.icon = "settings-2";
+			this.structure = [];
+		},
+		
+		selectItem: function(event, detail, sender)
+		{
+			if (event.toElement.href)
+			{
+				event.stopPropagation();
+				this.topAncestor().open = false;
+			}
+		},
+		
+		topAncestor: function()
+		{
+			var ancestor = this;
+			
+			if (this.child)
+			{
+				do
+				{
+					if (ancestor.nodeType === 11) // 11 = DOCUMENT_FRAGMENT_NODE
+					{
+						ancestor = ancestor.host;
+					}
+					else
+					{
+						ancestor = ancestor.parentNode;
+					}
+				}
+				while (ancestor.localName != "dropdown-menu" && ancestor.child !== false);
+			}
+			
+			return ancestor;
+		},
+		
+		closestAncestor: function()
+		{
+			var ancestor = this;
+			
+			if (this.child)
+			{
+				do
+				{
+					ancestor = ancestor.parentNode;
+				}
+				while (ancestor.nodeType != 11); // 11 = DOCUMENT_FRAGMENT_NODE
+				
+				ancestor = ancestor.host;
+			}
+			
+			return ancestor;
+		},
+	
+		ready: function()
+		{
+			if (this.child === false)
+			{	
+				this.$.menu.style.transition = "0.3s all";
+				
+				this.$.wrap.style.position = "relative";
+				this.$.wrap.style.transition = "0.3s all";
+			}
+			else
+			{
+				this.$.wrap.style.left = "100%";
+				this.$.wrap.style.position = "absolute";
+				this.$.wrap.style.top = 0;
+				this.$.wrap.style.transition = "0.3s all";
+			}
+		},
+		
+		resetToTop: function()
+		{
+			var top = this.topAncestor();
+			
+			top.$.wrap.style.transform = "translate(0,0)";
+			top.$.menu.style.height = top.$.wrap.offsetHeight+"px";
+			top.$.menu.style.width = top.$.wrap.offsetWidth+"px";
+		},
+	
+		drillDown: function(event, detail, sender)
+		{
+			var dropdown = sender.getElementsByTagName("dropdown-menu")[0];
+			
+			if (dropdown && dropdown.shadowRoot && dropdown.shadowRoot.childNodes.length > 0)
+			{
+				var top = this.topAncestor();
+				var ancestor = this.closestAncestor();
+				
+				var oldOffset = ancestor.$.wrap.offsetWidth;
+				
+				ancestor.$.wrap.style.transform = "translate(-"+oldOffset+"px,0)";
+				ancestor.$.wrap.style.width = oldOffset+"px";
+				
+				top.$.menu.style.height = dropdown.$.wrap.offsetHeight+"px";
+				top.$.menu.style.width = dropdown.$.wrap.offsetWidth+"px";
+			}
+		},
+		
+		goBack: function(event, detail, sender)
+		{
+			event.stopPropagation();
+			
+			var top = this.topAncestor();
+			var ancestor = this.closestAncestor();
+				
+			ancestor.$.wrap.style.transform = "translate(0,0)";
+				
+			top.$.menu.style.height = ancestor.$.wrap.offsetHeight+"px";
+			top.$.menu.style.width = ancestor.$.wrap.offsetWidth+"px";
+		},
+		
+		publish: 
+		{
+			open: 
+			{
+				value: false,
+				reflect: true
+			}
+		},
+	
+		toggle: function() 
+		{
+			this.open = !this.open;
+			
+			if (this.open)
+			{
+				this.resetToTop();
+			}
+			
+			if (this.hasBeenOpened === false)
+			{
+				this.$.menu.style.height = this.$.wrap.offsetHeight+"px";
+				this.$.menu.style.width = this.$.wrap.offsetWidth+"px";
+				this.hasBeenOpened = true;
+			}
+		}
+				
+	});
+	</script>
+	
+</polymer-element>

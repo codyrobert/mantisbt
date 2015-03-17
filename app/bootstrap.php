@@ -3,9 +3,10 @@
 -------------------------------------------------------------- */
 define('IS_LOCAL_ENVIRONMENT',	(bool)(substr($_SERVER['HTTP_HOST'], -4) == '.dev'));
 
-define('ROOT',					$_SERVER['DOCUMENT_ROOT'].'/');
-define('APP',					$_SERVER['DOCUMENT_ROOT'].'/app/');
-define('VENDOR',				$_SERVER['DOCUMENT_ROOT'].'/vendor/');
+define('ROOT',					dirname(__DIR__).'/');
+define('APP',					ROOT.'/app/');
+define('MEDIA',					ROOT.'/public/media/');
+define('VENDOR',				ROOT.'/vendor/');
 
 
 /* Require config, globals, and autoloads

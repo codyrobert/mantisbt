@@ -1,0 +1,19 @@
+{
+  "name": "com.flickerbox.bugs2",
+  "version": "0.0.0",
+  "homepage": "https://github.com/codyrobert/mantisbt",
+  "authors": [
+    "Cody Baker <cody@flickerbox.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.5"
+  }
+}

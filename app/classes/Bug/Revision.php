@@ -256,7 +256,7 @@ class Revision
 	 * @param integer $p_bugnote_id A bugnote identifier.
 	 * @return array/null Array of Revision rows
 	 */
-	static function list( $p_bug_id, $p_type = REV_ANY, $p_bugnote_id = 0 ) {
+	static function list_changes( $p_bug_id, $p_type = REV_ANY, $p_bugnote_id = 0 ) {
 		$t_params = array( $p_bug_id );
 		$t_query = 'SELECT * FROM {bug_revision} WHERE bug_id=' . \Core\Database::param();
 	
