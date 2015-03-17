@@ -811,6 +811,9 @@ class Email
 	 * @return boolean
 	 */
 	static function send( \Core\Email\Data $p_email_data ) {
+	
+		return true;
+	
 		global $g_phpMailer;
 	
 		$t_email_data = $p_email_data;
