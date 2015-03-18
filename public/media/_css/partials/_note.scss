@@ -1,0 +1,15 @@
+.bug-note {
+	background: mix($colorGreyLight, $colorGreyLighter, 30%);
+	padding: 10px;
+	
+	&:nth-child(2n+1) {
+		background: $colorGreyLight;
+	}
+}
+
+.avatar {
+	border-radius: 60px;
+	height: 60px !important;
+	margin: 0;
+	width: 60px !important;
+}

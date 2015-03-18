@@ -396,7 +396,7 @@ if( $t_resolve_issue ) {
 			$t_updated_bug->handler_id !== NO_USER ) {
 	\Core\Email::generic( $f_bug_id, 'owner', 'email_notification_title_for_action_bug_assigned' );
 } else if( $t_existing_bug->status !== $t_updated_bug->status ) {
-	$t_new_status_label = \Core\MantisEnum::getLabel( \Core\Config::mantis_get( 'status_enum_string' ), $t_updated_bug->status );
+	$t_new_status_label = \Core\Enum::getLabel( \Core\Config::mantis_get( 'status_enum_string' ), $t_updated_bug->status );
 	$t_new_status_label = str_replace( ' ', '_', $t_new_status_label );
 	\Core\Email::generic( $f_bug_id, $t_new_status_label, 'email_notification_title_for_status_bug_' . $t_new_status_label );
 } else {

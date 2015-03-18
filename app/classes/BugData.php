@@ -629,7 +629,7 @@ class BugData {
 
 			# status changed
 			if( $t_old_data->status != $this->status ) {
-				$t_status = \Core\MantisEnum::getLabel( \Core\Config::mantis_get( 'status_enum_string' ), $this->status );
+				$t_status = \Core\Enum::getLabel( \Core\Config::mantis_get( 'status_enum_string' ), $this->status );
 				$t_status = str_replace( ' ', '_', $t_status );
 				\Core\Email::generic( $c_bug_id, $t_status, 'email_notification_title_for_status_bug_' . $t_status );
 				return true;

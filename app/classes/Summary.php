@@ -808,7 +808,7 @@ class Summary
 		$t_project_id = \Core\Helper::get_current_project();
 	
 		# Get the resolution values ot use
-		$c_res_s = \Core\MantisEnum::getValues( $p_resolution_enum_string );
+		$c_res_s = \Core\Enum::getValues( $p_resolution_enum_string );
 		$t_enum_res_count = count( $c_res_s );
 	
 		$t_specific_where = \Core\Helper::project_specific_where( $t_project_id );
@@ -916,7 +916,7 @@ class Summary
 		$t_project_id = \Core\Helper::get_current_project();
 	
 		# Get the resolution values ot use
-		$c_res_s = \Core\MantisEnum::getValues( $p_resolution_enum_string );
+		$c_res_s = \Core\Enum::getValues( $p_resolution_enum_string );
 		$t_enum_res_count = count( $c_res_s );
 	
 		# Checking if it's a per project statistic or all projects
@@ -1035,11 +1035,11 @@ class Summary
 		$t_resolution_multipliers = \Core\Config::mantis_get( 'resolution_multipliers' );
 	
 		# Get the severity values to use
-		$c_sev_s = \Core\MantisEnum::getValues( $p_severity_enum_string );
+		$c_sev_s = \Core\Enum::getValues( $p_severity_enum_string );
 		$t_enum_sev_count = count( $c_sev_s );
 	
 		# Get the resolution values to use
-		$c_res_s = \Core\MantisEnum::getValues( $p_resolution_enum_string );
+		$c_res_s = \Core\Enum::getValues( $p_resolution_enum_string );
 	
 		# Checking if it's a per project statistic or all projects
 		$t_specific_where = \Core\Helper::project_specific_where( $t_project_id );

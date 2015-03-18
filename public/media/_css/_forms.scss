@@ -1,4 +1,5 @@
 form {
+	display: block;
 	overflow: auto;
 	position: relative;
 	zoom: 1;
@@ -8,33 +9,40 @@ form {
 	overflow: hidden;
 	zoom: 1;
 	
+	+ .field-container {
+		border-top: 1px solid #fff;
+	}
+	
 	&:nth-child(2n) {
 		.field-label {
 			background: mix($colorGreenLighter, $colorGreyLighter, 70%);
 		}
 		
 		.field-input {
-			background: mix($colorGreenLighter, $colorGreyLighter, 10%);
+			background: mix($colorGreenLighter, $colorGreyLighter, 15%);
 		}
 	}
 }
 
 .field-label {
 	background: mix($colorGreenLighter, $colorGreyLighter, 50%);
+	border-right: 1px solid #fff;
+	box-sizing: border-box;
 	color: mix($colorGreen, $colorGreenLighter, 90%);
 	float: left;
 	font-weight: 600;
 	margin-bottom: -989px;
 	padding: 10px 20px 999px 20px;
 	text-align: right;
-	width: 280px;
+	width: 320px;
 }
 
 .field-input {
+	background: mix($colorGreenLighter, $colorGreyLighter, 05%);
 	margin-left: 320px;
 	padding: 10px 20px;
 	
-	input, select, textarea {
+	input[type=text], input[type=password], input[type=email], select, textarea {
 		border: 1px solid mix($colorGrey, $colorGreyLight, 25%);
 		display: block;
 		font-size: 14px;

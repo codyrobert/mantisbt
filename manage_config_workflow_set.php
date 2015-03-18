@@ -90,7 +90,7 @@ foreach( $t_valid_thresholds as $t_threshold ) {
 	}
 }
 
-$t_enum_status = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+$t_enum_status = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 
 # process the workflow by reversing the flags to a matrix and creating the appropriate string
 if( \Core\Config::get_access( 'status_enum_workflow' ) <= $t_access ) {

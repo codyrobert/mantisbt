@@ -1041,7 +1041,7 @@ $g_sort_by_last_name = OFF;
  * @global integer|string $g_show_avatar
  * @see $g_show_avatar_threshold
  */
-$g_show_avatar = OFF;
+$g_show_avatar = ON;
 
 /**
  * Only users above this threshold will have their avatar shown

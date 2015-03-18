@@ -128,7 +128,7 @@ class Helper
 	 * @return string
 	 */
 	static function get_status_color( $p_status, $p_user = null, $p_project = null ) {
-		$t_status_label = \Core\MantisEnum::getLabel( \Core\Config::mantis_get( 'status_enum_string', null, $p_user, $p_project ), $p_status );
+		$t_status_label = \Core\Enum::getLabel( \Core\Config::mantis_get( 'status_enum_string', null, $p_user, $p_project ), $p_status );
 		$t_status_colors = \Core\Config::mantis_get( 'status_colors', null, $p_user, $p_project );
 		$t_color = '#ffffff';
 	
@@ -185,7 +185,7 @@ class Helper
 		$t_config_var = \Core\Config::mantis_get( $p_enum_name . '_enum_string', null, $p_user, $p_project );
 		$t_string_var = \Core\Lang::get( $p_enum_name . '_enum_string' );
 	
-		return \Core\MantisEnum::getLocalizedLabel( $t_config_var, $t_string_var, $p_val );
+		return \Core\Enum::getLocalizedLabel( $t_config_var, $t_string_var, $p_val );
 	}
 	
 	/**

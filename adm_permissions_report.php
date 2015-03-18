@@ -47,7 +47,7 @@ require_once( 'core.php' );
  * @return string
  */
 function get_section_begin_apr( $p_section_name ) {
-	$t_access_levels = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
+	$t_access_levels = \Core\Enum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 
 	$t_output = '<div class="table-container">';
 	$t_output .= '<table>';
@@ -57,7 +57,7 @@ function get_section_begin_apr( $p_section_name ) {
 	$t_output .= '<th class="form-title">' . \Core\Lang::get( 'perm_rpt_capability' ) . '</th>';
 
 	foreach( $t_access_levels as $t_access_level ) {
-		$t_output .= '<th class="form-title" style="text-align:center">&#160;' . \Core\MantisEnum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
+		$t_output .= '<th class="form-title" style="text-align:center">&#160;' . \Core\Enum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
 	}
 
 	$t_output .= '</tr>' . "\n";
@@ -74,7 +74,7 @@ function get_section_begin_apr( $p_section_name ) {
  * @return string
  */
 function get_capability_row( $p_caption, $p_access_level ) {
-	$t_access_levels = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
+	$t_access_levels = \Core\Enum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 
 	$t_output = '<tr><td>' . \Core\String::display( $p_caption ) . '</td>';
 	foreach( $t_access_levels as $t_access_level ) {

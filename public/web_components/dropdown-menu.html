@@ -1,13 +1,13 @@
-<polymer-element name="dropdown-menu" attributes="label icon structure child">
+<polymer-element name="dropdown-menu" attributes="label icon structure child active">
 	
 	<template>
 		
 		<template if="{{ child === false }}">
 			
-			<svg-element id="toggle" on-tap="{{ toggle }}" src="/media/svgs/{{ icon }}.svg"></svg-element>
+			<svg-element id="toggle" on-tap="{{ toggleOpen }}" src="/media/svgs/{{ icon }}.svg"></svg-element>
 			
 			<div id="menu">
-				<div style="overflow:hidden;">
+				<div style="height:100%;overflow:hidden;">
 					<div id="wrap">
 						<h3>
 							<template if="{{ child !== false }}">
@@ -81,10 +81,15 @@
 	
 		created: function()
 		{
+			this.active = false;
 			this.child = false;
 			this.hasBeenOpened = false;
 			this.icon = "settings-2";
 			this.structure = [];
+		},
+		
+		eventDelegates: {
+			click: "stopPropagation"
 		},
 		
 		selectItem: function(event, detail, sender)
@@ -152,7 +157,10 @@
 				this.$.wrap.style.position = "absolute";
 				this.$.wrap.style.top = 0;
 				this.$.wrap.style.transition = "0.3s all";
+				this.$.wrap.style.visibility = "hidden";
 			}
+			
+			document.addEventListener("click", this.close.bind(this), false);
 		},
 		
 		resetToTop: function()
@@ -180,6 +188,12 @@
 				
 				top.$.menu.style.height = dropdown.$.wrap.offsetHeight+"px";
 				top.$.menu.style.width = dropdown.$.wrap.offsetWidth+"px";
+				
+				dropdown.$.wrap.style.visibility = "visible";
+				dropdown.$.wrap.style.zIndex = 10;
+				
+				dropdown.active = true;
+				ancestor.active = false;
 			}
 		},
 		
@@ -194,23 +208,55 @@
 				
 			top.$.menu.style.height = ancestor.$.wrap.offsetHeight+"px";
 			top.$.menu.style.width = ancestor.$.wrap.offsetWidth+"px";
+				
+			this.$.wrap.style.visibility = "hidden";
+			this.$.wrap.style.zIndex = 1;
+			
+			this.active = false;
+			ancestor.active = true;;
 		},
 		
 		publish: 
 		{
+			active:
+			{
+				value: false,
+				reflect: true
+			},
+			
 			open: 
 			{
 				value: false,
 				reflect: true
 			}
 		},
+		
+		stopPropagation: function(event)
+		{
+			event.stopPropagation();	
+		},
+		
+		close: function()
+		{
+			if (this.child === true)
+			{
+				this.$.wrap.style.visibility = "hidden";
+				this.$.wrap.style.zIndex = 1;
+			}
+			else if (this.open === true)
+			{
+				this.open = !this.open;
+				this.active = false;
+			}
+		},
 	
-		toggle: function() 
+		toggleOpen: function() 
 		{
 			this.open = !this.open;
 			
 			if (this.open)
 			{
+				this.active = true;
 				this.resetToTop();
 			}
 			

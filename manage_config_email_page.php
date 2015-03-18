@@ -198,7 +198,7 @@ function show_notify_threshold( $p_access, $p_action ) {
  * @return void
  */
 function get_section_begin_for_email( $p_section_name ) {
-	$t_access_levels = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
+	$t_access_levels = \Core\Enum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 	echo '<div class="form-container">'. "\n";
 	echo '<table>' . "\n";
 	echo '  <thead>' . "\n";
@@ -214,7 +214,7 @@ function get_section_begin_for_email( $p_section_name ) {
 	echo '    </tr><tr class="row-category2">' . "\n";
 
 	foreach( $t_access_levels as $t_access_level ) {
-		echo '      <th>&#160;' . \Core\MantisEnum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>' . "\n";
+		echo '      <th>&#160;' . \Core\Enum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>' . "\n";
 	}
 
 	echo '    </tr>' . "\n";
@@ -230,7 +230,7 @@ function get_section_begin_for_email( $p_section_name ) {
  * @return void
  */
 function get_capability_row_for_email( $p_caption, $p_message_type ) {
-	$t_access_levels = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
+	$t_access_levels = \Core\Enum::getValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 
 	echo '<tr><td>' . \Core\String::display( $p_caption ) . '</td>' . "\n";
 	echo '  <td' . color_notify_flag( $p_message_type, 'reporter' ) . '>' . show_notify_flag( $p_message_type, 'reporter' )  . '</td>' . "\n";
@@ -270,7 +270,7 @@ if( \Core\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
 
 $t_actions[] = 'relation';
 
-$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+$t_statuses = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 foreach( $t_statuses as $t_status ) {
 	$t_actions[] =  $t_status;
 }
@@ -340,7 +340,7 @@ if( \Core\Config::mantis_get( 'enable_email_notification' ) == ON ) {
 
 	get_capability_row_for_email( \Core\Lang::get( 'email_on_relationship_changed' ), 'relation' );
 
-	$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+	$t_statuses = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 	foreach ( $t_statuses as $t_status => $t_label ) {
 		get_capability_row_for_email( \Core\Lang::get( 'status_changed_to' ) . ' \'' . \Core\Helper::get_enum_element( 'status', $t_status ) . '\'', $t_label );
 	}

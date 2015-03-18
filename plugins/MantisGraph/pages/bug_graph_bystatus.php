@@ -71,8 +71,8 @@ if( $t_end == false || $t_start == false ) {
 	return;
 }
 # grab all status levels
-$t_status_arr  = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
-$t_status_labels  = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Lang::get( 'status_enum_string' ) );
+$t_status_arr  = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+$t_status_labels  = \Core\Enum::getAssocArrayIndexedByValues( \Core\Lang::get( 'status_enum_string' ) );
 $t_default_bug_status = \Core\Config::mantis_get( 'bug_submit_status' );
 
 $t_bug = array();

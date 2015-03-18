@@ -111,7 +111,7 @@ if( \Core\Config::mantis_get( 'bug_assigned_status' ) == $f_new_status ) {
 	}
 }
 
-$t_status_label = str_replace( ' ', '_', \Core\MantisEnum::getLabel( \Core\Config::mantis_get( 'status_enum_string' ), $f_new_status ) );
+$t_status_label = str_replace( ' ', '_', \Core\Enum::getLabel( \Core\Config::mantis_get( 'status_enum_string' ), $f_new_status ) );
 
 \Core\HTML::page_top( \Core\Bug::format_summary( $f_bug_id, SUMMARY_CAPTION ) );
 

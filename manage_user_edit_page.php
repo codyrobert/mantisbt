@@ -127,7 +127,7 @@ $t_ldap = ( LDAP == \Core\Config::mantis_get( 'login_method' ) );
 				<span class="select">
 					<select id="edit-access-level" name="access_level"><?php
 						$t_access_level = $t_user['access_level'];
-						if( !\Core\MantisEnum::hasValue( \Core\Config::mantis_get( 'access_levels_enum_string' ), $t_access_level ) ) {
+						if( !\Core\Enum::hasValue( \Core\Config::mantis_get( 'access_levels_enum_string' ), $t_access_level ) ) {
 							$t_access_level = \Core\Config::mantis_get( 'default_new_account_access_level' );
 						}
 						\Core\Print_Util::project_access_levels_option_list( (int)$t_access_level ); ?>

@@ -2,74 +2,227 @@
 use Core\Access;
 use Core\Auth;
 use Core\Bug;
+use Core\Category;
 use Core\Config;
+use Core\Current_User;
+use Core\GPC;
+use Core\Helper;
 use Core\Lang;
-use Core\SVG_Icon;
+use Core\Print_Util;
+use Core\Project;
+use Core\String;
+use Core\URL;
 
 $this->layout('Layouts/Master', $this->data);
 
-$f_bug_id = $ticket->id;
+$t_fields_config_option = 'bug_view_page_fields';
+
+$bug_id = $ticket->id;
+$f_bug_id = $bug_id;
 $p_bug = $t_bug = Bug::get( $f_bug_id, true );
+
+$g_project_override = $t_bug->project_id;
 ?>
 
 
 <header class="page-title">
 
-	<dropdown-menu label="Options" structure="[
-		{'label': 'Edit', 'href': '#', 'icon': 'pencil'},
-		{
-			'label': 'Assign to...',
-			'icon': 'user-4',
-			'structure': [
-				{'label': 'Myself', 'href': '#', 'icon': 'user-4'},
-				{'label': 'Reporter', 'href': '#', 'icon': 'user-4'},
-				{'label': 'Hamza', 'href': '#', 'icon': 'user-4'}
-			]
-		},
-		{'label': 'Change status to...', 'href': '#', 'icon': 'bullhorn'},
-		{'label': 'Monitor', 'href': '#', 'icon': 'watch'},
-		{'label': 'Move', 'href': '#', 'icon': 'arrow-right'},
-		{'label': 'Clone', 'href': '#', 'icon': 'subtract'},
-		{'label': 'Close', 'href': '#', 'icon': 'delete'},
-		{'label': 'Print', 'href': '#', 'icon': 'print'}
-	]"></dropdown-menu>
+	<div class="tools">
 	
-	<h2><?php echo $ticket->summary; ?></h2>
+		<a class="notify" href="<?php echo URL::get('bug_reminder_page.php?bug_id='.$ticket->id); ?>"><svg-element src="<?php echo URL::get('/media/svgs/bell.svg'); ?>" style="height:26px;width:26px;"></svg-element></a>
+	
+		<dropdown-menu label="Options" structure='<?php
+		
+		$statuses = [];
+				
+		foreach ($ticket->get_status_list() as $key => $label)
+		{
+			$statuses[] = ['label' => $label, 'href' => '#'.$key, 'icon' => 'asterisk'];
+		}
+		
+		echo json_encode([
+		
+			['label' => 'Edit', 'href' => '#', 'icon' => 'pencil'],
+			
+			['label' => 'Assign to...', 'icon' => 'user-4', 'structure' => [
+			
+				['label' => 'Myself', 'href' => '#', 'icon' => 'user-4'],
+				['label' => 'Reporter', 'href' => '#', 'icon' => 'user-4'],
+				['label' => 'Hamza', 'href' => '#', 'icon' => 'user-4']
+				
+			]],
+			
+			['label' => 'Change status to...', 'icon' => 'bullhorn', 'structure' => $statuses],
+			
+			['label' => 'Monitor', 'href' => '#', 'icon' => 'watch'],
+			['label' => 'Move', 'href' => '#', 'icon' => 'arrow-right'],
+			['label' => 'Clone', 'href' => '#', 'icon' => 'subtract'],
+			['label' => 'Close', 'href' => '#', 'icon' => 'delete'],
+			['label' => 'Print', 'href' => '#', 'icon' => 'print'],
+			
+		]); ?>'></dropdown-menu>
+	
+	</div>
+	
+	<h2>
+		<?php if ($show->id): ?><span>#<?php echo Bug::format_id($ticket->id); ?></span><?php endif; ?>
+		<?php echo $ticket->summary; ?>
+	</h2>
 	
 </header>
 
+<div class="main">
 
+	<div class="main-sidebar">
+	
+		<aside id="people">
+		
+			<h5>People</h5>
+			
+			<p>
+				<strong><?php echo Lang::get( 'reporter' ); ?>:</strong> <?php echo Print_Util::user_with_subject($ticket->reporter_id, $ticket->id); ?><br />
+				<strong><?php echo Lang::get( 'assigned_to' ); ?>:</strong> <?php echo Print_Util::user_with_subject($ticket->handler_id, $ticket->id); ?></strong>	
+			</p>
+			
+		</aside>
+	
+		<aside id="attachments">
+		
+			<h5><?php echo Lang::get( 'attached_files' ); ?></h5>
+			
+			<?php Print_Util::bug_attachments_list($ticket->id); ?>
+			
+		</aside>
+	
+	</div>
+	
+	<div class="main-body">
+		
+		<section id="ticket_description">
+		
+			<h4 class="section-title">Description</h4>
+			
+			<div class="content">
+				<?php echo String::display_links($ticket->description); ?>
+			</div>
+			
+			<?php if ($show->steps_to_reproduce && $ticket->steps_to_reproduce): ?>
+			<h4><?php echo Lang::get( 'steps_to_reproduce' ); ?></h4>
+			
+			<div class="content">
+				<?php echo String::display_links($ticket->steps_to_reproduce); ?>
+			</div>
+			<?php endif; ?>
+			
+			<?php if ($show->additional_information && $ticket->additional_information): ?>
+			<h4><?php echo Lang::get( 'additional_information' ); ?></h4>
+			
+			<div class="content">
+				<?php echo String::display_links($ticket->additional_information); ?>
+			</div>
+			<?php endif; ?>
+			
+		</section>
+	
+		<details id="ticket-details" open>
+		
+			<summary>Details</summary>
+			
+			<div class="row">
+				<div class="column-1-4">
+					<?php if ($show->project): ?><div><strong><?php echo Lang::get('email_project'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->category_id): ?><div><strong><?php echo Lang::get('category'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->priority): ?><div><strong><?php echo Lang::get('priority'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->severity): ?><div><strong><?php echo Lang::get('severity'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->status): ?><div><strong><?php echo Lang::get('status'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->projection): ?><div><strong><?php echo Lang::get('projection'); ?>:</strong></div><?php endif; ?>
+				</div>
+				
+				<div class="column-1-4">
+					<?php if ($show->project): ?><div><?php echo Project::get_name($ticket->project_id); ?></div><?php endif; ?>
+					<?php if ($show->category_id): ?><div><?php echo Category::full_name($ticket->category_id); ?></div><?php endif; ?>
+					<?php if ($show->priority): ?><div><?php echo Helper::get_enum_element('priority', $ticket->priority); ?></div><?php endif; ?>
+					<?php if ($show->severity): ?><div><?php echo Helper::get_enum_element('severity', $ticket->severity); ?></div><?php endif; ?>
+					<?php if ($show->status): ?><div><?php echo Helper::get_enum_element('status', $ticket->status); ?></div><?php endif; ?>
+					<?php if ($show->projection): ?><div><?php echo Helper::get_enum_element('projection', $ticket->projection); ?></div><?php endif; ?>
+				</div>
+					
+				<div class="column-1-4">
+					<?php if ($show->date_submitted): ?><div><strong><?php echo Lang::get('date_submitted'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->last_updated): ?><div><strong><?php echo Lang::get('last_update'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->due_date): ?><div><strong><?php echo Lang::get('due_date'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->reproducibility): ?><div><strong><?php echo Lang::get('reproducibility'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->resolution): ?><div><strong><?php echo Lang::get('resolution'); ?>:</strong></div><?php endif; ?>
+					<?php if ($show->eta): ?><div><strong><?php echo Lang::get('eta'); ?>:</strong></div><?php endif; ?>
+				</div>
+				
+				<div class="column-1-4">
+					<?php if ($show->date_submitted): ?><div><?php echo date(Config::mantis_get('normal_date_format'), $ticket->date_submitted); ?></div><?php endif; ?>
+					<?php if ($show->last_updated): ?><div><?php echo date(Config::mantis_get('normal_date_format'), $ticket->last_updated); ?></div><?php endif; ?>
+					<?php if ($show->due_date): ?><div><?php echo date(Config::mantis_get('normal_date_format'), $ticket->due_date); ?></div><?php endif; ?>
+					<?php if ($show->reproducibility): ?><div><?php echo Helper::get_enum_element('reproducibility', $ticket->reproducibility); ?></div><?php endif; ?>
+					<?php if ($show->resolution): ?><div><?php echo Helper::get_enum_element('resolution', $ticket->resolution); ?></div><?php endif; ?>
+					<?php if ($show->eta): ?><div><?php echo Helper::get_enum_element('eta', $ticket->eta); ?></div><?php endif; ?>
+				</div>
+			</div>
+	
+			<!--
+			<div class="row">
+				<div class="column-1-4">
+					<div><strong><?php echo Lang::get('email_project'); ?>:</strong></div>
+					<div><strong><?php echo Lang::get('category'); ?>:</strong></div>
+				</div>
+				
+				<div class="column-3-4">
+					<div><?php echo Project::get_name($ticket->project_id); ?></div>
+					<div><?php echo Category::full_name($ticket->category_id); ?></div>
+				</div>
+			</div>
+			-->
+		
+		</details>
+		
+		<?php if(Current_User::get_pref('bugnote_order') === DESC && !Bug::is_readonly($ticket->id)): ?>
+				<details open>
+					<summary><?php echo Lang::get('add_bugnote_title'); ?></summary>
+					<?php $this->insert('Partials/Forms/Add_Note', ['ticket' => $ticket, 'order' => Current_User::get_pref('bugnote_order')]); ?>
+				</details>
+		<?php endif; ?>
+		
+		<?php $this->insert('Partials/View_Notes', ['ticket' => $ticket]); ?>
+		
+		<?php if(Current_User::get_pref('bugnote_order') === ASC && !Bug::is_readonly($ticket->id)): ?>
+				<details open>
+					<summary><?php echo Lang::get('add_bugnote_title'); ?></summary>
+					<?php $this->insert('Partials/Forms/Add_Note', ['ticket' => $ticket, 'order' => Current_User::get_pref('bugnote_order')]); ?>
+				</details>
+		<?php endif; ?>
+		
+		
+	</div>
 
+</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
+<?php
+return;
+?>
 
 <?php
 # In case the current project is not the same project of the bug we are
 # viewing, override the current project. This ensures all config_get and other
 # per-project function calls use the project ID of this bug.
-$g_project_override = $t_bug->project_id;
 
-Access::ensure_bug_level( Config::mantis_get( 'view_bug_threshold' ), $f_bug_id );
 
-$f_history = \Core\GPC::get_bool( 'history', Config::mantis_get( 'history_default_visible' ) );
+
+
+$f_history = GPC::get_bool( 'history', Config::mantis_get( 'history_default_visible' ) );
 
 $t_fields = Config::mantis_get( $t_fields_config_option );
 $t_fields = \Core\Columns::filter_disabled( $t_fields );
 
 $t_action_button_position = Config::mantis_get( 'action_button_position' );
 
-$t_bugslist = \Core\GPC::get_cookie( Config::mantis_get( 'bug_list_cookie' ), false );
+$t_bugslist = GPC::get_cookie( Config::mantis_get( 'bug_list_cookie' ), false );
 
 $t_show_versions = \Core\Version::should_show_product_version( $t_bug->project_id );
 $t_show_product_version = $t_show_versions && in_array( 'product_version', $t_fields );
@@ -105,7 +258,7 @@ $t_target_version_string = \Core\String::display_line( $t_target_version_string 
 $t_fixed_in_version_string = \Core\String::display_line( $t_fixed_in_version_string );
 
 $t_bug_id = $f_bug_id;
-$t_form_title = \Core\Lang::get( 'bug_view_title' );
+$t_form_title = Lang::get( 'bug_view_title' );
 $t_wiki_link = Config::get_global( 'wiki_enable' ) == ON ? 'wiki.php?id=' . $f_bug_id : '';
 
 if( Access::has_bug_level( Config::mantis_get( 'view_history_threshold' ), $f_bug_id ) ) {
@@ -193,53 +346,8 @@ $t_description = $t_show_description ? \Core\String::display_links( $t_bug->desc
 $t_steps_to_reproduce = $t_show_steps_to_reproduce ? \Core\String::display_links( $t_bug->steps_to_reproduce ) : '';
 $t_additional_information = $t_show_additional_information ? \Core\String::display_links( $t_bug->additional_information ) : '';
 
-$t_links = \Core\Event::signal( 'EVENT_MENU_ISSUE', $f_bug_id );
 
-#
-# Start of Template
-#
 
-echo '<br />';
-echo '<div id="view-issue-details" class="table-container">';
-echo '<table>';
-echo '<thead><tr class="bug-nav">';
-
-# Form Title
-echo '<td class="form-title" colspan="', $t_bugslist ? '3' : '4', '">';
-
-echo $t_form_title;
-
-echo '&#160;<span class="small">';
-
-# Jump to Bugnotes
-\Core\Print_Util::bracket_link( '#bugnotes', \Core\Lang::get( 'jump_to_bugnotes' ), false, 'jump-to-bugnotes' );
-
-# Send Bug Reminder
-if( $t_show_reminder_link ) {
-	\Core\Print_Util::bracket_link( $t_bug_reminder_link, \Core\Lang::get( 'bug_reminder' ), false, 'bug-reminder' );
-}
-
-if( !\Core\Utility::is_blank( $t_wiki_link ) ) {
-	\Core\Print_Util::bracket_link( $t_wiki_link, \Core\Lang::get( 'wiki' ), false, 'wiki' );
-}
-
-foreach ( $t_links as $t_plugin => $t_hooks ) {
-	foreach( $t_hooks as $t_hook ) {
-		if( is_array( $t_hook ) ) {
-			foreach( $t_hook as $t_label => $t_href ) {
-				if( is_numeric( $t_label ) ) {
-					\Core\Print_Util::bracket_link_prepared( $t_href );
-				} else {
-					\Core\Print_Util::bracket_link( $t_href, $t_label );
-				}
-			}
-		} else {
-			\Core\Print_Util::bracket_link_prepared( $t_hook );
-		}
-	}
-}
-
-echo '</span></td>';
 
 # prev/next links
 if( $t_bugslist ) {
@@ -266,13 +374,13 @@ echo '<td class="right alternate-views-links" colspan="2">';
 if( !\Core\Utility::is_blank( $t_history_link ) ) {
 	# History
 	echo '<span class="small">';
-	\Core\Print_Util::bracket_link( $t_history_link, \Core\Lang::get( 'bug_history' ), false, 'bug-history' );
+	\Core\Print_Util::bracket_link( $t_history_link, Lang::get( 'bug_history' ), false, 'bug-history' );
 	echo '</span>';
 }
 
 # Print Bug
 echo '<span class="small">';
-\Core\Print_Util::bracket_link( $t_print_link, \Core\Lang::get( 'print' ), false, 'print' );
+\Core\Print_Util::bracket_link( $t_print_link, Lang::get( 'print' ), false, 'print' );
 echo '</span>';
 echo '</td>';
 echo '</tr>';
@@ -297,360 +405,13 @@ if( $t_bottom_buttons_enabled ) {
 
 echo '<tbody>';
 
-if( $t_show_id || $t_show_project || $t_show_category || $t_show_view_state || $t_show_date_submitted || $t_show_last_updated ) {
-	# Labels
-	echo '<tr class="bug-header">';
-	echo '<th class="bug-id category" width="15%">', $t_show_id ? \Core\Lang::get( 'id' ) : '', '</th>';
-	echo '<th class="bug-project category" width="20%">', $t_show_project ? \Core\Lang::get( 'email_project' ) : '', '</th>';
-	echo '<th class="bug-category category" width="15%">', $t_show_category ? \Core\Lang::get( 'category' ) : '', '</th>';
-	echo '<th class="bug-view-status category" width="15%">', $t_show_view_state ? \Core\Lang::get( 'view_status' ) : '', '</th>';
-	echo '<th class="bug-date-submitted category" width="15%">', $t_show_date_submitted ? \Core\Lang::get( 'date_submitted' ) : '', '</th>';
-	echo '<th class="bug-last-modified category" width="20%">', $t_show_last_updated ? \Core\Lang::get( 'last_update' ) : '','</th>';
-	echo '</tr>';
 
-	echo '<tr class="bug-header-data">';
 
-	# Bug ID
-	echo '<td class="bug-id">', $t_formatted_bug_id, '</td>';
-
-	# Project
-	echo '<td class="bug-project">', $t_project_name, '</td>';
-
-	# Category
-	echo '<td class="bug-category">', $t_category, '</td>';
-
-	# View Status
-	echo '<td class="bug-view-status">', $t_bug_view_state_enum, '</td>';
-
-	# Date Submitted
-	echo '<td class="bug-date-submitted">', $t_date_submitted, '</td>';
-
-	# Date Updated
-	echo '<td class="bug-last-modified">', $t_last_updated, '</td>';
-
-	echo '</tr>';
-
-	# spacer
-	echo '<tr class="spacer"><td colspan="6"></td></tr>';
-	echo '<tr class="hidden"></tr>';
-}
-
-#
-# Reporter
-#
-
-if( $t_show_reporter ) {
-	echo '<tr>';
-
-	$t_spacer = 4;
-
-	# Reporter
-	echo '<th class="bug-reporter category">', \Core\Lang::get( 'reporter' ), '</th>';
-	echo '<td class="bug-reporter">';
-	\Core\Print_Util::user_with_subject( $t_bug->reporter_id, $t_bug_id );
-	echo '</td>';
-	echo '<td colspan="', $t_spacer, '">&#160;</td>';
-
-	echo '</tr>';
-}
-
-#
-# Handler, Due Date
-#
-
-if( $t_show_handler || $t_show_due_date ) {
-	echo '<tr>';
-
-	$t_spacer = 2;
-
-	# Handler
-	if( $t_show_handler ) {
-		echo '<th class="bug-assigned-to category">', \Core\Lang::get( 'assigned_to' ), '</th>';
-		echo '<td class="bug-assigned-to">';
-		\Core\Print_Util::user_with_subject( $t_bug->handler_id, $t_bug_id );
-		echo '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# Due Date
-	if( $t_show_due_date ) {
-		echo '<th class="bug-due-date category">', \Core\Lang::get( 'due_date' ), '</th>';
-
-		if( $t_bug_overdue ) {
-			echo '<td class="bug-due-date overdue">', $t_bug_due_date, '</td>';
-		} else {
-			echo '<td class="bug-due-date">', $t_bug_due_date, '</td>';
-		}
-	} else {
-		$t_spacer += 2;
-	}
-
-	echo '<td colspan="', $t_spacer, '">&#160;</td>';
-	echo '</tr>';
-}
-
-#
-# Priority, Severity, Reproducibility
-#
-
-if( $t_show_priority || $t_show_severity || $t_show_reproducibility ) {
-	echo '<tr>';
-
-	$t_spacer = 0;
-
-	# Priority
-	if( $t_show_priority ) {
-		echo '<th class="bug-priority category">', \Core\Lang::get( 'priority' ), '</th>';
-		echo '<td class="bug-priority">', $t_priority, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# Severity
-	if( $t_show_severity ) {
-		echo '<th class="bug-severity category">', \Core\Lang::get( 'severity' ), '</th>';
-		echo '<td class="bug-severity">', $t_severity, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# Reproducibility
-	if( $t_show_reproducibility ) {
-		echo '<th class="bug-reproducibility category">', \Core\Lang::get( 'reproducibility' ), '</th>';
-		echo '<td class="bug-reproducibility">', $t_reproducibility, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# spacer
-	if( $t_spacer > 0 ) {
-		echo '<td colspan="', $t_spacer, '">&#160;</td>';
-	}
-
-	echo '</tr>';
-}
-
-#
-# Status, Resolution
-#
-
-if( $t_show_status || $t_show_resolution ) {
-	echo '<tr>';
-
-	$t_spacer = 2;
-
-	# Status
-	if( $t_show_status ) {
-		echo '<th class="bug-status category">', \Core\Lang::get( 'status' ), '</th>';
-
-		# choose color based on status
-		$t_status_label = \Core\HTML::get_status_css_class( $t_bug->status );
-
-		echo '<td class="bug-status ', $t_status_label, '">', $t_status, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# Resolution
-	if( $t_show_resolution ) {
-		echo '<th class="bug-resolution category">', \Core\Lang::get( 'resolution' ), '</th>';
-		echo '<td class="bug-resolution">', $t_resolution, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# spacer
-	if( $t_spacer > 0 ) {
-		echo '<td colspan="', $t_spacer, '">&#160;</td>';
-	}
-
-	echo '</tr>';
-}
-
-#
-# Projection, ETA
-#
-
-if( $t_show_projection || $t_show_eta ) {
-	echo '<tr>';
-
-	$t_spacer = 2;
-
-	if( $t_show_projection ) {
-		# Projection
-		echo '<th class="bug-projection category">', \Core\Lang::get( 'projection' ), '</th>';
-		echo '<td class="bug-projection">', $t_projection, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# ETA
-	if( $t_show_eta ) {
-		echo '<th class="bug-eta category">', \Core\Lang::get( 'eta' ), '</th>';
-		echo '<td class="bug-eta">', $t_eta, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	echo '<td colspan="', $t_spacer, '">&#160;</td>';
-	echo '</tr>';
-}
-
-#
-# Platform, OS, OS Version
-#
-
-if( ( $t_show_platform || $t_show_os || $t_show_os_version ) &&
-	( $t_platform || $t_os || $t_os_version )) {
-	$t_spacer = 0;
-
-	echo '<tr>';
-
-	# Platform
-	if( $t_show_platform ) {
-		echo '<th class="bug-platform category">', \Core\Lang::get( 'platform' ), '</th>';
-		echo '<td class="bug-platform">', $t_platform, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# Operating System
-	if( $t_show_os ) {
-		echo '<th class="bug-os category">', \Core\Lang::get( 'os' ), '</th>';
-		echo '<td class="bug-os">', $t_os, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# OS Version
-	if( $t_show_os_version ) {
-		echo '<th class="bug-os-version category">', \Core\Lang::get( 'os_version' ), '</th>';
-		echo '<td class="bug-os-version">', $t_os_version, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	if( $t_spacer > 0 ) {
-		echo '<td colspan="', $t_spacer, '">&#160;</td>';
-	}
-
-	echo '</tr>';
-}
-
-#
-# Product Version, Product Build
-#
-
-if( $t_show_product_version || $t_show_product_build ) {
-	$t_spacer = 2;
-
-	echo '<tr>';
-
-	# Product Version
-	if( $t_show_product_version ) {
-		echo '<th class="bug-product-version category">', \Core\Lang::get( 'product_version' ), '</th>';
-		echo '<td class="bug-product-version">', $t_product_version_string, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# Product Build
-	if( $t_show_product_build ) {
-		echo '<th class="bug-product-build category">', \Core\Lang::get( 'product_build' ), '</th>';
-		echo '<td class="bug-product-build">', $t_product_build, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# spacer
-	echo '<td colspan="', $t_spacer, '">&#160;</td>';
-
-	echo '</tr>';
-}
-
-#
-# Target Version, Fixed In Version
-#
-
-if( $t_show_target_version || $t_show_fixed_in_version ) {
-	$t_spacer = 2;
-
-	echo '<tr>';
-
-	# target version
-	if( $t_show_target_version ) {
-		# Target Version
-		echo '<th class="bug-target-version category">', \Core\Lang::get( 'target_version' ), '</th>';
-		echo '<td class="bug-target-version">', $t_target_version_string, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# fixed in version
-	if( $t_show_fixed_in_version ) {
-		echo '<th class="bug-fixed-in-version category">', \Core\Lang::get( 'fixed_in_version' ), '</th>';
-		echo '<td class="bug-fixed-in-version">', $t_fixed_in_version_string, '</td>';
-	} else {
-		$t_spacer += 2;
-	}
-
-	# spacer
-	echo '<td colspan="', $t_spacer, '">&#160;</td>';
-
-	echo '</tr>';
-}
-
-#
-# Bug Details Event Signal
-#
-
-\Core\Event::signal( 'EVENT_VIEW_BUG_DETAILS', array( $t_bug_id ) );
-
-# spacer
-echo '<tr class="spacer"><td colspan="6"></td></tr>';
-echo '<tr class="hidden"></tr>';
-
-#
-# Bug Details (screen wide fields)
-#
-
-# Summary
-if( $t_show_summary ) {
-	echo '<tr>';
-	echo '<th class="bug-summary category">', \Core\Lang::get( 'summary' ), '</th>';
-	echo '<td class="bug-summary" colspan="5">', $t_summary, '</td>';
-	echo '</tr>';
-}
-
-# Description
-if( $t_show_description ) {
-	echo '<tr>';
-	echo '<th class="bug-description category">', \Core\Lang::get( 'description' ), '</th>';
-	echo '<td class="bug-description" colspan="5">', $t_description, '</td>';
-	echo '</tr>';
-}
-
-# Steps to Reproduce
-if( $t_show_steps_to_reproduce ) {
-	echo '<tr>';
-	echo '<th class="bug-steps-to-reproduce category">', \Core\Lang::get( 'steps_to_reproduce' ), '</th>';
-	echo '<td class="bug-steps-to-reproduce" colspan="5">', $t_steps_to_reproduce, '</td>';
-	echo '</tr>';
-}
-
-# Additional Information
-if( $t_show_additional_information ) {
-	echo '<tr>';
-	echo '<th class="bug-additional-information category">', \Core\Lang::get( 'additional_information' ), '</th>';
-	echo '<td class="bug-additional-information" colspan="5">', $t_additional_information, '</td>';
-	echo '</tr>';
-}
 
 # Tagging
 if( $t_show_tags ) {
 	echo '<tr>';
-	echo '<th class="bug-tags category">', \Core\Lang::get( 'tags' ), '</th>';
+	echo '<th class="bug-tags category">', Lang::get( 'tags' ), '</th>';
 	echo '<td class="bug-tags" colspan="5">';
 	\Core\Tag::display_attached( $t_bug_id );
 	echo '</td></tr>';
@@ -659,7 +420,7 @@ if( $t_show_tags ) {
 # Attachments Form
 if( $t_can_attach_tag ) {
 	echo '<tr>';
-	echo '<th class="bug-attach-tags category">', \Core\Lang::get( 'tag_attach_long' ), '</th>';
+	echo '<th class="bug-attach-tags category">', Lang::get( 'tag_attach_long' ), '</th>';
 	echo '<td class="bug-attach-tags" colspan="5">';
 	\Core\Print_Util::tag_attach_form( $t_bug_id );
 	echo '</td></tr>';
@@ -682,7 +443,7 @@ foreach( $t_related_custom_field_ids as $t_id ) {
 	$t_def = custom_field_get_definition( $t_id );
 
 	echo '<tr>';
-	echo '<th class="bug-custom-field category">', \Core\String::display( \Core\Lang::get_defaulted( $t_def['name'] ) ), '</th>';
+	echo '<th class="bug-custom-field category">', \Core\String::display( Lang::get_defaulted( $t_def['name'] ) ), '</th>';
 	echo '<td class="bug-custom-field" colspan="5">';
 	print_custom_field_value( $t_def, $t_id, $f_bug_id );
 	echo '</td></tr>';
@@ -694,17 +455,7 @@ if( $t_custom_fields_found ) {
 	echo '<tr class="hidden"></tr>';
 }
 
-# Attachments
-if( $t_show_attachments ) {
-	echo '<tr id="attachments">';
-	echo '<th class="bug-attachments category">', \Core\Lang::get( 'attached_files' ), '</th>';
-	echo '<td class="bug-attachments" colspan="5">';
-	\Core\Print_Util::bug_attachments_list( $t_bug_id );
-	echo '</td></tr>';
-}
 
-echo '</tbody></table>';
-echo '</div>';
 
 # User list sponsoring the bug
 if( $t_show_sponsorships_box ) {

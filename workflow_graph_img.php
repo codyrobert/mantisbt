@@ -40,7 +40,7 @@ if( !\Core\Config::mantis_get( 'relationship_graph_enable' ) ) {
 
 \Core\Compress::enable();
 
-$t_status_arr  = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+$t_status_arr  = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 
 $t_graph_fontname = \Core\Config::mantis_get( 'relationship_graph_fontname' );
 $t_graph_fontsize = \Core\Config::mantis_get( 'relationship_graph_fontsize' );
@@ -67,11 +67,11 @@ $t_graph->set_default_edge_attr( array ( 'style' => 'solid',
 										 'dir'   => 'forward' ) );
 
 foreach ( $t_status_arr as $t_from_status => $t_from_label ) {
-	$t_enum_status = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+	$t_enum_status = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 	foreach ( $t_enum_status as $t_to_status_id => $t_to_status_label ) {
 		if( \Core\Workflow::transition_edge_exists( $t_from_status, $t_to_status_id ) ) {
-			$t_graph->add_edge( \Core\String::no_break( \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_from_status ) ),
-			                    \Core\String::no_break( \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_to_status_id ) ),
+			$t_graph->add_edge( \Core\String::no_break( \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_from_status ) ),
+			                    \Core\String::no_break( \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_to_status_id ) ),
 			                    array() );
 		}
 	}

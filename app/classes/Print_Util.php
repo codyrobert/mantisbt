@@ -1,6 +1,9 @@
 <?php
 namespace Core;
 
+use \Core\Config;
+use \Core\Enum;
+
 
 # MantisBT - A PHP based bugtracking system
 
@@ -76,7 +79,7 @@ class Print_Util
 	 * @return boolean
 	 */
 	static function header_redirect( $p_url, $p_die = true, $p_sanitize = false, $p_absolute = false ) {
-		if( ON == \Core\Config::get_global( 'stop_on_errors' ) && \Core\Error::handled() ) {
+		if( ON == Config::get_global( 'stop_on_errors' ) && \Core\Error::handled() ) {
 			return false;
 		}
 	
@@ -91,7 +94,7 @@ class Print_Util
 			if( $p_sanitize ) {
 				$t_url = \Core\String::sanitize_url( $p_url, true );
 			} else {
-				$t_url = \Core\Config::mantis_get( 'path' ) . $p_url;
+				$t_url = Config::mantis_get( 'path' ) . $p_url;
 			}
 		}
 	
@@ -122,12 +125,12 @@ class Print_Util
 	 * @return void
 	 */
 	static function header_redirect_view( $p_bug_id ) {
-		\Core\Print_Util::header_redirect( \Core\String::get_bug_view_url( $p_bug_id ) );
+		self::header_redirect( \Core\String::get_bug_view_url( $p_bug_id ) );
 	}
 	
 	/**
 	 * Get a view URL for the bug id based on the user's preference and
-	 * call \Core\Print_Util::successful_redirect() with that URL
+	 * call self::successful_redirect() with that URL
 	 *
 	 * @param integer $p_bug_id A bug identifier.
 	 * @return void
@@ -135,7 +138,7 @@ class Print_Util
 	static function successful_redirect_to_bug( $p_bug_id ) {
 		$t_url = \Core\String::get_bug_view_url( $p_bug_id, \Core\Auth::get_current_user_id() );
 	
-		\Core\Print_Util::successful_redirect( $t_url );
+		self::successful_redirect( $t_url );
 	}
 	
 	/**
@@ -150,11 +153,11 @@ class Print_Util
 			\Core\HTML::page_top( null, $p_redirect_to );
 			echo '<br /><div class="center">';
 			echo \Core\Lang::get( 'operation_successful' ) . '<br />';
-			\Core\Print_Util::bracket_link( $p_redirect_to, \Core\Lang::get( 'proceed' ) );
+			self::bracket_link( $p_redirect_to, \Core\Lang::get( 'proceed' ) );
 			echo '</div>';
 			\Core\HTML::page_bottom();
 		} else {
-			\Core\Print_Util::header_redirect( $p_redirect_to );
+			self::header_redirect( $p_redirect_to );
 		}
 	}
 	
@@ -166,7 +169,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function avatar( $p_user_id, $p_size = 80 ) {
-		if( OFF === \Core\Config::mantis_get( 'show_avatar' ) ) {
+		if( OFF === Config::mantis_get( 'show_avatar' ) ) {
 			return;
 		}
 	
@@ -174,7 +177,7 @@ class Print_Util
 			return;
 		}
 	
-		if( \Core\Access::has_project_level( \Core\Config::mantis_get( 'show_avatar_threshold' ), null, $p_user_id ) ) {
+		if( \Core\Access::has_project_level( Config::mantis_get( 'show_avatar_threshold' ), null, $p_user_id ) ) {
 			$t_avatar = \Core\User::get_avatar( $p_user_id, $p_size );
 			if( !empty( $t_avatar ) ) {
 				$t_avatar_url = htmlspecialchars( $t_avatar[0] );
@@ -210,7 +213,7 @@ class Print_Util
 		$t_username = \Core\User::get_name( $p_user_id );
 		if( \Core\User::exists( $p_user_id ) && \Core\User::get_field( $p_user_id, 'enabled' ) ) {
 			$t_email = \Core\User::get_email( $p_user_id );
-			\Core\Print_Util::email_link_with_subject( $t_email, $t_username, $p_bug_id );
+			self::email_link_with_subject( $t_email, $t_username, $p_bug_id );
 		} else {
 			echo '<span class="user" style="text-decoration: line-through">';
 			echo $t_username;
@@ -278,8 +281,8 @@ class Print_Util
 	
 		$t_display = array();
 		$t_sort = array();
-		$t_show_realname = ( ON == \Core\Config::mantis_get( 'show_realname' ) );
-		$t_sort_by_last_name = ( ON == \Core\Config::mantis_get( 'sort_by_last_name' ) );
+		$t_show_realname = ( ON == Config::mantis_get( 'show_realname' ) );
+		$t_sort_by_last_name = ( ON == Config::mantis_get( 'sort_by_last_name' ) );
 		foreach( $t_users as $t_key => $t_user ) {
 			$t_user_name = \Core\String::attribute( $t_user['username'] );
 			$t_sort_name = utf8_strtolower( $t_user_name );
@@ -321,7 +324,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function reporter_option_list( $p_user_id, $p_project_id = null ) {
-		\Core\Print_Util::user_option_list( $p_user_id, $p_project_id, \Core\Config::mantis_get( 'report_bug_threshold' ) );
+		self::user_option_list( $p_user_id, $p_project_id, Config::mantis_get( 'report_bug_threshold' ) );
 	}
 	
 	/**
@@ -332,11 +335,11 @@ class Print_Util
 	 */
 	static function tag_attach_form( $p_bug_id, $p_string = '' ) {
 	?>
-		<small><?php echo sprintf( \Core\Lang::get( 'tag_separate_by' ), \Core\Config::mantis_get( 'tag_separator' ) )?></small>
+		<small><?php echo sprintf( \Core\Lang::get( 'tag_separate_by' ), Config::mantis_get( 'tag_separator' ) )?></small>
 		<form method="post" action="tag_attach.php">
 		<?php echo \Core\Form::security_field( 'tag_attach' )?>
 		<input type="hidden" name="bug_id" value="<?php echo $p_bug_id?>" />
-		<?php \Core\Print_Util::tag_input( $p_bug_id, $p_string ); ?>
+		<?php self::tag_input( $p_bug_id, $p_string ); ?>
 		<input type="submit" value="<?php echo \Core\Lang::get( 'tag_attach' )?>" class="button" />
 		</form>
 	<?php
@@ -351,10 +354,10 @@ class Print_Util
 	 */
 	static function tag_input( $p_bug_id = 0, $p_string = '' ) {
 	?>
-		<input type="hidden" id="tag_separator" value="<?php echo \Core\Config::mantis_get( 'tag_separator' )?>" />
+		<input type="hidden" id="tag_separator" value="<?php echo Config::mantis_get( 'tag_separator' )?>" />
 		<input type="text" name="tag_string" id="tag_string" size="40" value="<?php echo \Core\String::attribute( $p_string )?>" />
 		<select <?php echo \Core\Helper::get_tab_index()?> name="tag_select" id="tag_select">
-			<?php \Core\Print_Util::tag_option_list( $p_bug_id );?>
+			<?php self::tag_option_list( $p_bug_id );?>
 		</select>
 	<?php
 	}
@@ -385,7 +388,7 @@ class Print_Util
 	static function news_item_option_list() {
 		$t_project_id = \Core\Helper::get_current_project();
 	
-		$t_global = \Core\Access::has_global_level( \Core\Config::get_global( 'admin_site_threshold' ) );
+		$t_global = \Core\Access::has_global_level( Config::get_global( 'admin_site_threshold' ) );
 		if( $t_global ) {
 			$t_query = 'SELECT id, headline, announcement, view_state FROM {news} ORDER BY date_posted DESC';
 		} else {
@@ -435,7 +438,7 @@ class Print_Util
 	static function news_entry( $p_headline, $p_body, $p_poster_id, $p_view_state, $p_announcement, $p_date_posted ) {
 		$t_headline = \Core\String::display_links( $p_headline );
 		$t_body = \Core\String::display_links( $p_body );
-		$t_date_posted = date( \Core\Config::mantis_get( 'normal_date_format' ), $p_date_posted );
+		$t_date_posted = date( Config::mantis_get( 'normal_date_format' ), $p_date_posted );
 	
 		if( VS_PRIVATE == $p_view_state ) {
 			$t_news_css = 'news-heading-private';
@@ -473,7 +476,7 @@ class Print_Util
 		$t_announcement = $p_news_row['announcement'];
 		$t_date_posted = $p_news_row['date_posted'];
 	
-		\Core\Print_Util::news_entry( $t_headline, $t_body, $t_poster_id, $t_view_state, $t_announcement, $t_date_posted );
+		self::news_entry( $t_headline, $t_body, $t_poster_id, $t_view_state, $t_announcement, $t_date_posted );
 	}
 	
 	/**
@@ -486,11 +489,11 @@ class Print_Util
 		$t_row = \Core\News::get_row( $p_news_id );
 	
 		# only show VS_PRIVATE posts to configured threshold and above
-		if( ( VS_PRIVATE == $t_row['view_state'] ) && !\Core\Access::has_project_level( \Core\Config::mantis_get( 'private_news_threshold' ) ) ) {
+		if( ( VS_PRIVATE == $t_row['view_state'] ) && !\Core\Access::has_project_level( Config::mantis_get( 'private_news_threshold' ) ) ) {
 			return;
 		}
 	
-		\Core\Print_Util::news_entry_from_row( $t_row );
+		self::news_entry_from_row( $t_row );
 	}
 	
 	/**
@@ -502,10 +505,10 @@ class Print_Util
 	 */
 	static function assign_to_option_list( $p_user_id = '', $p_project_id = null, $p_threshold = null ) {
 		if( null === $p_threshold ) {
-			$p_threshold = \Core\Config::mantis_get( 'handle_bug_threshold' );
+			$p_threshold = Config::mantis_get( 'handle_bug_threshold' );
 		}
 	
-		\Core\Print_Util::user_option_list( $p_user_id, $p_project_id, $p_threshold );
+		self::user_option_list( $p_user_id, $p_project_id, $p_threshold );
 	}
 	
 	/**
@@ -517,10 +520,10 @@ class Print_Util
 	 */
 	static function note_option_list( $p_user_id = '', $p_project_id = null, $p_threshold = null ) {
 		if( null === $p_threshold ) {
-			$p_threshold = \Core\Config::mantis_get( 'add_bugnote_threshold' );
+			$p_threshold = Config::mantis_get( 'add_bugnote_threshold' );
 		}
 	
-		\Core\Print_Util::user_option_list( $p_user_id, $p_project_id, $p_threshold );
+		self::user_option_list( $p_user_id, $p_project_id, $p_threshold );
 	}
 	
 	/**
@@ -549,7 +552,7 @@ class Print_Util
 	
 		foreach( $t_project_ids as $t_id ) {
 			if( $p_can_report_only ) {
-				$t_report_bug_threshold = \Core\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
+				$t_report_bug_threshold = Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
 				$t_can_report = \Core\Access::has_project_level( $t_report_bug_threshold, $t_id, $t_user_id );
 			}
 	
@@ -557,7 +560,7 @@ class Print_Util
 			\Core\Helper::check_selected( $p_project_id, $t_id, false );
 			\Core\Helper::check_disabled( $t_id == $p_filter_project_id || !$t_can_report );
 			echo '>' . \Core\String::attribute( \Core\Project::get_field( $t_id, 'name' ) ) . '</option>' . "\n";
-			\Core\Print_Util::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only );
+			self::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only );
 		}
 	}
 	
@@ -579,7 +582,7 @@ class Print_Util
 	
 		foreach( $t_project_ids as $t_id ) {
 			if( $p_can_report_only ) {
-				$t_report_bug_threshold = \Core\Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
+				$t_report_bug_threshold = Config::mantis_get( 'report_bug_threshold', null, $t_user_id, $t_id );
 				$t_can_report = \Core\Access::has_project_level( $t_report_bug_threshold, $t_id, $t_user_id );
 			}
 	
@@ -597,7 +600,7 @@ class Print_Util
 				. str_repeat( '&raquo;', count( $p_parents ) ) . ' '
 				. \Core\String::attribute( \Core\Project::get_field( $t_id, 'name' ) )
 				. '</option>' . "\n";
-			\Core\Print_Util::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only, $p_parents );
+			self::subproject_option_list( $t_id, $p_project_id, $p_filter_project_id, $p_trace, $p_can_report_only, $p_parents );
 		}
 	}
 	
@@ -617,7 +620,7 @@ class Print_Util
 		} else {
 			$t_profiles = \Core\Profile::get_all_for_user( $p_user_id );
 		}
-		\Core\Print_Util::profile_option_list_from_profiles( $t_profiles, $p_select_id );
+		self::profile_option_list_from_profiles( $t_profiles, $p_select_id );
 	}
 	
 	/**
@@ -636,7 +639,7 @@ class Print_Util
 		} else {
 			$t_profiles = \Core\Profile::get_all_for_project( $p_project_id );
 		}
-		\Core\Print_Util::profile_option_list_from_profiles( $t_profiles, $p_select_id );
+		self::profile_option_list_from_profiles( $t_profiles, $p_select_id );
 	}
 	
 	/**
@@ -681,7 +684,7 @@ class Print_Util
 	
 		$t_cat_arr = \Core\Category::get_all_rows( $t_project_id, null, true );
 	
-		if( \Core\Config::mantis_get( 'allow_no_category' ) ) {
+		if( Config::mantis_get( 'allow_no_category' ) ) {
 			echo '<option value="0"';
 			\Core\Helper::check_selected( $p_category_id, 0 );
 			echo '>';
@@ -815,9 +818,9 @@ class Print_Util
 		}
 	
 		$t_listed = array();
-		$t_max_length = \Core\Config::mantis_get( 'max_dropdown_length' );
-		$t_show_version_dates = \Core\Access::has_project_level( \Core\Config::mantis_get( 'show_version_dates_threshold' ) );
-		$t_short_date_format = \Core\Config::mantis_get( 'short_date_format' );
+		$t_max_length = Config::mantis_get( 'max_dropdown_length' );
+		$t_show_version_dates = \Core\Access::has_project_level( Config::mantis_get( 'show_version_dates_threshold' ) );
+		$t_short_date_format = Config::mantis_get( 'short_date_format' );
 	
 		foreach( $t_versions as $t_version ) {
 			# If the current version is obsolete, and current version not equal to $p_version,
@@ -865,7 +868,7 @@ class Print_Util
 			$t_overall_build_arr[] = $t_row['build'];
 		}
 	
-		$t_max_length = \Core\Config::mantis_get( 'max_dropdown_length' );
+		$t_max_length = Config::mantis_get( 'max_dropdown_length' );
 	
 		foreach( $t_overall_build_arr as $t_build_unescaped ) {
 			$t_build = \Core\String::attribute( $t_build_unescaped );
@@ -883,9 +886,9 @@ class Print_Util
 	 */
 	static function enum_string_option_list( $p_enum_name, $p_val = 0 ) {
 		$t_config_var_name = $p_enum_name . '_enum_string';
-		$t_config_var_value = \Core\Config::mantis_get( $t_config_var_name );
+		$t_config_var_value = Config::mantis_get( $t_config_var_name );
 	
-		$t_enum_values = \Core\MantisEnum::getValues( $t_config_var_value );
+		$t_enum_values = Enum::getValues( $t_config_var_value );
 	
 		foreach ( $t_enum_values as $t_key ) {
 			$t_elem2 = \Core\Helper::get_enum_element( $p_enum_name, $t_key );
@@ -906,23 +909,30 @@ class Print_Util
 	 * @param integer $p_project_id    A project identifier.
 	 * @return array
 	 */
-	static function get_status_option_list( $p_user_auth = 0, $p_current_value = 0, $p_show_current = true, $p_add_close = false, $p_project_id = ALL_PROJECTS ) {
-		$t_config_var_value = \Core\Config::mantis_get( 'status_enum_string', null, null, $p_project_id );
-		$t_enum_workflow = \Core\Config::mantis_get( 'status_enum_workflow', null, null, $p_project_id );
+	static function get_status_option_list( $p_user_auth = 0, $p_current_value = 0, $p_show_current = true, $p_add_close = false, $p_project_id = ALL_PROJECTS ) 
+	{
+		$t_config_var_value = Config::mantis_get( 'status_enum_string', null, null, $p_project_id );
 	
-		if( count( $t_enum_workflow ) < 1 ) {
-			# workflow not defined, use default enumeration
-			$t_enum_values = \Core\MantisEnum::getValues( $t_config_var_value );
-		} else {
+		if(Config::mantis_get( 'status_enum_workflow', null, null, $p_project_id )) 
+		{
 			# workflow defined - find allowed states
-			if( isset( $t_enum_workflow[$p_current_value] ) ) {
-				$t_enum_values = \Core\MantisEnum::getValues( $t_enum_workflow[$p_current_value] );
-			} else {
+			if (isset($t_enum_workflow[$p_current_value])) 
+			{
+				$t_enum_values = Enum::getValues($t_enum_workflow[$p_current_value]);
+			}
+			else
+			{
 				# workflow was not set for this status, this shouldn't happen
 				# caller should be able to handle empty list
 				$t_enum_values = array();
 			}
 		}
+		else
+		{
+			# workflow not defined, use default enumeration
+			$t_enum_values = Enum::getValues( $t_config_var_value );
+		}
+		
 		$t_enum_list = array();
 	
 		foreach ( $t_enum_values as $t_enum_value ) {
@@ -937,8 +947,8 @@ class Print_Util
 			$t_enum_list[$p_current_value] = \Core\Helper::get_enum_element( 'status', $p_current_value );
 		}
 	
-		if( $p_add_close && \Core\Access::compare_level( $p_current_value, \Core\Config::mantis_get( 'bug_resolved_status_threshold', null, null, $p_project_id ) ) ) {
-			$t_closed = \Core\Config::mantis_get( 'bug_closed_status_threshold', null, null, $p_project_id );
+		if( $p_add_close && \Core\Access::compare_level( $p_current_value, Config::mantis_get( 'bug_resolved_status_threshold', null, null, $p_project_id ) ) ) {
+			$t_closed = Config::mantis_get( 'bug_closed_status_threshold', null, null, $p_project_id );
 			if( $p_show_current || $p_current_value != $t_closed ) {
 				$t_enum_list[$t_closed] = \Core\Helper::get_enum_element( 'status', $t_closed );
 			}
@@ -958,7 +968,7 @@ class Print_Util
 	static function status_option_list( $p_select_label, $p_current_value = 0, $p_allow_close = false, $p_project_id = ALL_PROJECTS ) {
 		$t_current_auth = \Core\Access::get_project_level( $p_project_id );
 	
-		$t_enum_list = \Core\Print_Util::get_status_option_list( $t_current_auth, $p_current_value, true, $p_allow_close, $p_project_id );
+		$t_enum_list = self::get_status_option_list( $t_current_auth, $p_current_value, true, $p_allow_close, $p_project_id );
 	
 		if( count( $t_enum_list ) > 1 ) {
 			# resort the list into ascending order
@@ -974,7 +984,7 @@ class Print_Util
 		} else if( count( $t_enum_list ) == 1 ) {
 			echo array_pop( $t_enum_list );
 		} else {
-			echo \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $p_current_value );
+			echo Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $p_current_value );
 		}
 	}
 	
@@ -985,7 +995,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function project_user_option_list( $p_project_id = null ) {
-		\Core\Print_Util::user_option_list( 0, $p_project_id );
+		self::user_option_list( 0, $p_project_id );
 	}
 	
 	/**
@@ -997,8 +1007,8 @@ class Print_Util
 	 */
 	static function project_access_levels_option_list( $p_val, $p_project_id = null ) {
 		$t_current_user_access_level = \Core\Access::get_project_level( $p_project_id );
-		$t_access_levels_enum_string = \Core\Config::mantis_get( 'access_levels_enum_string' );
-		$t_enum_values = \Core\MantisEnum::getValues( $t_access_levels_enum_string );
+		$t_access_levels_enum_string = Config::mantis_get( 'access_levels_enum_string' );
+		$t_enum_values = Enum::getValues( $t_access_levels_enum_string );
 		foreach ( $t_enum_values as $t_enum_value ) {
 			# a user must not be able to assign another user an access level that is higher than theirs.
 			if( $t_enum_value > $t_current_user_access_level ) {
@@ -1017,7 +1027,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function language_option_list( $p_language ) {
-		$t_arr = \Core\Config::mantis_get( 'language_choices_arr' );
+		$t_arr = Config::mantis_get( 'language_choices_arr' );
 		$t_enum_count = count( $t_arr );
 		for( $i = 0;$i < $t_enum_count;$i++ ) {
 			$t_language = \Core\String::attribute( $t_arr[$i] );
@@ -1093,7 +1103,7 @@ class Print_Util
 			$t_view_state = \Core\Helper::get_enum_element( 'project_view_state', $t_view_state );
 	
 			echo $t_project_name . ' [' . $t_access_level . '] (' . $t_view_state . ')';
-			if( $p_include_remove_link && \Core\Access::has_project_level( \Core\Config::mantis_get( 'project_user_threshold' ), $t_project_id ) ) {
+			if( $p_include_remove_link && \Core\Access::has_project_level( Config::mantis_get( 'project_user_threshold' ), $t_project_id ) ) {
 				\Core\HTML::button( 'manage_user_proj_delete.php', \Core\Lang::get( 'remove_link' ), array( 'project_id' => $t_project_id, 'user_id' => $p_user_id ) );
 			}
 			echo '<br />';
@@ -1119,7 +1129,7 @@ class Print_Util
 			$t_project_name = \Core\Project::get_field( $t_project_id, 'name' );
 			$t_sequence = custom_field_get_sequence( $p_field_id, $t_project_id );
 			echo '<strong>', \Core\String::display_line( $t_project_name ), '</strong>: ';
-			\Core\Print_Util::bracket_link( 'manage_proj_custom_field_remove.php?field_id=' . $c_field_id . '&project_id=' . $t_project_id . '&return=custom_field' . $t_security_token, \Core\Lang::get( 'remove_link' ) );
+			self::bracket_link( 'manage_proj_custom_field_remove.php?field_id=' . $c_field_id . '&project_id=' . $t_project_id . '&return=custom_field' . $t_security_token, \Core\Lang::get( 'remove_link' ) );
 			echo '<br />- ';
 	
 			$t_linked_field_ids = custom_field_get_linked_ids( $t_project_id );
@@ -1182,11 +1192,11 @@ class Print_Util
 	 */
 	static function formatted_priority_string( \Core\BugData $p_bug ) {
 		$t_pri_str = \Core\Helper::get_enum_element( 'priority', $p_bug->priority, \Core\Auth::get_current_user_id(), $p_bug->project_id );
-		$t_priority_threshold = \Core\Config::mantis_get( 'priority_significant_threshold' );
+		$t_priority_threshold = Config::mantis_get( 'priority_significant_threshold' );
 	
 		if( $t_priority_threshold >= 0 &&
 			$p_bug->priority >= $t_priority_threshold &&
-			$p_bug->status < \Core\Config::mantis_get( 'bug_closed_status_threshold' ) ) {
+			$p_bug->status < Config::mantis_get( 'bug_closed_status_threshold' ) ) {
 			echo '<span class="bold">' . $t_pri_str . '</span>';
 		} else {
 			echo $t_pri_str;
@@ -1201,11 +1211,11 @@ class Print_Util
 	 */
 	static function formatted_severity_string( \Core\BugData $p_bug ) {
 		$t_sev_str = \Core\Helper::get_enum_element( 'severity', $p_bug->severity, \Core\Auth::get_current_user_id(), $p_bug->project_id );
-		$t_severity_threshold = \Core\Config::mantis_get( 'severity_significant_threshold' );
+		$t_severity_threshold = Config::mantis_get( 'severity_significant_threshold' );
 	
 		if( $t_severity_threshold >= 0 &&
 			$p_bug->severity >= $t_severity_threshold &&
-			$p_bug->status < \Core\Config::mantis_get( 'bug_closed_status_threshold' ) ) {
+			$p_bug->status < Config::mantis_get( 'bug_closed_status_threshold' ) ) {
 			echo '<span class="bold">' . $t_sev_str . '</span>';
 		} else {
 			echo $t_sev_str;
@@ -1237,7 +1247,7 @@ class Print_Util
 			}
 	
 			$t_sort_field = rawurlencode( $p_sort_field );
-			\Core\Print_Util::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2&print=1', $p_string );
+			self::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2&print=1', $p_string );
 		} else if( $p_columns_target == COLUMNS_TARGET_VIEW_PAGE ) {
 			if( $p_sort_field == $p_sort ) {
 	
@@ -1252,7 +1262,7 @@ class Print_Util
 				$p_dir = 'ASC';
 			}
 			$t_sort_field = rawurlencode( $p_sort_field );
-			\Core\Print_Util::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2', $p_string );
+			self::link( 'view_all_set.php?sort=' . $t_sort_field . '&dir=' . $p_dir . '&type=2', $p_string );
 		} else {
 			echo $p_string;
 		}
@@ -1284,7 +1294,7 @@ class Print_Util
 		}
 	
 		$t_field = rawurlencode( $p_field );
-		\Core\Print_Util::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir . '&save=1&hideinactive=' . $p_hide_inactive . '&showdisabled=' . $p_show_disabled . '&filter=' . $p_filter, $p_string );
+		self::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir . '&save=1&hideinactive=' . $p_hide_inactive . '&showdisabled=' . $p_show_disabled . '&filter=' . $p_filter, $p_string );
 	}
 	
 	/**
@@ -1310,7 +1320,7 @@ class Print_Util
 		}
 	
 		$t_field = rawurlencode( $p_field );
-		\Core\Print_Util::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir, $p_string );
+		self::link( $p_page . '?sort=' . $t_field . '&dir=' . $t_dir, $p_string );
 	}
 	
 	/**
@@ -1377,7 +1387,7 @@ class Print_Util
 			echo ' bracket-link-',$p_class; # prefix on a container allows styling of whole link, including brackets
 		}
 		echo '">[&#160;';
-		\Core\Print_Util::link( $p_link, $p_url_text, $p_new_window, $p_class );
+		self::link( $p_link, $p_url_text, $p_new_window, $p_class );
 		echo '&#160;]</span> ';
 	}
 	
@@ -1423,9 +1433,9 @@ class Print_Util
 		if( ( 0 < $p_page_no ) && ( $p_page_no != $p_page_cur ) ) {
 			$t_delimiter = ( strpos( $p_page_url, '?' ) ? '&' : '?' );
 			if( $p_temp_filter_id !== 0 ) {
-				\Core\Print_Util::link( $p_page_url . $t_delimiter . 'filter=' . $p_temp_filter_id . '&page_number=' . $p_page_no, $p_text );
+				self::link( $p_page_url . $t_delimiter . 'filter=' . $p_temp_filter_id . '&page_number=' . $p_page_no, $p_text );
 			} else {
-				\Core\Print_Util::link( $p_page_url . $t_delimiter . 'page_number=' . $p_page_no, $p_text );
+				self::link( $p_page_url . $t_delimiter . 'page_number=' . $p_page_no, $p_text );
 			}
 		} else {
 			echo $p_text;
@@ -1462,9 +1472,9 @@ class Print_Util
 		print( '[ ' );
 	
 		# First and previous links
-		\Core\Print_Util::page_link( $p_page, $t_first, 1, $p_current, $p_temp_filter_id );
+		self::page_link( $p_page, $t_first, 1, $p_current, $p_temp_filter_id );
 		echo '&#160;';
-		\Core\Print_Util::page_link( $p_page, $t_prev, $p_current - 1, $p_current, $p_temp_filter_id );
+		self::page_link( $p_page, $t_prev, $p_current - 1, $p_current, $p_temp_filter_id );
 		echo '&#160;';
 	
 		# Page numbers ...
@@ -1501,12 +1511,12 @@ class Print_Util
 		# Next and Last links
 		echo '&#160;';
 		if( $p_current < $p_end ) {
-			\Core\Print_Util::page_link( $p_page, $t_next, $p_current + 1, $p_current, $p_temp_filter_id );
+			self::page_link( $p_page, $t_next, $p_current + 1, $p_current, $p_temp_filter_id );
 		} else {
-			\Core\Print_Util::page_link( $p_page, $t_next, null, null, $p_temp_filter_id );
+			self::page_link( $p_page, $t_next, null, null, $p_temp_filter_id );
 		}
 		echo '&#160;';
-		\Core\Print_Util::page_link( $p_page, $t_last, $p_end, $p_current, $p_temp_filter_id );
+		self::page_link( $p_page, $t_last, $p_end, $p_current, $p_temp_filter_id );
 	
 		print( ' ]' );
 	}
@@ -1519,7 +1529,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function email_link( $p_email, $p_text ) {
-		echo \Core\Print_Util::get_email_link( $p_email, $p_text );
+		echo self::get_email_link( $p_email, $p_text );
 	}
 	
 	/**
@@ -1543,12 +1553,12 @@ class Print_Util
 	 */
 	static function email_link_with_subject( $p_email, $p_text, $p_bug_id ) {
 		$t_bug = \Core\Bug::get( $p_bug_id, true );
-		if( !\Core\Access::has_project_level( \Core\Config::mantis_get( 'show_user_email_threshold', null, null, $t_bug->project_id ), $t_bug->project_id ) ) {
+		if( !\Core\Access::has_project_level( Config::mantis_get( 'show_user_email_threshold', null, null, $t_bug->project_id ), $t_bug->project_id ) ) {
 			echo $p_text;
 			return;
 		}
 		$t_subject = \Core\Email::build_subject( $p_bug_id );
-		echo \Core\Print_Util::get_email_link_with_subject( $p_email, $p_text, $t_subject );
+		echo self::get_email_link_with_subject( $p_email, $p_text, $t_subject );
 	}
 	
 	/**
@@ -1585,7 +1595,7 @@ class Print_Util
 	 */
 	static function hidden_inputs( array $p_assoc_array ) {
 		foreach( $p_assoc_array as $t_key => $t_val ) {
-			\Core\Print_Util::hidden_input( $t_key, $t_val );
+			self::hidden_input( $t_key, $t_val );
 		}
 	}
 	
@@ -1602,10 +1612,10 @@ class Print_Util
 				if( is_array( $t_value ) ) {
 					$t_key = \Core\String::html_entities( $t_key );
 					$t_field_key = $p_field_key . '[' . $t_key . ']';
-					\Core\Print_Util::hidden_input( $t_field_key, $t_value );
+					self::hidden_input( $t_field_key, $t_value );
 				} else {
 					$t_field_key = $p_field_key . '[' . $t_key . ']';
-					\Core\Print_Util::hidden_input( $t_field_key, $t_value );
+					self::hidden_input( $t_field_key, $t_value );
 				}
 			}
 		} else {
@@ -1631,11 +1641,11 @@ class Print_Util
 	 * @return void
 	 */
 	static function signup_link() {
-		if( ( ON == \Core\Config::get_global( 'allow_signup' ) ) &&
-			 ( LDAP != \Core\Config::get_global( 'login_method' ) ) &&
-			 ( ON == \Core\Config::mantis_get( 'enable_email_notification' ) )
+		if( ( ON == Config::get_global( 'allow_signup' ) ) &&
+			 ( LDAP != Config::get_global( 'login_method' ) ) &&
+			 ( ON == Config::mantis_get( 'enable_email_notification' ) )
 		   ) {
-			\Core\Print_Util::bracket_link( 'signup_page.php', \Core\Lang::get( 'signup_link' ) );
+			self::bracket_link( 'signup_page.php', \Core\Lang::get( 'signup_link' ) );
 		}
 	}
 	
@@ -1644,7 +1654,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function login_link() {
-		\Core\Print_Util::bracket_link( 'login_page.php', \Core\Lang::get( 'login_title' ) );
+		self::bracket_link( 'login_page.php', \Core\Lang::get( 'login_title' ) );
 	}
 	
 	/**
@@ -1653,11 +1663,11 @@ class Print_Util
 	 */
 	static function lost_password_link() {
 		# lost password feature disabled or reset password via email disabled -> stop here!
-		if( ( LDAP != \Core\Config::get_global( 'login_method' ) ) &&
-			 ( ON == \Core\Config::mantis_get( 'lost_password_feature' ) ) &&
-			 ( ON == \Core\Config::mantis_get( 'send_reset_password' ) ) &&
-			 ( ON == \Core\Config::mantis_get( 'enable_email_notification' ) ) ) {
-			\Core\Print_Util::bracket_link( 'lost_pwd_page.php', \Core\Lang::get( 'lost_password_link' ) );
+		if( ( LDAP != Config::get_global( 'login_method' ) ) &&
+			 ( ON == Config::mantis_get( 'lost_password_feature' ) ) &&
+			 ( ON == Config::mantis_get( 'send_reset_password' ) ) &&
+			 ( ON == Config::mantis_get( 'enable_email_notification' ) ) ) {
+			self::bracket_link( 'lost_pwd_page.php', \Core\Lang::get( 'lost_password_link' ) );
 		}
 	}
 	
@@ -1680,7 +1690,7 @@ class Print_Util
 	 * @return void
 	 */
 	static function rss( $p_feed_url, $p_title = '' ) {
-		$t_path = \Core\Config::mantis_get( 'path' );
+		$t_path = Config::mantis_get( 'path' );
 		echo '<a class="rss" rel="alternate" href="', htmlspecialchars( $p_feed_url ), '" title="', $p_title, '"><img src="', $t_path, '/images/', 'rss.png" width="16" height="16" alt="', $p_title, '" /></a>';
 	}
 	
@@ -1758,7 +1768,7 @@ class Print_Util
 		echo "\n<ul>";
 		foreach ( $t_attachments as $t_attachment ) {
 			echo "\n<li>";
-			\Core\Print_Util::bug_attachment( $t_attachment );
+			self::bug_attachment( $t_attachment );
 			echo "\n</li>";
 		}
 		echo "\n</ul>";
@@ -1779,17 +1789,17 @@ class Print_Util
 			$g_collapse_cache_token[$t_collapse_id] = false;
 			\Core\Collapse::open( $t_collapse_id );
 		}
-		\Core\Print_Util::bug_attachment_header( $p_attachment );
+		self::bug_attachment_header( $p_attachment );
 		if( $t_show_attachment_preview ) {
 			echo \Core\Lang::get( 'word_separator' );
 			\Core\Collapse::icon( $t_collapse_id );
 			if( $p_attachment['type'] == 'text' ) {
-				\Core\Print_Util::bug_attachment_preview_text( $p_attachment );
+				self::bug_attachment_preview_text( $p_attachment );
 			} else if( $p_attachment['type'] === 'image' ) {
-				\Core\Print_Util::bug_attachment_preview_image( $p_attachment );
+				self::bug_attachment_preview_image( $p_attachment );
 			}
 			\Core\Collapse::closed( $t_collapse_id );
-			\Core\Print_Util::bug_attachment_header( $p_attachment );
+			self::bug_attachment_header( $p_attachment );
 			echo \Core\Lang::get( 'word_separator' );
 			\Core\Collapse::icon( $t_collapse_id );
 			\Core\Collapse::end( $t_collapse_id );
@@ -1808,7 +1818,7 @@ class Print_Util
 			if( $p_attachment['can_download'] ) {
 				echo '<a href="' . \Core\String::attribute( $p_attachment['download_url'] ) . '">';
 			}
-			\Core\Print_Util::file_icon( $p_attachment['display_name'] );
+			self::file_icon( $p_attachment['display_name'] );
 			if( $p_attachment['can_download'] ) {
 				echo '</a>';
 			}
@@ -1821,16 +1831,16 @@ class Print_Util
 				echo '</a>';
 			}
 			echo \Core\Lang::get( 'word_separator' ) . '(' . number_format( $p_attachment['size'] ) . \Core\Lang::get( 'word_separator' ) . \Core\Lang::get( 'bytes' ) . ')';
-			echo \Core\Lang::get( 'word_separator' ) . '<span class="italic">' . date( \Core\Config::mantis_get( 'normal_date_format' ), $p_attachment['date_added'] ) . '</span>';
+			echo \Core\Lang::get( 'word_separator' ) . '<span class="italic">' . date( Config::mantis_get( 'normal_date_format' ), $p_attachment['date_added'] ) . '</span>';
 			\Core\Event::signal( 'EVENT_VIEW_BUG_ATTACHMENT', array( $p_attachment ) );
 		} else {
-			\Core\Print_Util::file_icon( $p_attachment['display_name'] );
+			self::file_icon( $p_attachment['display_name'] );
 			echo \Core\Lang::get( 'word_separator' ) . '<span class="strike">' . \Core\String::display_line( $p_attachment['display_name'] ) . '</span>' . \Core\Lang::get( 'word_separator' ) . '(' . \Core\Lang::get( 'attachment_missing' ) . ')';
 		}
 	
 		if( $p_attachment['can_delete'] ) {
 			echo \Core\Lang::get( 'word_separator' ) . '[';
-			\Core\Print_Util::link( 'bug_file_delete.php?file_id=' . $p_attachment['id'] . \Core\Form::security_param( 'bug_file_delete' ), \Core\Lang::get( 'delete_link' ), false, 'small' );
+			self::link( 'bug_file_delete.php?file_id=' . $p_attachment['id'] . \Core\Form::security_param( 'bug_file_delete' ), \Core\Lang::get( 'delete_link' ), false, 'small' );
 			echo ']';
 		}
 	}
@@ -1845,7 +1855,7 @@ class Print_Util
 			return;
 		}
 		echo "\n<pre class=\"bug-attachment-preview-text\">";
-		switch( \Core\Config::mantis_get( 'file_upload_method' ) ) {
+		switch( Config::mantis_get( 'file_upload_method' ) ) {
 			case DISK:
 				if( file_exists( $p_attachment['diskfile'] ) ) {
 					$t_content = file_get_contents( $p_attachment['diskfile'] );
@@ -1871,12 +1881,12 @@ class Print_Util
 	 */
 	static function bug_attachment_preview_image( array $p_attachment ) {
 		$t_preview_style = 'border: 0;';
-		$t_max_width = \Core\Config::mantis_get( 'preview_max_width' );
+		$t_max_width = Config::mantis_get( 'preview_max_width' );
 		if( $t_max_width > 0 ) {
 			$t_preview_style .= ' max-width:' . $t_max_width . 'px;';
 		}
 	
-		$t_max_height = \Core\Config::mantis_get( 'preview_max_height' );
+		$t_max_height = Config::mantis_get( 'preview_max_height' );
 		if( $t_max_height > 0 ) {
 			$t_preview_style .= ' max-height:' . $t_max_height . 'px;';
 		}
@@ -1940,10 +1950,10 @@ class Print_Util
 	 * @return void
 	 */
 	static function max_filesize( $p_size, $p_divider = 1000, $p_unit = 'kb' ) {
-		echo '<span class="small" title="' . \Core\Print_Util::get_filesize_info( $p_size, \Core\Lang::get( 'bytes' ) ) . '">';
+		echo '<span class="small" title="' . self::get_filesize_info( $p_size, \Core\Lang::get( 'bytes' ) ) . '">';
 		echo \Core\Lang::get( 'max_file_size_label' )
 			. \Core\Lang::get( 'word_separator' )
-			. \Core\Print_Util::get_filesize_info( $p_size / $p_divider, \Core\Lang::get( $p_unit ) );
+			. self::get_filesize_info( $p_size / $p_divider, \Core\Lang::get( $p_unit ) );
 		echo '</span>';
 	}
 

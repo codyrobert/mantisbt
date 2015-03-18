@@ -62,7 +62,7 @@ function set_capability_row( $p_threshold, $p_all_projects_only = false ) {
 		$f_threshold = \Core\GPC::get_int_array( 'flag_thres_' . $p_threshold, array() );
 		$f_access = \Core\GPC::get_int( 'access_' . $p_threshold );
 		# @@debug @@ echo "<br />for $p_threshold "; var_dump($f_threshold, $f_access); echo '<br />';
-		$t_access_levels = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
+		$t_access_levels = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 		ksort( $t_access_levels );
 		reset( $t_access_levels );
 

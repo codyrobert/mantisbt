@@ -12,12 +12,13 @@ dropdown-menu {
 		#toggle {
 			cursor: pointer;
 			height: 26px;
+			transform-origin: 0 0;	
 			width: 26px;
 			
 			&::shadow {
 				path {
 					fill: $colorGrey;
-					transition: 0.3s fill;
+					transition: 0.3s all;
 				}
 					
 				svg:hover path {
@@ -37,7 +38,7 @@ dropdown-menu {
 			text-align: left;
 			top: 100%;
 			transform: scale(0);
-			transform-origin: top right;
+			transform-origin: 92% 0;
 			transition: 0.3s all;
 			width: auto;
 			
@@ -63,7 +64,8 @@ html /deep/ dropdown-menu::shadow {
 		background: $colorGrey;
 		color: #fff;
 		margin: 0;
-		padding: 6px 10px;
+		padding: 6px 30px 6px 10px;
+		white-space: nowrap;
 		
 		svg-element
 		{

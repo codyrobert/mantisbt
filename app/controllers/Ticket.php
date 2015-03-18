@@ -27,16 +27,26 @@ use Core\Utility;
 
 class Ticket extends Authenticated_Page
 {
+	function __construct($params)
+	{
+		parent::__construct($params);
+		
+		App::queue_css(URL::get('media/css/ticket.css'));	
+	}
+	
 	function action_view($id)
 	{
 		$ticket = new \Model\Ticket($id);
 		
 		if ($ticket->loaded())
 		{
+			Access::ensure_bug_level(Config::mantis_get('view_bug_threshold'), $id);
+			
 			$this->set([
-				'page_title'	=> Lang::get( '' ),
-				'view'			=> 'Pages/Ticket/View',
-				'ticket'		=> $ticket,
+				'page_title'		=> Lang::get( '' ),
+				'view'				=> 'Pages/Ticket/View',
+				'show'				=> (object)array_fill_keys(Config::get('ticket.view_page_fields'), true),
+				'ticket'			=> $ticket,
 			]);
 		
 		}

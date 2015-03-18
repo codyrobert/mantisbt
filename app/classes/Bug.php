@@ -388,7 +388,7 @@ class Bug
 		# workflow defined - find allowed states
 		$t_allowed_states = $t_status_enum_workflow[$p_bug_status];
 	
-		return \Core\MantisEnum::hasValue( $t_allowed_states, $p_wanted_status );
+		return \Core\Enum::hasValue( $t_allowed_states, $p_wanted_status );
 	}
 	
 	/**

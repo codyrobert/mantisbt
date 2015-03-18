@@ -25,7 +25,7 @@
  * @uses config_api.php
  */
 
-require dirname(__DIR__).'/app/bootstrap.php';
+require dirname(dirname(__DIR__)).'/app/bootstrap.php';
 
 /**
  * Send correct MIME Content-Type header for css content.
@@ -68,7 +68,7 @@ switch( $t_referer_page ) {
 }
 
 $t_status_string = \Core\Config::mantis_get( 'status_enum_string' );
-$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( $t_status_string );
+$t_statuses = \Core\Enum::getAssocArrayIndexedByValues( $t_status_string );
 $t_colors = \Core\Config::mantis_get( 'status_colors' );
 $t_color_count = count( $t_colors );
 $t_color_width = ( $t_color_count > 0 ? ( round( 100/$t_color_count ) ) : 0 );

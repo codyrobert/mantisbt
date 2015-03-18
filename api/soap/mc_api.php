@@ -422,7 +422,7 @@ function mci_helper_get_enum_element( $p_enum_name, $p_val, $p_lang ) {
 	$t_enum_string = \Core\Config::mantis_get( $p_enum_name . '_enum_string' );
 	$t_localized_enum_string = \Core\Lang::get( $p_enum_name . '_enum_string', $p_lang );
 
-	return \Core\MantisEnum::getLocalizedLabel( $t_enum_string, $t_localized_enum_string, $p_val );
+	return \Core\Enum::getLocalizedLabel( $t_enum_string, $t_localized_enum_string, $p_val );
 }
 
 /**

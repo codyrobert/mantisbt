@@ -1337,8 +1337,8 @@ class HTML
 			}
 		}
 	
-		$t_status_array = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
-		$t_status_names = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Lang::get( 'status_enum_string' ) );
+		$t_status_array = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+		$t_status_names = \Core\Enum::getAssocArrayIndexedByValues( \Core\Lang::get( 'status_enum_string' ) );
 	
 		# read through the list and eliminate unused ones for the selected project
 		# assumes that all status are are in the enum array
@@ -1382,7 +1382,7 @@ class HTML
 		$t_status_enum_string = \Core\Config::mantis_get( 'status_enum_string' );
 		foreach( $t_status_array as $t_status => $t_name ) {
 			$t_val = isset( $t_status_names[$t_status] ) ? $t_status_names[$t_status] : $t_status_array[$t_status];
-			$t_status_label = \Core\MantisEnum::getLabel( $t_status_enum_string, $t_status );
+			$t_status_label = \Core\Enum::getLabel( $t_status_enum_string, $t_status );
 	
 			echo '<td class="small-caption ' . $t_status_label . '-color">' . $t_val . '</td>';
 		}
@@ -1401,7 +1401,7 @@ class HTML
 	static function status_percentage_legend() {
 		$t_status_percents = \Core\Helper::get_percentage_by_status();
 		$t_status_enum_string = \Core\Config::mantis_get( 'status_enum_string' );
-		$t_enum_values = \Core\MantisEnum::getValues( $t_status_enum_string );
+		$t_enum_values = \Core\Enum::getValues( $t_status_enum_string );
 		$t_enum_count = count( $t_enum_values );
 	
 		$t_bug_count = array_sum( $t_status_percents );
@@ -1418,7 +1418,7 @@ class HTML
 				$t_percent = ( isset( $t_status_percents[$t_status] ) ?  $t_status_percents[$t_status] : 0 );
 	
 				if( $t_percent > 0 ) {
-					$t_status_label = \Core\MantisEnum::getLabel( $t_status_enum_string, $t_status );
+					$t_status_label = \Core\Enum::getLabel( $t_status_enum_string, $t_status );
 					echo '<td class="small-caption-center ' . $t_status_label . '-color ' . $t_status_label . '-percentage">' . $t_percent . '%</td>';
 				}
 			}
@@ -1852,7 +1852,7 @@ class HTML
 	 * Build CSS including project or even user-specific colors ?
 	 */
 	static function get_status_css_class( $p_status, $p_user = null, $p_project = null ) {
-		return \Core\String::attribute( \Core\MantisEnum::getLabel( \Core\Config::mantis_get( 'status_enum_string', null, $p_user, $p_project ), $p_status ) . '-color' );
+		return \Core\String::attribute( \Core\Enum::getLabel( \Core\Config::mantis_get( 'status_enum_string', null, $p_user, $p_project ), $p_status ) . '-color' );
 	}
 
 

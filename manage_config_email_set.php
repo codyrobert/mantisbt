@@ -66,7 +66,7 @@ if( \Core\Config::mantis_get( 'enable_sponsorship' ) == ON ) {
 
 $t_valid_actions[] = 'relation';
 
-$t_statuses = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+$t_statuses = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 ksort( $t_statuses );
 reset( $t_statuses );
 

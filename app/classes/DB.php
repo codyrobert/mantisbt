@@ -67,4 +67,38 @@ class DB
 		
 		return false;
 	}
+	
+	static function find_globally($string)
+	{
+		if (_IS_LOCAL_ENVIRONMENT)
+		{
+			ini_set('memory_limit', '2G');
+			
+			self::startup();
+			
+			foreach (self::query('SHOW TABLES') as $table_name)
+			{
+				$table_name = current($table_name);
+				$table_structure = self::query('DESCRIBE '.$table_name);
+				
+				foreach ($table_structure as $column)
+				{
+					if (strstr($column['Field'], $string))
+					{
+						$response[] = 'Match found in table: '.$table_name.', column: '.$column['Field'];	
+					}
+					
+					if ($search = self::query('SELECT * FROM '.$table_name.' WHERE '.$column['Field'].' LIKE ?', ['%'.$string.'%']))
+					{
+						foreach ((array)$search as $row)
+						{
+							$response[] = 'Match found in table: '.$table_name.', row: '.json_encode($row);
+						}
+					}
+				}
+			}
+			
+			!dd($response);
+		}
+	}
 }

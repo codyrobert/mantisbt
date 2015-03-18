@@ -1395,7 +1395,7 @@ class Filter
 		# take a list of all available statuses then remove the ones that we want hidden, then make sure
 		# the ones we want shown are still available
 		$t_desired_statuses = array();
-		$t_available_statuses = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+		$t_available_statuses = \Core\Enum::getValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 	
 		if( 'simple' == $t_filter['_view_type'] ) {
 			# simple filtering: if showing any, restrict by the hide status value, otherwise ignore the hide

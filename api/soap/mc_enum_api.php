@@ -235,12 +235,12 @@ function mci_explode_to_objectref( $p_enumeration_name ) {
 	$t_config_var_value = \Core\Config::mantis_get( $t_config_var_name );
 	$t_translated_values = \Core\Lang::get( $t_config_var_name, mci_get_user_lang( \Core\Auth::get_current_user_id() ) );
 
-	$t_enum_values = \Core\MantisEnum::getValues( $t_config_var_value );
+	$t_enum_values = \Core\Enum::getValues( $t_config_var_value );
 
 	$t_result = array();
 
 	foreach ( $t_enum_values as $t_key ) {
-		$t_translated = \Core\MantisEnum::getLocalizedLabel( $t_config_var_value, $t_translated_values, $t_key );
+		$t_translated = \Core\Enum::getLocalizedLabel( $t_config_var_value, $t_translated_values, $t_key );
 
 		$t_result[] = array(
 			'id' => $t_key,
@@ -293,7 +293,7 @@ function mci_enum_get_array_by_id( $p_enum_id, $p_enum_type, $p_lang ) {
  * @return integer The id corresponding to the given label, or 0 if not found.
  */
 function mci_get_enum_value_from_label( $p_enum_string, $p_label ) {
-	$t_value = \Core\MantisEnum::getValue( $p_enum_string, $p_label );
+	$t_value = \Core\Enum::getValue( $p_enum_string, $p_label );
 	if( $t_value === false ) {
 		return 0;
 	}

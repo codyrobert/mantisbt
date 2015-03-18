@@ -50,7 +50,7 @@ $g_user = \Core\Auth::get_current_user_id();
 $g_project_id = \Core\Helper::get_current_project();
 $t_show_submit = false;
 
-$g_access_levels = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
+$g_access_levels = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'access_levels_enum_string' ) );
 $g_overrides = array();
 
 /**
@@ -83,7 +83,7 @@ function get_section_begin_mcwt( $p_section_name ) {
 	echo '<th class="form-title" style="text-align:center" rowspan="2">&#160;' . \Core\Lang::get( 'alter_level' ) . '&#160;</th>';
 	echo '</tr><tr class="row-category2">';
 	foreach( $g_access_levels as $t_access_level => $t_access_label ) {
-		echo '<th class="form-title" style="text-align:center">&#160;' . \Core\MantisEnum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
+		echo '<th class="form-title" style="text-align:center">&#160;' . \Core\Enum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_access_level ) . '&#160;</th>';
 	}
 	echo '</tr>' . "\n";
 	echo '</thead>';
@@ -146,7 +146,7 @@ function print_who_can_change( $p_threshold, $p_can_change ) {
 		\Core\Print_Util::enum_string_option_list( 'access_levels', $t_project_access );
 		echo '</select>';
 	} else {
-		echo \Core\MantisEnum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_project_access ) . '&#160;';
+		echo \Core\Enum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_project_access ) . '&#160;';
 	}
 	echo "</td>\n";
 }
@@ -300,7 +300,7 @@ function get_capability_enum( $p_caption, $p_threshold, $p_enum, $p_all_projects
 		echo '</select>';
 		$t_show_submit = true;
 	} else {
-		$t_value = \Core\MantisEnum::getLabel( \Core\Lang::get( $p_enum . '_enum_string' ), \Core\Config::mantis_get( $p_threshold ) ) . '&#160;';
+		$t_value = \Core\Enum::getLabel( \Core\Lang::get( $p_enum . '_enum_string' ), \Core\Config::mantis_get( $p_threshold ) ) . '&#160;';
 		echo $t_value;
 	}
 	echo '</td>' . "\n\t" . '<td colspan="' . ( count( $g_access_levels ) - 3 ) . '"></td>' . "\n";

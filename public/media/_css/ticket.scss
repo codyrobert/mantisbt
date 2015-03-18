@@ -1,0 +1,124 @@
+@import "bourbon";
+
+@import "variables";
+@import "mixins";
+
+@import "partials/note";
+
+h2 span {
+	background: mix($colorGreenLighter, $colorGreyLighter, 70%);
+	display: inline-block;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 14px;
+	padding: 4px;
+	vertical-align: middle;
+}
+
+summary {
+	font-size: 16px;
+	line-height: 16px;
+	outline: none;
+	
+	&::-webkit-details-marker {
+		color: $colorGrey;
+	}
+}
+
+details, section, aside {
+	margin: 30px 0;
+	
+	&:first-child {
+		margin-top: 0;
+	}
+	
+	&:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.main {
+	@include clearfix;
+}
+
+.main-sidebar {
+	box-sizing: border-box;
+	border-left: 1px solid mix($colorGrey, $colorGreyLight, 10%);
+	float: right;
+	padding-left: 30px;
+	width: 350px;
+}
+
+.main-body {
+	margin-right: 380px;
+	
+	details {
+		@include materialObjectShadow(2);
+		background: #fff;
+		
+		summary {
+			padding: 10px;
+		}
+		
+		[class*=column-] {
+			border-right: 1px solid #fff;
+			
+			&:last-child {
+				border-right: 0;
+			}
+		}
+		
+		.field-submit {
+			padding: 10px;
+		}
+	}
+}
+
+.row {
+	@include clearfix;
+	background: mix($colorGreyLight, $colorGreyLighter, 30%);
+	overflow: hidden;
+	
+	+ .row {
+		border-top: 1px solid #fff;
+	}
+	
+	.column-1-4 {
+		float: left;
+		width: 25%;
+	}
+	
+	.column-1-2 {
+		float: left;
+		width: 50%;
+	}
+	
+	.column-3-4 {
+		float: left;
+		width: 75%;
+	}
+}
+
+#ticket_description {
+	@include materialObjectShadow(2);
+	background: #fff;
+	padding: 20px;
+}
+
+#ticket-details [class*=column-] {
+	box-sizing: border-box;
+	
+	&:nth-child(2n+1) {
+		background: $colorGreyLight;
+		margin-bottom: -999px;
+		padding-bottom: 999px;
+	}
+	
+	> div {
+		padding: 5px 10px;
+		
+		&:nth-child(2n) {
+			background: rgba(0, 0, 0, .05);
+		}
+	}
+}

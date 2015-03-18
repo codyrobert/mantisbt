@@ -45,7 +45,7 @@ p {
 #head {
 	$height: 90px;
 	
-	@include materialObjectShadow(10);
+	@include materialObjectShadow(8);
 	
 	background: $colorGreyLighter;
 	color: $colorGrey;
@@ -174,14 +174,16 @@ p {
 	padding: 60px 30px 0;
 }
 
-.page-title {
+.page-title, .section-title {
 	border-bottom: 1px solid mix($colorGrey, $colorGreyLight, 10%);
 	margin-bottom: 30px;
 	
-	h2 {
+	h2, h4 {
 		margin: 0;
 	}
-	
+}
+
+.page-title {
 	nav {
 		float: right;
 		line-height: 33px;
@@ -224,11 +226,42 @@ p {
 		}
 	}
 	
-	dropdown-menu {
+	.tools {
 		float: right;
+		
+		> * {
+			float: left;
+			
+			+ * {
+				margin-left: 10px;
+			}
+		}
+	}
+	
+	.notify {
+	
+		::shadow svg {
+			cursor: pointer;
+			
+		}
+		::shadow path {
+			fill: $colorGrey;
+			transition: 0.3s all;
+		}
+		
+		&:focus, &:hover ::shadow path {
+			fill: $colorGreenLight;
+		}
+	}
+	
+	dropdown-menu {
 		height: 33px;
 		width: 26px;
 	}
+}
+
+.main-body {
+	
 }
 
 #floor {

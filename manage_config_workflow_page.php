@@ -135,7 +135,7 @@ function show_flag( $p_from_status_id, $p_to_status_id ) {
  * @return void
  */
 function section_begin( $p_section_name ) {
-	$t_enum_statuses = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+	$t_enum_statuses = \Core\Enum::getValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 	echo '<div class="form-container">'. "\n";
 	echo "\t<table>\n";
 	echo "\t\t<thead>\n";
@@ -150,7 +150,7 @@ function section_begin( $p_section_name ) {
 
 	foreach( $t_enum_statuses as $t_status ) {
 		echo "\t\t\t" . '<th class="form-title" style="text-align:center">&#160;'
-			. \Core\String::no_break( \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_status ) )
+			. \Core\String::no_break( \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_status ) )
 			. '&#160;</th>' ."\n";
 	}
 
@@ -167,8 +167,8 @@ function section_begin( $p_section_name ) {
  */
 function capability_row( $p_from_status ) {
 	global $g_file_workflow, $g_global_workflow, $g_project_workflow, $g_can_change_workflow;
-	$t_enum_status = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
-	echo "\t\t" .'<tr><td>' . \Core\String::no_break( \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $p_from_status ) ) . '</td>' . "\n";
+	$t_enum_status = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+	echo "\t\t" .'<tr><td>' . \Core\String::no_break( \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $p_from_status ) ) . '</td>' . "\n";
 	foreach ( $t_enum_status as $t_to_status_id => $t_to_status_label ) {
 		echo show_flag( $p_from_status, $t_to_status_id );
 	}
@@ -187,7 +187,7 @@ function capability_row( $p_from_status ) {
 		\Core\Print_Util::enum_string_option_list( 'status', $t_project );
 		echo '</select>';
 	} else {
-		echo \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_project );
+		echo \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_project );
 	}
 	echo ' </td>' . "\n";
 	echo "\t\t" . '</tr>' . "\n";
@@ -248,8 +248,8 @@ function threshold_row( $p_threshold ) {
 		echo '</select> </td>' . "\n";
 		$g_can_change_flags = true;
 	} else {
-		echo '<td' . $t_color . '>' . \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_project ) . '&#160;</td>' . "\n";
-		echo '<td>' . \Core\MantisEnum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), \Core\Config::get_access( $p_threshold ) ) . '&#160;</td>' . "\n";
+		echo '<td' . $t_color . '>' . \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_project ) . '&#160;</td>' . "\n";
+		echo '<td>' . \Core\Enum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), \Core\Config::get_access( $p_threshold ) ) . '&#160;</td>' . "\n";
 	}
 
 	echo '</tr>' . "\n";
@@ -285,7 +285,7 @@ function access_begin( $p_section_name ) {
 function access_row() {
 	global $g_access, $g_can_change_flags;
 
-	$t_enum_status = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+	$t_enum_status = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 
 	$t_file_new = \Core\Config::get_global( 'report_bug_threshold' );
 	$t_global_new = \Core\Config::mantis_get( 'report_bug_threshold', null, ALL_USERS, ALL_PROJECTS );
@@ -300,7 +300,7 @@ function access_row() {
 	# Print the table rows
 	foreach( $t_enum_status as $t_status => $t_status_label ) {
 		echo "\t\t" . '<tr><td class="width30">'
-			. \Core\String::no_break( \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_status ) ) . '</td>' . "\n";
+			. \Core\String::no_break( \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), $t_status ) ) . '</td>' . "\n";
 
 		if( $t_status == $t_submit_status ) {
 			# 'NEW' status
@@ -338,7 +338,7 @@ function access_row() {
 			$g_can_change_flags = true;
 		} else {
 			echo '<td class="center ' . $t_color . '">'
-				. \Core\MantisEnum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_level_project )
+				. \Core\Enum::getLabel( \Core\Lang::get( 'access_levels_enum_string' ), $t_level_project )
 				. '</td>' . "\n";
 		}
 
@@ -358,7 +358,7 @@ echo '<br /><br />';
 
 # count arcs in and out of each status
 $t_enum_status = \Core\Config::mantis_get( 'status_enum_string' );
-$t_status_arr  = \Core\MantisEnum::getAssocArrayIndexedByValues( $t_enum_status );
+$t_status_arr  = \Core\Enum::getAssocArrayIndexedByValues( $t_enum_status );
 
 $t_extra_enum_status = '0:non-existent,' . $t_enum_status;
 $t_lang_enum_status = '0:' . \Core\Lang::get( 'non_existent' ) . ',' . \Core\Lang::get( 'status_enum_string' );
@@ -374,7 +374,7 @@ $t_validation_result = '';
 foreach( $t_status_arr as $t_status => $t_label ) {
 	if( isset( $g_project_workflow['exit'][$t_status][$t_status] ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \Core\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Core\Enum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FFED4F">' . \Core\Lang::get( 'superfluous' ) . '</td></tr>';
 	}
 }
@@ -383,7 +383,7 @@ foreach( $t_status_arr as $t_status => $t_label ) {
 foreach( $t_status_arr as $t_status => $t_status_label ) {
 	if( ( 0 == count( $g_project_workflow['entry'][$t_status] ) ) && ( 0 < count( $g_project_workflow['exit'][$t_status] ) ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \Core\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Core\Enum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FF0088">' . \Core\Lang::get( 'unreachable' ) . '</td></tr>';
 	}
 }
@@ -392,7 +392,7 @@ foreach( $t_status_arr as $t_status => $t_status_label ) {
 foreach( $t_status_arr as $t_status => $t_status_label ) {
 	if( ( 0 == count( $g_project_workflow['exit'][$t_status] ) ) && ( 0 < count( $g_project_workflow['entry'][$t_status] ) ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \Core\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Core\Enum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FF0088">' . \Core\Lang::get( 'no_exit' ) . '</td></tr>';
 	}
 }
@@ -401,7 +401,7 @@ foreach( $t_status_arr as $t_status => $t_status_label ) {
 foreach ( $t_status_arr as $t_status => $t_status_label ) {
 	if( ( 0 == count( $g_project_workflow['exit'][$t_status] ) ) && ( 0 == count( $g_project_workflow['entry'][$t_status] ) ) ) {
 		$t_validation_result .= '<tr><td>'
-						. \Core\MantisEnum::getLabel( $t_lang_enum_status, $t_status )
+						. \Core\Enum::getLabel( $t_lang_enum_status, $t_status )
 						. '</td><td bgcolor="#FF0088">' . \Core\Lang::get( 'unreachable' ) . '<br />' . \Core\Lang::get( 'no_exit' ) . '</td></tr>';
 	}
 }
@@ -446,7 +446,7 @@ if( '' <> $t_validation_result ) {
 # Initialization for 'reopened' label handling
 $t_resolved_status = \Core\Config::mantis_get( 'bug_resolved_status_threshold' );
 $t_reopen_status = \Core\Config::mantis_get( 'bug_reopen_status' );
-$t_reopen_label = \Core\MantisEnum::getLabel( \Core\Lang::get( 'resolution_enum_string' ), \Core\Config::mantis_get( 'bug_reopen_resolution' ) );
+$t_reopen_label = \Core\Enum::getLabel( \Core\Lang::get( 'resolution_enum_string' ), \Core\Config::mantis_get( 'bug_reopen_resolution' ) );
 
 # display the graph as a matrix
 section_begin( \Core\Lang::get( 'workflow' ) );

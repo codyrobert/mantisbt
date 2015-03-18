@@ -558,7 +558,7 @@ $t_setting_arr = \Core\Filter::ensure_valid_filter( $t_setting_arr );
 # Remove any statuses that should be excluded by the hide_status field
 if( $f_view_type == 'advanced' ) {
 	if( $t_setting_arr[FILTER_PROPERTY_HIDE_STATUS][0] > 0 ) {
-		$t_statuses = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+		$t_statuses = \Core\Enum::getValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 		foreach( $t_statuses as $t_key=>$t_val ) {
 			if( $t_val < $t_setting_arr[FILTER_PROPERTY_HIDE_STATUS][0] ) {
 				$t_keep_statuses[$t_key] = $t_val;

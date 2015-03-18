@@ -8,17 +8,27 @@ class Config
 	
 	static function get($key)
 	{
-		if (!array_key_exists($key, (array)Config::$data))
+		$key_parts = explode('.', $key);
+		
+		if (!array_key_exists($key_parts[0], (array)self::$data))
 		{
-			$config_file = APP.'config/'.$key.'.php';
+			$config_file = APP.'config/'.$key_parts[0].'.php';
 			
 			if (file_exists($config_file))
 			{
-				Config::$data[$key] = include($config_file);
+				self::$data[$key_parts[0]] = include($config_file);
 			}
 		}
 		
-		return @Config::$data[$key] ? Config::$data[$key] : false;
+		$data = @self::$data;
+		
+		do
+		{
+			$data = @$data[array_shift($key_parts)];
+		}
+		while (count($key_parts));
+		
+		return $data ? $data : false;
 	}
 	
 	static function set($key, $val)
@@ -49,7 +59,7 @@ class Config
 	
 		# @@ debug @@ echo "lu o=$p_option ";
 		# bypass table lookup for certain options
-		$t_bypass_lookup = !\Core\Config::can_set_in_database( $p_option );
+		$t_bypass_lookup = !self::can_set_in_database( $p_option );
 	
 		# @@ debug @@ if( $t_bypass_lookup ) { echo "bp=$p_option match=$t_match_pattern <br />"; }
 	
@@ -150,14 +160,15 @@ class Config
 								break;
 							case CONFIG_TYPE_STRING:
 							default:
-								$t_value = \Core\Config::do_eval( $t_raw_value );
+								$t_value = self::do_eval( $t_raw_value );
 						}
 						return $t_value;
 					}
 				}
 			}
 		}
-		return \Core\Config::get_global( $p_option, $p_default );
+		
+		return self::get_global( $p_option, $p_default );
 	}
 	
 	/**
@@ -171,7 +182,7 @@ class Config
 		global $g_cache_config_eval;
 		if( isset( $GLOBALS['g_' . $p_option] ) ) {
 			if( !isset( $g_cache_config_eval['g_' . $p_option] ) ) {
-				$t_value = \Core\Config::do_eval( $GLOBALS['g_' . $p_option], true );
+				$t_value = self::do_eval( $GLOBALS['g_' . $p_option], true );
 				$g_cache_config_eval['g_' . $p_option] = $t_value;
 			} else {
 				$t_value = $g_cache_config_eval['g_' . $p_option];
@@ -200,7 +211,7 @@ class Config
 		global $g_cache_config, $g_cache_config_access, $g_cache_filled;
 	
 		if( !$g_cache_filled ) {
-			\Core\Config::mantis_get( $p_option, -1, $p_user, $p_project );
+			self::mantis_get( $p_option, -1, $p_user, $p_project );
 		}
 	
 		# prepare the user's list
@@ -238,7 +249,7 @@ class Config
 			}
 		}
 	
-		return $t_found ? $t_access : \Core\Config::get_global( 'admin_site_threshold' );
+		return $t_found ? $t_access : self::get_global( 'admin_site_threshold' );
 	}
 	
 	/**
@@ -254,7 +265,7 @@ class Config
 		global $g_cache_config, $g_cache_filled;
 	
 		if( !$g_cache_filled ) {
-			\Core\Config::mantis_get( $p_option, -1, $p_user, $p_project );
+			self::mantis_get( $p_option, -1, $p_user, $p_project );
 		}
 	
 		# prepare the user's list
@@ -308,7 +319,7 @@ class Config
 	 */
 	static function mantis_set( $p_option, $p_value, $p_user = NO_USER, $p_project = ALL_PROJECTS, $p_access = DEFAULT_ACCESS_LEVEL ) {
 		if( $p_access == DEFAULT_ACCESS_LEVEL ) {
-			$p_access = \Core\Config::get_global( 'admin_site_threshold' );
+			$p_access = self::get_global( 'admin_site_threshold' );
 		}
 		if( is_array( $p_value ) || is_object( $p_value ) ) {
 			$t_type = CONFIG_TYPE_COMPLEX;
@@ -324,7 +335,7 @@ class Config
 			$c_value = $p_value;
 		}
 	
-		if( \Core\Config::can_set_in_database( $p_option ) ) {
+		if( self::can_set_in_database( $p_option ) ) {
 			# before we set in the database, ensure that the user and project id exist
 			if( $p_project !== ALL_PROJECTS ) {
 				\Core\Project::ensure_exists( $p_project );
@@ -372,7 +383,7 @@ class Config
 			\Core\Database::query( $t_set_query, $t_params );
 		}
 	
-		\Core\Config::set_cache( $p_option, $c_value, $t_type, $p_user, $p_project, $p_access );
+		self::set_cache( $p_option, $c_value, $t_type, $p_user, $p_project, $p_access );
 	
 		return true;
 	}
@@ -414,7 +425,7 @@ class Config
 		global $g_cache_config, $g_cache_config_access;
 	
 		if( $p_access == DEFAULT_ACCESS_LEVEL ) {
-			$p_access = \Core\Config::get_global( 'admin_site_threshold' );
+			$p_access = self::get_global( 'admin_site_threshold' );
 		}
 	
 		$g_cache_config[$p_option][$p_user][$p_project] = $p_type . ';' . $p_value;
@@ -439,7 +450,7 @@ class Config
 	
 		# bypass table lookup for certain options
 		if( $g_cache_can_set_in_database == '' ) {
-			$g_cache_can_set_in_database = \Core\Config::get_global( 'global_settings' );
+			$g_cache_can_set_in_database = self::get_global( 'global_settings' );
 		}
 		$t_bypass_lookup = in_array( $p_option, $g_cache_can_set_in_database, true );
 	
@@ -468,10 +479,10 @@ class Config
 	 */
 	static function delete( $p_option, $p_user = ALL_USERS, $p_project = ALL_PROJECTS ) {
 		# bypass table lookup for certain options
-		$t_bypass_lookup = !\Core\Config::can_set_in_database( $p_option );
+		$t_bypass_lookup = !self::can_set_in_database( $p_option );
 	
 		if( ( !$t_bypass_lookup ) && ( true === \Core\Database::is_connected() ) && ( \Core\Database::table_exists( \Core\Database::get_table( 'config' ) ) ) ) {
-			if( !\Core\Config::can_delete( $p_option ) ) {
+			if( !self::can_delete( $p_option ) ) {
 				return;
 			}
 	
@@ -482,7 +493,7 @@ class Config
 			\Core\Database::query( $t_query, array( $p_option, $p_project, $p_user ) );
 		}
 	
-		\Core\Config::flush_cache( $p_option, $p_user, $p_project );
+		self::flush_cache( $p_option, $p_user, $p_project );
 	}
 	
 	/**
@@ -493,7 +504,7 @@ class Config
 	 * @return void
 	 */
 	static function delete_for_user( $p_option, $p_user_id ) {
-		if( !\Core\Config::can_delete( $p_option ) ) {
+		if( !self::can_delete( $p_option ) ) {
 			return;
 		}
 	
@@ -513,7 +524,7 @@ class Config
 		\Core\Database::query( $t_query, array( $p_project ) );
 	
 		# flush cache here in case some of the deleted configs are in use.
-		\Core\Config::flush_cache();
+		self::flush_cache();
 	}
 	
 	/**
@@ -553,7 +564,7 @@ class Config
 		#     have extra data plugged into them (we need to give the old and
 		#     new config option names in the warning text)
 	
-		if( \Core\Config::is_set( $p_var ) ) {
+		if( self::is_set( $p_var ) ) {
 			$t_description = 'The configuration option <em>' . $p_var . '</em> is now obsolete';
 			$t_info = '';
 	
@@ -627,9 +638,9 @@ class Config
 					# $t_matches[0][$i] is the matched string including the delimiters
 					# $t_matches[1][$i] is the target parameter string
 					if( $p_global ) {
-						$t_repl = \Core\Config::get_global( $t_matches[2][$i] );
+						$t_repl = self::get_global( $t_matches[2][$i] );
 					} else {
-						$t_repl = \Core\Config::mantis_get( $t_matches[2][$i] );
+						$t_repl = self::mantis_get( $t_matches[2][$i] );
 					}
 	
 					# Handle the simple case where there is no need to do string replace.

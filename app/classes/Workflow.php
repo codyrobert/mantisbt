@@ -57,7 +57,7 @@ class Workflow
 	 * @return array The parsed workflow graph.
 	 */
 	static function parse( array $p_enum_workflow ) {
-		$t_status_arr = \Core\MantisEnum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
+		$t_status_arr = \Core\Enum::getAssocArrayIndexedByValues( \Core\Config::mantis_get( 'status_enum_string' ) );
 		if( count( $p_enum_workflow ) == 0 ) {
 			# workflow is not set, default it to all transitions
 			foreach ( $t_status_arr as $t_status => $t_label ) {
@@ -76,7 +76,7 @@ class Workflow
 	
 		# prepopulate new bug state (bugs go from nothing to here)
 		$t_submit_status_array = \Core\Config::mantis_get( 'bug_submit_status' );
-		$t_new_label = \Core\MantisEnum::getLabel( \Core\Lang::get( 'status_enum_string' ), \Core\Config::mantis_get( 'bug_submit_status' ) );
+		$t_new_label = \Core\Enum::getLabel( \Core\Lang::get( 'status_enum_string' ), \Core\Config::mantis_get( 'bug_submit_status' ) );
 		if( is_array( $t_submit_status_array ) ) {
 			# @@@ (thraxisp) this is not implemented in bug_api.php
 			foreach ( $t_submit_status_array as $t_access => $t_status ) {
@@ -93,7 +93,7 @@ class Workflow
 		$t_default = array();
 		foreach ( $t_status_arr as $t_status => $t_status_label ) {
 			if( isset( $p_enum_workflow[$t_status] ) ) {
-				$t_next_arr = \Core\MantisEnum::getAssocArrayIndexedByValues( $p_enum_workflow[$t_status] );
+				$t_next_arr = \Core\Enum::getAssocArrayIndexedByValues( $p_enum_workflow[$t_status] );
 				foreach ( $t_next_arr as $t_next => $t_next_label ) {
 					if( !isset( $t_default[$t_status] ) ) {
 						$t_default[$t_status] = $t_next;

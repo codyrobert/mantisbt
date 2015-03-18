@@ -308,7 +308,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 			<tr class="row-category2">
 				<th><?php echo \Core\Lang::get( 'reporter_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'resolution_enum_string' ) );
+					$t_resolutions = \Core\Enum::getValues( \Core\Config::mantis_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
 						echo '<td class="right">', \Core\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
@@ -327,7 +327,7 @@ foreach ( $t_orct_arr as $t_orct_s ) {
 			<tr class="row-category2">
 				<th><?php echo \Core\Lang::get( 'developer_by_resolution' ) ?></th>
 				<?php
-					$t_resolutions = \Core\MantisEnum::getValues( \Core\Config::mantis_get( 'resolution_enum_string' ) );
+					$t_resolutions = \Core\Enum::getValues( \Core\Config::mantis_get( 'resolution_enum_string' ) );
 
 					foreach ( $t_resolutions as $t_resolution ) {
 						echo '<td class="right">', \Core\Helper::get_enum_element( 'resolution', $t_resolution ), "</td>\n";
