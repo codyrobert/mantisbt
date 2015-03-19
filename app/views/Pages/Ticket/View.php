@@ -13,6 +13,7 @@ use Core\Project;
 use Core\String;
 use Core\URL;
 
+
 $this->layout('Layouts/Master', $this->data);
 
 $t_fields_config_option = 'bug_view_page_fields';
