@@ -2,18 +2,21 @@ dropdown-menu {
 	position: relative;
 	z-index: 100;
 	
-	&[open]::shadow #menu {
-		opacity: 1;
-		transform: scale(1);
+	&[open] {
+		z-index: 101;
+		
+		&::shadow #menu {
+			opacity: 1;
+			transform: scale(1);
+		}
 	}
 	
 	&::shadow {
 	
 		#toggle {
 			cursor: pointer;
-			height: 26px;
-			transform-origin: 0 0;	
-			width: 26px;
+			padding-bottom: 6px;
+			transform-origin: 0 0;
 			
 			&::shadow {
 				path {

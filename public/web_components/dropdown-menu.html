@@ -1,10 +1,10 @@
-<polymer-element name="dropdown-menu" attributes="label icon structure child active">
+<polymer-element name="dropdown-menu" attributes="label icon structure togglesize child active">
 	
 	<template>
 		
 		<template if="{{ child === false }}">
 			
-			<svg-element id="toggle" on-tap="{{ toggleOpen }}" src="/media/svgs/{{ icon }}.svg"></svg-element>
+			<svg-element id="toggle" on-tap="{{ toggleOpen }}" src="/media/svgs/{{ icon }}.svg" style="height:{{ togglesize }}px;width:{{ togglesize }}px;"></svg-element>
 			
 			<div id="menu">
 				<div style="height:100%;overflow:hidden;">
@@ -86,6 +86,7 @@
 			this.hasBeenOpened = false;
 			this.icon = "settings-2";
 			this.structure = [];
+			this.togglesize = 26;
 		},
 		
 		eventDelegates: {

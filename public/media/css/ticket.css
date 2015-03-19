@@ -1,8 +1,14 @@
 .bug-note {
   background: #f2f2f2;
-  padding: 10px; }
+  padding: 10px;
+  position: relative; }
+  .bug-note + .bug-note {
+    border-top: 1px solid #fff; }
   .bug-note:nth-child(2n+1) {
     background: #e7e7e7; }
+  .bug-note dropdown-menu {
+    float: right;
+    margin: 0 0 10px 10px; }
 
 .avatar {
   border-radius: 60px;
@@ -91,5 +97,7 @@ details, section, aside {
     padding-bottom: 999px; }
   #ticket-details [class*=column-] > div {
     padding: 5px 10px; }
+    #ticket-details [class*=column-] > div + div {
+      border-top: 1px solid #fff; }
     #ticket-details [class*=column-] > div:nth-child(2n) {
       background: rgba(0, 0, 0, 0.05); }

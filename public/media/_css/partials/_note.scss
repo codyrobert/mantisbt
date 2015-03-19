@@ -1,9 +1,19 @@
 .bug-note {
 	background: mix($colorGreyLight, $colorGreyLighter, 30%);
 	padding: 10px;
+	position: relative;
+	
+	+ .bug-note {
+		border-top: 1px solid #fff;
+	}
 	
 	&:nth-child(2n+1) {
 		background: $colorGreyLight;
+	}
+	
+	dropdown-menu {
+		float: right;
+		margin: 0 0 10px 10px;
 	}
 }
 

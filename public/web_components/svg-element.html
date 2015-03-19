@@ -3,22 +3,56 @@
 	<template></template>
 	
 	<script>
+	var cache = {};
+	
 	Polymer({
 	
 		ready: function()
 		{
+			this.cache = cache;
+			
 			if (this.src)
 			{
-				xhr = new XMLHttpRequest();
-				xhr.open("GET", this.src, false);
-				
-				xhr.overrideMimeType("image/svg+xml");
-				xhr.send("");
-				
-				if (xhr.responseXML)
+				if (this.src in this.cache)
 				{
-					this.shadowRoot.appendChild(xhr.responseXML.documentElement);
+					if (this.cache[this.src]  && !(this.cache[this.src].readyState === 4 && this.cache[this.src].status === 200 && this.cache[this.src].responseText))
+					{
+						window.addEventListener("svg-element-loaded", this.svgLoaded.bind(this));
+					}
+					else
+					{
+						this.loadSVG();
+					}
 				}
+				else
+				{
+					xhr = new XMLHttpRequest();
+					xhr.open("GET", this.src, true);
+					
+					xhr.overrideMimeType("application/xhtml+xml");
+					
+					xhr.onload = function()
+					{
+						if (this.cache[this.src].readyState === 4 && this.cache[this.src].status === 200 && this.cache[this.src].responseXML)
+						{
+							this.fire("svg-element-loaded", {src: this.src});
+						}
+					}.bind(this);
+					
+					window.addEventListener("svg-element-loaded", this.svgLoaded.bind(this));
+					
+					this.cache[this.src] = xhr;
+					this.cache[this.src].send(null);
+				}
+			}
+		},
+		
+		svgLoaded: function(e)
+		{
+			if (e === undefined || e.detail.src === this.src)
+			{
+				this.shadowRoot.innerHTML = this.cache[this.src].responseText;
+				window.removeEventListener("svg-element-loaded", this.svgLoaded.bind(this));
 			}
 		}
 				

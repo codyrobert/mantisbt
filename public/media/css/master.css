@@ -48,18 +48,19 @@ table {
 dropdown-menu {
   position: relative;
   z-index: 100; }
-  dropdown-menu[open]::shadow #menu {
-    opacity: 1;
-    -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-            transform: scale(1); }
+  dropdown-menu[open] {
+    z-index: 101; }
+    dropdown-menu[open]::shadow #menu {
+      opacity: 1;
+      -webkit-transform: scale(1);
+          -ms-transform: scale(1);
+              transform: scale(1); }
   dropdown-menu::shadow #toggle {
     cursor: pointer;
-    height: 26px;
+    padding-bottom: 6px;
     -webkit-transform-origin: 0 0;
         -ms-transform-origin: 0 0;
-            transform-origin: 0 0;
-    width: 26px; }
+            transform-origin: 0 0; }
     dropdown-menu::shadow #toggle::shadow path {
       fill: #777;
       -webkit-transition: 0.3s all;

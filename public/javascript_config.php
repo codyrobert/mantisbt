@@ -1,4 +1,6 @@
 <?php
+header("Content-type: application/x-javascript");
+
 # MantisBT - A PHP based bugtracking system
 
 # MantisBT is free software: you can redistribute it and/or modify
@@ -24,7 +26,7 @@
  * @uses config_api.php
  */
 
-require_once( 'core.php' );
+require_once( '../core.php' );
 
 /**
  * Print array of configuration option->values for javascript.

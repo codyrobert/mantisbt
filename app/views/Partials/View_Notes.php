@@ -1,5 +1,7 @@
 <?php
 use Core\Lang;
+use Core\Print_Util;
+use Core\URL;
 
 
 $f_bug_id = $ticket->id;
@@ -77,6 +79,58 @@ $t_num_notes = count( $t_bugnotes );
 		}
 ?>
 <div class="bug-note <?php echo $t_bugnote_css ?>" id="bug_note_<?php echo $t_bugnote->id ?>">
+
+	<?php
+			# bug must be open to be editable
+			if( !\Core\Bug::is_readonly( $f_bug_id ) ) {
+
+				# check if the user can edit this bugnote
+				if( $t_user_id == $t_bugnote->reporter_id ) {
+					$t_can_edit_bugnote = \Core\Access::has_bugnote_level( $t_bugnote_user_edit_threshold, $t_bugnote->id );
+				} else {
+					$t_can_edit_bugnote = $t_can_edit_all_bugnotes;
+				}
+
+				# check if the user can delete this bugnote
+				if( $t_user_id == $t_bugnote->reporter_id ) {
+					$t_can_delete_bugnote = \Core\Access::has_bugnote_level( $t_bugnote_user_delete_threshold, $t_bugnote->id );
+				} else {
+					$t_can_delete_bugnote = $t_can_delete_all_bugnotes;
+				}
+
+				# check if the user can make this bugnote private
+				if( $t_user_id == $t_bugnote->reporter_id ) {
+					$t_can_change_view_state = \Core\Access::has_bugnote_level( $t_bugnote_user_change_view_state_threshold, $t_bugnote->id );
+				} else {
+					$t_can_change_view_state = $t_can_change_view_state_all_bugnotes;
+				}
+				
+				$options = [];
+
+				# show edit button if the user is allowed to edit this bugnote
+				if( $t_can_edit_bugnote ) {
+					$options[] = ['label' => Lang::get( 'bugnote_edit_link' ), 'href' => URL::get('bugnote_edit_page.php?bugnote_id='.$t_bugnote->id), 'icon' =>'pencil'];
+				}
+
+				# show delete button if the user is allowed to delete this bugnote
+				if( $t_can_delete_bugnote ) {
+					$options[] = ['label' => Lang::get( 'delete_link' ), 'href' => URL::get('bugnote_delete.php?bugnote_id='.$t_bugnote->id), 'icon' =>'delete'];
+				}
+
+				# show make public or make private button if the user is allowed to change the view state of this bugnote
+				if( $t_can_change_view_state ) {
+					$options[] = ['label' => ($t_bugnote->view_state === VS_PRIVATE) ? Lang::get( 'make_public' ) : Lang::get( 'make_private' ), 'href' => URL::get('bugnote_set_view_state.php?private='.(int)(bool)($t_bugnote->view_state !== VS_PRIVATE).'&bugnote_id='.$t_bugnote->id), 'icon' =>'watch'];
+				}
+				
+				?>
+				
+				<dropdown-menu label="Options" togglesize="18" structure='<?php echo json_encode($options); ?>'></dropdown-menu>
+				
+				<?php
+			}
+		?>
+		
+		
 		<div class="bugnote-meta">
 		<?php Print_Util::avatar( $t_bugnote->reporter_id, 120 ); ?>
 		<p class="compact"><span class="small bugnote-permalink"><a rel="bookmark" href="<?php echo \Core\String::get_bugnote_view_url( $t_bugnote->bug_id, $t_bugnote->id ) ?>" title="<?php echo \Core\Lang::get( 'bugnote_link_title' ) ?>"><?php echo htmlentities( \Core\Config::get_global( 'bugnote_link_tag' ) ) . $t_bugnote_id_formatted ?></a></span></p>
@@ -112,53 +166,7 @@ $t_num_notes = count( $t_bugnotes );
 			}
 		}
 		?>
-		<div class="small bugnote-buttons">
-		<?php
-			# bug must be open to be editable
-			if( !\Core\Bug::is_readonly( $f_bug_id ) ) {
-
-				# check if the user can edit this bugnote
-				if( $t_user_id == $t_bugnote->reporter_id ) {
-					$t_can_edit_bugnote = \Core\Access::has_bugnote_level( $t_bugnote_user_edit_threshold, $t_bugnote->id );
-				} else {
-					$t_can_edit_bugnote = $t_can_edit_all_bugnotes;
-				}
-
-				# check if the user can delete this bugnote
-				if( $t_user_id == $t_bugnote->reporter_id ) {
-					$t_can_delete_bugnote = \Core\Access::has_bugnote_level( $t_bugnote_user_delete_threshold, $t_bugnote->id );
-				} else {
-					$t_can_delete_bugnote = $t_can_delete_all_bugnotes;
-				}
-
-				# check if the user can make this bugnote private
-				if( $t_user_id == $t_bugnote->reporter_id ) {
-					$t_can_change_view_state = \Core\Access::has_bugnote_level( $t_bugnote_user_change_view_state_threshold, $t_bugnote->id );
-				} else {
-					$t_can_change_view_state = $t_can_change_view_state_all_bugnotes;
-				}
-
-				# show edit button if the user is allowed to edit this bugnote
-				if( $t_can_edit_bugnote ) {
-					\Core\Print_Util::button( 'bugnote_edit_page.php?bugnote_id='.$t_bugnote->id, \Core\Lang::get( 'bugnote_edit_link' ) );
-				}
-
-				# show delete button if the user is allowed to delete this bugnote
-				if( $t_can_delete_bugnote ) {
-					\Core\Print_Util::button( 'bugnote_delete.php?bugnote_id='.$t_bugnote->id, \Core\Lang::get( 'delete_link' ) );
-				}
-
-				# show make public or make private button if the user is allowed to change the view state of this bugnote
-				if( $t_can_change_view_state ) {
-					if( VS_PRIVATE == $t_bugnote->view_state ) {
-						\Core\Print_Util::button( 'bugnote_set_view_state.php?private=0&bugnote_id=' . $t_bugnote->id, \Core\Lang::get( 'make_public' ) );
-					} else {
-						\Core\Print_Util::button( 'bugnote_set_view_state.php?private=1&bugnote_id=' . $t_bugnote->id, \Core\Lang::get( 'make_private' ) );
-					}
-				}
-			}
-		?>
-		</div>
+		
 	</div>
 	<div class="bugnote-note">
 		<?php

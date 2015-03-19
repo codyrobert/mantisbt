@@ -19,8 +19,8 @@ use Core\Utility;
 	
 	<?php $this->insert('Partials/Head'); ?>
 	
-	<link rel="import" href="<?php echo URL::get('web_components/dropdown-menu.html'); ?>" />
 	<link rel="import" href="<?php echo URL::get('web_components/svg-element.html'); ?>" />
+	<link rel="import" href="<?php echo URL::get('web_components/dropdown-menu.html'); ?>" />
 	
 </head>
 <body class="<?php echo $this->body_class(); ?>">
