@@ -1,3 +1,4 @@
+php_value display_errors On
 php_value error_reporting 32767
 
 RewriteEngine on
