@@ -111,14 +111,14 @@ if( false === $t_config_inc_found ) {
 		exit(1);
 	}
 
-	if( !( isset( $_SERVER['SCRIPT_NAME'] ) && ( 0 < strpos( $_SERVER['SCRIPT_NAME'], 'admin' ) ) ) ) {
+	/*if( !( isset( $_SERVER['SCRIPT_NAME'] ) && ( 0 < strpos( $_SERVER['SCRIPT_NAME'], 'admin' ) ) ) ) {
 		header( 'Content-Type: text/html' );
 		# Temporary redirect (307) instead of Found (302) default
 		header( 'Location: admin/install.php', true, 307 );
 		# Make sure it's not cached
 		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
 		exit;
-	}
+	}*/
 }
 
 # Initialise cryptographic keys
