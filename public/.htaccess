@@ -1,4 +1,4 @@
-php_value error_reporting E_ALL
+php_value error_reporting 32767
 
 RewriteEngine on
 RewriteCond %{REQUEST_FILENAME} !-d
