@@ -5,7 +5,7 @@ namespace Core;
 /**
  * Bugnote Data Structure Definition
  */
-class BugnoteData {
+class BugNoteData {
 	/**
 	 * Bugnote ID
 	 */

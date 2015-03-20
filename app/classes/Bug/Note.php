@@ -278,7 +278,7 @@ class Note
 		}
 	
 		if( $s_vars == null ) {
-			$s_vars = \Core\Utility::getClassProperties( '\\Core\\BugnoteData', 'public' );
+			$s_vars = \Core\Utility::getClassProperties( '\\Core\\BugNoteData', 'public' );
 		}
 	
 		if( !array_key_exists( $p_field_name, $s_vars ) ) {
@@ -396,7 +396,7 @@ class Note
 			$t_result = \Core\Database::query( $t_query, array( $p_bug_id ) );
 	
 			while( $t_row = \Core\Database::fetch_array( $t_result ) ) {
-				$t_bugnote = new \Core\BugnoteData;
+				$t_bugnote = new \Core\BugNoteData;
 	
 				$t_bugnote->id = $t_row['id'];
 				$t_bugnote->bug_id = $t_row['bug_id'];
