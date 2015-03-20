@@ -4,9 +4,9 @@
 define('IS_LOCAL_ENVIRONMENT',	(bool)(substr($_SERVER['HTTP_HOST'], -4) == '.dev'));
 
 define('ROOT',					dirname(__DIR__).'/');
-define('APP',					ROOT.'/app/');
-define('MEDIA',					ROOT.'/public/media/');
-define('VENDOR',				ROOT.'/vendor/');
+define('APP',					ROOT.'app/');
+define('MEDIA',					ROOT.'public/media/');
+define('VENDOR',				ROOT.'vendor/');
 
 
 /* Require config, globals, and autoloads
