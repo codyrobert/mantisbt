@@ -94,7 +94,7 @@ if( $t_ldap && \Core\Config::mantis_get( 'use_ldap_realname' ) ) {
 	$t_realname = \Core\LDAP::realname_from_username( $f_username );
 } else {
 	# strip extra space from real name
-	$t_realname = string_normalize( $f_realname );
+	$t_realname = \Core\String::normalize( $f_realname );
 	\Core\User::ensure_realname_unique( $t_old_username, $t_realname );
 }
 

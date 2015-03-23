@@ -178,6 +178,9 @@ form {
     background: #b4d0b9; }
   .field-container:nth-child(2n) .field-input {
     background: #e9efea; }
+  .field-container .field-submit {
+    float: right;
+    padding: 0; }
 
 .field-label {
   background: #c7dbcb;
@@ -243,6 +246,14 @@ form {
 
 .access-level, .view-state {
   padding-left: 10px; }
+
+.notice {
+  background: #f4f2e6;
+  border: 1px solid #e5e0bd;
+  border-radius: 3px;
+  color: #4b4622;
+  font-weight: 600;
+  padding: 10px; }
 
 a {
   color: #06482f;
@@ -402,6 +413,8 @@ p {
 
 #content {
   padding: 60px 30px 0; }
+  #content section + section {
+    margin-top: 30px; }
 
 .page-title, .section-title {
   border-bottom: 1px solid #dbdbdb;

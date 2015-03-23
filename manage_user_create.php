@@ -65,7 +65,7 @@ if( \Core\Utility::is_blank( $f_username ) ) {
 #  blank password (don't want to prompt the user if the process will fail
 #  anyway)
 # strip extra space from real name
-$t_realname = string_normalize( $f_realname );
+$t_realname = \Core\String::normalize( $f_realname );
 \Core\User::ensure_name_valid( $f_username );
 \Core\User::ensure_realname_unique( $f_username, $f_realname );
 

@@ -32,7 +32,7 @@ use Core\Utility;
 		
 	</header>
 	
-	<section id="content">
+	<div id="content">
 		<div class="wrap">
 	
 			<?php Event::signal( 'EVENT_LAYOUT_CONTENT_BEGIN' ); ?>
@@ -40,7 +40,7 @@ use Core\Utility;
 			<?php Event::signal( 'EVENT_LAYOUT_CONTENT_END' ); ?>
 		
 		</div>
-	</section>
+	</div>
 
 	<footer id="floor">
 		<div class="wrap">

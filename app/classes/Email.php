@@ -96,7 +96,7 @@ class Email
 	
 		# check email address is a valid format
 		$t_email = filter_var( $p_email, FILTER_SANITIZE_EMAIL );
-		if( PHPMailer::ValidateAddress( $t_email ) ) {
+		if( \PHPMailer::ValidateAddress( $t_email ) ) {
 			$t_domain = substr( $t_email, strpos( $t_email, '@' ) + 1 );
 	
 			# see if we're limited to a set of known domains
@@ -155,7 +155,7 @@ class Email
 			require_lib( 'disposable/disposable.php' );
 		}
 	
-		return DisposableEmailChecker::is_disposable_email( $p_email );
+		return \DisposableEmailChecker::is_disposable_email( $p_email );
 	}
 	
 	/**
@@ -831,7 +831,7 @@ class Email
 			if( $t_mailer_method == PHPMAILER_METHOD_SMTP ) {
 				register_shutdown_function( 'email_smtp_close' );
 			}
-			$t_mail = new PHPMailer( true );
+			$t_mail = new \PHPMailer( true );
 		} else {
 			$t_mail = $g_phpMailer;
 		}

@@ -22,6 +22,11 @@ form {
 			background: mix($colorGreenLighter, $colorGreyLighter, 15%);
 		}
 	}
+	
+	.field-submit {
+		float: right;
+		padding: 0;
+	}
 }
 
 .field-label {

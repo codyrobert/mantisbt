@@ -86,7 +86,7 @@ if( !( $t_ldap && \Core\Config::mantis_get( 'use_ldap_email' ) ) ) {
 # Update real name (but only if LDAP isn't being used)
 if( !( $t_ldap && \Core\Config::mantis_get( 'use_ldap_realname' ) ) ) {
 	# strip extra spaces from real name
-	$t_realname = string_normalize( $f_realname );
+	$t_realname = \Core\String::normalize( $f_realname );
 	if( $t_realname != \Core\User::get_field( $t_user_id, 'realname' ) ) {
 		# checks for problems with realnames
 		$t_username = \Core\User::get_field( $t_user_id, 'username' );

@@ -75,6 +75,10 @@ if( $t_force_pw_reset ) {
 	<h2><?php echo Lang::get( 'edit_account_title' ); ?></h2>
 </header>
 
+<?php if (@$message): ?>
+<p class="notice"><?php echo $this->e($message); ?></p>
+<?php endif; ?>
+
 <form method="post" action="<?php echo URL::get('account'); ?>">
 	<fieldset <?php echo $t_force_pw_reset_html ?>>
 	
