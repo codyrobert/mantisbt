@@ -131,7 +131,7 @@ $g_library_path = $g_absolute_path . 'library' . DIRECTORY_SEPARATOR;
  * Path to lang folder for language files. Requires trailing / or \
  * @global string $g_language_path
  */
-$g_language_path = $g_absolute_path . 'lang' . DIRECTORY_SEPARATOR;
+$g_language_path = APP.'lang'.DIRECTORY_SEPARATOR;
 
 /**
  * Path to custom configuration folder. Requires trailing / or \

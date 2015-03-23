@@ -103,24 +103,6 @@ unset( $t_output );
 # Start HTML compression handler (if enabled)
 \Core\Compress::start_handler();
 
-# If no configuration file exists, redirect the user to the admin page so
-# they can complete installation and configuration of MantisBT
-if( false === $t_config_inc_found ) {
-	if( php_sapi_name() == 'cli' ) {
-		echo 'Error: ' . $g_config_path . "config_inc.php file not found; ensure MantisBT is properly setup.\n";
-		exit(1);
-	}
-
-	/*if( !( isset( $_SERVER['SCRIPT_NAME'] ) && ( 0 < strpos( $_SERVER['SCRIPT_NAME'], 'admin' ) ) ) ) {
-		header( 'Content-Type: text/html' );
-		# Temporary redirect (307) instead of Found (302) default
-		header( 'Location: admin/install.php', true, 307 );
-		# Make sure it's not cached
-		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-		exit;
-	}*/
-}
-
 # Initialise cryptographic keys
 \Core\Crypto::init();
 

@@ -22,6 +22,13 @@
 	),
 
 	array(
+		'route'			=> '/changelog/?',
+		'controller'	=> 'Changelog',
+		'action'		=> 'index',
+		'method'		=> 'GET',
+	),
+
+	array(
 		'route'			=> '/login/?',
 		'controller'	=> 'Auth',
 		'action'		=> 'login',
@@ -29,10 +36,31 @@
 	),
 
 	array(
+		'route'			=> '/logout/?',
+		'controller'	=> 'Auth',
+		'action'		=> 'logout',
+		'method'		=> 'GET',
+	),
+
+	array(
 		'route'			=> '/lost_password/?',
 		'controller'	=> 'Auth',
 		'action'		=> 'lost_password',
 		'method'		=> 'GET|POST',
+	),
+
+	array(
+		'route'			=> '/report/?',
+		'controller'	=> 'Report',
+		'action'		=> 'index',
+		'method'		=> 'GET',
+	),
+
+	array(
+		'route'			=> '/roadmap/?',
+		'controller'	=> 'Roadmap',
+		'action'		=> 'index',
+		'method'		=> 'GET',
 	),
 
 	array(

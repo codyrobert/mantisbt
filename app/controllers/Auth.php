@@ -70,6 +70,12 @@ class Auth extends Unauthenticated_Page
 		]);
 	}
 	
+	function action_logout()
+	{
+		\Core\Auth::logout();
+		URL::redirect(Config::get('redirects.logout'));
+	}
+	
 	function action_lost_password()
 	{
 		$this->set([

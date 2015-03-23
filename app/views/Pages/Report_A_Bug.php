@@ -1,4 +1,7 @@
 <?php
+$this->layout('Layouts/Master', $this->data);
+
+
 # MantisBT - A PHP based bugtracking system
 
 # MantisBT is free software: you can redistribute it and/or modify
@@ -49,11 +52,9 @@
  * @uses version_api.php
  */
 
-$g_allow_browser_cache = 1;
-
-require_api( 'custom_field_api.php' );
-
 $f_master_bug_id = \Core\GPC::get_int( 'm_id', 0 );
+
+echo $f_master_bug_id;
 
 if( $f_master_bug_id > 0 ) {
 	# master bug exists...
@@ -123,9 +124,9 @@ if( $f_master_bug_id > 0 ) {
 	}
 
 	# New issues cannot be reported for the 'All Project' selection
-	if( ALL_PROJECTS == $t_current_project ) {
+	/*if( ALL_PROJECTS == $t_current_project ) {
 		\Core\Print_Util::header_redirect( 'login_select_proj_page.php?ref=bug_report_page.php' );
-	}
+	}*/
 
 	\Core\Access::ensure_project_level( \Core\Config::mantis_get( 'report_bug_threshold' ) );
 
@@ -614,5 +615,3 @@ if( $t_show_attachments ) {
 		</fieldset>
 	</form>
 </div>
-<?php
-\Core\HTML::page_bottom();

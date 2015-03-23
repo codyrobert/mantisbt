@@ -78,19 +78,19 @@ class Menu
 		# Report Page
 		if (Access::has_project_level(Config::mantis_get('report_bug_threshold')))
 		{
-			$menu_items[URL::get(String::get_bug_report_url( $p_user_id ))] = Lang::get('report_bug_link');
+			$menu_items[URL::get('report')] = Lang::get('report_bug_link');
 		}
 		
 		# Changelog Page
 		if (Access::has_project_level(Config::mantis_get('view_changelog_threshold')))
 		{
-			$menu_items[URL::get('changelog_page.php')] = Lang::get('changelog_link');
+			$menu_items[URL::get('changelog')] = Lang::get('changelog_link');
 		}
 		
 		# Roadmap Page
 		if (Access::has_project_level(Config::mantis_get('roadmap_view_threshold')))
 		{
-			$menu_items[URL::get('roadmap_page.php')] = Lang::get('roadmap_link');
+			$menu_items[URL::get('roadmap')] = Lang::get('roadmap_link');
 		}
 		
 		# Summary Page
@@ -191,7 +191,7 @@ class Menu
 		# Logout (no if anonymously logged in)
 		if (!Current_User::is_anonymous())
 		{
-			$menu_items[URL::get('logout_page.php')] = Lang::get('logout_link');
+			$menu_items[URL::get('logout')] = Lang::get('logout_link');
 		}
 		
 		

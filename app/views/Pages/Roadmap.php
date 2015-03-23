@@ -1,57 +1,8 @@
 <?php
-# MantisBT - A PHP based bugtracking system
+$this->layout('Layouts/Master', $this->data);
 
-# MantisBT is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-#
-# MantisBT is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with MantisBT.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Display Project Roadmap
- *
- * @package MantisBT
- * @copyright Copyright 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- * @copyright Copyright 2002  MantisBT Team - mantisbt-dev@lists.sourceforge.net
- * @link http://www.mantisbt.org
- *
- * @uses core.php
- * @uses access_api.php
- * @uses authentication_api.php
- * @uses bug_api.php
- * @uses category_api.php
- * @uses config_api.php
- * @uses constant_inc.php
- * @uses database_api.php
- * @uses error_api.php
- * @uses filter_api.php
- * @uses filter_constants_inc.php
- * @uses gpc_api.php
- * @uses helper_api.php
- * @uses html_api.php
- * @uses lang_api.php
- * @uses print_api.php
- * @uses project_api.php
- * @uses string_api.php
- * @uses user_api.php
- * @uses utility_api.php
- * @uses version_api.php
- */
 
-require_once( 'core.php' );
-
-/**
- * Print header for the specified project version.
- * @param array $p_version_row Array containing project version data.
- * @return void
- */
 function print_version_header( array $p_version_row ) {
 	$t_project_id   = $p_version_row['project_id'];
 	$t_version_id   = $p_version_row['id'];
@@ -77,6 +28,9 @@ function print_version_header( array $p_version_row ) {
 	echo utf8_str_pad( '', utf8_strlen( $t_release_title_without_hyperlinks ), '=' ), '<br />';
 }
 
+
+
+
 /**
  * print project header
  * @param string $p_project_name Project name.
@@ -85,6 +39,10 @@ function print_version_header( array $p_version_row ) {
 function print_project_header_roadmap( $p_project_name ) {
 	echo '<br /><span class="pagetitle">', \Core\String::display( $p_project_name ), ' - ', \Core\Lang::get( 'roadmap' ), '</span><br />';
 }
+
+
+
+
 
 $t_issues_found = false;
 
@@ -150,7 +108,6 @@ if( ALL_PROJECTS == $t_project_id ) {
 
 $t_project_id_for_access_check = $t_project_id;
 
-\Core\HTML::page_top( \Core\Lang::get( 'roadmap' ) );
 
 \Core\Version::cache_array_rows( $t_project_ids );
 \Core\Category::cache_array_rows_by_project( $t_project_ids );
@@ -348,5 +305,3 @@ if( !$t_issues_found ) {
 
 	echo '<p>' . \Core\Lang::get( $t_string ) . '</p>';
 }
-
-\Core\HTML::page_bottom();

@@ -28,13 +28,6 @@ if( file_exists( $g_config_path . 'custom_constants_inc.php' ) ) {
 	require_once( $g_config_path . 'custom_constants_inc.php' );
 }
 
-# config_inc may not be present if this is a new install
-$t_config_inc_found = file_exists( $g_config_path . 'config_inc.php' );
-
-if( $t_config_inc_found ) {
-	require_once( $g_config_path . 'config_inc.php' );
-}
-
 
 /**
  * Define an API inclusion function to replace require_once
