@@ -16,11 +16,11 @@ class Menu
 	{
 		$menu_items[URL::get('account')] = Lang::get('account_link');
 		$menu_items[URL::get('account/preferences')] = Lang::get('change_preferences_link');
-		$menu_items[URL::get('account_manage_columns_page.php')] = Lang::get('manage_columns_config');
+		$menu_items[URL::get('account/columns')] = Lang::get('manage_columns_config');
 	
 		if (Config::mantis_get('enable_profiles') == ON && Access::has_project_level(Config::mantis_get('add_profile_threshold')))
 		{
-			$menu_items[URL::get('account_prof_menu_page.php')] = Lang::get('manage_profiles_link');
+			$menu_items[URL::get('account/profiles')] = Lang::get('manage_profiles_link');
 		}
 	
 		if (Config::mantis_get('enable_sponsorship') == ON && Access::has_project_level(Config::mantis_get('view_sponsorship_total_threshold')) && !Current_User::is_anonymous())

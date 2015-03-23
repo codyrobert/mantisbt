@@ -27,7 +27,7 @@ header("Content-type: application/x-javascript");
  * @uses lang_api.php
  */
 
-require_once( '../core.php' );
+require '../app/bootstrap.php';
 
 /**
  * Print Language translation for javascript

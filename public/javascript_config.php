@@ -26,7 +26,7 @@ header("Content-type: application/x-javascript");
  * @uses config_api.php
  */
 
-require_once( '../core.php' );
+require '../app/bootstrap.php';
 
 /**
  * Print array of configuration option->values for javascript.

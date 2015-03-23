@@ -1,4 +1,7 @@
 <?php
+use Core\Lang;
+use Core\Menu;
+
 # MantisBT - A PHP based bugtracking system
 
 # MantisBT is free software: you can redistribute it and/or modify
@@ -67,15 +70,14 @@ $t_columns = \Core\Helper::get_columns_to_view( COLUMNS_TARGET_EXCEL_PAGE, false
 $t_excel = implode( ', ', $t_columns );
 ?>
 
+<header class="page-title">
+	<?php $this->insert('Partials/Menu', array('items' => Menu::account())); ?>
+	<h2><?php echo Lang::get( 'manage_columns_config' ); ?></h2>
+</header>
+
 <div id="manage-columns-div" class="form-container">
 	<form id="manage-columns-form" method="post" action="manage_config_columns_set.php">
 		<fieldset class="has-required">
-			<legend><span><?php echo \Core\Lang::get( 'manage_columns_config' ) ?></span></legend>
-			<?php
-			if( $t_account_page ) {
-				\Core\HTML::print_account_menu( 'account_manage_columns_page.php' );
-			}
-			?>
 			<?php echo \Core\Form::security_field( 'manage_config_columns_set' ) ?>
 			<input type="hidden" name="project_id" value="<?php echo $t_project_id ?>" />
 			<input type="hidden" name="form_page" value="<?php echo $t_account_page ? 'account' : 'manage'; ?>" />

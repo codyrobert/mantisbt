@@ -33,11 +33,24 @@ if ($match = $router->match())
 {
 	if (strstr($match['target'], '->'))
 	{
+		$params = $match['params'];
+		
+		$match['target'] = preg_replace_callback('/\[([^\]]*)\]/iU', function($matches) use($params) 
+		{
+			if ($matches[1] == 'action' && !$params[$matches[1]])
+			{
+				$params[$matches[1]] = 'index';
+			}
+			
+			return $matches[1] ? $params[$matches[1]] : $matches[0];
+		}, 
+		$match['target']);
+		
 		list($controller, $action) = explode('->', $match['target']);
 		
-		$page = new $controller($match['params']);
+		$page = new $controller($params);
 		
-		call_user_func_array(array(&$page, $action), $match['params']);
+		call_user_func_array(array(&$page, $action), $params);
 		
 		$page->render();
 	}

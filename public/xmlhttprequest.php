@@ -31,7 +31,7 @@
  * @uses xhtmlrequest_api.php
  */
 
-require_once( 'core.php' );
+require '../app/bootstrap.php';
 
 \Core\Auth::ensure_user_authenticated();
 

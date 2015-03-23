@@ -8,16 +8,9 @@
 	),
 
 	array(
-		'route'			=> '/account/?',
+		'route'			=> '/account/?[a:action]?/?',
 		'controller'	=> 'Account',
-		'action'		=> 'edit',
-		'method'		=> 'GET|POST',
-	),
-
-	array(
-		'route'			=> '/account/preferences/?',
-		'controller'	=> 'Account',
-		'action'		=> 'edit_preferences',
+		'action'		=> '[action]',
 		'method'		=> 'GET|POST',
 	),
 

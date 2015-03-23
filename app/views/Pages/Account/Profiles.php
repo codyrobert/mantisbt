@@ -1,44 +1,9 @@
 <?php
-# MantisBT - A PHP based bugtracking system
+use Core\Lang;
+use Core\Menu;
 
-# MantisBT is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 2 of the License, or
-# (at your option) any later version.
-#
-# MantisBT is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with MantisBT.  If not, see <http://www.gnu.org/licenses/>.
+$this->layout('Layouts/Master', $this->data);
 
-/**
- * This page allows users to add a new profile which is POSTed to
- * account_prof_add.php
- *
- * Users can also manage their profiles
- *
- * @package MantisBT
- * @copyright Copyright 2000 - 2002  Kenzaburo Ito - kenito@300baud.org
- * @copyright Copyright 2002  MantisBT Team - mantisbt-dev@lists.sourceforge.net
- * @link http://www.mantisbt.org
- *
- * @uses core.php
- * @uses access_api.php
- * @uses authentication_api.php
- * @uses config_api.php
- * @uses constant_inc.php
- * @uses current_user_api.php
- * @uses form_api.php
- * @uses html_api.php
- * @uses lang_api.php
- * @uses print_api.php
- * @uses profile_api.php
- */
-
-require_once( 'core.php' );
 
 if( !\Core\Config::mantis_get( 'enable_profiles' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );
@@ -50,8 +15,6 @@ if( isset( $g_global_profiles ) ) {
 	$g_global_profiles = false;
 }
 
-\Core\Auth::ensure_user_authenticated();
-
 \Core\Current_User::ensure_unprotected();
 
 if( $g_global_profiles ) {
@@ -59,8 +22,6 @@ if( $g_global_profiles ) {
 } else {
 	\Core\Access::ensure_global_level( \Core\Config::mantis_get( 'add_profile_threshold' ) );
 }
-
-\Core\HTML::page_top( \Core\Lang::get( 'manage_profiles_link' ) );
 
 if( $g_global_profiles ) {
 	\Core\HTML::print_manage_menu( 'manage_prof_menu_page.php' );
@@ -74,18 +35,20 @@ if( $g_global_profiles ) {
 
 # Add Profile Form BEGIN
 ?>
+<header class="page-title">
+	<?php $this->insert('Partials/Menu', array('items' => Menu::account())); ?>
+	<h2><?php echo Lang::get( 'add_profile_title' ); ?></h2>
+</header>
+
+
+
 <div id="account-profile-div" class="form-container">
 	<form id="account-profile-form" method="post" action="account_prof_update.php">
 		<fieldset class="has-required">
-			<legend><span><?php echo \Core\Lang::get( 'add_profile_title' ) ?></span></legend>
 			<?php  echo \Core\Form::security_field( 'profile_update' )?>
 			<input type="hidden" name="action" value="add" />
 			<input type="hidden" name="user_id" value="<?php echo $t_user_id ?>" />
-			<?php
-			if( !$g_global_profiles ) {
-				\Core\HTML::print_account_menu( 'account_prof_menu_page.php' );
-			}
-			?>
+			
 			<div class="field-container">
 				<label for="platform" class="required"><span><?php echo \Core\Lang::get( 'platform' ) ?></span></label>
 				<span class="input"><input id="platform" type="text" name="platform" size="32" maxlength="32" /></span>
@@ -158,6 +121,4 @@ if( $g_global_profiles ) {
 	</form>
 </div>
 <?php
-} # Edit or Delete Profile Form END
-
-\Core\HTML::page_bottom();
+}

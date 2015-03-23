@@ -32,7 +32,7 @@ class Account extends Authenticated_Page
 		App::queue_css(URL::get('css/status_config.php'));
 	}
 	
-	function action_edit()
+	function action_index()
 	{
 		$this->set([
 			'page_title'	=> Lang::get( 'my_view_link' ),
@@ -40,11 +40,27 @@ class Account extends Authenticated_Page
 		]);
 	}
 	
-	function action_edit_preferences()
+	function action_preferences()
 	{
 		$this->set([
 			'page_title'	=> Lang::get( 'change_preferences_link' ),
 			'view'			=> 'Pages/Account/Edit_Preferences',
+		]);
+	}
+	
+	function action_columns()
+	{
+		$this->set([
+			'page_title'	=> '',//Lang::get( 'change_preferences_link' ),
+			'view'			=> 'Pages/Account/Columns',
+		]);
+	}
+	
+	function action_profiles()
+	{
+		$this->set([
+			'page_title'	=> \Core\Lang::get( 'manage_profiles_link' ),
+			'view'			=> 'Pages/Account/Profiles',
 		]);
 	}
 }
