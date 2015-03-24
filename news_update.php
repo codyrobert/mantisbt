@@ -32,7 +32,7 @@
  * @uses print_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\News::ensure_enabled();
 

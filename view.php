@@ -25,7 +25,7 @@
  * @uses core.php
  */
 
-require_once( 'core.php' );
+
 
 $t_file = __FILE__;
 $t_mantis_dir = dirname( __FILE__ ) . DIRECTORY_SEPARATOR;

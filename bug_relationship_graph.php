@@ -36,7 +36,7 @@
  * @uses relationship_graph_api.php
  */
 
-require_once( 'core.php' );
+
 
 # If relationship graphs were made disabled, we disallow any access to
 # this script.

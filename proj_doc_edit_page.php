@@ -36,7 +36,7 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
+
 
 # Check if project documentation feature is enabled.
 if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ||

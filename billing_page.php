@@ -30,7 +30,7 @@
  * @uses lang_api.php
  */
 
-require_once( 'core.php' );
+
 
 if( !\Core\Config::mantis_get( 'time_tracking_enabled' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );

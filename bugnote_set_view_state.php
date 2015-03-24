@@ -37,7 +37,7 @@
  * @uses string_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Form::security_validate( 'bugnote_set_view_state' );
 

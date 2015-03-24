@@ -2,6 +2,8 @@
 namespace Core;
 
 
+use Core\URL;
+
 # MantisBT - A PHP based bugtracking system
 
 # MantisBT is free software: you can redistribute it and/or modify
@@ -547,7 +549,7 @@ class HTML
 	
 		if( $t_show_project_selector ) {
 			echo '<div id="project-selector-div">';
-			echo '<form method="post" id="form-set-project" action="' . \Core\Helper::mantis_url( 'set_project.php' ) . '">';
+			echo '<form method="post" id="form-set-project" action="' . URL::get('set_project') . '">';
 			echo '<fieldset id="project-selector">';
 			# CSRF protection not required here - form does not result in modifications
 	
@@ -952,7 +954,7 @@ class HTML
 		echo '<table class="width100" cellspacing="0">';
 		echo '<tr>';
 		echo '<td class="menu">';
-		echo '<a href="' . \Core\Helper::mantis_url( 'set_project.php?project_id=' . ALL_PROJECTS ) . '">' . \Core\Lang::get( 'all_projects' ) . '</a>';
+		echo '<a href="' . URL::get( 'set_project?project_id=' . ALL_PROJECTS ) . '">' . \Core\Lang::get( 'all_projects' ) . '</a>';
 	
 		foreach( $t_project_ids as $t_id ) {
 			echo ' | <a href="' . \Core\Helper::mantis_url( 'set_project.php?project_id=' . $t_id ) . '">' . \Core\String::html_specialchars( \Core\Project::get_field( $t_id, 'name' ) ) . '</a>';
@@ -975,7 +977,7 @@ class HTML
 		$t_subprojects = \Core\Current_User::get_accessible_subprojects( $p_project_id );
 		$t_char = ':';
 		foreach( $t_subprojects as $t_subproject ) {
-			echo $t_char . ' <a href="' . \Core\Helper::mantis_url( 'set_project.php?project_id=' . $p_parents . $t_subproject ) . '">' . \Core\String::html_specialchars( \Core\Project::get_field( $t_subproject, 'name' ) ) . '</a>';
+			echo $t_char . ' <a href="' . URL::get( 'set_project?project_id=' . $p_parents . $t_subproject ) . '">' . \Core\String::html_specialchars( \Core\Project::get_field( $t_subproject, 'name' ) ) . '</a>';
 			\Core\HTML::print_subproject_menu_bar( $t_subproject, $p_parents . $t_subproject . ';' );
 			$t_char = ',';
 		}

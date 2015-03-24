@@ -38,7 +38,7 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Auth::reauthenticate();
 

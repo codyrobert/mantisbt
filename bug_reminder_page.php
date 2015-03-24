@@ -36,7 +36,7 @@
  * @uses print_api.php
  */
 
-require_once( 'core.php' );
+
 
 $f_bug_id = \Core\GPC::get_int( 'bug_id' );
 

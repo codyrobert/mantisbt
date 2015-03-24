@@ -37,7 +37,7 @@
  * @uses string_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Helper::begin_long_process();
 

@@ -37,7 +37,7 @@
  * @uses rssbuilder/class.RSSBuilder.inc.php
  */
 
-require_once( 'core.php' );
+
 require_lib( 'rssbuilder' . DIRECTORY_SEPARATOR . 'class.RSSBuilder.inc.php' );
 
 $f_username = \Core\GPC::get_string( 'username', null );

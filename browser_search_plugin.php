@@ -27,7 +27,7 @@
  * @uses gpc_api.php
  */
 
-require_once( 'core.php' );
+
 
 $f_type = \Core\GPC::get_string( 'type', 'text' );
 

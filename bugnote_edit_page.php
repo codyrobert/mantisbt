@@ -50,7 +50,7 @@
  * @uses string_api.php
  */
 
-require_once( 'core.php' );
+
 
 $f_bugnote_id = \Core\GPC::get_int( 'bugnote_id' );
 $t_bug_id = \Core\Bug\Note::get_field( $f_bugnote_id, 'bug_id' );

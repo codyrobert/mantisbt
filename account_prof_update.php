@@ -35,7 +35,7 @@
  * @uses profile_api.php
  */
 
-require_once( 'core.php' );
+
 
 if( !\Core\Config::mantis_get( 'enable_profiles' ) ) {
 	trigger_error( ERROR_ACCESS_DENIED, ERROR );

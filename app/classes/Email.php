@@ -53,7 +53,7 @@ namespace Core;
  * @uses class.phpmailer.php PHPMailer library
  */
 
-require_api( 'custom_field_api.php' );
+
 
 
 class Email

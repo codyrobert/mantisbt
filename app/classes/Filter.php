@@ -55,7 +55,7 @@ namespace Core;
  * @uses version_api.php
  */
 
-require_api( 'custom_field_api.php' );
+
 
 
 class Filter

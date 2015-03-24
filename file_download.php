@@ -38,7 +38,7 @@
 $g_bypass_headers = true; # suppress headers as we will send our own later
 define( 'COMPRESSION_DISABLED', true );
 
-require_once( 'core.php' );
+
 
 \Core\Auth::ensure_user_authenticated();
 

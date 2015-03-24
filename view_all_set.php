@@ -39,8 +39,8 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
-require_api( 'custom_field_api.php' );
+
+
 
 \Core\Auth::ensure_user_authenticated();
 

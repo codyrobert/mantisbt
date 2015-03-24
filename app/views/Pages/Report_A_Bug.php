@@ -9,7 +9,7 @@ $this->layout('Layouts/Master', $this->data);
 </header>
 
 
-<form id="report-bug-form" method="post" <?php echo $t_form_encoding; ?> action="bug_report.php?posted=1">
+<form id="report-bug-form" method="post" <?php echo $t_form_encoding; ?>>
 	<fieldset class="has-required">
 	
 		<?php echo \Core\Form::security_field( 'bug_report' ) ?>

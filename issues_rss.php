@@ -44,7 +44,7 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
+
 
 $f_project_id = \Core\GPC::get_int( 'project_id', ALL_PROJECTS );
 $f_filter_id = \Core\GPC::get_int( 'filter_id', 0 );

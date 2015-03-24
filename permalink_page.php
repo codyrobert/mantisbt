@@ -33,7 +33,7 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\HTML::page_top();
 

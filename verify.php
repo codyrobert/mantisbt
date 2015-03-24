@@ -35,7 +35,7 @@
 # don't auto-login when trying to verify new user
 $g_login_anonymous = false;
 
-require_once( 'core.php' );
+
 
 # check if at least one way to get here is enabled
 if( OFF == \Core\Config::mantis_get( 'allow_signup' ) &&

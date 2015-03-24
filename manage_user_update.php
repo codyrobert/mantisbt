@@ -41,7 +41,7 @@
  * @uses user_pref_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Form::security_validate( 'manage_user_update' );
 

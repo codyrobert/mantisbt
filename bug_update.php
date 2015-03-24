@@ -42,8 +42,8 @@
  * @uses relationship_api.php
  */
 
-require_once( 'core.php' );
-require_api( 'custom_field_api.php' );
+
+
 
 \Core\Form::security_validate( 'bug_update' );
 

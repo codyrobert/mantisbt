@@ -30,7 +30,7 @@
 $g_bypass_headers = true;
 header( 'Content-type: ' );
 
-require_once( 'core.php' );
+
 
 $t_plugin_path = \Core\Config::mantis_get( 'plugin_path' );
 

@@ -23,7 +23,7 @@
  * @link http://www.mantisbt.org
  */
 
-require_once( 'core.php' );
+
 \Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_summary_threshold' ) );
 
 \Core\HTML::page_top();

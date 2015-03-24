@@ -38,7 +38,7 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
+
 \Core\HTML::require_css( 'login.css' );
 
 $f_error                 = \Core\GPC::get_bool( 'error' );

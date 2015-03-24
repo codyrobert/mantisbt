@@ -35,7 +35,7 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Auth::reauthenticate();
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'manage_plugin_threshold' ) );

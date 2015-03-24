@@ -52,8 +52,15 @@
 	array(
 		'route'			=> '/report/?',
 		'controller'	=> 'Report',
-		'action'		=> 'index',
+		'action'		=> 'get',
 		'method'		=> 'GET',
+	),
+
+	array(
+		'route'			=> '/report/?',
+		'controller'	=> 'Report',
+		'action'		=> 'post',
+		'method'		=> 'POST',
 	),
 
 	array(
@@ -61,6 +68,13 @@
 		'controller'	=> 'Roadmap',
 		'action'		=> 'index',
 		'method'		=> 'GET',
+	),
+
+	array(
+		'route'			=> '/set_project/?',
+		'controller'	=> 'Set_Project',
+		'action'		=> 'index',
+		'method'		=> 'GET|POST',
 	),
 
 	array(

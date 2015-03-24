@@ -39,7 +39,7 @@
  * @uses user_api.php
  */
 
-require_once( 'core.php' );
+
 
 $f_bug_id = \Core\GPC::get_int( 'bug_id', 0 );
 $f_bugnote_id = \Core\GPC::get_int( 'bugnote_id', 0 );

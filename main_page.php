@@ -38,7 +38,7 @@
  * @uses rss_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Access::ensure_project_level( \Core\Config::mantis_get( 'view_bug_threshold' ) );
 

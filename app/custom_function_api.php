@@ -42,7 +42,7 @@
  * @uses version_api.php
  */
 
-require_api( 'custom_field_api.php' );
+
 
 /**
  * Custom Function API

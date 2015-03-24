@@ -27,7 +27,7 @@
  * @uses plugin_api.php
  */
 
-require_once( 'core.php' );
+
 
 $t_plugin_path = \Core\Config::mantis_get( 'plugin_path' );
 

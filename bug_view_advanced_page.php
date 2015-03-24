@@ -25,7 +25,7 @@
  * @uses gpc_api.php
  */
 
-require_once( 'core.php' );
+
 
 # Copy 'bug_id' parameter into 'id' so it is found by the view page.
 $_GET['id'] = \Core\GPC::get_int( 'bug_id' );

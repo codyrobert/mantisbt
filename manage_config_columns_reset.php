@@ -30,7 +30,7 @@
  * @uses print_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Form::security_validate( 'manage_config_columns_reset' );
 

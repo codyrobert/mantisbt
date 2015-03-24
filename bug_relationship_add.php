@@ -39,7 +39,7 @@
  * @uses relationship_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Form::security_validate( 'bug_relationship_add' );
 

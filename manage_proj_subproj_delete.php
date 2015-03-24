@@ -34,7 +34,7 @@
  * @uses project_hierarchy_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Form::security_validate( 'manage_proj_subproj_delete' );
 

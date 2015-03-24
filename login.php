@@ -32,7 +32,7 @@
  * @uses string_api.php
  */
 
-require_once( 'core.php' );
+
 
 $t_allow_perm_login = ( ON == \Core\Config::mantis_get( 'allow_permanent_cookie' ) );
 

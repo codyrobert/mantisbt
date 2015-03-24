@@ -34,7 +34,7 @@
 /** @ignore */
 define( 'PLUGINS_DISABLED', true );
 
-require_once( 'core.php' );
+
 
 \Core\Form::security_validate( 'manage_plugin_install' );
 

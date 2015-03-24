@@ -19,6 +19,8 @@ require APP.'autoload.php';
 require APP.'config.php';
 require APP.'constants.php';
 require APP.'config_defaults_inc.php';
+require APP.'custom_field_api.php';
+require APP.'custom_function_api.php';
 require APP.'require_functions.php';
 
 define( 'ADODB_DIR', \Core\Config::mantis_get( 'library_path' ) . 'adodb' );

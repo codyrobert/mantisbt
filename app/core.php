@@ -153,9 +153,6 @@ if( !defined( 'MANTIS_MAINTENANCE_MODE' ) ) {
 		\Core\Collapse::cache_token();
 }
 
-# Load custom functions
-require_api( 'custom_function_api.php' );
-
 if( file_exists( $g_config_path . 'custom_functions_inc.php' ) ) {
 	require_once( $g_config_path . 'custom_functions_inc.php' );
 }

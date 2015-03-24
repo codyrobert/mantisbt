@@ -34,7 +34,7 @@
  * @uses print_api.php
  */
 
-require_once( 'core.php' );
+
 
 define( 'PRINT_ALL_BUG_OPTIONS_INC_ALLOW', true );
 include( dirname( __FILE__ ) . '/print_all_bug_options_inc.php' );

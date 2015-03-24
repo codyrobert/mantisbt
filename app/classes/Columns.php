@@ -46,7 +46,7 @@ namespace Core;
  * @uses string_api.php
  */
 
-require_api( 'custom_field_api.php' );
+
 
 
 class Columns

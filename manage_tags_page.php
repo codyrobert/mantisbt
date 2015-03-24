@@ -36,7 +36,7 @@
  * @uses user_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Access::ensure_global_level( \Core\Config::mantis_get( 'tag_edit_threshold' ) );
 

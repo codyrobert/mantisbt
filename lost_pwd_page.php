@@ -33,7 +33,7 @@
  * @uses print_api.php
  */
 
-require_once( 'core.php' );
+
 \Core\HTML::require_css( 'login.css' );
 
 # lost password feature disabled or reset password via email disabled -> stop here!

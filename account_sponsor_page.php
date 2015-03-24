@@ -57,7 +57,7 @@
  * @uses version_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\HTML::require_css( 'status_config.php' );
 

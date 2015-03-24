@@ -1,5 +1,5 @@
 <?php
-require_api( 'custom_field_api.php' );
+
 
 
 $f_bug_id = $bug_id ? $bug_id : \Core\GPC::get_int( 'id' );

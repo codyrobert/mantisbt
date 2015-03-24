@@ -37,7 +37,7 @@
  * @uses sponsorship_api.php
  */
 
-require_once( 'core.php' );
+
 
 if( !\Core\Config::mantis_get( 'enable_sponsorship' ) ) {
 	trigger_error( ERROR_SPONSORSHIP_NOT_ENABLED, ERROR );

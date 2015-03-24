@@ -37,7 +37,7 @@
  * @uses version_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\HTML::require_js( 'jscalendar/calendar.js' );
 \Core\HTML::require_js( 'jscalendar/lang/calendar-en.js' );

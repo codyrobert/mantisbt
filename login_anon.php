@@ -37,7 +37,7 @@
  * @uses string_api.php
  */
 
-require_once( 'core.php' );
+
 
 $f_return = \Core\GPC::get_string( 'return', '' );
 

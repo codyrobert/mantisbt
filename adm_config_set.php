@@ -34,7 +34,7 @@
  * @uses utility_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Form::security_validate( 'adm_config_set' );
 

@@ -39,7 +39,7 @@
  * @uses user_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Compress::enable();
 

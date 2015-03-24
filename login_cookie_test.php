@@ -30,7 +30,7 @@
  * @uses string_api.php
  */
 
-require_once( 'core.php' );
+
 
 if( \Core\Auth::is_user_authenticated() ) {
 	$f_return = \Core\GPC::get_string( 'return' );

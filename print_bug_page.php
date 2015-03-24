@@ -49,8 +49,8 @@
  * @uses version_api.php
  */
 
-require_once( 'core.php' );
-require_api( 'custom_field_api.php' );
+
+
 
 $f_bug_id = \Core\GPC::get_int( 'bug_id' );
 

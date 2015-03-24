@@ -29,7 +29,7 @@
  * @uses plugin_api.php
  */
 
-require_once( 'core.php' );
+
 \Core\Plugin::require_api( 'core/Period.php' );
 
 \Core\HTML::require_js( 'jscalendar/calendar.js' );

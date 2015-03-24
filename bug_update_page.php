@@ -48,8 +48,8 @@
 
 $g_allow_browser_cache = 1;
 
-require_once( 'core.php' );
-require_api( 'custom_field_api.php' );
+
+
 
 \Core\HTML::require_css( 'status_config.php' );
 

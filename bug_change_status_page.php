@@ -43,8 +43,8 @@
 
 $g_allow_browser_cache = 1;
 
-require_once( 'core.php' );
-require_api( 'custom_field_api.php' );
+
+
 
 $f_bug_id = \Core\GPC::get_int( 'id' );
 $t_bug = \Core\Bug::get( $f_bug_id );

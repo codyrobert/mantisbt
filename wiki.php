@@ -30,7 +30,7 @@
  * @uses wiki_api.php
  */
 
-require_once( 'core.php' );
+
 
 $f_id = \Core\GPC::get_int( 'id' );
 $f_type = \Core\GPC::get_string( 'type', 'issue' );

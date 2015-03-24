@@ -23,7 +23,7 @@
  * @link http://www.mantisbt.org
  */
 
-require_once( 'core.php' );
+
 
 \Core\Plugin::require_api( 'core/graph_api.php' );
 

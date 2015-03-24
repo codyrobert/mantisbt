@@ -46,7 +46,7 @@
  * @uses lang_api.php
  */
 
-require_once( 'core.php' );
+
 
 #============ Parameters ============
 # (none)

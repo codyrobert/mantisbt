@@ -39,7 +39,7 @@ namespace Core;
  * @uses user_api.php
  */
 
-require_api( 'custom_field_api.php' );
+
 
 
 class Excel

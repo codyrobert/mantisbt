@@ -47,7 +47,7 @@
  * @uses user_pref_api.php
  */
 
-require_once( 'core.php' );
+
 
 #============ Parameters ============
 $f_user_id = \Core\GPC::get_int( 'user_id' );

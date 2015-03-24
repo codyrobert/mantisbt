@@ -1,5 +1,5 @@
 <?php
-require_once( 'core.php' );
+
 
 \Core\HTML::require_js( 'bugFilter.js' );
 \Core\HTML::require_css( 'status_config.php' );

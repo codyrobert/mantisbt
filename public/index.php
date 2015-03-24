@@ -58,9 +58,8 @@ if ($match = $router->match())
 	{
 		call_user_func_array($match['target'], $match['params']); 
 	}
-	else
-	{
-		header($_SERVER["SERVER_PROTOCOL"] . ' 404 Not Found');
-		dd($router);
-	}
+}
+else
+{
+	include ROOT.$_SERVER['REQUEST_URI'];
 }

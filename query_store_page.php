@@ -36,7 +36,7 @@
  * @uses lang_api.php
  */
 
-require_once( 'core.php' );
+
 
 \Core\Auth::ensure_user_authenticated();
 
