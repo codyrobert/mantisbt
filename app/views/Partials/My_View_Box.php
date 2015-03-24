@@ -37,6 +37,12 @@
  * @uses project_api.php
  * @uses string_api.php
  */
+ 
+$t_box_title = $label;
+$t_per_page = $per_page;
+$t_current_user_id = $user_id;
+ 
+ 
 
 
 $t_filter = \Core\Current_User::get_bug_filter();
@@ -55,6 +61,7 @@ $t_default_show_changed = \Core\Config::mantis_get( 'default_show_changed' );
 
 $c_filter['assigned'] = \Core\Filter::create_assigned_to_unresolved( \Core\Helper::get_current_project(), $t_current_user_id );
 $t_url_link_parameters['assigned'] = FILTER_PROPERTY_HANDLER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
+
 
 $c_filter['recent_mod'] = array(
 	FILTER_PROPERTY_CATEGORY_ID => array(
@@ -130,6 +137,7 @@ $c_filter['resolved'] = array(
 $t_url_link_parameters['resolved'] = FILTER_PROPERTY_STATUS . '=' . $t_bug_resolved_status_threshold . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_bug_resolved_status_threshold;
 
 
+
 $c_filter['unassigned'] = \Core\Filter::create_assigned_to_unresolved( \Core\Helper::get_current_project(), 0 );
 $t_url_link_parameters['unassigned'] = FILTER_PROPERTY_HANDLER_ID . '=[none]' . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 
@@ -172,6 +180,7 @@ $c_filter['feedback'] = array(
 	),
 );
 $t_url_link_parameters['feedback'] = FILTER_PROPERTY_REPORTER_ID . '=' . $t_current_user_id . '&' . FILTER_PROPERTY_STATUS . '=' . \Core\Config::mantis_get( 'bug_feedback_status' ) . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
+
 
 $c_filter['verify'] = array(
 	FILTER_PROPERTY_CATEGORY_ID => array(
@@ -245,6 +254,8 @@ $c_filter['my_comments'] = array(
 	),
 );
 
+
+
 $t_url_link_parameters['my_comments'] = FILTER_PROPERTY_NOTE_USER_ID. '=' . META_FILTER_MYSELF . '&' . FILTER_PROPERTY_HIDE_STATUS . '=' . $t_hide_status_default;
 $t_rows = \Core\Filter::get_bug_rows( $f_page_number, $t_per_page, $t_page_count, $t_bug_count, $c_filter[$t_box_title] );
 
@@ -261,6 +272,8 @@ if( \Core\Helper::get_current_project() == 0 ) {
 $t_filter = array_merge( $c_filter[$t_box_title], $t_filter );
 
 $t_box_title_label = \Core\Lang::get( 'my_view_title_' . $t_box_title );
+
+
 
 # -- ====================== BUG LIST ========================= --
 ?>

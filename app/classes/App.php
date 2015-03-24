@@ -14,7 +14,7 @@ class App
 	
 	static function page_title()
 	{
-		$title_parts = array_merge(array_filter((array)Config::get('page_title')), array(Config::get('app')['site_name']));
+		$title_parts = array_merge(array_filter((array)Config::get('page_title')), array(Config::get('_/app.name')));
 		
 		foreach ($title_parts as $key => $val)
 		{

@@ -6,6 +6,8 @@ define('IS_LOCAL_ENVIRONMENT',	(bool)(substr($_SERVER['HTTP_HOST'], -4) == '.dev
 define('ROOT',					dirname(__DIR__).'/');
 define('APP',					ROOT.'app/');
 define('MEDIA',					ROOT.'public/media/');
+define('PLUGINS',				ROOT.'plugins/');
+define('THEMES',				ROOT.'themes/');
 define('VENDOR',				ROOT.'vendor/');
 
 

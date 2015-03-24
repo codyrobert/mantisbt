@@ -41,6 +41,13 @@
 		'action'		=> 'lost_password',
 		'method'		=> 'GET|POST',
 	),
+	
+	array(
+		'route'			=> '/media/[**:path]',
+		'controller'	=> 'Media',
+		'action'		=> 'find',
+		'method'		=> 'GET',
+	),
 
 	array(
 		'route'			=> '/report/?',

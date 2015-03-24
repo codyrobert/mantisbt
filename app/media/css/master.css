@@ -375,6 +375,7 @@ p {
     #head h1 a {
       color: #777;
       display: block;
+      height: 100%;
       text-decoration: none; }
     #head h1.logo a {
       overflow: hidden;
@@ -463,6 +464,26 @@ p {
 .page-title dropdown-menu {
   height: 33px;
   width: 26px; }
+
+.myview-boxes:after {
+  content: "";
+  display: table;
+  clear: both; }
+.myview-boxes .section {
+  -moz-box-sizing: border-box;
+       box-sizing: border-box;
+  clear: left;
+  float: left;
+  padding-right: 15px;
+  padding-top: 30px;
+  width: 50%; }
+  .myview-boxes .section:nth-child(1), .myview-boxes .section:nth-child(2) {
+    padding-top: 30px; }
+  .myview-boxes .section:nth-child(2n+1) {
+    clear: right;
+    float: right;
+    padding-left: 15px;
+    padding-right: 0; }
 
 #floor {
   background: #ebebeb;

@@ -12,11 +12,28 @@ class Config
 		
 		if (!array_key_exists($key_parts[0], (array)self::$data))
 		{
-			$config_file = APP.'config/'.$key_parts[0].'.php';
+			$app_file = APP.'config/'.$key_parts[0].'.php';
 			
-			if (file_exists($config_file))
+			if (file_exists($app_file))
 			{
-				self::$data[$key_parts[0]] = include($config_file);
+				self::$data[$key_parts[0]] = include($app_file);
+			}
+			
+			//
+			// underscored config files cannot be loaded via plugins and themes
+			// - only app and db
+			//
+			if (substr($key_parts[0], 0, 1) !== '_')
+			{
+				if ($theme = self::get('_/app.theme'))
+				{
+					$theme_file = THEMES.$theme.'/'.$key_parts[0].'.php';
+				}
+				
+				if (file_exists($theme_file))
+				{
+					self::$data[$key_parts[0]] = include($theme_file) + self::$data[$key_parts[0]]; // theme options override
+				}
 			}
 		}
 		

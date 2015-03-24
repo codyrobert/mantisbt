@@ -2,8 +2,9 @@
 namespace Core;
 
 
+use Core\Config;
+use Core\Template\Engine;
 use Core\Template\Extension\Body_Class;
-use League\Plates\Engine;
 
 
 class Template
@@ -18,8 +19,7 @@ class Template
 	{
 		if (Template::$engine === null)
 		{
-			Template::$engine = new Engine(APP.'views');
-			
+			Template::$engine = new Engine();
 			Template::$engine->loadExtension(new Body_Class());
 		}
 		
