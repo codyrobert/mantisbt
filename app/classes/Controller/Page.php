@@ -26,8 +26,8 @@ abstract class Page extends Controller
 		App::queue_css(URL::get('css/status_config.php'));
 		
 		App::queue_js('//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js', true);
-		App::queue_js(URL::get('bower_components/webcomponentsjs/webcomponents.min.js'), true);
-		App::queue_js(URL::get('bower_components/polymer/polymer.min.js'), true);
+		App::queue_js(URL::get('media/js/vendors/webcomponentsjs/webcomponents.min.js'), true);
+		App::queue_js(URL::get('media/js/vendors/polymer/polymer.min.js'), true);
 		
 		App::queue_js(URL::get('javascript_config.php'), true);
 		App::queue_js(URL::get('javascript_translations.php'), true);

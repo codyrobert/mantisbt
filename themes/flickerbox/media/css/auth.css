@@ -15,7 +15,7 @@ body {
     float: none;
     height: 80px;
     margin: 0 auto;
-    width: 100%; }
+    width: auto; }
 
 .wrap {
   max-width: 740px; }
