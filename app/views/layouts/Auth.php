@@ -26,7 +26,7 @@ use Core\Utility;
 	
 	<header id="head">
 	
-		<h1<?php if (Config::mantis_get('logo_image')): ?> class="logo" style="background-image:url('<?php echo URL::get(Config::mantis_get('logo_image')); ?>');"<?php endif; ?>>
+		<h1<?php if (Config::get('_/app.logo')): ?> class="logo" style="background-image:url('<?php echo URL::get(Config::get('_/app.logo')); ?>');"<?php endif; ?>>
 			<a href="<?php echo URL::home(); ?>"><?php echo Config::get('app')['site_name']; ?></a>
 		</h1>
 		

@@ -3,7 +3,8 @@
 @import "variables";
 @import "mixins";
 @import "reset";
-@import "web_components/*";
+@import "web_components/_dropdown_menu";
+@import "web_components/_svg_element";
 @import "forms";
 @import "notices";
 @import "typography";
@@ -105,7 +106,7 @@ p {
 	}
 	
 	h1 {
-		background: no-repeat center;
+		background: url(../images/logo.png) no-repeat center;
 		background-size: auto 42px;
 		float: left;
 		height: $height - 30;
@@ -118,11 +119,8 @@ p {
 			color: $colorGrey;
 			display: block;
 			height: 100%;
-			text-decoration: none;
-		}
-		
-		&.logo a {
 			overflow: hidden;
+			text-decoration: none;
 			text-indent: 100%;
 			white-space: nowrap;
 		}

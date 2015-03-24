@@ -1,0 +1,46 @@
+html {
+  background: #f8f8f8; }
+
+body {
+  padding: 90px 30px; }
+
+#head {
+  background: none;
+  box-shadow: none;
+  height: auto;
+  position: static;
+  text-align: center; }
+  #head h1 {
+    background-size: auto 80px;
+    float: none;
+    height: 80px;
+    margin: 0 auto;
+    width: 100%; }
+
+.wrap {
+  max-width: 740px; }
+
+#content {
+  margin: 30px 0;
+  padding: 0; }
+  #content .wrap {
+    box-shadow: rgba(0, 0, 0, 0.1) 0 0 16px, rgba(0, 0, 0, 0.15) 0 4px 8px;
+    background: #fff;
+    padding: 30px; }
+
+.field-container:nth-child(2n+1) .field-input {
+  background: #fff; }
+
+.field-submit a {
+  display: inline-block;
+  line-height: 30px;
+  padding: 0 20px; }
+  .field-submit a + a {
+    border-left: 1px solid #e7e7e7; }
+
+#floor {
+  background: none;
+  margin: 0; }
+  #floor .wrap {
+    border-top: 1px solid #e7e7e7;
+    padding: 30px 0 0; }
