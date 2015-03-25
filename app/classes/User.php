@@ -900,11 +900,7 @@ class User
 		}
 	
 		# Build Gravatar URL
-		if( \Core\HTTP::is_protocol_https() ) {
-			$t_avatar_url = 'https://secure.gravatar.com/';
-		} else {
-			$t_avatar_url = 'http://www.gravatar.com/';
-		}
+		$t_avatar_url = '//secure.gravatar.com/';	
 		$t_avatar_url .= 'avatar/' . $t_email_hash . '?d=' . $t_default_avatar . '&r=' . $t_rating . '&s=' . $p_size;
 	
 		return array( $t_avatar_url, $p_size, $p_size );

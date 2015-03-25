@@ -29,7 +29,6 @@ require_lib( 'adodb' . DIRECTORY_SEPARATOR . 'adodb.inc.php' );
 require_lib( 'phpmailer' . DIRECTORY_SEPARATOR . 'class.phpmailer.php' );
 
 require APP.'globals.php';
-
 require APP.'core.php';
 require APP.'settings.php';
 

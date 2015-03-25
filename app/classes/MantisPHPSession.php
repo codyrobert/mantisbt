@@ -24,7 +24,7 @@ class MantisPHPSession extends MantisSession {
 		}
 
 		# Handle session cookie and caching
-		session_cache_limiter( 'private_no_expire' );
+		session_cache_limiter( 'nocache' ); // private_no_expire
 		session_set_cookie_params( 0, \Core\Config::mantis_get( 'cookie_path' ), \Core\Config::mantis_get( 'cookie_domain' ), $g_cookie_secure_flag_enabled, true );
 
 		# Handle existent session ID

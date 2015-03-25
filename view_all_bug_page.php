@@ -1,10 +1,6 @@
 <?php
-
-
 \Core\HTML::require_js( 'bugFilter.js' );
 \Core\HTML::require_css( 'status_config.php' );
-
-\Core\Auth::ensure_user_authenticated();
 
 $f_page_number		= \Core\GPC::get_int( 'page_number', 1 );
 # Get Project Id and set it as current
@@ -59,5 +55,3 @@ if( \Core\Current_User::get_pref( 'refresh_delay' ) > 0 ) {
 
 define( 'VIEW_ALL_INC_ALLOW', true );
 include( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'view_all_inc.php' );
-
-new \Core\Page;

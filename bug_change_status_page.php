@@ -41,8 +41,6 @@
  * @uses version_api.php
  */
 
-$g_allow_browser_cache = 1;
-
 
 
 

@@ -90,5 +90,12 @@
 		'action'		=> 'view',
 		'method'		=> 'GET',
 	),
+
+	array(
+		'route'			=> '/view_all/?',
+		'controller'	=> 'View_All',
+		'action'		=> 'index',
+		'method'		=> 'GET|POST',
+	),
 	
 );

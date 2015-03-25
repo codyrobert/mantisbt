@@ -46,9 +46,6 @@
  * @uses version_api.php
  */
 
-$g_allow_browser_cache = 1;
-
-
 
 
 \Core\HTML::require_css( 'status_config.php' );

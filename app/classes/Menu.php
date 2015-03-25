@@ -73,7 +73,7 @@ class Menu
 		$menu_items[URL::get('my_view')] = Lang::get('my_view_link');
 		
 		# View All Page
-		$menu_items[URL::get('view_all_bug_page.php')] = Lang::get('view_bugs_link');
+		$menu_items[URL::get('view_all')] = Lang::get('view_bugs_link');
 		
 		# Report Page
 		if (Access::has_project_level(Config::mantis_get('report_bug_threshold')))

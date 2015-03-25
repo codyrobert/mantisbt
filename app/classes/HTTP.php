@@ -112,7 +112,10 @@ class HTTP
 	 * @return void
 	 */
 	static function caching_headers( $p_allow_caching = false ) {
-		global $g_allow_browser_cache;
+	
+		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+	
+		/*global $g_allow_browser_cache;
 	
 		# Headers to prevent caching
 		# with option to bypass if running from script
@@ -129,7 +132,7 @@ class HTTP
 	
 			header( 'Expires: ' . gmdate( 'D, d M Y H:i:s \G\M\T', time() ) );
 			header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s \G\M\T', time() ) );
-		}
+		}*/
 	}
 	
 	/**

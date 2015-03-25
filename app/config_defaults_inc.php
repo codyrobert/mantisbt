@@ -3401,7 +3401,7 @@ $g_custom_headers = array();
  *
  * @global integer $g_allow_browser_cache
  */
-# $g_allow_browser_cache = ON;
+$g_allow_browser_cache = OFF;
 /**
  * File caching - This will allow the browser to cache downloaded files.
  * Without this set, there may be issues with IE receiving files, and launching
