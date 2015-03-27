@@ -157,20 +157,20 @@ form {
   position: relative;
   zoom: 1; }
 
-.field-container {
+.field-container, .control-group {
   overflow: hidden;
   zoom: 1; }
-  .field-container + .field-container {
+  .field-container + .field-container, .field-container + .control-group, .control-group + .field-container, .control-group + .control-group {
     border-top: 1px solid #fff; }
-  .field-container:nth-child(2n) .field-label {
+  .field-container:nth-child(2n) .field-label, .field-container:nth-child(2n) .control-label, .control-group:nth-child(2n) .field-label, .control-group:nth-child(2n) .control-label {
     background: #b4d0b9; }
-  .field-container:nth-child(2n) .field-input {
+  .field-container:nth-child(2n) .field-input, .field-container:nth-child(2n) .controls, .control-group:nth-child(2n) .field-input, .control-group:nth-child(2n) .controls {
     background: #e9efea; }
-  .field-container .field-submit {
+  .field-container .field-submit, .field-container .form-actions, .control-group .field-submit, .control-group .form-actions {
     float: right;
     padding: 0; }
 
-.field-label {
+.field-label, .control-label {
   background: #c7dbcb;
   border-right: 1px solid #fff;
   box-sizing: border-box;
@@ -182,33 +182,33 @@ form {
   text-align: right;
   width: 320px; }
 
-.field-input {
+.field-input, .controls {
   background: #f3f5f3;
   margin-left: 320px;
   padding: 10px 20px; }
-  .field-input input[type=text], .field-input input[type=password], .field-input input[type=email], .field-input select, .field-input textarea {
+  .field-input input[type=text], .field-input input[type=password], .field-input input[type=email], .field-input select, .field-input textarea, .controls input[type=text], .controls input[type=password], .controls input[type=email], .controls select, .controls textarea {
     border: 1px solid #cbcbcb;
     display: block;
     font-size: 14px;
     line-height: 20px;
     transition: 0.3s all; }
-    .field-input input[type=text]:focus, .field-input input[type=text]:hover, .field-input input[type=password]:focus, .field-input input[type=password]:hover, .field-input input[type=email]:focus, .field-input input[type=email]:hover, .field-input select:focus, .field-input select:hover, .field-input textarea:focus, .field-input textarea:hover {
+    .field-input input[type=text]:focus, .field-input input[type=text]:hover, .field-input input[type=password]:focus, .field-input input[type=password]:hover, .field-input input[type=email]:focus, .field-input input[type=email]:hover, .field-input select:focus, .field-input select:hover, .field-input textarea:focus, .field-input textarea:hover, .controls input[type=text]:focus, .controls input[type=text]:hover, .controls input[type=password]:focus, .controls input[type=password]:hover, .controls input[type=email]:focus, .controls input[type=email]:hover, .controls select:focus, .controls select:hover, .controls textarea:focus, .controls textarea:hover {
       border-color: #777;
       outline: none; }
-  .field-input ul {
+  .field-input ul, .controls ul {
     list-style: none;
     margin: 0;
     padding: 0; }
-    .field-input ul li + li {
+    .field-input ul li + li, .controls ul li + li {
       margin-top: 10px; }
 
-.field-submit {
+.field-submit, .form-actions {
   height: 40px;
   line-height: 40px;
   padding-top: 10px;
   text-align: right; }
 
-.button {
+.button, .form-actions input[type=submit] {
   box-shadow: rgba(0, 0, 0, 0.1) 0 0 1px, rgba(0, 0, 0, 0.15) 0 1px 2px;
   background: #368745;
   border: 0;
@@ -222,9 +222,9 @@ form {
   padding: 0 20px;
   text-decoration: none;
   transition: 0.3s all; }
-  .button:active, .button:focus, .button:hover {
+  .button:active, .button:focus, .button:hover, .form-actions input[type=submit]:active, .form-actions input[type=submit]:focus, .form-actions input[type=submit]:hover {
     background: #66a371; }
-  .button:active {
+  .button:active, .form-actions input[type=submit]:active {
     transform: scale(0.95); }
 
 .access-level, .view-state {

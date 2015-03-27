@@ -2,6 +2,9 @@
 namespace Controller;
 
 
+use Core\Config;
+
+
 class Report extends \Core\Controller\Page
 {
 	function action_post()
@@ -66,7 +69,7 @@ class Report extends \Core\Controller\Page
 		}
 		
 		$f_rel_type                         = \Core\GPC::get_int( 'rel_type', BUG_REL_NONE );
-		$f_files                            = gpc_get_file( 'ufile', null );
+		$f_files                            = \Core\GPC::get_file( 'ufile', null );
 		$f_report_stay                      = \Core\GPC::get_bool( 'report_stay', false );
 		$f_copy_notes_from_parent           = \Core\GPC::get_bool( 'copy_notes_from_parent', false );
 		$f_copy_attachments_from_parent     = \Core\GPC::get_bool( 'copy_attachments_from_parent', false );
@@ -236,6 +239,8 @@ class Report extends \Core\Controller\Page
 		$this->set([
 			'page_title'	=> \Core\Lang::get('report_bug_link'),
 			'view'			=> 'Pages/Report_A_Bug',
+			
+			'show'			=> Config::get('ticket.report_page_fields'),
 		]);
 		
 		$f_master_bug_id = \Core\GPC::get_int( 'm_id', 0 );

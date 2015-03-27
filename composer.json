@@ -6,6 +6,7 @@
 		"raveren/kint": "v0.9",
 		"cocur/slugify": "dev-master",
 		"wixel/gump": "dev-master",
-		"symfony/yaml": "2.*"
+		"symfony/yaml": "2.*",
+		"pfbc/pfbc": "dev-master"
 	}
 }

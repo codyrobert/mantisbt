@@ -1,6 +1,6 @@
-<?php return array(
+<?php return [
 
-	'statuses' => array(
+	'statuses' => [
 		'10' => 'new',
 		'20' => 'feedback',
 		'30' => 'acknowledged',
@@ -8,9 +8,9 @@
 		'50' => 'assigned',
 		'80' => 'resolved',
 		'90' => 'closed',
-	),
+	],
 
-	'view_page_fields' => array (
+	'view_page_fields' => [
 		'additional_info',
 		'attachments',
 		'category_id',
@@ -40,5 +40,25 @@
 		'tags',
 		'target_version',
 		'view_state',
-	),
-);
+	],
+	
+	'report_page_fields' => [
+		'additional_info',
+		'attachments',
+		'category_id',
+		'due_date',
+		'handler',
+		'os',
+		'os_version',
+		'platform',
+		'priority',
+		'product_build',
+		'product_version',
+		'reproducibility',
+		'severity',
+		'steps_to_reproduce',
+		'target_version',
+		'view_state',
+	]
+	
+];

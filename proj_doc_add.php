@@ -49,7 +49,7 @@ if( OFF == \Core\Config::mantis_get( 'enable_project_documentation' ) ) {
 
 $f_title = \Core\GPC::get_string( 'title' );
 $f_description = \Core\GPC::get_string( 'description' );
-$f_file = gpc_get_file( 'file' );
+$f_file = \Core\GPC::get_file( 'file' );
 
 if( \Core\Utility::is_blank( $f_title ) ) {
 	\Core\Error::parameters( \Core\Lang::get( 'title' ) );

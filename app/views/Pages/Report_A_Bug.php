@@ -8,6 +8,14 @@ $this->layout('Layouts/Master', $this->data);
 	<h2><?php echo Lang::get( 'enter_report_details_title' ); ?></h2>
 </header>
 
+<?php $this->insert('Partials/Forms/Report_a_Bug', [
+	'bug_id'			=> $f_master_bug_id,
+	'project_id'		=> $t_project_id,
+	'show'				=> $show,
+	'reproducibility'	=> $f_reproducibility,
+	'eta'				=> $f_eta,
+	'severity'			=> $f_severity,
+]); ?>
 
 <form id="report-bug-form" method="post" <?php echo $t_form_encoding; ?>>
 	<fieldset class="has-required">

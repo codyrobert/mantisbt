@@ -595,7 +595,7 @@ class File
 	 * Add a file to the system using the configured storage method
 	 *
 	 * @param integer $p_bug_id          The bug id (should be 0 when adding project doc).
-	 * @param array   $p_file            The uploaded file info, as retrieved from gpc_get_file().
+	 * @param array   $p_file            The uploaded file info, as retrieved from \Core\GPC::get_file().
 	 * @param string  $p_table           Either 'bug' or 'project' depending on attachment type.
 	 * @param string  $p_title           File title.
 	 * @param string  $p_desc            File description.
@@ -800,7 +800,7 @@ class File
 	 *
 	 * This function perform various checks for determining if the upload was successful
 	 *
-	 * @param array $p_file The uploaded file info, as retrieved from gpc_get_file().
+	 * @param array $p_file The uploaded file info, as retrieved from \Core\GPC::get_file().
 	 * @return void
 	 */
 	static function ensure_uploaded( array $p_file ) {

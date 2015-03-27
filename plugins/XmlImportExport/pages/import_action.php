@@ -29,7 +29,7 @@ require_once( $t_plugin_path . 'XmlImportExport/ImportXml.php' );
 
 \Core\Auth::reauthenticate( );
 
-$f_file = gpc_get_file( 'file', -1 );
+$f_file = \Core\GPC::get_file( 'file', -1 );
 $f_strategy = \Core\GPC::get_string( 'strategy' );
 $f_fallback = \Core\GPC::get_string( 'fallback' );
 $f_project = \Core\GPC::get_int( 'project_id' ); # not used, but ensures a project is selected

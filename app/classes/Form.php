@@ -1,6 +1,9 @@
 <?php
 namespace Core;
 
+
+use Core\URL;
+
 # MantisBT - A PHP based bugtracking system
 
 # MantisBT is free software: you can redistribute it and/or modify
@@ -39,8 +42,66 @@ namespace Core;
 
 
 
-class Form
+class Form extends \PFBC\Form
 {
+
+	function __construct($id = null)
+	{
+		parent::__construct();
+		
+		$this->configure([
+			"action" => URL::current(),
+		]);
+		
+		$this->prevent = ['bootstrap', 'jQuery'];
+		
+		if ($id !== null)
+		{
+			$this->addElement(new \PFBC\Element\Hidden('_token', \Core\Form::security_token($id)));
+		}
+	}
+	
+	function render($returnHTML = false)
+	{
+		if(!empty($this->labelToPlaceholder)) {
+			foreach($this->_elements as $element) {
+				$label = $element->getLabel();
+				if(!empty($label)) {
+					$element->setAttribute("placeholder", $label);
+					$element->setLabel("");
+				}	
+			}	
+		}
+
+		$this->view->_setForm($this);
+		$this->errorView->_setForm($this);
+
+		/*When validation errors occur, the form's submitted values are saved in a session 
+		array, which allows them to be pre-populated when the user is redirected to the form.*/
+		$values = self::getSessionValues($this->_attributes["id"]);
+		if(!empty($values))
+			$this->setValues($values);
+		$this->applyValues();
+
+		if($returnHTML)
+			ob_start();
+
+		//For usability, the prevent array is treated case insensitively.
+		$this->prevent = array_map("strtolower", $this->prevent);	
+
+		//$this->renderCSS();
+		$this->view->render();
+		//$this->renderJS();
+
+		/*The form's instance is serialized and saved in a session variable for use during validation.*/
+		$this->save();
+
+		if($returnHTML) {
+			$html = ob_get_contents();
+			ob_end_clean();
+			return $html;
+		}
+	}
 
 	/**
 	 * Helper function to generate a form action value when forms are designed

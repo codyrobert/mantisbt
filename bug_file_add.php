@@ -42,7 +42,7 @@
 \Core\Helper::begin_long_process();
 
 $f_bug_id	= \Core\GPC::get_int( 'bug_id', -1 );
-$f_files		= gpc_get_file( 'ufile', -1 );
+$f_files		= \Core\GPC::get_file( 'ufile', -1 );
 
 if( $f_bug_id == -1 && $f_files	== -1 ) {
 	# _POST/_FILES does not seem to get populated if you exceed size limit so check if bug_id is -1

@@ -5,31 +5,31 @@ form {
 	zoom: 1;
 }
 
-.field-container {
+.field-container, .control-group {
 	overflow: hidden;
 	zoom: 1;
 	
-	+ .field-container {
+	+ .field-container, + .control-group {
 		border-top: 1px solid #fff;
 	}
 	
 	&:nth-child(2n) {
-		.field-label {
+		.field-label, .control-label {
 			background: mix($colorGreenLighter, $colorGreyLighter, 70%);
 		}
 		
-		.field-input {
+		.field-input, .controls {
 			background: mix($colorGreenLighter, $colorGreyLighter, 15%);
 		}
 	}
 	
-	.field-submit {
+	.field-submit, .form-actions {
 		float: right;
 		padding: 0;
 	}
 }
 
-.field-label {
+.field-label, .control-label {
 	background: mix($colorGreenLighter, $colorGreyLighter, 50%);
 	border-right: 1px solid #fff;
 	box-sizing: border-box;
@@ -42,7 +42,7 @@ form {
 	width: 320px;
 }
 
-.field-input {
+.field-input, .controls {
 	background: mix($colorGreenLighter, $colorGreyLighter, 05%);
 	margin-left: 320px;
 	padding: 10px 20px;
@@ -71,14 +71,14 @@ form {
 	}
 }
 
-.field-submit { 
+.field-submit, .form-actions { 
 	height: 40px;
 	line-height: 40px;
 	padding-top: 10px;
 	text-align: right;
 }
 
-.button {
+.button, .form-actions input[type=submit] {
 	@include materialObjectShadow(2);
 	
 	background: $colorGreenLight;
