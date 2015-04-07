@@ -17,13 +17,34 @@ abstract class Model
 	protected $data = [];
 	protected $changed = [];
 	
-	function __construct($id = null)
+	function __construct(int $id = null)
 	{
-		if ($result = DB::query('SELECT * FROM '.$this->schema['table_name'].' WHERE '.$this->schema['id_key'].' = ? LIMIT 1', [(int)$id]))
+		if ($id !== null)
 		{
-			$this->data = $result;
-			$this->loaded = true;
+			$this->load($this->schema['id_key'], $id);
 		}
+	}
+	
+	function load($key, $value)
+	{
+		if ($this->loaded === false)
+		{
+			if ($result = DB::query('SELECT * FROM '.$this->schema['table_name'].' WHERE '.$key.' = ? LIMIT 1', [$value]))
+			{
+				$this->data = $result;
+				$this->loaded = true;
+			}
+		}
+	}
+	
+	static function find($key, $value)
+	{
+		$class = get_called_class();
+		
+		$model = new $class;
+		$model->load($key, $value);
+		
+		return $model;
 	}
 	
 	function loaded()

@@ -2,37 +2,15 @@
 namespace Core;
 
 
-class Request
+class Request extends \GUMP
 {
-	protected static $_added_filters_and_rules = false;
+	protected $has_run = false;
 	
 	protected $data = null;
 	protected $validated_data = null;
 	
-	protected $validator;
-	
-	static function add_filters_and_rules()
-	{
-		if (self::$_added_filters_and_rules === false)
-		{
-			\GUMP::add_filter('boolean', function($value, $params = NULL) 
-			{
-			    return (bool)$value;
-			});
-			
-			\GUMP::add_filter('sanitize_url', function($value, $params = NULL) 
-			{
-			    return filter_var($value, FILTER_SANITIZE_URL);
-			});
-		
-			self::$_added_filters_and_rules = true;
-		}
-	}
-	
 	function __construct($type, array $defaults = null, array $validation_rules = null, array $filter_rules = null)
 	{
-		self::add_filters_and_rules();
-		
 		switch ($type)
 		{
 			case 'POST':
@@ -53,13 +31,10 @@ class Request
 		}
 		
 		$this->data = array_merge((array)$defaults, (array)$this->data);
+		$this->data = $this->sanitize($this->data);
 		
-		$this->validator = new \GUMP();
-		
-		$this->data = $this->validator->sanitize($this->data);
-		
-		$this->validator->validation_rules($validation_rules);
-		$this->validator->filter_rules($filter_rules);
+		$this->validation_rules($validation_rules);
+		$this->filter_rules($filter_rules);
 	}
 	
 	function __get($key)
@@ -74,20 +49,112 @@ class Request
 	
 	function errors()
 	{
-		if (!$this->is_valid())
+		if ($this->has_run === false)
 		{
-			return $this->validator->get_readable_errors(true);
+			$this->run();
 		}
+		
+		return count($this->errors) ? $this->get_readable_errors(false) : false;
 	}
 	
-	function is_valid()
+	function valid()
 	{
-		$this->run();
-		return (bool)($this->validated_data);
+		if ($this->has_run === false)
+		{
+			$this->run();
+		}
+		
+		return !(bool)count($this->errors);
 	}
 	
 	function run()
 	{
-		$this->validated_data = $this->validator->run($this->data);
+		if ($this->has_run === false)
+		{
+			$this->validated_data = parent::run($this->data);
+			$this->has_run = true;
+			
+			return $this->data();	
+		}
 	}
+	
+	function filter_boolean($value, $params = null) 
+	{
+	    return (bool)$value;
+	}
+			
+	function filter_sanitize_url($value, $params = null) 
+	{
+	    return filter_var($value, FILTER_SANITIZE_URL);
+	}
+	
+	function validate_matches($field, $input, $param = null) 
+	{
+		if ($input[$field] != $input[$param])
+		{
+			return [
+				'field'	=> $field,
+				'value'	=> $input[$field],
+				'rule'	=> __FUNCTION__,
+				'param'	=> $param,
+			];
+		}
+	}
+	
+	function validate_valid_email($field, $input, $param = null)
+	{
+		if (!filter_var($input[$field], FILTER_VALIDATE_EMAIL) || \Core\Email::is_disposable($input[$field]))
+		{
+			return [
+				'field'	=> $field,
+				'value'	=> $input[$field],
+				'rule'	=> __FUNCTION__,
+				'param'	=> $param,
+			];
+		}
+	}
+	
+	function validate_valid_token($field, $input, $param = null) 
+	{
+		if (!Form::is_token_valid($param, $input[$field]))
+		{
+			return [
+				'field'	=> $field,
+				'value'	=> $input[$field],
+				'rule'	=> __FUNCTION__,
+				'param'	=> $param,
+			];
+		}
+	}
+	
+	function validate_unique_user_realname($field, $input, $param = null) 
+	{
+		$user = \Model\User::find('realname', $input[$field]);
+		
+		if ($user->loaded() & $user->id !== (int)$param)
+		{
+			return [
+				'field'	=> $field,
+				'value'	=> $input[$field],
+				'rule'	=> __FUNCTION__,
+				'param'	=> $param,
+			];
+		}
+	}
+	
+	function validate_unique_user_email($field, $input, $param = null) 
+	{
+		$user = \Model\User::find('email', $input[$field]);
+		
+		if ($user->loaded() & $user->id !== (int)$param)
+		{
+			return [
+				'field'	=> $field,
+				'value'	=> $input[$field],
+				'rule'	=> __FUNCTION__,
+				'param'	=> $param,
+			];
+		}
+	}
+
 }

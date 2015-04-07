@@ -8,7 +8,6 @@ use Core\Auth;
 use Core\Category;
 use Core\Config;
 use Core\Controller\Authenticated_Page;
-use Core\Current_User;
 use Core\Form;
 use Core\GPC;
 use Core\Helper;
@@ -16,11 +15,13 @@ use Core\HTML;
 use Core\Lang;
 use Core\Menu;
 use Core\Print_Util;
+use Core\Request;
 use Core\String;
 use Core\Template;
 use Core\URL;
-use Core\User;
 use Core\Utility;
+
+use Model\User;
 
 
 class Account extends Authenticated_Page
@@ -34,93 +35,52 @@ class Account extends Authenticated_Page
 	
 	function action_index()
 	{
-		if ($_POST && Form::security_validate( 'account_update' ))
+		$request = new Request('POST', [], [
+			// Validations
+			'_token'				=> 'valid_token,account_update|required',
+			'email'					=> 'valid_email|unique_user_email,'.User::current()->id.'|required',
+			'realname'				=> 'unique_user_realname,'.User::current()->id.'|required',
+			'password'				=> 'matches,password_confirm|min_len,6',
+		], [
+			// Filters
+			'realname'				=> 'trim|sanitize_string',
+			'password'				=> 'trim',
+		]);
+		
+		if ($_POST && $request->valid())
 		{
-			$t_user_id = \Core\Auth::get_current_user_id();
-			
-			\Core\Current_User::ensure_unprotected();
-			
-			$f_email           	= \Core\GPC::get_string( 'email', '' );
-			$f_realname        	= \Core\GPC::get_string( 'realname', '' );
-			$f_password_current = \Core\GPC::get_string( 'password_current', '' );
-			$f_password        	= \Core\GPC::get_string( 'password', '' );
-			$f_password_confirm	= \Core\GPC::get_string( 'password_confirm', '' );
-			
-			$t_email_updated = false;
-			$t_password_updated = false;
-			$t_realname_updated = false;
-			
-			$t_ldap = ( LDAP == \Core\Config::mantis_get( 'login_method' ) );
-			
-			# Update email (but only if LDAP isn't being used)
-			if( !( $t_ldap && \Core\Config::mantis_get( 'use_ldap_email' ) ) ) {
-				\Core\Email::ensure_valid( $f_email );
-				\Core\Email::ensure_not_disposable( $f_email );
-			
-				if( $f_email != \Core\User::get_email( $t_user_id ) ) {
-					\Core\User::set_email( $t_user_id, $f_email );
-					$t_email_updated = true;
-				}
+			if ($request->email != User::current()->email) 
+			{
+				User::current()->email = $request->email;
+				$messages[] = Lang::get('email_updated');
 			}
 			
-			# Update real name (but only if LDAP isn't being used)
-			if( !( $t_ldap && \Core\Config::mantis_get( 'use_ldap_realname' ) ) ) {
-				# strip extra spaces from real name
-				$t_realname = \Core\String::normalize( $f_realname );
-				if( $t_realname != \Core\User::get_field( $t_user_id, 'realname' ) ) {
-					# checks for problems with realnames
-					$t_username = \Core\User::get_field( $t_user_id, 'username' );
-					\Core\User::ensure_realname_unique( $t_username, $t_realname );
-					\Core\User::set_realname( $t_user_id, $t_realname );
-					$t_realname_updated = true;
-				}
+			if ($request->realname != User::current()->realname)
+			{
+				User::current()->realname = $request->realname;
+				$messages[] = Lang::get('realname_updated');
 			}
 			
-			# Update password if the two match and are not empty
-			if( !\Core\Utility::is_blank( $f_password ) ) {
-				if( $f_password != $f_password_confirm ) {
-					trigger_error( ERROR_USER_CREATE_PASSWORD_MISMATCH, ERROR );
-				} else {
-					if( !$t_account_verification && !\Core\Auth::does_password_match( $t_user_id, $f_password_current ) ) {
-						trigger_error( ERROR_USER_CURRENT_PASSWORD_MISMATCH, ERROR );
-					}
-			
-					if( !\Core\Auth::does_password_match( $t_user_id, $f_password ) ) {
-						\Core\User::set_password( $t_user_id, $f_password );
-						$t_password_updated = true;
-					}
-				}
+			if ($request->password)
+			{
+				\Core\User::set_password(User::current()->id, $request->password);
+				$messages[] = Lang::get('password_updated');
 			}
 			
-			\Core\Form::security_purge( 'account_update' );
+			User::current()->save();
+			Form::security_purge('account_update');
 			
-			# Clear the verification token
-			if( $t_account_verification ) {
-				\Core\Token::delete( TOKEN_ACCOUNT_VERIFY, $t_user_id );
+			if (!count(@$messages))
+			{
+				$messages[] = Lang::get('operation_successful');
 			}
-			
-			$t_message = '';
-			
-			if( $t_email_updated ) {
-				$t_message .= \Core\Lang::get( 'email_updated' );
-			}
-			
-			if( $t_password_updated ) {
-				$t_message = \Core\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
-				$t_message .= \Core\Lang::get( 'password_updated' );
-			}
-			
-			if( $t_realname_updated ) {
-				$t_message = \Core\Utility::is_blank( $t_message ) ? '' : $t_message . '<br />';
-				$t_message .= \Core\Lang::get( 'realname_updated' );
-			}
-			
-			$this->message = /*$t_message ? $t_messsage : */Lang::get( 'operation_successful' );
 		}
 		
 		$this->set([
 			'page_title'	=> Lang::get( 'edit_account_title' ),
 			'view'			=> 'Pages/Account/Edit',
+			'messages'		=> $messages,
+			'errors'		=> $_POST ? $request->errors() : [],
 		]);
 	}
 	

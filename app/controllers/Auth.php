@@ -51,7 +51,7 @@ class Auth extends Unauthenticated_Page
 		    'secure_session'	=> 'boolean',
 		]);
 		
-		if ($_POST && $request->is_valid())
+		if ($_POST && $request->valid())
 		{
 			$allow_permanent_login = (bool)(Config::mantis_get('allow_permanent_cookie') == ON && $request->perm_login);
 			GPC::set_cookie(Config::get_global('cookie_prefix').'_secure_session', $request->secure_session ? '1' : '0');

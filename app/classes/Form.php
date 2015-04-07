@@ -57,7 +57,7 @@ class Form extends \PFBC\Form
 		
 		if ($id !== null)
 		{
-			$this->addElement(new \PFBC\Element\Hidden('_token', \Core\Form::security_token($id)));
+			$this->addElement(new \PFBC\Element\Hidden('_token', self::security_token($id)));
 		}
 	}
 	
@@ -121,10 +121,11 @@ class Form extends \PFBC\Form
 	 * @param string $p_form_name Form name.
 	 * @return string Security token string
 	 */
-	static function security_token( $p_form_name ) {
-		if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
+	static function security_token( $p_form_name ) 
+	{
+		/*if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
 			return '';
-		}
+		}*/
 	
 		$t_tokens = \Core\Session::get( 'form_security_tokens', array() );
 	
@@ -204,10 +205,15 @@ class Form extends \PFBC\Form
 	 * @param string $p_form_name Form name.
 	 * @return boolean Form is valid
 	 */
+	 static function is_token_valid($key, $value)
+	 {
+		return (bool)\Core\Session::get('form_security_tokens', array())[$key][utf8_substr($value, 0, 8)][$value];
+	 }
+	 
 	static function security_validate( $p_form_name ) {
-		if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
+		/*if( PHP_CLI == \Core\PHP::mode() || OFF == \Core\Config::get_global( 'form_security_validation' ) ) {
 			return true;
-		}
+		}*/
 	
 		$t_tokens = \Core\Session::get( 'form_security_tokens', array() );
 	
@@ -223,6 +229,11 @@ class Form extends \PFBC\Form
 		$t_input = \Core\GPC::get_string( $t_form_token, '' );
 	
 		# No form input
+		if( '' == $t_input ) {
+			$t_form_token = '_token';
+			$t_input = \Core\GPC::get_string( $t_form_token, '' );
+		}
+		
 		if( '' == $t_input ) {
 			trigger_error( ERROR_FORM_TOKEN_INVALID, ERROR );
 			return false;
@@ -262,6 +273,11 @@ class Form extends \PFBC\Form
 		# Get the form input
 		$t_form_token = $p_form_name . '_token';
 		$t_input = \Core\GPC::get_string( $t_form_token, '' );
+		
+		if( '' == $t_input ) {
+			$t_form_token = '_token';
+			$t_input = \Core\GPC::get_string( $t_form_token, '' );
+		}
 	
 		# Get the date claimed by the token
 		$t_date = utf8_substr( $t_input, 0, 8 );

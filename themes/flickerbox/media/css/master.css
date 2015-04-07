@@ -188,19 +188,52 @@ form {
   padding: 10px 20px; }
   .field-input input[type=text], .field-input input[type=password], .field-input input[type=email], .field-input select, .field-input textarea, .controls input[type=text], .controls input[type=password], .controls input[type=email], .controls select, .controls textarea {
     border: 1px solid #cbcbcb;
+    box-sizing: border-box;
     display: block;
     font-size: 14px;
+    height: 30px;
     line-height: 20px;
-    transition: 0.3s all; }
+    max-width: 400px;
+    padding: 5px;
+    transition: 0.3s all;
+    width: 100%; }
     .field-input input[type=text]:focus, .field-input input[type=text]:hover, .field-input input[type=password]:focus, .field-input input[type=password]:hover, .field-input input[type=email]:focus, .field-input input[type=email]:hover, .field-input select:focus, .field-input select:hover, .field-input textarea:focus, .field-input textarea:hover, .controls input[type=text]:focus, .controls input[type=text]:hover, .controls input[type=password]:focus, .controls input[type=password]:hover, .controls input[type=email]:focus, .controls input[type=email]:hover, .controls select:focus, .controls select:hover, .controls textarea:focus, .controls textarea:hover {
       border-color: #777;
       outline: none; }
+    .field-input input[type=text][disabled], .field-input input[type=password][disabled], .field-input input[type=email][disabled], .field-input select[disabled], .field-input textarea[disabled], .controls input[type=text][disabled], .controls input[type=password][disabled], .controls input[type=email][disabled], .controls select[disabled], .controls textarea[disabled] {
+      opacity: .6; }
+      .field-input input[type=text][disabled]:hover, .field-input input[type=password][disabled]:hover, .field-input input[type=email][disabled]:hover, .field-input select[disabled]:hover, .field-input textarea[disabled]:hover, .controls input[type=text][disabled]:hover, .controls input[type=password][disabled]:hover, .controls input[type=email][disabled]:hover, .controls select[disabled]:hover, .controls textarea[disabled]:hover {
+        border-color: #cbcbcb; }
+  .field-input textarea, .controls textarea {
+    height: 150px;
+    max-width: 600px; }
   .field-input ul, .controls ul {
     list-style: none;
     margin: 0;
     padding: 0; }
     .field-input ul li + li, .controls ul li + li {
       margin-top: 10px; }
+  .field-input table, .controls table {
+    border-bottom: 1px solid #97bf9e;
+    max-width: 600px;
+    width: 100%; }
+    .field-input table td, .controls table td {
+      height: 20px;
+      line-height: 20px;
+      padding: 5px;
+      text-align: center; }
+      .field-input table td:first-child, .controls table td:first-child {
+        text-align: left; }
+      .field-input table td:last-child, .controls table td:last-child {
+        text-align: right; }
+  .field-input thead td, .controls thead td {
+    border-bottom: 1px solid #97bf9e;
+    color: #06482f;
+    font-weight: 600; }
+  .field-input tbody td:first-child, .controls tbody td:first-child {
+    font-weight: 600; }
+  .field-input tbody tr:nth-child(2n+1) td, .controls tbody tr:nth-child(2n+1) td {
+    background: rgba(255, 255, 255, 0.5); }
 
 .field-submit, .form-actions {
   height: 40px;
@@ -278,6 +311,9 @@ h6 {
 
 strong {
   font-weight: 600; }
+
+p, ul, ol {
+  margin: 20px 0; }
 
 html {
   background: #ebebeb; }

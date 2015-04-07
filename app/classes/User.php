@@ -1485,11 +1485,7 @@ class User
 	 * @param boolean $p_allow_protected Whether Allow password change to a protected account. This defaults to false.
 	 * @return boolean always true
 	 */
-	static function set_password( $p_user_id, $p_password, $p_allow_protected = false ) {
-		if( !$p_allow_protected ) {
-			\Core\User::ensure_unprotected( $p_user_id );
-		}
-	
+	static function set_password( $p_user_id, $p_password, $p_allow_protected = false) {
 		# When the password is changed, invalidate the cookie to expire sessions that
 		# may be active on all browsers.
 		$c_cookie_string = \Core\Auth::generate_unique_cookie_string();

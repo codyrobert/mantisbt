@@ -43,21 +43,39 @@ form {
 }
 
 .field-input, .controls {
-	background: mix($colorGreenLighter, $colorGreyLighter, 05%);
+	background: mix($colorGreenLighter, $colorGreyLighter, 5%);
 	margin-left: 320px;
 	padding: 10px 20px;
 	
 	input[type=text], input[type=password], input[type=email], select, textarea {
 		border: 1px solid mix($colorGrey, $colorGreyLight, 25%);
+		box-sizing: border-box;
 		display: block;
 		font-size: 14px;
+		height: 30px;
 		line-height: 20px;
+		max-width: 400px;
+		padding: 5px;
 		transition: 0.3s all;
+		width: 100%;
 		
 		&:focus, &:hover {
 			border-color: $colorGrey;
 			outline: none;
 		}
+		
+		&[disabled] {
+			opacity: .6;
+			
+			&:hover {
+				border-color: mix($colorGrey, $colorGreyLight, 25%);
+			}
+		}
+	}
+	
+	textarea {
+		height: 150px;
+		max-width: 600px;
 	}
 	
 	ul {
@@ -67,6 +85,47 @@ form {
 		
 		li + li {
 			margin-top: 10px;
+		}
+	}
+	
+	table {
+		border-bottom: 1px solid $colorGreenLighter;
+		max-width: 600px;
+		width: 100%;
+		
+		td {
+			height: 20px;
+			line-height: 20px;
+			padding: 5px;
+			text-align: center;
+			
+			&:first-child {
+				text-align: left;
+			}
+			
+			&:last-child {
+				text-align: right;
+			}
+		}
+	}
+	
+	thead {
+		td {
+			border-bottom: 1px solid $colorGreenLighter;
+			color: $colorGreen;
+			font-weight: 600;
+		}
+	}
+	
+	tbody {
+		td {
+			&:first-child {
+				font-weight: 600;
+			}
+		}
+		
+		tr:nth-child(2n+1) td {
+			background: rgba(255, 255, 255, .5);
 		}
 	}
 }
