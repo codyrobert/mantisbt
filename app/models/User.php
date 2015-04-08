@@ -21,4 +21,9 @@ class User extends \Core\Model
 		
 		return self::$_current_user;
 	}
+	
+	function preferences()
+	{
+		return \Core\User\Pref::get($this->data[$this->schema['id_key']]);
+	}
 }

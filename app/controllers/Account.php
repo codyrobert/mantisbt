@@ -78,17 +78,29 @@ class Account extends Authenticated_Page
 		
 		$this->set([
 			'page_title'	=> Lang::get( 'edit_account_title' ),
-			'view'			=> 'Pages/Account/Edit',
-			'messages'		=> $messages,
+			'view'			=> 'Pages/Account/Index',
+			'messages'		=> @$messages,
 			'errors'		=> $_POST ? $request->errors() : [],
 		]);
 	}
 	
 	function action_preferences()
 	{
+		$request = new Request('POST', [], [
+			// Validations
+		], [
+			// Filters
+		]);
+		
+		if ($_POST && $request->valid())
+		{
+		}
+		
 		$this->set([
 			'page_title'	=> Lang::get( 'change_preferences_link' ),
-			'view'			=> 'Pages/Account/Edit_Preferences',
+			'view'			=> 'Pages/Account/Preferences',
+			'messages'		=> @$messages,
+			'errors'		=> $_POST ? $request->errors() : [],
 		]);
 	}
 	

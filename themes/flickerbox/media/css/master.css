@@ -189,7 +189,7 @@ form {
   .field-input input[type=text], .field-input input[type=password], .field-input input[type=email], .field-input select, .field-input textarea, .controls input[type=text], .controls input[type=password], .controls input[type=email], .controls select, .controls textarea {
     border: 1px solid #cbcbcb;
     box-sizing: border-box;
-    display: block;
+    display: inline-block;
     font-size: 14px;
     height: 30px;
     line-height: 20px;
@@ -204,9 +204,13 @@ form {
       opacity: .6; }
       .field-input input[type=text][disabled]:hover, .field-input input[type=password][disabled]:hover, .field-input input[type=email][disabled]:hover, .field-input select[disabled]:hover, .field-input textarea[disabled]:hover, .controls input[type=text][disabled]:hover, .controls input[type=password][disabled]:hover, .controls input[type=email][disabled]:hover, .controls select[disabled]:hover, .controls textarea[disabled]:hover {
         border-color: #cbcbcb; }
+  .field-input select, .controls select {
+    width: auto; }
   .field-input textarea, .controls textarea {
     height: 150px;
     max-width: 600px; }
+  .field-input span, .controls span {
+    margin: 0 5px; }
   .field-input ul, .controls ul {
     list-style: none;
     margin: 0;
