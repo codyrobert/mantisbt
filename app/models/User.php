@@ -11,6 +11,8 @@ class User extends \Core\Model
 		'id_key'			=> 'id',
 	];
 	
+	protected $preferences = null;
+	
 	static function current()
 	{
 		if (self::$_current_user === null)
@@ -22,8 +24,13 @@ class User extends \Core\Model
 		return self::$_current_user;
 	}
 	
-	function preferences()
+	function &preferences()
 	{
-		return \Core\User\Pref::get($this->data[$this->schema['id_key']]);
+		if ($this->preferences === null)
+		{
+			$this->preferences = User\Preferences::find('user_id', $this->id);
+		}
+		
+		return $this->preferences;
 	}
 }

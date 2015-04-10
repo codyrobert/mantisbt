@@ -29,6 +29,11 @@ abstract class Model
 	{
 		if ($this->loaded === false)
 		{
+			if ($limit > 0)
+			{
+				$limit_string = ' LIMIT '.$limit;
+			}
+			
 			if ($result = DB::query('SELECT * FROM '.$this->schema['table_name'].' WHERE '.$key.' = ? LIMIT 1', [$value]))
 			{
 				$this->data = $result;

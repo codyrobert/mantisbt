@@ -86,14 +86,72 @@ class Account extends Authenticated_Page
 	
 	function action_preferences()
 	{
+		$severity_levels = implode(' ', [OFF] + array_keys(Config::get('levels.severity')));
+		
 		$request = new Request('POST', [], [
 			// Validations
+			'_token'								=> 'valid_token,account_prefs_update|required',
+			'bugnote_order'							=> 'contains,ASC DESC',
+			'email_bugnote_limit'					=> 'integer',
+			'timezone'								=> 'contains,'.implode(' ', array_keys(Config::get('_/timezones.ungrouped'))),
+			'language'								=> 'contains,'.implode(' ', Config::get('_/languages')),
+			'email_on_new_min_severity'				=> 'contains,'.$severity_levels,
+			'email_on_assigned_min_severity'		=> 'contains,'.$severity_levels, 
+			'email_on_feedback_min_severity'		=> 'contains,'.$severity_levels, 
+			'email_on_resolved_min_severity'		=> 'contains,'.$severity_levels, 
+			'email_on_closed_min_severity'			=> 'contains,'.$severity_levels, 
+			'email_on_reopened_min_severity'		=> 'contains,'.$severity_levels, 
+			'email_on_bugnote_min_severity'			=> 'contains,'.$severity_levels, 
+			'email_on_status_min_severity'			=> 'contains,'.$severity_levels, 
+			'email_on_priority_min_severity'		=> 'contains,'.$severity_levels,
 		], [
-			// Filters
+			'email_on_new'							=> 'boolean',
+			'email_on_assigned'						=> 'boolean', 
+			'email_on_feedback'						=> 'boolean', 
+			'email_on_resolved'						=> 'boolean', 
+			'email_on_closed'						=> 'boolean', 
+			'email_on_reopened'						=> 'boolean', 
+			'email_on_bugnote'						=> 'boolean', 
+			'email_on_status'						=> 'boolean', 
+			'email_on_priority'						=> 'boolean',
 		]);
 		
 		if ($_POST && $request->valid())
 		{
+			$fields = [
+				'bugnote_order', 
+				'email_bugnote_limit', 
+				'timezone', 
+				'language', 
+				'email_on_new', 
+				'email_on_assigned', 
+				'email_on_feedback', 
+				'email_on_resolved', 
+				'email_on_closed', 
+				'email_on_reopened', 
+				'email_on_bugnote', 
+				'email_on_status', 
+				'email_on_priority', 
+				'email_on_new_min_severity', 
+				'email_on_assigned_min_severity', 
+				'email_on_feedback_min_severity', 
+				'email_on_resolved_min_severity', 
+				'email_on_closed_min_severity', 
+				'email_on_reopened_min_severity', 
+				'email_on_bugnote_min_severity', 
+				'email_on_status_min_severity', 
+				'email_on_priority_min_severity'
+			];
+			
+			foreach ($fields as $key)
+			{
+				User::current()->preferences()->{$key} = $request->{$key};
+			}
+			
+			User::current()->preferences()->save();
+			Form::security_purge('account_prefs_update');
+			
+			$messages[] = Lang::get('operation_successful');
 		}
 		
 		$this->set([

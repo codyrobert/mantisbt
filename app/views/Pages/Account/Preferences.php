@@ -11,7 +11,32 @@ $this->layout('Layouts/Master', $this->data);
 	<h2><?php echo Lang::get('default_account_preferences_title'); ?></h2>
 </header>
 
-<?php $this->insert('Partials/Forms/User/Preferences'); ?>
+<?php
+if (@$errors)
+{
+	echo '<ul class="notice error">', PHP_EOL;
+	
+	foreach ($errors as $error)
+	{
+		echo '<li>', $error, '</li>', PHP_EOL;
+	}
+	
+	echo '</ul>', PHP_EOL;
+}
+elseif (@$messages)
+{
+	echo '<ul class="notice">', PHP_EOL;
+	
+	foreach ($messages as $message)
+	{
+		echo '<li>', $this->e($message), '</li>', PHP_EOL;
+	}
+	
+	echo '</ul>', PHP_EOL;
+}
+
+$this->insert('Partials/Forms/User/Preferences', $this->data);
+?>
 
 <div id="account-prefs-reset-div" class="form-container">
 	<form id="account-prefs-reset-form" method="post" action="account_prefs_reset.php">
