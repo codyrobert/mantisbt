@@ -3,10 +3,7 @@ use Core\Menu;
 use Core\URL;
 
 $this->layout('Layouts/Master', $this->data);
-$this->section('sidebar');
 ?>
-
-<?php $this->stop(); ?>
 
 <nav class="section-nav">
 	<ul>
