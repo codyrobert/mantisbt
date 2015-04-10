@@ -20,12 +20,12 @@ dropdown-menu {
 			
 			&::shadow {
 				path {
-					fill: $colorGrey;
+					fill: $colorSecondary;
 					transition: 0.3s all;
 				}
 					
 				svg:hover path {
-					fill: $colorGreenLight;
+					fill: $colorPrimaryLight;
 				}
 			}
 		}
@@ -47,7 +47,7 @@ dropdown-menu {
 			
 			&:before {
 				border: solid transparent;
-				border-bottom-color: $colorGrey;
+				border-bottom-color: $colorSecondary;
 				border-width: 0 6px 6px;
 				content: "";
 				display: block;
@@ -64,7 +64,7 @@ html /deep/ dropdown-menu::shadow {
 	h3 {
 		@include baseFontSettings();
 		
-		background: $colorGrey;
+		background: $colorSecondary;
 		color: #fff;
 		margin: 0;
 		padding: 6px 30px 6px 10px;
@@ -83,7 +83,7 @@ html /deep/ dropdown-menu::shadow {
 	a {
 		@include baseFontSettings();
 		
-		color: $colorGreyDark;
+		color: $colorSecondaryDark;
 		cursor: pointer;
 		display: block;
 		padding: 6px 30px 6px 10px;
@@ -92,7 +92,7 @@ html /deep/ dropdown-menu::shadow {
 		white-space: nowrap;
 		
 		&:active, &:focus, &:hover {
-			background: $colorGreenLight;
+			background: $colorPrimaryLight;
 			color: #fff;
 			
 			svg-element::shadow path {
@@ -109,7 +109,7 @@ html /deep/ dropdown-menu::shadow {
 		vertical-align: middle;
 		
 		&::shadow path {
-			fill: $colorGreyDark;
+			fill: $colorSecondaryDark;
 		}
 	}
 }

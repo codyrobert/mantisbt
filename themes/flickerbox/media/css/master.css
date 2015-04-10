@@ -61,7 +61,7 @@ dropdown-menu {
       fill: #777;
       transition: 0.3s all; }
     dropdown-menu::shadow #toggle::shadow svg:hover path {
-      fill: #368745; }
+      fill: #f76144; }
   dropdown-menu::shadow #menu {
     box-shadow: rgba(0, 0, 0, 0.1) 0 0 36px, rgba(0, 0, 0, 0.15) 0 6px 12px;
     background: #fff;
@@ -88,9 +88,9 @@ dropdown-menu {
 dropdown-menu::shadow h3,
 html /deep/ dropdown-menu::shadow h3 {
   color: #333;
-  font-family: Helvetica, Verdana, sans-serif;
+  font-family: "Avenir Next", Helvetica, Verdana, sans-serif;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 22px;
   background: #777;
   color: #fff;
@@ -106,9 +106,9 @@ html /deep/ dropdown-menu::shadow h3 {
 dropdown-menu::shadow a,
 html /deep/ dropdown-menu::shadow a {
   color: #333;
-  font-family: Helvetica, Verdana, sans-serif;
+  font-family: "Avenir Next", Helvetica, Verdana, sans-serif;
   font-size: 14px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 22px;
   color: #333;
   cursor: pointer;
@@ -121,7 +121,7 @@ html /deep/ dropdown-menu::shadow a {
   html /deep/ dropdown-menu::shadow a:active,
   html /deep/ dropdown-menu::shadow a:focus,
   html /deep/ dropdown-menu::shadow a:hover {
-    background: #368745;
+    background: #f76144;
     color: #fff; }
     dropdown-menu::shadow a:active svg-element::shadow path, dropdown-menu::shadow a:focus svg-element::shadow path, dropdown-menu::shadow a:hover svg-element::shadow path,
     html /deep/ dropdown-menu::shadow a:active svg-element::shadow path,
@@ -152,102 +152,110 @@ html /deep/ svg-element {
     width: auto !important; }
 
 form {
+  color: #333;
+  font-family: "Avenir Next", Helvetica, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
   display: block;
   overflow: auto;
   position: relative;
   zoom: 1; }
 
-.field-container, .control-group {
+input[type=text], input[type=password], input[type=email], input[type=search], select, textarea {
+  color: #333;
+  font-family: "Avenir Next", Helvetica, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 0 1px, rgba(0, 0, 0, 0.15) 0 1px 2px inset;
+  border: 1px solid #cbcbcb;
+  border-radius: 3px;
+  box-sizing: border-box;
+  display: inline-block;
+  height: 32px;
+  padding: 5px;
+  transition: 0.3s all; }
+  input[type=text]:focus, input[type=text]:hover, input[type=password]:focus, input[type=password]:hover, input[type=email]:focus, input[type=email]:hover, input[type=search]:focus, input[type=search]:hover, select:focus, select:hover, textarea:focus, textarea:hover {
+    border-color: #777;
+    outline: none; }
+  input[type=text][disabled], input[type=password][disabled], input[type=email][disabled], input[type=search][disabled], select[disabled], textarea[disabled] {
+    opacity: .6; }
+    input[type=text][disabled]:hover, input[type=password][disabled]:hover, input[type=email][disabled]:hover, input[type=search][disabled]:hover, select[disabled]:hover, textarea[disabled]:hover {
+      border-color: #cbcbcb; }
+
+.form-style--standard .field-container, .form-style--standard .control-group {
   overflow: hidden;
   zoom: 1; }
-  .field-container + .field-container, .field-container + .control-group, .control-group + .field-container, .control-group + .control-group {
+  .form-style--standard .field-container + .field-container, .form-style--standard .field-container + .control-group, .form-style--standard .control-group + .field-container, .form-style--standard .control-group + .control-group {
     border-top: 1px solid #fff; }
-  .field-container:nth-child(2n) .field-label, .field-container:nth-child(2n) .control-label, .control-group:nth-child(2n) .field-label, .control-group:nth-child(2n) .control-label {
-    background: #b4d0b9; }
-  .field-container:nth-child(2n) .field-input, .field-container:nth-child(2n) .controls, .control-group:nth-child(2n) .field-input, .control-group:nth-child(2n) .controls {
-    background: #e9efea; }
-  .field-container .field-submit, .field-container .form-actions, .control-group .field-submit, .control-group .form-actions {
+  .form-style--standard .field-container:nth-child(2n) .field-label, .form-style--standard .field-container:nth-child(2n) .control-label, .form-style--standard .control-group:nth-child(2n) .field-label, .form-style--standard .control-group:nth-child(2n) .control-label {
+    background: #f7b1a4; }
+  .form-style--standard .field-container:nth-child(2n) .field-input, .form-style--standard .field-container:nth-child(2n) .controls, .form-style--standard .control-group:nth-child(2n) .field-input, .form-style--standard .control-group:nth-child(2n) .controls {
+    background: #f7e8e6; }
+  .form-style--standard .field-container .field-submit, .form-style--standard .field-container .form-actions, .form-style--standard .control-group .field-submit, .form-style--standard .control-group .form-actions {
     float: right;
     padding: 0; }
-
-.field-label, .control-label {
-  background: #c7dbcb;
+.form-style--standard .field-label, .form-style--standard .control-label {
+  background: #f7c5bc;
   border-right: 1px solid #fff;
   box-sizing: border-box;
-  color: #14533a;
+  color: #f73913;
   float: left;
   font-weight: 600;
   margin-bottom: -989px;
   padding: 10px 20px 999px 20px;
   text-align: right;
   width: 320px; }
-
-.field-input, .controls {
-  background: #f3f5f3;
+.form-style--standard .field-input, .form-style--standard .controls {
+  background: #f7f2f2;
   margin-left: 320px;
   padding: 10px 20px; }
-  .field-input input[type=text], .field-input input[type=password], .field-input input[type=email], .field-input select, .field-input textarea, .controls input[type=text], .controls input[type=password], .controls input[type=email], .controls select, .controls textarea {
-    border: 1px solid #cbcbcb;
-    box-sizing: border-box;
-    display: inline-block;
-    font-size: 14px;
-    height: 30px;
-    line-height: 20px;
+  .form-style--standard .field-input input[type=text], .form-style--standard .field-input input[type=password], .form-style--standard .field-input input[type=email], .form-style--standard .field-input input[type=search], .form-style--standard .controls input[type=text], .form-style--standard .controls input[type=password], .form-style--standard .controls input[type=email], .form-style--standard .controls input[type=search] {
     max-width: 400px;
-    padding: 5px;
-    transition: 0.3s all;
     width: 100%; }
-    .field-input input[type=text]:focus, .field-input input[type=text]:hover, .field-input input[type=password]:focus, .field-input input[type=password]:hover, .field-input input[type=email]:focus, .field-input input[type=email]:hover, .field-input select:focus, .field-input select:hover, .field-input textarea:focus, .field-input textarea:hover, .controls input[type=text]:focus, .controls input[type=text]:hover, .controls input[type=password]:focus, .controls input[type=password]:hover, .controls input[type=email]:focus, .controls input[type=email]:hover, .controls select:focus, .controls select:hover, .controls textarea:focus, .controls textarea:hover {
-      border-color: #777;
-      outline: none; }
-    .field-input input[type=text][disabled], .field-input input[type=password][disabled], .field-input input[type=email][disabled], .field-input select[disabled], .field-input textarea[disabled], .controls input[type=text][disabled], .controls input[type=password][disabled], .controls input[type=email][disabled], .controls select[disabled], .controls textarea[disabled] {
-      opacity: .6; }
-      .field-input input[type=text][disabled]:hover, .field-input input[type=password][disabled]:hover, .field-input input[type=email][disabled]:hover, .field-input select[disabled]:hover, .field-input textarea[disabled]:hover, .controls input[type=text][disabled]:hover, .controls input[type=password][disabled]:hover, .controls input[type=email][disabled]:hover, .controls select[disabled]:hover, .controls textarea[disabled]:hover {
-        border-color: #cbcbcb; }
-  .field-input select, .controls select {
+  .form-style--standard .field-input select, .form-style--standard .controls select {
     width: auto; }
-  .field-input textarea, .controls textarea {
+  .form-style--standard .field-input textarea, .form-style--standard .controls textarea {
     height: 150px;
     max-width: 600px; }
-  .field-input span, .controls span {
+  .form-style--standard .field-input span, .form-style--standard .controls span {
     margin: 0 5px; }
-  .field-input ul, .controls ul {
+  .form-style--standard .field-input ul, .form-style--standard .controls ul {
     list-style: none;
     margin: 0;
     padding: 0; }
-    .field-input ul li + li, .controls ul li + li {
+    .form-style--standard .field-input ul li + li, .form-style--standard .controls ul li + li {
       margin-top: 10px; }
-  .field-input table, .controls table {
-    border-bottom: 1px solid #97bf9e;
+  .form-style--standard .field-input table, .form-style--standard .controls table {
+    border-bottom: 1px solid #f79380;
     max-width: 600px;
     width: 100%; }
-    .field-input table td, .controls table td {
+    .form-style--standard .field-input table td, .form-style--standard .controls table td {
       height: 20px;
       line-height: 20px;
       padding: 5px;
       text-align: center; }
-      .field-input table td:first-child, .controls table td:first-child {
+      .form-style--standard .field-input table td:first-child, .form-style--standard .controls table td:first-child {
         text-align: left; }
-      .field-input table td:last-child, .controls table td:last-child {
+      .form-style--standard .field-input table td:last-child, .form-style--standard .controls table td:last-child {
         text-align: right; }
-  .field-input thead td, .controls thead td {
-    border-bottom: 1px solid #97bf9e;
-    color: #06482f;
+  .form-style--standard .field-input thead td, .form-style--standard .controls thead td {
+    border-bottom: 1px solid #f79380;
+    color: #f72f08;
     font-weight: 600; }
-  .field-input tbody td:first-child, .controls tbody td:first-child {
+  .form-style--standard .field-input tbody td:first-child, .form-style--standard .controls tbody td:first-child {
     font-weight: 600; }
-  .field-input tbody tr:nth-child(2n+1) td, .controls tbody tr:nth-child(2n+1) td {
+  .form-style--standard .field-input tbody tr:nth-child(2n+1) td, .form-style--standard .controls tbody tr:nth-child(2n+1) td {
     background: rgba(255, 255, 255, 0.5); }
-
-.field-submit, .form-actions {
+.form-style--standard .field-submit, .form-style--standard .form-actions {
   height: 40px;
   line-height: 40px;
   padding-top: 10px;
   text-align: right; }
-
-.button, .form-actions input[type=submit] {
+.form-style--standard .button, .form-style--standard .form-actions input[type=submit] {
   box-shadow: rgba(0, 0, 0, 0.1) 0 0 1px, rgba(0, 0, 0, 0.15) 0 1px 2px;
-  background: #368745;
+  background: #f72f08;
   border: 0;
   color: #fff;
   cursor: pointer;
@@ -259,12 +267,11 @@ form {
   padding: 0 20px;
   text-decoration: none;
   transition: 0.3s all; }
-  .button:active, .button:focus, .button:hover, .form-actions input[type=submit]:active, .form-actions input[type=submit]:focus, .form-actions input[type=submit]:hover {
-    background: #66a371; }
-  .button:active, .form-actions input[type=submit]:active {
+  .form-style--standard .button:active, .form-style--standard .button:focus, .form-style--standard .button:hover, .form-style--standard .form-actions input[type=submit]:active, .form-style--standard .form-actions input[type=submit]:focus, .form-style--standard .form-actions input[type=submit]:hover {
+    background: #f76144; }
+  .form-style--standard .button:active, .form-style--standard .form-actions input[type=submit]:active {
     transform: scale(0.95); }
-
-.access-level, .view-state {
+.form-style--standard .access-level, .form-style--standard .view-state {
   padding-left: 10px; }
 
 .notice {
@@ -276,13 +283,16 @@ form {
   padding: 10px; }
 
 a {
-  color: #06482f;
+  color: #009cff;
   text-decoration: none;
   transition: 0.3s color; }
   a:active, a:focus, a:hover {
-    color: #368745; }
+    color: #7ccafb; }
 
 h1, h2, h3, h4, h5, h6 {
+  color: #777;
+  font-family: "Avenir Next", Helvetica, Verdana, sans-serif;
+  font-weight: 600;
   margin: 40px 0 10px; }
   h1:first-child, h2:first-child, h3:first-child, h4:first-child, h5:first-child, h6:first-child {
     margin-top: 0; }
@@ -320,16 +330,14 @@ p, ul, ol {
   margin: 20px 0; }
 
 html {
-  background: #ebebeb; }
+  background: #fff; }
 
 body {
   color: #333;
-  font-family: Helvetica, Verdana, sans-serif;
+  font-family: "Avenir Next", Helvetica, Verdana, sans-serif;
   font-size: 14px;
-  font-weight: 300;
-  line-height: 22px;
-  background: #f8f8f8;
-  padding-top: 90px; }
+  font-weight: 400;
+  line-height: 22px; }
 
 p {
   margin: 20px 0; }
@@ -347,94 +355,64 @@ p {
   padding: 10px; }
 
 #head {
-  box-shadow: rgba(0, 0, 0, 0.1) 0 0 16px, rgba(0, 0, 0, 0.15) 0 4px 8px;
+  color: #333;
+  font-family: "Avenir Next", Helvetica, Verdana, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
   background: #f8f8f8;
-  color: #777;
-  height: 90px;
-  left: 0;
+  border-bottom: 1px solid #e7e7e7;
+  height: 40px;
+  line-height: 40px;
   overflow: hidden;
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 200; }
-  #head .login-bar {
-    background: #fff;
-    border: solid #e7e7e7;
-    border-width: 1px 0;
-    clear: both;
-    height: 28px;
-    line-height: 28px;
-    padding: 0 30px; }
-    #head .login-bar #login-info {
-      float: left; }
-    #head .login-bar #rss-feed, #head .login-bar #project-selector-div {
-      float: right; }
-    #head .login-bar #project-selector-div select {
-      margin: 0 10px; }
-    #head .login-bar #project-selector-div input[type=submit] {
-      display: none; }
-    #head .login-bar #rss-feed img {
-      display: inline-block;
-      vertical-align: middle; }
-    #head .login-bar #current-time {
-      display: none; }
-  #head #bug-jump {
-    position: absolute;
-    right: 30px;
-    top: 20px; }
-  #head .recently-visited {
-    margin: 0 auto;
-    text-align: center; }
+  padding: 10px 0;
+  position: relative; }
   #head h1 {
-    background: url(../images/logo.png) no-repeat center;
-    background-size: auto 42px;
     float: left;
-    height: 60px;
-    line-height: 60px;
-    margin: 0;
-    padding: 0 30px;
-    width: 122px; }
-    #head h1 a {
-      color: #777;
+    height: 40px;
+    line-height: 40px;
+    margin: 0; }
+    #head h1 img {
       display: block;
-      height: 100%;
-      overflow: hidden;
-      text-decoration: none;
-      text-indent: 100%;
-      white-space: nowrap; }
-  #head nav {
-    border-right: 1px solid #e7e7e7;
+      height: 40px; }
+  #head form {
     float: left;
-    line-height: 60px; }
+    padding: 4px 20px; }
+    #head form input[type=search] {
+      display: block;
+      width: 300px; }
+  #head nav {
+    float: right; }
   #head ul {
     list-style: none;
     margin: 0;
     padding: 0; }
   #head li {
-    border-left: 1px solid #e7e7e7;
-    float: left; }
+    float: left;
+    margin-left: 20px; }
     #head li a {
-      display: block;
-      height: 60px;
-      padding: 0 20px; }
-      #head li a:active, #head li a:focus, #head li a:hover {
-        background: #e7e7e7; }
+      display: block; }
   #head a {
-    color: #777;
+    color: #333;
+    font-weight: 600;
     text-decoration: none;
     transition: 0.3s all; }
     #head a:active, #head a:focus, #head a:hover {
-      color: #333; }
+      color: #f72f08; }
+    #head a i {
+      display: inline-block;
+      font-size: 22px;
+      vertical-align: middle; }
 
 .wrap {
   box-sizing: border-box;
   margin: 0 auto;
-  max-width: 1400px; }
+  max-width: 1200px; }
 
 #content {
-  padding: 60px 30px 0; }
+  padding: 40px 20px 0; }
   #content section + section {
-    margin-top: 30px; }
+    margin-top: 40px; }
 
 .page-title, .section-title {
   border-bottom: 1px solid #dbdbdb;
@@ -478,34 +456,55 @@ p {
   fill: #777;
   transition: 0.3s all; }
 .page-title .notify:focus, .page-title .notify:hover ::shadow path {
-  fill: #368745; }
+  fill: #f76144; }
 .page-title dropdown-menu {
   height: 33px;
   width: 26px; }
 
-.myview-boxes:after {
-  content: "";
-  display: table;
-  clear: both; }
-.myview-boxes .section {
-  box-sizing: border-box;
-  clear: left;
-  float: left;
-  padding-right: 15px;
-  padding-top: 30px;
-  width: 50%; }
-  .myview-boxes .section:nth-child(1), .myview-boxes .section:nth-child(2) {
-    padding-top: 30px; }
-  .myview-boxes .section:nth-child(2n+1) {
-    clear: right;
-    float: right;
-    padding-left: 15px;
-    padding-right: 0; }
+.section-nav {
+  border-bottom: 1px solid #e7e7e7;
+  margin-bottom: 20px; }
+  .section-nav:after {
+    content: "";
+    display: table;
+    clear: both; }
+  .section-nav ul {
+    margin: 0;
+    padding: 0; }
+  .section-nav li {
+    float: left; }
+    .section-nav li + li {
+      margin-left: 20px; }
+  .section-nav a {
+    border-bottom: 2px solid transparent;
+    color: #777;
+    display: block;
+    font-size: 16px;
+    height: 38px;
+    line-height: 38px;
+    padding: 0 20px; }
+    .section-nav a:active, .section-nav a:focus, .section-nav a:hover {
+      color: #333; }
+    .section-nav a.active {
+      border-bottom-color: #f72f08;
+      color: #333; }
+
+.tabular-data {
+  border: 1px solid #e7e7e7; }
+  .tabular-data .row:after {
+    content: "";
+    display: table;
+    clear: both; }
+  .tabular-data .row + .row {
+    border-top: 1px solid #e7e7e7; }
+  .tabular-data .row .cell {
+    float: left;
+    padding: 5px; }
 
 #floor {
-  background: #ebebeb;
-  margin: 120px 0 0; }
+  margin: 60px 0 0; }
   #floor .wrap {
-    padding: 30px; }
+    border-top: 1px solid #e7e7e7;
+    padding: 30px 0; }
   #floor hr {
     display: none; }

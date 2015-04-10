@@ -161,36 +161,4 @@ class Account extends Authenticated_Page
 			'errors'		=> $_POST ? $request->errors() : [],
 		]);
 	}
-	
-	function action_columns()
-	{
-		if ($_POST && Form::security_validate( 'manage_config_columns_reset' ))
-		{
-			$t_user_id = Auth::get_current_user_id();
-			
-			Config::delete_for_user( 'view_issues_page_columns', $t_user_id );
-			Config::delete_for_user( 'print_issues_page_columns', $t_user_id );
-			Config::delete_for_user( 'csv_columns', $t_user_id );
-			Config::delete_for_user( 'excel_columns', $t_user_id );
-			
-			Form::security_purge( 'manage_config_columns_reset' );
-			
-			$this->message = Lang::get( 'operation_successful' );
-		}
-
-		$this->set([
-			'page_title'	=> Lang::get( 'manage_columns_config' ),
-			'view'			=> 'Pages/Account/Columns',
-			'project_id'	=> Helper::get_current_project(),
-			'user_id'		=> Auth::get_current_user_id(),
-		]);
-	}
-	
-	function action_profiles()
-	{
-		$this->set([
-			'page_title'	=> Lang::get( 'manage_profiles_link' ),
-			'view'			=> 'Pages/Account/Profiles',
-		]);
-	}
 }

@@ -1,14 +1,15 @@
 a {
-	color: $colorGreen;
+	color: $colorTertiary;
 	text-decoration: none;
 	transition: 0.3s color;
 	
 	&:active, &:focus, &:hover {
-		color: $colorGreenLight;
+		color: $colorTertiaryLight;
 	}
 }
 
 h1, h2, h3, h4, h5, h6 {
+	@include headerFontSettings();
 	margin: 40px 0 10px;
 	
 	&:first-child {

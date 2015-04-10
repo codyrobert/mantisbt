@@ -11,7 +11,9 @@ use PFBC\Element as Element;
 use Model\User;
 
 
-$form = new Form('account_update');
+$form = new Form('account_update', [
+	'class'	=> 'form-style--standard',
+]);
 
 $form->addElement(new Element\Textbox(Lang::get('username'), 'username', [
 	'disabled'	=> true,

@@ -1,14 +1,29 @@
-$colorGrey: #777;
-$colorGreyDark: #333;
-$colorGreyLight: #e7e7e7;
-$colorGreyLighter: #f8f8f8;
+$colorSecondary: #777;
+$colorSecondaryDark: #333;
+$colorSecondaryLight: #e7e7e7;
+$colorSecondaryLighter: #f8f8f8;
 
-$colorGreen: #06482f;
-$colorGreenLight: #368745;
-$colorGreenLighter: mix($colorGreenLight, $colorGreyLighter, 50%);
+$colorPrimary: #f72f08;
+$colorPrimaryLight: mix($colorPrimary, $colorSecondaryLighter, 75%);
+$colorPrimaryLighter: mix($colorPrimary, $colorSecondaryLighter, 50%);
 
-$fontColor: $colorGreyDark;
-$fontFamily: Helvetica, Verdana, sans-serif;
+$colorTertiary: #009cff;
+$colorTertiaryLight: mix($colorTertiary, $colorSecondaryLighter, 50%);
+
+$fontColor: $colorSecondaryDark;
+$fontColorHeader: $colorSecondary;
+$fontColorUI: $colorSecondaryDark;
+
+$fontFamily: "Avenir Next", Helvetica, Verdana, sans-serif;
+$fontFamilyHeader: "Avenir Next", Helvetica, Verdana, sans-serif;
+$fontFamilyUI: "Avenir Next", Helvetica, Verdana, sans-serif;
+
 $fontSize: 14px;
-$fontWeight: 300;
+$fontSizeUI: 14px;
+
+$fontWeight: 400;
+$fontWeightHeader: 600;
+$fontWeightUI: 400;
+
 $lineHeight: 22px;
+$lineHeightUI: 22px;

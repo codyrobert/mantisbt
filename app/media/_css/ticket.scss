@@ -6,7 +6,7 @@
 @import "partials/note";
 
 h2 span {
-	background: mix($colorGreenLighter, $colorGreyLighter, 70%);
+	background: mix($colorPrimaryLighter, $colorSecondaryLighter, 70%);
 	display: inline-block;
 	font-size: 14px;
 	font-weight: 600;
@@ -21,7 +21,7 @@ summary {
 	outline: none;
 	
 	&::-webkit-details-marker {
-		color: $colorGrey;
+		color: $colorSecondary;
 	}
 }
 
@@ -43,7 +43,7 @@ details, section, aside {
 
 .main-sidebar {
 	box-sizing: border-box;
-	border-left: 1px solid mix($colorGrey, $colorGreyLight, 10%);
+	border-left: 1px solid mix($colorSecondary, $colorSecondaryLight, 10%);
 	float: right;
 	padding-left: 30px;
 	width: 350px;
@@ -76,7 +76,7 @@ details, section, aside {
 
 .row {
 	@include clearfix;
-	background: mix($colorGreyLight, $colorGreyLighter, 30%);
+	background: mix($colorSecondaryLight, $colorSecondaryLighter, 30%);
 	overflow: hidden;
 	
 	+ .row {
@@ -109,7 +109,7 @@ details, section, aside {
 	box-sizing: border-box;
 	
 	&:nth-child(2n+1) {
-		background: $colorGreyLight;
+		background: $colorSecondaryLight;
 		margin-bottom: -999px;
 		padding-bottom: 999px;
 	}

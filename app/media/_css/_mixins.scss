@@ -8,8 +8,32 @@
 	
 }
 
+@mixin uiFontSettings() {
+	
+	color: $fontColorUI;
+	font-family: $fontFamilyUI;
+	font-size: $fontSizeUI;
+	font-weight: $fontWeightUI;
+	line-height: $lineHeightUI;
+	
+}
+
+@mixin headerFontSettings() {
+	
+	color: $fontColorHeader;
+	font-family: $fontFamilyHeader;
+	font-weight: $fontWeightHeader;
+	
+}
+
 @mixin materialObjectShadow($index) {
 	
 	box-shadow: rgba(0, 0, 0, .1) 0 0 unquote(($index * $index / 4) + "px"), rgba(0, 0, 0, .15) 0 unquote(($index / 2) + "px") unquote(($index) + "px");
+	
+}
+
+@mixin insetMaterialObjectShadow($index) {
+	
+	box-shadow: rgba(0, 0, 0, .1) 0 0 unquote(($index * $index / 4) + "px"), rgba(0, 0, 0, .15) 0 unquote(($index / 2) + "px") unquote(($index) + "px") inset;
 	
 }

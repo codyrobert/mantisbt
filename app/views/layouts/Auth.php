@@ -14,7 +14,7 @@ use Core\URL;
 use Core\Utility;
 
 ?><!doctype html>
-<html class="no-js" lang="">
+<html>
 <head>
 	
 	<?php $this->insert('Partials/Head'); ?>
@@ -26,9 +26,9 @@ use Core\Utility;
 	
 	<header id="head">
 	
-		<h1<?php if (Config::get('_/app.logo')): ?> class="logo" style="background-image:url('<?php echo URL::get(Config::get('_/app.logo')); ?>');"<?php endif; ?>>
-			<a href="<?php echo URL::home(); ?>"><?php echo Config::get('app')['site_name']; ?></a>
-		</h1>
+		<h1><a href="<?php echo URL::home(); ?>">
+			<img src="<?php echo Config::get('_/app.logo') ? URL::get(Config::get('_/app.logo')) : '/media/images/logo.png'; ?>" />
+		</a></h1>
 		
 	</header>
 	

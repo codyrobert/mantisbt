@@ -2,7 +2,7 @@
 
 	array(
 		'route'			=> '/?',
-		'controller'	=> 'Master',
+		'controller'	=> 'Home',
 		'action'		=> 'index',
 		'method'		=> 'GET',
 	),
@@ -12,13 +12,6 @@
 		'controller'	=> 'Account',
 		'action'		=> '[action]',
 		'method'		=> 'GET|POST',
-	),
-
-	array(
-		'route'			=> '/changelog/?',
-		'controller'	=> 'Changelog',
-		'action'		=> 'index',
-		'method'		=> 'GET',
 	),
 
 	array(
@@ -64,24 +57,10 @@
 	),
 
 	array(
-		'route'			=> '/roadmap/?',
-		'controller'	=> 'Roadmap',
-		'action'		=> 'index',
-		'method'		=> 'GET',
-	),
-
-	array(
 		'route'			=> '/set_project/?',
 		'controller'	=> 'Set_Project',
 		'action'		=> 'index',
 		'method'		=> 'GET|POST',
-	),
-
-	array(
-		'route'			=> '/my_view/?',
-		'controller'	=> 'View_Issues',
-		'action'		=> 'my_view',
-		'method'		=> 'GET',
 	),
 
 	array(

@@ -11,14 +11,11 @@
 
 
 html {
-	background: mix($colorGreyLighter, $colorGrey, 90%);
+	background: #fff;
 }
 
 body {
 	@include baseFontSettings();
-	
-	background: $colorGreyLighter;
-	padding-top: 90px;
 }
 
 p {
@@ -45,91 +42,42 @@ p {
 
 
 #head {
-	$height: 90px;
+	$height: 40px;
 	
-	@include materialObjectShadow(8);
+	@include uiFontSettings();
 	
-	background: $colorGreyLighter;
-	color: $colorGrey;
+	background: $colorSecondaryLighter;
+	border-bottom: 1px solid $colorSecondaryLight;
 	height: $height;
-	left: 0;
+	line-height: $height;
 	overflow: hidden;
-	position: fixed;
-	right: 0;
-	top: 0;
-	z-index: 200;
-	
-	.login-bar {
-		background: #fff;
-		border: solid $colorGreyLight;
-		border-width: 1px 0;
-		clear: both;
-		height: 28px;
-		line-height: 28px;
-		padding: 0 30px;
-		
-		#login-info {
-			float: left;
-		}
-		
-		#rss-feed, #project-selector-div {
-			float: right;
-		}
-		
-		#project-selector-div select {
-			margin: 0 10px;
-		}
-		
-		#project-selector-div input[type=submit] {
-			display: none;
-		}
-		
-		#rss-feed img {
-			display: inline-block;
-			vertical-align: middle;
-		}
-		
-		#current-time {
-			display: none;
-		}
-	}
-	
-	#bug-jump {
-		position: absolute;
-		right: 30px;
-		top: 20px;
-	}
-	
-	.recently-visited {
-		margin: 0 auto;
-		text-align: center;
-	}
+	padding: 10px 0;
+	position: relative;
 	
 	h1 {
-		background: url(../images/logo.png) no-repeat center;
-		background-size: auto 42px;
 		float: left;
-		height: $height - 30;
-		line-height: $height - 30;
+		height: $height;
+		line-height: $height;
 		margin: 0;
-		padding: 0 30px;
-		width: 122px;
 		
-		a {
-			color: $colorGrey;
+		img {
 			display: block;
-			height: 100%;
-			overflow: hidden;
-			text-decoration: none;
-			text-indent: 100%;
-			white-space: nowrap;
+			height: $height;
+		}
+	}
+	
+	form {
+		float: left;
+		padding: (($height - $lineHeightUI - 10) / 2) 20px;
+		
+		input[type=search] {
+			display: block;
+			width: 300px;
 		}
 	}
 	
 	nav {
-		border-right: 1px solid $colorGreyLight;
-		float: left;
-		line-height: $height - 30;
+		float: right;
 	}
 	
 	ul {
@@ -139,27 +87,28 @@ p {
 	}
 	
 	li {
-		border-left: 1px solid $colorGreyLight;
 		float: left;
+		margin-left: 20px;
 		
 		a {
 			display: block;
-			height: $height - 30;
-			padding: 0 20px;
-			
-			&:active, &:focus, &:hover {
-				background: $colorGreyLight;
-			}
 		}
 	}
 	
 	a {
-		color: $colorGrey;
+		color: $colorSecondaryDark;
+		font-weight: 600;
 		text-decoration: none;
 		transition: 0.3s all;
 		
 		&:active, &:focus, &:hover {
-			color: #333;
+			color: $colorPrimary;
+		}
+		
+		i {
+			display: inline-block;
+			font-size: $lineHeightUI;
+			vertical-align: middle;
 		}
 	}
 }
@@ -167,19 +116,19 @@ p {
 .wrap {
 	box-sizing: border-box;
 	margin: 0 auto;
-	max-width: 1400px;
+	max-width: 1200px;
 }
 
 #content {
-	padding: 60px 30px 0;
+	padding: 40px 20px 0;
 	
 	section + section {
-		margin-top: 30px;
+		margin-top: 40px;
 	}
 }
 
 .page-title, .section-title {
-	border-bottom: 1px solid mix($colorGrey, $colorGreyLight, 10%);
+	border-bottom: 1px solid mix($colorSecondary, $colorSecondaryLight, 10%);
 	margin-bottom: 30px;
 	
 	h2, h4 {
@@ -204,14 +153,14 @@ p {
 			padding: 0 20px;
 			
 			+ li {
-				border-left: 1px solid mix($colorGrey, $colorGreyLight, 10%);
+				border-left: 1px solid mix($colorSecondary, $colorSecondaryLight, 10%);
 			}
 			
 			&.active {
-				background: mix($colorGrey, $colorGreyLight, 10%);
+				background: mix($colorSecondary, $colorSecondaryLight, 10%);
 				
 				a, a:active, a:focus, a:hover {
-					color: $colorGreyDark;
+					color: $colorSecondaryDark;
 					font-weight: 600;
 				}
 			}
@@ -222,10 +171,10 @@ p {
 		}
 		
 		a {
-			color: $colorGrey;
+			color: $colorSecondary;
 			
 			&:active, &:focus, &:hover {
-				color: $colorGreyDark;
+				color: $colorSecondaryDark;
 			}
 		}
 	}
@@ -249,12 +198,12 @@ p {
 			
 		}
 		::shadow path {
-			fill: $colorGrey;
+			fill: $colorSecondary;
 			transition: 0.3s all;
 		}
 		
 		&:focus, &:hover ::shadow path {
-			fill: $colorGreenLight;
+			fill: $colorPrimaryLight;
 		}
 	}
 	
@@ -268,36 +217,68 @@ p {
 	
 }
 
-.myview-boxes {
+.section-nav {
 	@include clearfix;
 	
-	.section {
-		box-sizing: border-box;
-		clear: left;
+	border-bottom: 1px solid $colorSecondaryLight;
+	margin-bottom: 20px;
+	
+	ul {
+		margin: 0;
+		padding: 0;
+	}
+	
+	li {
 		float: left;
-		padding-right: 15px;
-		padding-top: 30px;
-		width: 50%;
 		
-		&:nth-child(1), &:nth-child(2) {
-			padding-top: 30px;
+		+ li {
+			margin-left: 20px;
+		}
+	}
+	
+	a {
+		border-bottom: 2px solid transparent;
+		color: $colorSecondary;
+		display: block;
+		font-size: $fontSize + 2;
+		height: 38px;
+		line-height: 38px;
+		padding: 0 20px;
+		
+		&:active, &:focus, &:hover {
+			color: $colorSecondaryDark;
 		}
 		
-		&:nth-child(2n+1) {
-			clear: right;
-			float: right;
-			padding-left: 15px;
-			padding-right: 0;
+		&.active {
+			border-bottom-color: $colorPrimary;
+			color: $colorSecondaryDark;
+		}
+	}
+}
+
+.tabular-data {
+	border: 1px solid $colorSecondaryLight;
+	
+	.row {
+		@include clearfix;
+		
+		+ .row {
+			border-top: 1px solid $colorSecondaryLight;
+		}
+		
+		.cell {
+			float: left;
+			padding: 5px;
 		}
 	}
 }
 
 #floor {
-	background: mix($colorGreyLighter, $colorGrey, 90%);
-	margin: 120px 0 0;
+	margin: 60px 0 0;
 	
 	.wrap {
-		padding: 30px;
+		border-top: 1px solid $colorSecondaryLight;
+		padding: 30px 0;
 	}
 	
 	hr {

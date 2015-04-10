@@ -3,26 +3,31 @@
 
 
 html {
-	background: $colorGreyLighter;
+	background: #fff;
 }
 
 body {
+	@include baseFontSettings();
 	padding: 90px 30px;
 }
 
 #head {
 	background: none;
-	box-shadow: none;
+	border: 0;
 	height: auto;
 	position: static;
 	text-align: center;
 	
 	h1 {
-		background-size: auto 80px;
 		float: none;
 		height: 80px;
-		margin: 0 auto;
+		line-height: 80px;
 		width: auto;
+		
+		img {
+			height: 80px;
+			margin: 0 auto;
+		}
 	}
 }
 
@@ -52,7 +57,7 @@ body {
 	padding: 0 20px;
 	
 	+ a {
-		border-left: 1px solid $colorGreyLight;
+		border-left: 1px solid $colorSecondaryLight;
 	}
 }
 
@@ -61,7 +66,7 @@ body {
 	margin: 0;
 	
 	.wrap {
-		border-top: 1px solid $colorGreyLight;
+		border-top: 1px solid $colorSecondaryLight;
 		padding: 30px 0 0;
 	}
 }

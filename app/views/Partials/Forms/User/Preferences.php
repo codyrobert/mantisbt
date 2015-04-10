@@ -10,7 +10,9 @@ use PFBC\Element as Element;
 use Model\User;
 
 
-$form = new Form('account_prefs_update');
+$form = new Form('account_prefs_update', [
+	'class'	=> 'form-style--standard',
+]);
 
 $form->addElement(new Element\Radio(Lang::get('bugnote_order'), 'bugnote_order', ['DESC', 'ASC'], [
 	'value'	=> User::current()->preferences()->bugnote_order,

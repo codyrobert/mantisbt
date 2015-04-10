@@ -43,7 +43,7 @@ class Media extends \Core\Controller
 			{
 				header('Content-type: '.$mime_types[$type]);
 			}
-		
+			
 			echo file_get_contents($served_file);
 		}
 		

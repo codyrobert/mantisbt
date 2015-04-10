@@ -50,16 +50,20 @@ if ($match = $router->match())
 		
 		$page = new $controller($params);
 		
-		call_user_func_array(array(&$page, $action), $params);
-		
-		$page->render();
+		if (method_exists($page, $action))
+		{
+			call_user_func_array(array(&$page, $action), $params);
+			
+			$page->render();
+			exit;
+		}
 	}
 	elseif (is_callable($match['target']))
 	{
-		call_user_func_array($match['target'], $match['params']); 
+		call_user_func_array($match['target'], $match['params']);
+		exit;
 	}
 }
-else
-{
-	include ROOT.$_SERVER['REQUEST_URI'];
-}
+
+echo '404';
+!dd($router);

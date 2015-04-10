@@ -78,7 +78,7 @@ $g_return_path_email    = 'admin@example.com';	# the return address for bounced 
 # $g_show_user_realname_threshold = NOBODY;	# Set to access level (e.g. VIEWER, REPORTER, DEVELOPER, MANAGER, etc)
 
 # --- Others ---
-$g_default_home_page = 'my_view';	# Set to name of page to go to after login
+$g_default_home_page = '';	# Set to name of page to go to after login
 
 
 

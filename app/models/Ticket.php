@@ -13,7 +13,7 @@ use Core\Print_Util;
 
 class Ticket extends Model
 {
-	protected $schema = [
+	protected static $schema = [
 		'table_name'		=> 'mantis_bug_table',
 		'text_table_name'	=> 'mantis_bug_text_table',
 		'id_key'			=> 'id',
@@ -25,7 +25,7 @@ class Ticket extends Model
 		
 		if ($this->loaded())
 		{
-			if ($result = DB::query('SELECT * FROM '.$this->schema['text_table_name'].' WHERE id = ? LIMIT 1', [$this->id]))
+			if ($result = DB::query('SELECT * FROM '.self::$schema['text_table_name'].' WHERE id = ? LIMIT 1', [$this->id]))
 			{
 				$this->data = array_merge($result, $this->data);
 			}

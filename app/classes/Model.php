@@ -7,7 +7,7 @@ use Core\DB;
 
 abstract class Model
 {
-	protected $schema = [
+	protected static $schema = [
 		'table_name'	=> null,
 		'id_key'		=> 'id',
 	];
@@ -17,39 +17,51 @@ abstract class Model
 	protected $data = [];
 	protected $changed = [];
 	
+	static function find($where_string, $parameters, int $limit = null)
+	{
+		if ($limit === null)
+		{
+			$limit = 1;
+		}
+		
+		if ($limit > 0)
+		{
+			$limit_string = ' LIMIT '.$limit;
+		}
+		
+		$class = get_called_class();
+		
+		if ($result = DB::query('SELECT * FROM '.$class::$schema['table_name'].' WHERE '.$where_string.$limit_string, $parameters))
+		{
+			foreach ($result as $row)
+			{
+				$model = new $class();
+				$model->inject($row);
+				
+				$models[] = $model;
+			}
+			
+			return count($models) > 1 ? $models : current($models);
+		}
+	}
+	
 	function __construct(int $id = null)
 	{
 		if ($id !== null)
 		{
-			$this->load($this->schema['id_key'], $id);
-		}
-	}
-	
-	function load($key, $value)
-	{
-		if ($this->loaded === false)
-		{
-			if ($limit > 0)
-			{
-				$limit_string = ' LIMIT '.$limit;
-			}
+			$class = get_called_class();
 			
-			if ($result = DB::query('SELECT * FROM '.$this->schema['table_name'].' WHERE '.$key.' = ? LIMIT 1', [$value]))
+			if ($result = DB::query('SELECT * FROM '.$class::$schema['table_name'].' WHERE '.$class::$schema['id_key'].' = ? LIMIT 1', [$id]))
 			{
-				$this->data = $result;
-				$this->loaded = true;
+				$this->inject($result);
 			}
 		}
 	}
 	
-	static function find($key, $value)
+	function inject($data)
 	{
-		$class = get_called_class();
-		
-		$model = new $class;
-		$model->load($key, $value);
-		
-		return $model;
+		$this->data = $data;
+		$this->loaded = true;
 	}
 	
 	function loaded()
@@ -61,8 +73,10 @@ abstract class Model
 	{
 		if (count($this->changed))
 		{
-			$statement = 'UPDATE '.$this->schema['table_name'].' SET '.implode(' = ?, ', array_keys($this->changed)).' = ? WHERE '.$this->schema['id_key'].' = ?';
-			$values = array_merge(array_values($this->changed), [$this->data[$this->schema['id_key']]]);
+			$class = get_called_class();
+			
+			$statement = 'UPDATE '.$class::$schema['table_name'].' SET '.implode(' = ?, ', array_keys($this->changed)).' = ? WHERE '.$class::$schema['id_key'].' = ?';
+			$values = array_merge(array_values($this->changed), [$this->data[$class::$schema['id_key']]]);
 			
 			DB::query($statement, $values);
 			$this->changed = [];

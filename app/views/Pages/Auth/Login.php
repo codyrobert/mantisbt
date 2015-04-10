@@ -25,7 +25,7 @@ $this->layout('Layouts/Auth', $this->data);
 	<h2><?php echo Lang::get( 'login_title' ) ?></h2>
 </header>
 
-<form method="post" action="<?php echo URL::get('login'); ?>">
+<form method="post" action="<?php echo URL::get('login'); ?>" class="form-style--standard">
 
 	<?php if ($error): ?>
 	<p class="error"><?php echo $error; ?>

@@ -14,34 +14,13 @@ class Menu
 {
 	static function account()
 	{
-		$menu_items[URL::get('account')] = Lang::get('account_link');
-		$menu_items[URL::get('account/preferences')] = Lang::get('change_preferences_link');
-		$menu_items[URL::get('account/columns')] = Lang::get('manage_columns_config');
-	
-		if (Config::mantis_get('enable_profiles') == ON && Access::has_project_level(Config::mantis_get('add_profile_threshold')))
-		{
-			$menu_items[URL::get('account/profiles')] = Lang::get('manage_profiles_link');
-		}
-	
-		if (Config::mantis_get('enable_sponsorship') == ON && Access::has_project_level(Config::mantis_get('view_sponsorship_total_threshold')) && !Current_User::is_anonymous())
-		{
-			$menu_items[URL::get('account_sponsor_page.php')] = Lang::get('my_sponsorship');
-		}
+		$menu_items[URL::get('account')] = [
+			'label'	=> Lang::get('account_link'),
+		];
 		
-		# Plugin / Event added options
-		/*$t_event_menu_options = \Core\Event::signal( 'EVENT_MENU_ACCOUNT' );
-		$t_menu_options = array();
-		foreach( $t_event_menu_options as $t_plugin => $t_plugin_menu_options ) {
-			foreach( $t_plugin_menu_options as $t_callback => $t_callback_menu_options ) {
-				if( is_array( $t_callback_menu_options ) ) {
-					$t_menu_options = array_merge( $t_menu_options, $t_callback_menu_options );
-				} else {
-					if( !is_null( $t_callback_menu_options ) ) {
-						$t_menu_options[] = $t_callback_menu_options;
-					}
-				}
-			}
-		}*/
+		$menu_items[URL::get('account/preferences')] = [
+			'label'	=> Lang::get('change_preferences_link'),
+		];
 		
 		return $menu_items;
 	}
@@ -70,45 +49,45 @@ class Menu
 		
 		
 		# My View Page
-		$menu_items[URL::get('my_view')] = Lang::get('my_view_link');
+		$menu_items[URL::home()] = [
+			'label'	=> Lang::get('my_view_link'),
+		];
 		
 		# View All Page
-		$menu_items[URL::get('view_all')] = Lang::get('view_bugs_link');
+		$menu_items[URL::get('view_all')] = [
+			'label'	=> Lang::get('view_bugs_link'),
+		];
 		
 		# Report Page
 		if (Access::has_project_level(Config::mantis_get('report_bug_threshold')))
 		{
-			$menu_items[URL::get('report')] = Lang::get('report_bug_link');
-		}
-		
-		# Changelog Page
-		if (Access::has_project_level(Config::mantis_get('view_changelog_threshold')))
-		{
-			$menu_items[URL::get('changelog')] = Lang::get('changelog_link');
-		}
-		
-		# Roadmap Page
-		if (Access::has_project_level(Config::mantis_get('roadmap_view_threshold')))
-		{
-			$menu_items[URL::get('roadmap')] = Lang::get('roadmap_link');
+			$menu_items[URL::get('report')] = [
+				'label'	=> Lang::get('report_bug_link'),
+			];
 		}
 		
 		# Summary Page
 		if (Access::has_project_level(Config::mantis_get('view_summary_threshold')))
 		{
-			$menu_items[URL::get('summary_page.php')] = Lang::get('summary_link');
+			$menu_items[URL::get('summary_page.php')] = [
+				'label'	=> Lang::get('summary_link'),
+			];
 		}
 		
 		# Project Documentation Page
 		if (Config::mantis_get('enable_project_documentation') == ON)
 		{
-			$menu_items[URL::get('proj_doc_page.php')] = Lang::get('docs_link');
+			$menu_items[URL::get('proj_doc_page.php')] = [
+				'label'	=> Lang::get('docs_link'),
+			];
 		}
 		
 		# Project Documentation Page
 		if (Config::mantis_get('wiki_enable') == ON)
 		{
-			$menu_items[URL::get('wiki.php?type=project&amp;id=')] = Lang::get('wiki');
+			$menu_items[URL::get('wiki.php?type=project&amp;id=')] = [
+				'label'	=> Lang::get('wiki'),
+			];
 		}
 		
 		
@@ -131,7 +110,9 @@ class Menu
 		
 		if (Access::has_global_level(Config::mantis_get('manage_site_threshold')))
 		{
-			$menu_items[URL::get('manage_overview_page.php')] = Lang::get('manage_link');
+			$menu_items[URL::get('manage_overview_page.php')] = [
+				'label'	=> Lang::get('manage_link'),
+			];
 		}
 		else
 		{
@@ -154,7 +135,9 @@ class Menu
 					$link = URL::get('manage_proj_page.php');
 				}
 				
-				$menu_items[$link] = Lang::get('manage_link');
+				$menu_items[$link] = [
+					'label'	=> Lang::get('manage_link'),
+				];
 			}
 		}
 		
@@ -164,18 +147,24 @@ class Menu
 			# Admin can edit news for All Projects (site-wide)
 			if (Helper::get_current_project() != ALL_PROJECTS || Current_User::is_administrator())
 			{
-				$menu_items[URL::get('news_menu_page.php')] = Lang::get('edit_news_link');
+				$menu_items[URL::get('news_menu_page.php')] = [
+					'label'	=> Lang::get('edit_news_link'),
+				];
 			}
 			else
 			{
-				$menu_items[URL::get('login_select_proj_page.php')] = Lang::get('edit_news_link');
+				$menu_items[URL::get('login_select_proj_page.php')] = [
+					'label'	=> Lang::get('edit_news_link'),
+				];
 			}
 		}
 		
 		# Account Page (only show accounts that are NOT protected)
 		if (Current_User::get_field('protected') == OFF)
 		{
-			$menu_items[URL::get('account')] = Lang::get('account_link');
+			$menu_items[URL::get('account')] = [
+				'label'	=> '<i class="mdi mdi-settings"></i>',
+			];
 		}
 		
 		# Add custom options
@@ -185,13 +174,17 @@ class Menu
 		# Time Tracking / Billing
 		if (Config::mantis_get('time_tracking_enabled') && Access::has_global_level(Config::mantis_get('time_tracking_reporting_threshold')))
 		{
-			$menu_items[URL::get('billing_page.php')] = Lang::get('time_tracking_billing_link');
+			$menu_items[URL::get('billing_page.php')] = [
+				'label'	=> Lang::get('time_tracking_billing_link'),
+			];
 		}
 		
 		# Logout (no if anonymously logged in)
 		if (!Current_User::is_anonymous())
 		{
-			$menu_items[URL::get('logout')] = Lang::get('logout_link');
+			$menu_items[URL::get('logout')] = [
+				'label'	=> '<i class="mdi mdi-logout"></i>',
+			];
 		}
 		
 		

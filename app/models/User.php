@@ -6,7 +6,7 @@ class User extends \Core\Model
 {
 	protected static $_current_user = null;
 	
-	protected $schema = [
+	protected static $schema = [
 		'table_name'		=> 'mantis_user_table',
 		'id_key'			=> 'id',
 	];
@@ -28,7 +28,9 @@ class User extends \Core\Model
 	{
 		if ($this->preferences === null)
 		{
-			$this->preferences = User\Preferences::find('user_id', $this->id);
+			$this->preferences = User\Preferences::find('user_id = ?', [
+				$this->id,
+			]);
 		}
 		
 		return $this->preferences;

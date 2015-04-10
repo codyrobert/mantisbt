@@ -33,33 +33,18 @@ use Core\Utility;
 	?>
 	
 	<header id="head">
-	
-		<h1<?php if (Config::get('_/app.logo')): ?> style="background-image:url('<?php echo URL::get(Config::get('_/app.logo')); ?>');"<?php endif; ?>>
-			<a href="<?php echo URL::home(); ?>"><?php echo Config::get('app')['site_name']; ?></a>
-		</h1>
-		
-		<?php if(Auth::is_user_authenticated()): ?>
-		
-			<?php
-			$this->insert('Partials/Menu', array('items' => Menu::main()));
-			$this->insert('Partials/Forms/Jump_To_Bug');
-			?>
+		<div class="wrap">
 			
-			<div class="login-bar">
-			<?php
-				HTML::login_info();
-		
-				if( ON == Config::mantis_get( 'show_project_menu_bar' ) ) {
-					HTML::print_project_menu_bar();
-					echo '<br />';
-				}
-				
-				echo Print_Util::recently_visited();
-			?>
-			</div>
+			<h1><a href="<?php echo URL::home(); ?>">
+				<img src="<?php echo Config::get('_/app.logo') ? URL::get(Config::get('_/app.logo')) : '/media/images/logo.png'; ?>" />
+			</a></h1>
 			
-		<?php endif; ?>
+			<?php
+			$this->insert('Partials/Forms/Search');
+			$this->insert('Partials/Menu', ['items' => Menu::main()]);
+			?>
 		
+		</div>
 	</header>
 	
 	<div id="content">

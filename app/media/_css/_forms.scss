@@ -1,175 +1,184 @@
 form {
+	@include uiFontSettings();
+	
 	display: block;
 	overflow: auto;
 	position: relative;
 	zoom: 1;
 }
 
-.field-container, .control-group {
-	overflow: hidden;
-	zoom: 1;
+input[type=text], input[type=password], input[type=email], input[type=search], select, textarea {
+	@include uiFontSettings();
+	@include insetMaterialObjectShadow(2);
 	
-	+ .field-container, + .control-group {
-		border-top: 1px solid #fff;
-	}
-	
-	&:nth-child(2n) {
-		.field-label, .control-label {
-			background: mix($colorGreenLighter, $colorGreyLighter, 70%);
-		}
-		
-		.field-input, .controls {
-			background: mix($colorGreenLighter, $colorGreyLighter, 15%);
-		}
-	}
-	
-	.field-submit, .form-actions {
-		float: right;
-		padding: 0;
-	}
-}
-
-.field-label, .control-label {
-	background: mix($colorGreenLighter, $colorGreyLighter, 50%);
-	border-right: 1px solid #fff;
+	border: 1px solid mix($colorSecondary, $colorSecondaryLight, 25%);
+	border-radius: 3px;
 	box-sizing: border-box;
-	color: mix($colorGreen, $colorGreenLighter, 90%);
-	float: left;
-	font-weight: 600;
-	margin-bottom: -989px;
-	padding: 10px 20px 999px 20px;
-	text-align: right;
-	width: 320px;
+	display: inline-block;
+	height: $lineHeightUI + 10;
+	padding: 5px;
+	transition: 0.3s all;
+	
+	&:focus, &:hover {
+		border-color: $colorSecondary;
+		outline: none;
+	}
+	
+	&[disabled] {
+		opacity: .6;
+		
+		&:hover {
+			border-color: mix($colorSecondary, $colorSecondaryLight, 25%);
+		}
+	}
 }
 
-.field-input, .controls {
-	background: mix($colorGreenLighter, $colorGreyLighter, 5%);
-	margin-left: 320px;
-	padding: 10px 20px;
+.form-style--standard {
+	.field-container, .control-group {
+		overflow: hidden;
+		zoom: 1;
+		
+		+ .field-container, + .control-group {
+			border-top: 1px solid #fff;
+		}
+		
+		&:nth-child(2n) {
+			.field-label, .control-label {
+				background: mix($colorPrimaryLighter, $colorSecondaryLighter, 70%);
+			}
+			
+			.field-input, .controls {
+				background: mix($colorPrimaryLighter, $colorSecondaryLighter, 15%);
+			}
+		}
+		
+		.field-submit, .form-actions {
+			float: right;
+			padding: 0;
+		}
+	}
 	
-	input[type=text], input[type=password], input[type=email], select, textarea {
-		border: 1px solid mix($colorGrey, $colorGreyLight, 25%);
+	.field-label, .control-label {
+		background: mix($colorPrimaryLighter, $colorSecondaryLighter, 50%);
+		border-right: 1px solid #fff;
 		box-sizing: border-box;
-		display: inline-block;
-		font-size: 14px;
-		height: 30px;
-		line-height: 20px;
-		max-width: 400px;
-		padding: 5px;
-		transition: 0.3s all;
-		width: 100%;
+		color: mix($colorPrimary, $colorPrimaryLighter, 90%);
+		float: left;
+		font-weight: 600;
+		margin-bottom: -989px;
+		padding: 10px 20px 999px 20px;
+		text-align: right;
+		width: 320px;
+	}
+	
+	.field-input, .controls {
+		background: mix($colorPrimaryLighter, $colorSecondaryLighter, 5%);
+		margin-left: 320px;
+		padding: 10px 20px;
 		
-		&:focus, &:hover {
-			border-color: $colorGrey;
-			outline: none;
+		input[type=text], input[type=password], input[type=email], input[type=search] {
+			max-width: 400px;
+			width: 100%;
 		}
 		
-		&[disabled] {
-			opacity: .6;
+		select {
+			width: auto;
+		}
+		
+		textarea {
+			height: 150px;
+			max-width: 600px;
+		}
+		
+		span {
+			margin: 0 5px;
+		}
+		
+		ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
 			
-			&:hover {
-				border-color: mix($colorGrey, $colorGreyLight, 25%);
+			li + li {
+				margin-top: 10px;
 			}
 		}
-	}
-	
-	select {
-		width: auto;
-	}
-	
-	textarea {
-		height: 150px;
-		max-width: 600px;
-	}
-	
-	span {
-		margin: 0 5px;
-	}
-	
-	ul {
-		list-style: none;
-		margin: 0;
-		padding: 0;
 		
-		li + li {
-			margin-top: 10px;
-		}
-	}
-	
-	table {
-		border-bottom: 1px solid $colorGreenLighter;
-		max-width: 600px;
-		width: 100%;
-		
-		td {
-			height: 20px;
-			line-height: 20px;
-			padding: 5px;
-			text-align: center;
+		table {
+			border-bottom: 1px solid $colorPrimaryLighter;
+			max-width: 600px;
+			width: 100%;
 			
-			&:first-child {
-				text-align: left;
-			}
-			
-			&:last-child {
-				text-align: right;
+			td {
+				height: 20px;
+				line-height: 20px;
+				padding: 5px;
+				text-align: center;
+				
+				&:first-child {
+					text-align: left;
+				}
+				
+				&:last-child {
+					text-align: right;
+				}
 			}
 		}
-	}
-	
-	thead {
-		td {
-			border-bottom: 1px solid $colorGreenLighter;
-			color: $colorGreen;
-			font-weight: 600;
-		}
-	}
-	
-	tbody {
-		td {
-			&:first-child {
+		
+		thead {
+			td {
+				border-bottom: 1px solid $colorPrimaryLighter;
+				color: $colorPrimary;
 				font-weight: 600;
 			}
 		}
 		
-		tr:nth-child(2n+1) td {
-			background: rgba(255, 255, 255, .5);
+		tbody {
+			td {
+				&:first-child {
+					font-weight: 600;
+				}
+			}
+			
+			tr:nth-child(2n+1) td {
+				background: rgba(255, 255, 255, .5);
+			}
 		}
 	}
-}
-
-.field-submit, .form-actions { 
-	height: 40px;
-	line-height: 40px;
-	padding-top: 10px;
-	text-align: right;
-}
-
-.button, .form-actions input[type=submit] {
-	@include materialObjectShadow(2);
 	
-	background: $colorGreenLight;
-	border: 0;
-	color: #fff;
-	cursor: pointer;
-	display: inline-block;
-	font-size: 14px;
-	height: 40px;
-	line-height: 40px;
-	outline: none;
-	padding: 0 20px;
-	text-decoration: none;
-	transition: 0.3s all;
-	
-	&:active, &:focus, &:hover {
-		background: mix($colorGreenLight, $colorGreenLighter, 50%);
+	.field-submit, .form-actions { 
+		height: 40px;
+		line-height: 40px;
+		padding-top: 10px;
+		text-align: right;
 	}
 	
-	&:active {
-		transform: scale((38px / 40px));
+	.button, .form-actions input[type=submit] {
+		@include materialObjectShadow(2);
+		
+		background: $colorPrimary;
+		border: 0;
+		color: #fff;
+		cursor: pointer;
+		display: inline-block;
+		font-size: 14px;
+		height: 40px;
+		line-height: 40px;
+		outline: none;
+		padding: 0 20px;
+		text-decoration: none;
+		transition: 0.3s all;
+		
+		&:active, &:focus, &:hover {
+			background: $colorPrimaryLight;
+		}
+		
+		&:active {
+			transform: scale((38px / 40px));
+		}
 	}
-}
-
-.access-level, .view-state {
-	padding-left: 10px;
+	
+	.access-level, .view-state {
+		padding-left: 10px;
+	}
 }

@@ -1,5 +1,5 @@
 .bug-note {
-	background: mix($colorGreyLight, $colorGreyLighter, 30%);
+	background: mix($colorSecondaryLight, $colorSecondaryLighter, 30%);
 	padding: 10px;
 	position: relative;
 	
@@ -8,7 +8,7 @@
 	}
 	
 	&:nth-child(2n+1) {
-		background: $colorGreyLight;
+		background: $colorSecondaryLight;
 	}
 	
 	dropdown-menu {

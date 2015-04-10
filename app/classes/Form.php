@@ -45,13 +45,14 @@ use Core\URL;
 class Form extends \PFBC\Form
 {
 
-	function __construct($id = null)
+	function __construct($id = null, array $config = null)
 	{
 		parent::__construct();
 		
 		$this->configure([
-			"action" => URL::current(),
-		]);
+			'id'		=> $id,
+			'action'	=> URL::current(),
+		] + (array)$config);
 		
 		$this->prevent = ['bootstrap', 'jQuery'];
 		

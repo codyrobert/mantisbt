@@ -10,7 +10,7 @@ $this->layout('Layouts/Auth', $this->data);
 	<h2><?php echo Lang::get( 'lost_password_title' ) ?></h2>
 </header>
 
-<form method="post" action="<?php echo URL::get('login'); ?>">
+<form method="post" action="<?php echo URL::get('login'); ?>" class="form-style--standard">
 	
 	<p><?php echo Lang::get( 'lost_password_info' ); ?></p>
 
