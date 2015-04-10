@@ -1,3 +1,15 @@
+/* Neat 1.7.0
+ * http://neat.bourbon.io
+ * Copyright 2012-2014 thoughtbot, inc.
+ * MIT License */
+html {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
+
+*, *:before, *:after {
+  -moz-box-sizing: inherit;
+  box-sizing: inherit; }
+
 /**
  * Eric Meyer's Reset CSS v2.0 (http://meyerweb.com/eric/tools/css/reset/)
  * http://cssreset.com
@@ -292,6 +304,9 @@ input[type=text], input[type=password], input[type=email], input[type=search], s
 .form-style--standard .access-level, .form-style--standard .view-state {
   padding-left: 10px; }
 
+.form-style--fill-width input[type=text], .form-style--fill-width input[type=password], .form-style--fill-width input[type=email], .form-style--fill-width input[type=search], .form-style--fill-width select, .form-style--fill-width textarea {
+  width: 100%; }
+
 .notice {
   background: #f4f2e6;
   border: 1px solid #e5e0bd;
@@ -319,28 +334,28 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0; }
 
 h1 {
-  font-size: 28px;
-  line-height: 36px; }
+  font-size: 26px;
+  line-height: 34px; }
 
 h2 {
-  font-size: 26px;
-  line-height: 33px; }
+  font-size: 24px;
+  line-height: 32px; }
 
 h3 {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 30px; }
 
 h4 {
-  font-size: 22px;
-  line-height: 27px; }
+  font-size: 20px;
+  line-height: 28px; }
 
 h5 {
-  font-size: 20px;
-  line-height: 24px; }
+  font-size: 18px;
+  line-height: 26px; }
 
 h6 {
-  font-size: 18px;
-  line-height: 21px; }
+  font-size: 16px;
+  line-height: 24px; }
 
 strong {
   font-weight: 600; }
@@ -381,6 +396,8 @@ p {
   line-height: 22px;
   background: #f8f8f8;
   border-bottom: 1px solid #e7e7e7;
+  -moz-box-sizing: content-box;
+       box-sizing: content-box;
   height: 40px;
   line-height: 40px;
   overflow: hidden;
@@ -425,15 +442,45 @@ p {
       vertical-align: middle; }
 
 .wrap {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
   -moz-box-sizing: border-box;
        box-sizing: border-box;
   margin: 0 auto;
-  max-width: 1200px; }
+  padding: 0 20px; }
+  .wrap:after {
+    content: "";
+    display: table;
+    clear: both; }
 
 #content {
-  padding: 40px 20px 0; }
+  padding: 40px 0; }
   #content section + section {
     margin-top: 40px; }
+
+.page-with-sidebar #content .wrap .section-sidebar {
+  float: left;
+  display: block;
+  margin-right: 2.3576515979%;
+  width: 23.2317613015%;
+  margin-right: 0;
+  float: right; }
+  .page-with-sidebar #content .wrap .section-sidebar:last-child {
+    margin-right: 0; }
+  .page-with-sidebar #content .wrap .section-sidebar aside {
+    border: 1px solid #e7e7e7;
+    border-radius: 3px;
+    padding: 10px; }
+    .page-with-sidebar #content .wrap .section-sidebar aside + aside {
+      margin-top: 20px; }
+.page-with-sidebar #content .wrap .section-content {
+  float: left;
+  display: block;
+  margin-right: 2.3576515979%;
+  width: 74.4105871005%; }
+  .page-with-sidebar #content .wrap .section-content:last-child {
+    margin-right: 0; }
 
 .page-title, .section-title {
   border-bottom: 1px solid #dbdbdb;
@@ -512,7 +559,8 @@ p {
       color: #333; }
 
 .tabular-data {
-  border: 1px solid #e7e7e7; }
+  border: 1px solid #e7e7e7;
+  border-radius: 3px; }
   .tabular-data .row:after {
     content: "";
     display: table;
@@ -521,12 +569,11 @@ p {
     border-top: 1px solid #e7e7e7; }
   .tabular-data .row .cell {
     float: left;
-    padding: 5px; }
+    padding: 8px; }
 
-#floor {
-  margin: 60px 0 0; }
-  #floor .wrap {
-    border-top: 1px solid #e7e7e7;
-    padding: 30px 0; }
-  #floor hr {
-    display: none; }
+#floor .wrap {
+  border-top: 1px solid #e7e7e7;
+  padding-bottom: 30px;
+  padding-top: 30px; }
+#floor hr {
+  display: none; }

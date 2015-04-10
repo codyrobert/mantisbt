@@ -1,4 +1,4 @@
-@import "bourbon";
+@import "bourbon", "neat";
 
 @import "variables";
 @import "mixins";
@@ -48,6 +48,7 @@ p {
 	
 	background: $colorSecondaryLighter;
 	border-bottom: 1px solid $colorSecondaryLight;
+	box-sizing: content-box;
 	height: $height;
 	line-height: $height;
 	overflow: hidden;
@@ -114,16 +115,39 @@ p {
 }
 
 .wrap {
+	@include outer-container($pageWidth);
 	box-sizing: border-box;
 	margin: 0 auto;
-	max-width: 1200px;
+	padding: 0 20px;
 }
 
 #content {
-	padding: 40px 20px 0;
+	padding: 40px 0;
 	
 	section + section {
 		margin-top: 40px;
+	}
+}
+
+.page-with-sidebar #content .wrap {
+	.section-sidebar {
+		@include span-columns(3);
+		@include omega;
+		float: right;
+		
+		aside {
+			border: 1px solid $colorSecondaryLight;
+			border-radius: 3px;
+			padding: 10px;
+			
+			+ aside {
+				margin-top: 20px;
+			}
+		}
+	}
+	
+	.section-content {
+		@include span-columns(9);
 	}
 }
 
@@ -258,6 +282,7 @@ p {
 
 .tabular-data {
 	border: 1px solid $colorSecondaryLight;
+	border-radius: 3px;
 	
 	.row {
 		@include clearfix;
@@ -268,17 +293,16 @@ p {
 		
 		.cell {
 			float: left;
-			padding: 5px;
+			padding: 8px;
 		}
 	}
 }
 
 #floor {
-	margin: 60px 0 0;
-	
 	.wrap {
 		border-top: 1px solid $colorSecondaryLight;
-		padding: 30px 0;
+		padding-bottom: 30px;
+		padding-top: 30px;
 	}
 	
 	hr {

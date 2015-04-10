@@ -1,16 +1,45 @@
 <?php
+use Core\Form;
+use Core\Lang;
 use Core\Menu;
 use Core\URL;
 
+use PFBC\Element;
+
 $this->layout('Layouts/Master', $this->data);
+$this->start('before_content');
 ?>
 
 <nav class="section-nav">
 	<ul>
-		<li><a href="#" class="active"><i class="mdi mdi-bookmark-outline"></i> Tickets</a></li>
 		<li><a href="#"><i class="mdi mdi-rss"></i> News Feed</a></li>
+		<li><a href="#" class="active"><i class="mdi mdi-bookmark"></i> Open Tickets</a></li>
+		<li><a href="#"><i class="mdi mdi-bookmark-outline"></i> Recently Closed</a></li>
 	</ul>
 </nav>
+
+<?php $this->stop(); ?>
+<?php $this->start('sidebar'); ?>
+
+<aside>
+	
+	<h4>Filter</h4>
+	
+	<?php
+	$form = new Form('filter_rows', [
+		'class'	=> 'form-style--fill-width',
+	]);
+	
+	$form->addElement(new Form\Element\Select(Lang::get('project'), 'project', [
+		OFF	=> Lang::get('all_projects'),
+	]));
+	
+	$form->render();
+	?>
+
+</aside>
+
+<?php $this->stop(); ?>
 
 <div class="tabular-data">
 

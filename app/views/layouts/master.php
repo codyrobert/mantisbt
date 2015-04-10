@@ -4,7 +4,7 @@ use Core\Action;
 use Core\App;
 use Core\Auth;
 use Core\Config;
-use Core\Event;
+use Core\Error;
 use Core\Helper;
 use Core\HTML;
 use Core\Menu;
@@ -23,7 +23,7 @@ use Core\Utility;
 	<link rel="import" href="<?php echo URL::get('web_components/dropdown-menu.html'); ?>" />
 	
 </head>
-<body class="<?php echo $this->body_class(); ?>">
+<body class="<?php echo $this->body_class($this->section('sidebar') ? 'page-with-sidebar' : ''); ?>">
 
 	<?php Action::perform('page_top'); ?>
 	
@@ -49,10 +49,24 @@ use Core\Utility;
 	
 	<div id="content">
 		<div class="wrap">
+		
+			<?php echo $this->section('before_content'); ?>
+		
+			<?php if ($this->section('sidebar')): ?>
+			<div class="section-sidebar">
 	
-			<?php Event::signal( 'EVENT_LAYOUT_CONTENT_BEGIN' ); ?>
-			<?php echo $this->section('content'); ?>
-			<?php Event::signal( 'EVENT_LAYOUT_CONTENT_END' ); ?>
+				<?php echo $this->section('sidebar'); ?>
+			
+			</div>
+			<?php endif; ?>
+		
+			<div class="section-content">
+	
+				<?php echo $this->section('content'); ?>
+				
+			</div>
+			
+			<?php echo $this->section('after_content'); ?>
 		
 		</div>
 	</div>
@@ -61,15 +75,15 @@ use Core\Utility;
 		<div class="wrap">
 		
 		<?php
-		if( \Core\Config::mantis_get( 'show_footer_menu' ) ) 
+		if (Config::mantis_get('show_footer_menu')) 
 		{
-			\Core\HTML::print_menu();
+			HTML::print_menu();
 		}
 	
-		\Core\Error::print_delayed();
+		Error::print_delayed();
 	
-		\Core\HTML::bottom_banner();
-		\Core\HTML::footer();
+		HTML::bottom_banner();
+		HTML::footer();
 		?>
 	
 		</div>
