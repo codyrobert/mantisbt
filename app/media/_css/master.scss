@@ -281,6 +281,7 @@ p {
 			background: #1cadf1;
 			box-sizing: content-box;
 			color: #fff;
+			display: block;
 			content: "NP";
 			display: block;
 			font-weight: 500;
@@ -292,6 +293,24 @@ p {
 		&.tag-priority:before {
 			background: #fc581e;
 			content: "P";
+		}
+		
+		&.tag-closed {
+			background: $colorSecondaryLighter;
+			color: mix($colorSecondary, $colorSecondaryLight, 50%);
+			
+			&:before {
+				background: #ccc;
+				content: "C";
+			}
+			
+			&:active, &:focus, &:hover {
+				color: $colorSecondary;
+			}
+			
+			.ticket-id {
+				background: mix($colorSecondaryLighter, $colorSecondaryLight, 80%);
+			}
 		}
 	}
 	

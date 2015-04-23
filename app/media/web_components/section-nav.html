@@ -7,7 +7,7 @@
 					
 				<template repeat="{{ item in items }}">
 				
-					<li><a on-click="{{ selectItem }}" href="{{ item.href }}">
+					<li><a on-click="{{ selectItem }}" data-section="{{ item.section }}" href="/#/{{ item.section }}">
 						<i class="mdi mdi-{{ item.icon }}"></i>
 						{{ item.label }}
 					</a></li>
@@ -29,10 +29,24 @@
 	
 		ready: function()
 		{
-			var firstItem = this.shadowRoot.querySelector('a');
-			firstItem.classList.add("active");
+			var href;
+			var item = this.shadowRoot.querySelector("a");
+			var params = app.params;
 			
-			this.fire("nav-item-selected", {href: firstItem.href});
+			if (params.section)
+			{
+				var allItems = this.shadowRoot.querySelectorAll('a');
+				
+				for (var i = 0; i < allItems.length; i++)
+				{
+					if (allItems[i].dataset.section == params.section)
+					{
+						item = allItems[i];
+					}
+				}
+			}
+			
+			item.classList.add("active");
 		},
 		
 		selectItem: function(event)
@@ -45,8 +59,6 @@
 			}
 			
 			event.toElement.classList.add("active");
-			
-			this.fire("nav-item-selected", {href: event.toElement.href});
 		}
 				
 	});

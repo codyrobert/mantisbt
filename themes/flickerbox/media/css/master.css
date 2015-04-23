@@ -574,6 +574,7 @@ p {
       background: #1cadf1;
       box-sizing: content-box;
       color: #fff;
+      display: block;
       content: "NP";
       display: block;
       font-weight: 500;
@@ -583,6 +584,16 @@ p {
     .tabular-data .row.tag-priority:before {
       background: #fc581e;
       content: "P"; }
+    .tabular-data .row.tag-closed {
+      background: #f8f8f8;
+      color: #aaaaaa; }
+      .tabular-data .row.tag-closed:before {
+        background: #ccc;
+        content: "C"; }
+      .tabular-data .row.tag-closed:active, .tabular-data .row.tag-closed:focus, .tabular-data .row.tag-closed:hover {
+        color: #777; }
+      .tabular-data .row.tag-closed .ticket-id {
+        background: #f2f2f2; }
   .tabular-data a.row, .tabular-data a.cell {
     color: inherit; }
     .tabular-data a.row:active, .tabular-data a.row:focus, .tabular-data a.row:hover, .tabular-data a.cell:active, .tabular-data a.cell:focus, .tabular-data a.cell:hover {

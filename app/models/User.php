@@ -77,10 +77,9 @@ class User extends \Core\Model
 	{
 		if ($this->tickets === null)
 		{
-			$this->tickets = Ticket::find('(handler_id = ? || reporter_id = ? || id IN (SELECT bug_id FROM mantis_bug_monitor_table WHERE user_id = ?)) AND (status < 90 OR (status = 90 AND last_updated >= DATE(NOW()) - INTERVAL 1 WEEK))', [
+			$this->tickets = Ticket::find('project_id IN (SELECT project_id FROM '.self::$schema['projects_table_name'].' WHERE user_id = ?) AND (status < 90 OR (status = 90 AND last_updated >= ?))', [
 				$this->id,
-				$this->id,
-				$this->id,
+				strtotime(date('Y-m-d')) - (60 * 60 * 24 * 7) // 1 week ago
 			], -1);
 		}
 		
