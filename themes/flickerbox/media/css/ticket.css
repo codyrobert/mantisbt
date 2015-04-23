@@ -1,11 +1,11 @@
 .bug-note {
-  background: #f2f2f2;
+  background: #efefef;
   padding: 10px;
   position: relative; }
   .bug-note + .bug-note {
     border-top: 1px solid #fff; }
   .bug-note:nth-child(2n+1) {
-    background: #e7e7e7; }
+    background: #ddd; }
   .bug-note dropdown-menu {
     float: right;
     margin: 0 0 10px 10px; }
@@ -46,7 +46,7 @@ details, section, aside {
 
 .main-sidebar {
   box-sizing: border-box;
-  border-left: 1px solid #dbdbdb;
+  border-left: 1px solid #d2d2d2;
   float: right;
   padding-left: 30px;
   width: 350px; }
@@ -66,7 +66,7 @@ details, section, aside {
       padding: 10px; }
 
 .row {
-  background: #f2f2f2;
+  background: #efefef;
   overflow: hidden; }
   .row:after {
     content: "";
@@ -92,7 +92,7 @@ details, section, aside {
 #ticket-details [class*=column-] {
   box-sizing: border-box; }
   #ticket-details [class*=column-]:nth-child(2n+1) {
-    background: #e7e7e7;
+    background: #ddd;
     margin-bottom: -999px;
     padding-bottom: 999px; }
   #ticket-details [class*=column-] > div {

@@ -17,7 +17,7 @@ input[type=text], input[type=password], input[type=email], input[type=search], s
 	display: inline-block;
 	height: $lineHeightUI + 10;
 	padding: 5px;
-	transition: 0.3s all;
+	transition: 0.2s all;
 	
 	&:focus, &:hover {
 		border-color: $colorSecondary;
@@ -167,7 +167,7 @@ input[type=text], input[type=password], input[type=email], input[type=search], s
 		outline: none;
 		padding: 0 20px;
 		text-decoration: none;
-		transition: 0.3s all;
+		transition: 0.2s all;
 		
 		&:active, &:focus, &:hover {
 			background: $colorPrimaryLight;

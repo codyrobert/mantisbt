@@ -1,0 +1,55 @@
+<polymer-element name="section-nav" attributes="items">
+	
+	<template>
+	
+		<nav>
+			<ul>
+					
+				<template repeat="{{ item in items }}">
+				
+					<li><a on-click="{{ selectItem }}" href="{{ item.href }}">
+						<i class="mdi mdi-{{ item.icon }}"></i>
+						{{ item.label }}
+					</a></li>
+					
+				</template>
+				
+			</ul>
+		</nav>
+		
+	</template>
+	
+	<script>
+	Polymer("section-nav", {
+	
+		created: function()
+		{
+			this.items = [];
+		},
+	
+		ready: function()
+		{
+			var firstItem = this.shadowRoot.querySelector('a');
+			firstItem.classList.add("active");
+			
+			this.fire("nav-item-selected", {href: firstItem.href});
+		},
+		
+		selectItem: function(event)
+		{
+			var allItems = this.shadowRoot.querySelectorAll('a');
+			
+			for (var i = 0; i < allItems.length; i++)
+			{
+				allItems[i].classList.remove("active");
+			}
+			
+			event.toElement.classList.add("active");
+			
+			this.fire("nav-item-selected", {href: event.toElement.href});
+		}
+				
+	});
+	</script>
+	
+</polymer-element>

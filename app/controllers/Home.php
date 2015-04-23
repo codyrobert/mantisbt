@@ -16,13 +16,8 @@ class Home extends Authenticated_Page
 {
 	function action_index()
 	{
-		$tickets = Ticket::find('handler_id = ? AND (status < 90 OR (status = 90 AND last_updated >= DATE(NOW()) - INTERVAL 1 WEEK))', [
-			User::current()->id,
-		], -1);
-		
 		$this->set([
-			'view'				=> 'Pages/Home',
-			'tickets'			=> $tickets,
+			'view' => 'Pages/Home',
 		]);
 	}
 }

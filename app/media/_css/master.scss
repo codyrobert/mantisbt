@@ -5,6 +5,7 @@
 @import "reset";
 @import "web_components/_dropdown_menu";
 @import "web_components/_svg_element";
+@import "web_components/_section_nav";
 @import "forms";
 @import "notices";
 @import "typography";
@@ -28,6 +29,10 @@ p {
 	&:last-child {
 		margin-bottom: 0;
 	}
+}
+
+.hide {
+	display: none !important;
 }
 
 .error {
@@ -84,23 +89,24 @@ p {
 	ul {
 		list-style: none;
 		margin: 0;
-		padding: 0;
+		padding-top: ($height - 32) / 2;
 	}
 	
 	li {
 		float: left;
-		margin-left: 20px;
-		
-		a {
-			display: block;
-		}
+		margin-left: 10px;
 	}
 	
 	a {
+		border: 1px solid transparent;
 		color: $colorSecondaryDark;
+		display: block;
 		font-weight: 600;
 		text-decoration: none;
-		transition: 0.3s all;
+		height: 32px;
+		line-height: 30px;
+		padding: 0 4px;
+		transition: 0.2s all;
 		
 		&:active, &:focus, &:hover {
 			color: $colorPrimary;
@@ -111,6 +117,15 @@ p {
 			font-size: $lineHeightUI;
 			vertical-align: middle;
 		}
+	}
+	
+	.avatar {
+		border-radius: 14px;
+		float: left;
+		height: 26px;
+		margin-right: 8px;
+		position: relative;
+		top: ($height - 26) / 2;
 	}
 }
 
@@ -136,12 +151,8 @@ p {
 		float: right;
 		
 		aside {
-			border: 1px solid $colorSecondaryLight;
-			border-radius: 3px;
-			padding: 10px;
-			
 			+ aside {
-				margin-top: 20px;
+				margin-top: 40px;
 			}
 		}
 	}
@@ -223,7 +234,7 @@ p {
 		}
 		::shadow path {
 			fill: $colorSecondary;
-			transition: 0.3s all;
+			transition: 0.2s all;
 		}
 		
 		&:focus, &:hover ::shadow path {
@@ -241,59 +252,54 @@ p {
 	
 }
 
-.section-nav {
-	@include clearfix;
-	
-	border-bottom: 1px solid $colorSecondaryLight;
-	margin-bottom: 20px;
-	
-	ul {
-		margin: 0;
-		padding: 0;
-	}
-	
-	li {
-		float: left;
-		
-		+ li {
-			margin-left: 20px;
-		}
-	}
-	
-	a {
-		border-bottom: 2px solid transparent;
-		color: $colorSecondary;
-		display: block;
-		font-size: $fontSize + 2;
-		height: 38px;
-		line-height: 38px;
-		padding: 0 20px;
-		
-		&:active, &:focus, &:hover {
-			color: $colorSecondaryDark;
-		}
-		
-		&.active {
-			border-bottom-color: $colorPrimary;
-			color: $colorSecondaryDark;
-		}
-	}
-}
-
 .tabular-data {
 	border: 1px solid $colorSecondaryLight;
 	border-radius: 3px;
 	
 	.row {
-		@include clearfix;
+		display: flex;
+		flex-direction: row;
+		overflow: hidden;
 		
 		+ .row {
 			border-top: 1px solid $colorSecondaryLight;
 		}
 		
-		.cell {
-			float: left;
+		> .cell {
 			padding: 8px;
+		}
+		
+		> .ticket-id {
+			background: $colorSecondaryLighter;
+		}
+		
+		> .ticket-project {
+			width: 140px;
+		}
+		
+		&:before {
+			background: #1cadf1;
+			box-sizing: content-box;
+			color: #fff;
+			content: "NP";
+			display: block;
+			font-weight: 500;
+			padding: 8px 0;
+			text-align: center;
+			width: 2.5em;
+		}
+		
+		&.tag-priority:before {
+			background: #fc581e;
+			content: "P";
+		}
+	}
+	
+	a.row, a.cell {
+		color: inherit;
+		
+		&:active, &:focus, &:hover {
+			color: $colorPrimary;
 		}
 	}
 }

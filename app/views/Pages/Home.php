@@ -6,17 +6,18 @@ use Core\URL;
 
 use PFBC\Element;
 
+use Model\Project;
+use Model\User;
+
+
 $this->layout('Layouts/Master', $this->data);
 $this->start('before_content');
 ?>
 
-<nav class="section-nav">
-	<ul>
-		<li><a href="#"><i class="mdi mdi-rss"></i> News Feed</a></li>
-		<li><a href="#" class="active"><i class="mdi mdi-bookmark"></i> Open Tickets</a></li>
-		<li><a href="#"><i class="mdi mdi-bookmark-outline"></i> Recently Closed</a></li>
-	</ul>
-</nav>
+<section-nav id="ticket-nav" items='<?php echo json_encode([
+	['label' => 'Open Tickets', 'href' => URL::get('/#/open_tickets'), 'icon' => 'bookmark'],
+	['label' => 'Recently Closed', 'href' => URL::get('/#/recently_closed'), 'icon' => 'bookmark-outline'],
+]); ?>'></section-nav>
 
 <?php $this->stop(); ?>
 <?php $this->start('sidebar'); ?>
@@ -30,9 +31,13 @@ $this->start('before_content');
 		'class'	=> 'form-style--fill-width',
 	]);
 	
-	$form->addElement(new Form\Element\Select(Lang::get('project'), 'project', [
+	$form->addElement(new Form\Element\Select(null, 'project', [
 		OFF	=> Lang::get('all_projects'),
-	]));
+	] + User::current()->projects_list()));
+	
+	$form->addElement(new Form\Element\Select(null, 'status', [
+		OFF	=> 'All Users',
+	] + User::get_col('realname')));
 	
 	$form->render();
 	?>
@@ -41,13 +46,14 @@ $this->start('before_content');
 
 <?php $this->stop(); ?>
 
-<div class="tabular-data">
+<div id="tickets-table" class="tabular-data">
 
-	<?php foreach ($tickets as $ticket): ?>
-	<div class="row">
-		<strong class="cell"><?php echo $ticket->id; ?></strong>
-		<div class="cell"><a href="<?php echo URL::get('ticket/'.$ticket->id); ?>"><?php echo $ticket->summary; ?></a></div>
-	</div>
+	<?php foreach (User::current()->tickets() as $ticket): ?>
+	<a data-status="<?php echo ($ticket->status == 90) ? 'closed' : 'open'; ?>" href="<?php echo URL::get('ticket/'.$ticket->id); ?>" class="<?php $ticket->classes('row', true); ?>">
+		<div class="cell ticket-id"><strong><?php echo $ticket->id; ?></strong></div>
+		<div class="cell ticket-project"><?php echo $ticket->project()->name; ?></div>
+		<div class="cell ticket-summary"><?php echo $ticket->summary; ?></div>
+	</a>
 	<?php endforeach; ?>
 	
 </div>

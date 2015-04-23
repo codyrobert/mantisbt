@@ -5,6 +5,7 @@ namespace Core;
 use Core\Config;
 use Core\Template\Engine;
 use Core\Template\Extension\Body_Class;
+use Core\Template\Extension\Gravatar;
 
 
 class Template
@@ -21,6 +22,7 @@ class Template
 		{
 			Template::$engine = new Engine();
 			Template::$engine->loadExtension(new Body_Class());
+			Template::$engine->loadExtension(new Gravatar());
 		}
 		
 		return Template::$engine;

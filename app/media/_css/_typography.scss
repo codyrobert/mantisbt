@@ -1,7 +1,7 @@
 a {
 	color: $colorTertiary;
 	text-decoration: none;
-	transition: 0.3s color;
+	transition: 0.2s color;
 	
 	&:active, &:focus, &:hover {
 		color: $colorTertiaryLight;

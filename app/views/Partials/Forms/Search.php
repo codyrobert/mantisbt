@@ -9,7 +9,7 @@ $request = new Request('POST');
 $form = new Form('search');
 
 $form->addElement(new Element\Textbox(null, 'query', [
-	'placeholder'	=> 'Search tickets', 
+	'placeholder'	=> 'Search issues', 
 	'type' 			=> 'search', 
 	'value' 		=> $this->e(@$request->query),
 ]));

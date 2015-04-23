@@ -13,14 +13,17 @@ use Core\String;
 use Core\URL;
 use Core\Utility;
 
+use Model\User;
+
 ?><!doctype html>
-<html>
+<html data-controller="<?php echo $controller_name; ?>">
 <head>
 	
 	<?php $this->insert('Partials/Head'); ?>
 	
-	<link rel="import" href="<?php echo URL::get('web_components/svg-element.html'); ?>" />
-	<link rel="import" href="<?php echo URL::get('web_components/dropdown-menu.html'); ?>" />
+	<link rel="import" href="<?php echo URL::get('media/web_components/svg-element.html'); ?>" />
+	<link rel="import" href="<?php echo URL::get('media/web_components/dropdown-menu.html'); ?>" />
+	<link rel="import" href="<?php echo URL::get('media/web_components/section-nav.html'); ?>" />
 	
 </head>
 <body class="<?php echo $this->body_class($this->section('sidebar') ? 'page-with-sidebar' : ''); ?>">

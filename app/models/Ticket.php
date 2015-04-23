@@ -10,14 +10,19 @@ use Core\DB;
 use Core\Model;
 use Core\Print_Util;
 
+use Model\Project;
+
 
 class Ticket extends Model
 {
 	protected static $schema = [
+		'config_name'		=> 'ticket',
 		'table_name'		=> 'mantis_bug_table',
 		'text_table_name'	=> 'mantis_bug_text_table',
 		'id_key'			=> 'id',
 	];
+	
+	protected $project = null;
 	
 	function __construct($id = null)
 	{
@@ -50,5 +55,25 @@ class Ticket extends Model
 		ksort( $status_list );
 		
 		return (array)$status_list;
+	}
+	
+	function project()
+	{
+		if ($this->project === null)
+		{
+			$this->project = new Project($this->project_id);
+		} 
+		
+		return $this->project;
+	}
+	
+	function priority()
+	{
+		return 'P';//$this->priority;
+	}
+	
+	function on_client()
+	{
+		return false;
 	}
 }

@@ -21,7 +21,7 @@ dropdown-menu {
 			&::shadow {
 				path {
 					fill: $colorSecondary;
-					transition: 0.3s all;
+					transition: 0.2s all;
 				}
 					
 				svg:hover path {
@@ -42,7 +42,7 @@ dropdown-menu {
 			top: 100%;
 			transform: scale(0);
 			transform-origin: 92% 0;
-			transition: 0.3s all;
+			transition: 0.2s all;
 			width: auto;
 			
 			&:before {
@@ -88,7 +88,7 @@ html /deep/ dropdown-menu::shadow {
 		display: block;
 		padding: 6px 30px 6px 10px;
 		text-decoration: none;
-		transition: 0.3s all;
+		transition: 0.2s all;
 		white-space: nowrap;
 		
 		&:active, &:focus, &:hover {
@@ -105,7 +105,7 @@ html /deep/ dropdown-menu::shadow {
 		height: 16px;
 		margin-right: 4px;
 		width: 16px;
-		transition: 0.3s all;
+		transition: 0.2s all;
 		vertical-align: middle;
 		
 		&::shadow path {

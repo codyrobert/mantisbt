@@ -69,7 +69,7 @@ abstract class Page extends Controller
 		
 		echo $engine->render(
 			$this->options['view'], 
-			$this->options + array('content' => ob_get_clean())
+			$this->options + ['content' => ob_get_clean(), 'controller_name' => $this->name()]
 		);
 	}
 }

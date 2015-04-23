@@ -1,0 +1,46 @@
+section-nav::shadow {
+	nav {
+		@include clearfix;
+		
+		border-bottom: 1px solid $colorSecondaryLight;
+		margin-bottom: 20px;
+	}
+	
+	ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	
+	li {
+		float: left;
+		
+		+ li {
+			margin-left: 20px;
+		}
+	}
+	
+	a {
+		@include baseFontSettings();
+		
+		border-bottom: 2px solid transparent;
+		color: $colorSecondary;
+		cursor: pointer;
+		display: block;
+		font-size: $fontSize + 2;
+		height: 38px;
+		line-height: 38px;
+		padding: 0 20px;
+		text-decoration: none;
+		white-space: nowrap;
+		
+		&:active, &:focus, &:hover {
+			color: $colorSecondaryDark;
+		}
+		
+		&.active {
+			border-bottom-color: $colorPrimary;
+			color: $colorSecondaryDark;
+		}
+	}
+}

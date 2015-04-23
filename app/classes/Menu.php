@@ -49,20 +49,20 @@ class Menu
 		
 		
 		# My View Page
-		$menu_items[URL::home()] = [
+		/*$menu_items[URL::home()] = [
 			'label'	=> Lang::get('my_view_link'),
 		];
 		
 		# View All Page
 		$menu_items[URL::get('view_all')] = [
 			'label'	=> Lang::get('view_bugs_link'),
-		];
+		];*/
 		
 		# Report Page
 		if (Access::has_project_level(Config::mantis_get('report_bug_threshold')))
 		{
 			$menu_items[URL::get('report')] = [
-				'label'	=> Lang::get('report_bug_link'),
+				'label'	=> '<i class="mdi mdi-plus"></i>',
 			];
 		}
 		
