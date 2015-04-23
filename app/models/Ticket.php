@@ -16,10 +16,11 @@ use Model\Project;
 class Ticket extends Model
 {
 	protected static $schema = [
-		'config_name'		=> 'ticket',
-		'table_name'		=> 'mantis_bug_table',
-		'text_table_name'	=> 'mantis_bug_text_table',
-		'id_key'			=> 'id',
+		'config_name'			=> 'ticket',
+		'table_name'			=> 'mantis_bug_table',
+		'text_table_name'		=> 'mantis_bug_text_table',
+		'monitor_table_name'	=> 'mantis_bug_monitor_table',
+		'id_key'				=> 'id',
 	];
 	
 	protected $project = null;

@@ -464,13 +464,6 @@ p {
       display: inline-block;
       font-size: 22px;
       vertical-align: middle; }
-  #head .avatar {
-    border-radius: 14px;
-    float: left;
-    height: 26px;
-    margin-right: 8px;
-    position: relative;
-    top: 7px; }
 
 .wrap {
   max-width: 1200px;
@@ -483,6 +476,11 @@ p {
     content: "";
     display: table;
     clear: both; }
+
+.avatar {
+  border-radius: 30px;
+  height: 60px;
+  position: relative; }
 
 #content {
   padding: 40px 0; }
@@ -554,6 +552,20 @@ p {
 .page-title dropdown-menu {
   height: 33px;
   width: 26px; }
+
+.user-list:after {
+  content: "";
+  display: table;
+  clear: both; }
+.user-list > a {
+  color: #777;
+  float: left;
+  line-height: 1em;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 25%; }
+  .user-list > a:nth-child(4n+1) {
+    clear: both; }
 
 .tabular-data {
   border: 1px solid #ddd;

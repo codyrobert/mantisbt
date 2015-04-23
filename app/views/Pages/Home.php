@@ -43,6 +43,19 @@ $this->start('before_content');
 	
 	$form->render();
 	?>
+	
+	<div class="user-list">
+		
+		<?php foreach (User::current()->related_users() as $user): ?>
+		<a href="#">
+			<?php echo $this->gravatar([
+				'email'	=> $user->email,		
+			]); ?>
+			<?php echo $user->realname; ?>
+		</a>
+		<?php endforeach; ?>
+		
+	</div>
 
 </aside>
 
@@ -75,7 +88,7 @@ $this->start('before_content');
 			$sections[] = 'closed';
 		}
 	?>
-	<a data-sections="<?php echo implode(' ', $sections); ?>" href="<?php echo URL::get('ticket/'.$ticket->id); ?>" class="<?php $ticket->classes('row', true); ?>">
+	<a data-sections="<?php echo implode(' ', $sections); ?>" data-reporter="<?php echo $ticket->reporter_id; ?>" data-assigned="<?php echo $ticket->handler_id; ?>" href="<?php echo URL::get('ticket/'.$ticket->id); ?>" class="<?php $ticket->classes('row', true); ?>">
 		<div class="cell ticket-id"><strong><?php echo $ticket->id; ?></strong></div>
 		<div class="cell ticket-project"><?php echo $ticket->project()->name; ?></div>
 		<div class="cell ticket-summary"><?php echo $ticket->summary; ?></div>

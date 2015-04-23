@@ -22,6 +22,12 @@ abstract class Model
 	protected $classes = null;
 	protected $tags = null;
 	
+	static function schema()
+	{
+		$class = get_called_class();
+		return $class::$schema;
+	}
+	
 	static function find($where_string, $parameters, int $limit = null)
 	{
 		if ($limit === null)

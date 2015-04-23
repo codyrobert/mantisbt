@@ -89,19 +89,21 @@ var app = {
 			{
 				var rows = app.controllers.home.tickets;
 				var params = app.params;
-			
-				if (params.section)
+				
+				if (!params.section)
 				{
-					for (var i = 0; i < rows.length; i++)
+					params.section = "open";
+				}
+		
+				for (var i = 0; i < rows.length; i++)
+				{
+					if (rows[i].dataset.sections.indexOf(params.section) >= 0)
 					{
-						if (rows[i].dataset.sections.indexOf(params.section) >= 0)
-						{
-							rows[i].classList.remove("hide");
-						}
-						else
-						{
-							rows[i].classList.add("hide");
-						}
+						rows[i].classList.remove("hide");
+					}
+					else
+					{
+						rows[i].classList.add("hide");
 					}
 				}
 

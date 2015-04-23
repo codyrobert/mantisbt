@@ -18,26 +18,22 @@ class Gravatar implements ExtensionInterface
         $engine->registerFunction('gravatar', [$this, 'gravatar']);
     }
 	
-	function gravatar(array $options = null)
+	function gravatar($options = null)
 	{
+		if (!is_array($options))
+		{
+			$options = ['email' => $options];
+		}
+		
 		$options = array_merge([
+			'email'		=> 'generic-avatar-since-user-not-found',
 			'default'	=> 'identicon',
 			'rating'	=> 'G',
-			'size'		=> 80,
+			'size'		=> 120,
 		], (array)$options);
 		
-		if (User::current())
-		{
-			$hash = md5(strtolower(trim(User::current()->email)));
-		}
-		else
-		{
-			$hash = md5('generic-avatar-since-user-not-found');
-		}
-	
-		# Build Gravatar URL
+		$hash = md5(strtolower(trim($options['email'])));
 		$url = '//secure.gravatar.com/avatar/'.$hash.'?d='.$options['default'].'&r='.$options['rating'].'&s='.$options['size'];
-		
 		
 		return '<img class="avatar" src="'.$url.'" />';
 	}

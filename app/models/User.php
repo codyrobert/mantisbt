@@ -19,6 +19,7 @@ class User extends \Core\Model
 	protected $preferences = null;
 	protected $projects = null;
 	protected $tickets = null;
+	protected $related_users = null;
 	
 	static function current()
 	{
@@ -79,10 +80,51 @@ class User extends \Core\Model
 		{
 			$this->tickets = Ticket::find('project_id IN (SELECT project_id FROM '.self::$schema['projects_table_name'].' WHERE user_id = ?) AND (status < 90 OR (status = 90 AND last_updated >= ?))', [
 				$this->id,
-				strtotime(date('Y-m-d')) - (60 * 60 * 24 * 7) // 1 week ago
+				strtotime(date('Y-m-d')) - (60 * 60 * 24 * 7), // 1 week ago
 			], -1);
 		}
 		
 		return $this->tickets;
+	}
+	
+	function &related_users()
+	{
+		if ($this->related_users === null)
+		{
+			$user_result = (array)User::find('enabled = 1 AND id IN (SELECT user_id FROM '.self::$schema['projects_table_name'].' WHERE project_id IN (SELECT project_id FROM '.self::$schema['projects_table_name'].' WHERE user_id = ?))', [
+				$this->id,
+			], -1);
+			
+			foreach ($user_result as $row)
+			{
+				$user_scope[] = $row->id;
+			}
+			
+			$ticket_result = DB::query('SELECT id,handler_id,reporter_id FROM '.Ticket::schema()['table_name'].' WHERE project_id IN (SELECT project_id FROM '.self::$schema['projects_table_name'].' WHERE user_id = ?) AND (status < 90 OR (status = 90 AND last_updated >= ?))', [
+				$this->id,
+				strtotime(date('Y-m-d')) - (60 * 60 * 24 * 7), // 1 week ago	
+			]);
+			
+			foreach ((array)$ticket_result as $row)
+			{
+				$ticket_ids[] = $row['id'];
+				$active_users[] = $row['handler_id'];
+				$active_users[] = $row['reporter_id'];
+			}
+			
+			$monitors_result = DB::query('SELECT user_id FROM '.Ticket::schema()['monitor_table_name'].' WHERE bug_id IN ('.implode(',', $ticket_ids).')');
+			
+			foreach ((array)$monitors_result as $row)
+			{
+				$active_users[] = $row['user_id'];
+			}
+			
+			$active_users = array_unique($active_users);
+			$active_users = array_intersect($user_scope, $active_users);
+			
+			$this->related_users = User::find('id IN ('.implode(',', $active_users).') ORDER BY access_level DESC, realname ASC', null, -1);
+		}
+		
+		return $this->related_users;
 	}
 }

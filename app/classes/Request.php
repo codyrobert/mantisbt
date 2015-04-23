@@ -129,9 +129,9 @@ class Request extends \GUMP
 	
 	function validate_unique_user_realname($field, $input, $param = null) 
 	{
-		$user = \Model\User::find('realname', $input[$field]);
+		$user = \Model\User::find('realname = ?', $input[$field]);
 		
-		if ($user->loaded() & $user->id !== (int)$param)
+		if ($user->loaded() && $user->id !== (int)$param)
 		{
 			return [
 				'field'	=> $field,
@@ -144,9 +144,9 @@ class Request extends \GUMP
 	
 	function validate_unique_user_email($field, $input, $param = null) 
 	{
-		$user = \Model\User::find('email', $input[$field]);
+		$user = \Model\User::find('email = ?', $input[$field]);
 		
-		if ($user->loaded() & $user->id !== (int)$param)
+		if ($user->loaded() && $user->id !== (int)$param)
 		{
 			return [
 				'field'	=> $field,
