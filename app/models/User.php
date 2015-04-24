@@ -54,6 +54,10 @@ class User extends \Core\Model
 				{
 					$this->projects[$row['project_id']] = new Project($row['project_id']);
 				}
+		
+				usort($this->projects, function($a, $b) {
+					return strcasecmp($a->name, $b->name);
+				});
 			}
 		}
 		
@@ -63,13 +67,6 @@ class User extends \Core\Model
 	function projects_list()
 	{
 		$projects = $this->projects();
-		
-		array_walk($projects, function(&$project) 
-		{
-			$project = $project->name;
-		});
-		
-		asort($projects);
 		
 		return $projects;
 	}
