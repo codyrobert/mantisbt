@@ -1,0 +1,10 @@
+@import "../vendors/mdi/scss/variables";
+
+$mdi-font-path: "/media/vendors/mdi/fonts";
+
+@import "../vendors/mdi/scss/path";
+	
+html, html /deep/ {
+	@import "../vendors/mdi/scss/core";
+	@import "../vendors/mdi/scss/icons";
+}

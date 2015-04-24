@@ -38,7 +38,7 @@
 			var href;
 			var item = this.shadowRoot.querySelector("a");
 			
-			var allItems = this.shadowRoot.querySelectorAll('a');
+			var allItems = this.shadowRoot.querySelectorAll("a");
 			
 			for (var i = 0; i < allItems.length; i++)
 			{
@@ -55,18 +55,21 @@
 		
 		selectItem: function(event)
 		{
-			var allItems = this.shadowRoot.querySelectorAll('a');
+			var el = event.toElement;
+			var allItems = this.shadowRoot.querySelectorAll("a");
 			
 			for (var i = 0; i < allItems.length; i++)
 			{
 				allItems[i].classList.remove("active");
 			}
 			
-			event.toElement.classList.add("active");
+			while (el.tagName.toLowerCase() !== "a" && (el = el.parentElement)) {}
+			
+			el.classList.add("active");
 			event.preventDefault();
 			
 			app.pushState({
-				url: app.getPathnameForURL(event.toElement.href)
+				url: app.getPathnameForURL(el.href)
 			});
 		}
 				

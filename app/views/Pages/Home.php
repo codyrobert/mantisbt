@@ -24,32 +24,41 @@ $this->start('before_content');
 	<h4>Filter</h4>
 	
 	<?php
+	$projects_list = [Lang::get('all_projects')];
+	
+	foreach (User::current()->projects() as $project)
+	{
+		$projects_list[$project->slug()] = $project->name;
+	}
+	
 	$form = new Form('filter_rows', [
 		'class'	=> 'form-style--fill-width',
 	]);
 	
-	$form->addElement(new Form\Element\Select(null, 'project', [
-		OFF	=> Lang::get('all_projects'),
-	] + User::current()->projects_list()));
-	
-	$form->addElement(new Form\Element\Select(null, 'status', [
-		OFF	=> 'All Users',
-	] + User::get_col('realname')));
+	$form->addElement(new Form\Element\Select(null, 'project', $projects_list, [
+		'id' => 'filter_view_by_project',
+	]));
 	
 	$form->render();
 	?>
+</aside>
+
+<aside>
+	
+	<h4>
+		<a class="aux-link" href="#"><i class="mdi mdi-arrow-right-bold-circle-outline"></i></a>
+		People
+	</h4>
 	
 	<div class="user-list">
-		
-		<?php foreach (User::current()->related_users() as $user): ?>
+		<?php foreach (array_slice(User::current()->related_users(), 0, 13) as $user): ?>
 		<a href="#">
 			<?php echo $this->gravatar([
 				'email'	=> $user->email,		
 			]); ?>
-			<?php echo $user->realname; ?>
+			<?php //echo $user->realname; ?>
 		</a>
 		<?php endforeach; ?>
-		
 	</div>
 
 </aside>
@@ -90,7 +99,7 @@ $this->start('before_content');
 			$append_classes[] = 'hide';
 		}
 	?>
-	<a data-category="<?php echo implode(' ', $row_categories); ?>" data-reporter="<?php echo $ticket->reporter_id; ?>" data-assigned="<?php echo $ticket->handler_id; ?>" href="<?php echo URL::get('ticket/'.$ticket->id); ?>" class="<?php $ticket->classes($append_classes, true); ?>">
+	<a data-category="<?php echo implode(' ', $row_categories); ?>" data-project="<?php echo $ticket->project()->slug(); ?>" data-reporter="<?php echo $ticket->reporter_id; ?>" data-assigned="<?php echo $ticket->handler_id; ?>" href="<?php echo URL::get('ticket/'.$ticket->id); ?>" class="<?php $ticket->classes($append_classes, true); ?>">
 		<div class="cell ticket-id"><strong><?php echo $ticket->id; ?></strong></div>
 		<div class="cell ticket-project"><?php echo $ticket->project()->name; ?></div>
 		<div class="cell ticket-summary"><?php echo $ticket->summary; ?></div>

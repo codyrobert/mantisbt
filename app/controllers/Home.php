@@ -8,7 +8,7 @@ use Core\URL;
 
 class Home extends Authenticated_Page
 {
-	function action_index($category = null)
+	function action_index($category = null, $project = null)
 	{
 		$categories = [
 			'open'		=> ['label' => 'Open Tickets',		'href' => URL::get('/view:open/'),		'icon' => 'bookmark'],
@@ -24,6 +24,7 @@ class Home extends Authenticated_Page
 		
 		$this->set([
 			'current_category'	=> $category ? $category : current(array_keys($categories)),
+			'current_project'	=> $project,
 			'categories'		=> array_values($categories),
 			'view'				=> 'Pages/Home',
 		]);

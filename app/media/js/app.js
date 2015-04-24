@@ -181,26 +181,42 @@ var app = {
 
 	controllers: {
 		home: {
+			project: null,
 			tickets: null,
+			
 			load: function()
 			{
 				app.controllers.home.tickets = document.querySelectorAll("#tickets-table > *");
-				app.addListener("popState", app.controllers.home.setCategory, app.controllers.home);
-				app.addListener("pushState", app.controllers.home.setCategory, app.controllers.home);
+				
+				app.addListener("popState", app.controllers.home.setCategory);
+				app.addListener("pushState", app.controllers.home.setCategory);
+				
+				document.querySelector("#filter_view_by_project").addEventListener("change", app.controllers.home.setProject);
 			},
 			setCategory: function(e)
 			{
-				var rows = app.controllers.home.tickets;
-				var params = app.state.params;
-				
-				if (!params.view)
+				if (!app.state.params.view)
 				{
-					params.view = "open";
+					app.state.params.view = "open";
 				}
-		
+				
+				app.controllers.home.filterView();
+			},
+			setProject: function(e)
+			{
+				app.controllers.home.project = e.target.options[e.target.selectedIndex].value;
+				app.controllers.home.filterView();
+			},
+			filterView: function()
+			{
+				var project = app.controllers.home.project;
+				var category = app.state.params.view;
+				var rows = app.controllers.home.tickets;
+				
 				for (var i = 0; i < rows.length; i++)
 				{
-					if (rows[i].dataset.category.indexOf(params.view) >= 0)
+					if ((!project || rows[i].dataset.project == project) &&
+						rows[i].dataset.category.indexOf(category) >= 0)
 					{
 						rows[i].classList.remove("hide");
 					}
@@ -209,7 +225,6 @@ var app = {
 						rows[i].classList.add("hide");
 					}
 				}
-
 			}
 		}
 	}

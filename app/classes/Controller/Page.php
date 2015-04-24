@@ -20,7 +20,6 @@ abstract class Page extends Controller
 		parent::__construct($params);
 		
 		App::queue_css(URL::get('css/default.css'));
-		App::queue_css(URL::get('media/vendors/mdi/css/materialdesignicons.min.css'));
 		App::queue_css(URL::get('media/css/master.css'));
 		App::queue_css(URL::get('css/jquery-ui-1.11.2.min.css'));
 		App::queue_css(URL::get('css/common_config.php'));

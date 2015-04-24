@@ -9,6 +9,7 @@
 @import "forms";
 @import "notices";
 @import "typography";
+@import "materialdesignicons";
 
 
 html {
@@ -148,9 +149,21 @@ p {
 		float: right;
 		
 		aside {
+			border: 1px solid $colorSecondaryLight;
+			border-radius: 3px;
+			padding: 10px;
+			
 			+ aside {
-				margin-top: 40px;
+				margin-top: 20px;
 			}
+		}
+		
+		h4 {
+			border-bottom: 1px solid $colorSecondaryLight;
+		}
+		
+		.control-group + .control-group {
+			margin-top: 10px;
 		}
 	}
 	
@@ -251,17 +264,24 @@ p {
 
 .user-list {
 	@include clearfix;
+	margin: -2px;
 	
 	> a {
 		color: $colorSecondary;
 		float: left;
 		line-height: 1em;
-		margin-bottom: 20px;
+		padding: 2px;
 		text-align: center;
-		width: 25%;
+		width: 20%;
 		
-		&:nth-child(4n+1) {
+		&:nth-child(5n+1) {
 			clear: both;
+		}
+		
+		img {
+			display: block;
+			height: auto;
+			max-width: 100%;
 		}
 	}
 }

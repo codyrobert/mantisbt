@@ -369,6 +369,12 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 0; }
   h1:last-child, h2:last-child, h3:last-child, h4:last-child, h5:last-child, h6:last-child {
     margin-bottom: 0; }
+  h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    color: #777; }
+    h1 a:active, h1 a:focus, h1 a:hover, h2 a:active, h2 a:focus, h2 a:hover, h3 a:active, h3 a:focus, h3 a:hover, h4 a:active, h4 a:focus, h4 a:hover, h5 a:active, h5 a:focus, h5 a:hover, h6 a:active, h6 a:focus, h6 a:hover {
+      color: #009cff; }
+  h1 .aux-link, h2 .aux-link, h3 .aux-link, h4 .aux-link, h5 .aux-link, h6 .aux-link {
+    float: right; }
 
 h1 {
   font-size: 26px;
@@ -399,6 +405,2039 @@ strong {
 
 p, ul, ol {
   margin: 20px 0; }
+
+@font-face {
+  font-family: 'MaterialDesignIcons';
+  src: url("/media/vendors/mdi/fonts/materialdesignicons-webfont.eot?v=1.0.8");
+  src: url("/media/vendors/mdi/fonts/materialdesignicons-webfont.eot?#iefix&v=1.0.8") format("embedded-opentype"), url("/media/vendors/mdi/fonts/materialdesignicons-webfont.woff2?v=1.0.8") format("woff2"), url("/media/vendors/mdi/fonts/materialdesignicons-webfont.woff?v=1.0.8") format("woff"), url("/media/vendors/mdi/fonts/materialdesignicons-webfont.ttf?v=1.0.8") format("truetype"), url("/media/vendors/mdi/fonts/materialdesignicons-webfont.svg?v=1.0.8#materialdesigniconsregular") format("svg");
+  font-weight: normal;
+  font-style: normal; }
+html .mdi, html /deep/ .mdi {
+  display: inline-block;
+  font: normal normal normal 24px/1 MaterialDesignIcons;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-transform: translate(0, 0);
+      -ms-transform: translate(0, 0);
+          transform: translate(0, 0); }
+html .mdi-account::before, html /deep/ .mdi-account::before {
+  content: "\f101"; }
+html .mdi-account-alert::before, html /deep/ .mdi-account-alert::before {
+  content: "\f102"; }
+html .mdi-account-box::before, html /deep/ .mdi-account-box::before {
+  content: "\f103"; }
+html .mdi-account-box-outline::before, html /deep/ .mdi-account-box-outline::before {
+  content: "\f104"; }
+html .mdi-account-check::before, html /deep/ .mdi-account-check::before {
+  content: "\f105"; }
+html .mdi-account-circle::before, html /deep/ .mdi-account-circle::before {
+  content: "\f106"; }
+html .mdi-account-key::before, html /deep/ .mdi-account-key::before {
+  content: "\f107"; }
+html .mdi-account-location::before, html /deep/ .mdi-account-location::before {
+  content: "\f108"; }
+html .mdi-account-minus::before, html /deep/ .mdi-account-minus::before {
+  content: "\f109"; }
+html .mdi-account-multiple::before, html /deep/ .mdi-account-multiple::before {
+  content: "\f10a"; }
+html .mdi-account-multiple-outline::before, html /deep/ .mdi-account-multiple-outline::before {
+  content: "\f10b"; }
+html .mdi-account-multiple-plus::before, html /deep/ .mdi-account-multiple-plus::before {
+  content: "\f10c"; }
+html .mdi-account-network::before, html /deep/ .mdi-account-network::before {
+  content: "\f10d"; }
+html .mdi-account-outline::before, html /deep/ .mdi-account-outline::before {
+  content: "\f10e"; }
+html .mdi-account-plus::before, html /deep/ .mdi-account-plus::before {
+  content: "\f10f"; }
+html .mdi-account-remove::before, html /deep/ .mdi-account-remove::before {
+  content: "\f110"; }
+html .mdi-account-search::before, html /deep/ .mdi-account-search::before {
+  content: "\f111"; }
+html .mdi-account-star::before, html /deep/ .mdi-account-star::before {
+  content: "\f112"; }
+html .mdi-account-star-variant::before, html /deep/ .mdi-account-star-variant::before {
+  content: "\f113"; }
+html .mdi-account-switch::before, html /deep/ .mdi-account-switch::before {
+  content: "\f114"; }
+html .mdi-airballoon::before, html /deep/ .mdi-airballoon::before {
+  content: "\f115"; }
+html .mdi-airplane::before, html /deep/ .mdi-airplane::before {
+  content: "\f116"; }
+html .mdi-airplane-off::before, html /deep/ .mdi-airplane-off::before {
+  content: "\f117"; }
+html .mdi-alarm::before, html /deep/ .mdi-alarm::before {
+  content: "\f118"; }
+html .mdi-alarm-check::before, html /deep/ .mdi-alarm-check::before {
+  content: "\f119"; }
+html .mdi-alarm-multiple::before, html /deep/ .mdi-alarm-multiple::before {
+  content: "\f11a"; }
+html .mdi-alarm-off::before, html /deep/ .mdi-alarm-off::before {
+  content: "\f11b"; }
+html .mdi-alarm-plus::before, html /deep/ .mdi-alarm-plus::before {
+  content: "\f11c"; }
+html .mdi-album::before, html /deep/ .mdi-album::before {
+  content: "\f11d"; }
+html .mdi-alert::before, html /deep/ .mdi-alert::before {
+  content: "\f11e"; }
+html .mdi-alert-box::before, html /deep/ .mdi-alert-box::before {
+  content: "\f11f"; }
+html .mdi-alert-circle::before, html /deep/ .mdi-alert-circle::before {
+  content: "\f120"; }
+html .mdi-alert-octagon::before, html /deep/ .mdi-alert-octagon::before {
+  content: "\f121"; }
+html .mdi-alpha::before, html /deep/ .mdi-alpha::before {
+  content: "\f122"; }
+html .mdi-alphabetical::before, html /deep/ .mdi-alphabetical::before {
+  content: "\f123"; }
+html .mdi-amazon::before, html /deep/ .mdi-amazon::before {
+  content: "\f124"; }
+html .mdi-amazon-clouddrive::before, html /deep/ .mdi-amazon-clouddrive::before {
+  content: "\f125"; }
+html .mdi-ambulance::before, html /deep/ .mdi-ambulance::before {
+  content: "\f126"; }
+html .mdi-android::before, html /deep/ .mdi-android::before {
+  content: "\f127"; }
+html .mdi-android-debug-bridge::before, html /deep/ .mdi-android-debug-bridge::before {
+  content: "\f128"; }
+html .mdi-android-studio::before, html /deep/ .mdi-android-studio::before {
+  content: "\f129"; }
+html .mdi-apple::before, html /deep/ .mdi-apple::before {
+  content: "\f12a"; }
+html .mdi-apple-finder::before, html /deep/ .mdi-apple-finder::before {
+  content: "\f12b"; }
+html .mdi-apple-mobileme::before, html /deep/ .mdi-apple-mobileme::before {
+  content: "\f12c"; }
+html .mdi-apple-safari::before, html /deep/ .mdi-apple-safari::before {
+  content: "\f12d"; }
+html .mdi-appnet::before, html /deep/ .mdi-appnet::before {
+  content: "\f12e"; }
+html .mdi-apps::before, html /deep/ .mdi-apps::before {
+  content: "\f12f"; }
+html .mdi-arrange-bring-forward::before, html /deep/ .mdi-arrange-bring-forward::before {
+  content: "\f130"; }
+html .mdi-arrange-bring-to-front::before, html /deep/ .mdi-arrange-bring-to-front::before {
+  content: "\f131"; }
+html .mdi-arrange-send-backward::before, html /deep/ .mdi-arrange-send-backward::before {
+  content: "\f132"; }
+html .mdi-arrange-send-to-back::before, html /deep/ .mdi-arrange-send-to-back::before {
+  content: "\f133"; }
+html .mdi-arrow-collapse::before, html /deep/ .mdi-arrow-collapse::before {
+  content: "\f134"; }
+html .mdi-arrow-down::before, html /deep/ .mdi-arrow-down::before {
+  content: "\f135"; }
+html .mdi-arrow-down-bold::before, html /deep/ .mdi-arrow-down-bold::before {
+  content: "\f136"; }
+html .mdi-arrow-down-bold-circle::before, html /deep/ .mdi-arrow-down-bold-circle::before {
+  content: "\f137"; }
+html .mdi-arrow-down-bold-circle-outline::before, html /deep/ .mdi-arrow-down-bold-circle-outline::before {
+  content: "\f138"; }
+html .mdi-arrow-down-bold-hexagon-outline::before, html /deep/ .mdi-arrow-down-bold-hexagon-outline::before {
+  content: "\f139"; }
+html .mdi-arrow-expand::before, html /deep/ .mdi-arrow-expand::before {
+  content: "\f13a"; }
+html .mdi-arrow-left::before, html /deep/ .mdi-arrow-left::before {
+  content: "\f13b"; }
+html .mdi-arrow-left-bold::before, html /deep/ .mdi-arrow-left-bold::before {
+  content: "\f13c"; }
+html .mdi-arrow-left-bold-circle::before, html /deep/ .mdi-arrow-left-bold-circle::before {
+  content: "\f13d"; }
+html .mdi-arrow-left-bold-circle-outline::before, html /deep/ .mdi-arrow-left-bold-circle-outline::before {
+  content: "\f13e"; }
+html .mdi-arrow-left-bold-hexagon-outline::before, html /deep/ .mdi-arrow-left-bold-hexagon-outline::before {
+  content: "\f13f"; }
+html .mdi-arrow-right::before, html /deep/ .mdi-arrow-right::before {
+  content: "\f140"; }
+html .mdi-arrow-right-bold::before, html /deep/ .mdi-arrow-right-bold::before {
+  content: "\f141"; }
+html .mdi-arrow-right-bold-circle::before, html /deep/ .mdi-arrow-right-bold-circle::before {
+  content: "\f142"; }
+html .mdi-arrow-right-bold-circle-outline::before, html /deep/ .mdi-arrow-right-bold-circle-outline::before {
+  content: "\f143"; }
+html .mdi-arrow-right-bold-hexagon-outline::before, html /deep/ .mdi-arrow-right-bold-hexagon-outline::before {
+  content: "\f144"; }
+html .mdi-arrow-up::before, html /deep/ .mdi-arrow-up::before {
+  content: "\f145"; }
+html .mdi-arrow-up-bold::before, html /deep/ .mdi-arrow-up-bold::before {
+  content: "\f146"; }
+html .mdi-arrow-up-bold-circle::before, html /deep/ .mdi-arrow-up-bold-circle::before {
+  content: "\f147"; }
+html .mdi-arrow-up-bold-circle-outline::before, html /deep/ .mdi-arrow-up-bold-circle-outline::before {
+  content: "\f148"; }
+html .mdi-arrow-up-bold-hexagon-outline::before, html /deep/ .mdi-arrow-up-bold-hexagon-outline::before {
+  content: "\f149"; }
+html .mdi-attachment::before, html /deep/ .mdi-attachment::before {
+  content: "\f14a"; }
+html .mdi-auto-fix::before, html /deep/ .mdi-auto-fix::before {
+  content: "\f14b"; }
+html .mdi-auto-upload::before, html /deep/ .mdi-auto-upload::before {
+  content: "\f14c"; }
+html .mdi-backup-restore::before, html /deep/ .mdi-backup-restore::before {
+  content: "\f14d"; }
+html .mdi-bank::before, html /deep/ .mdi-bank::before {
+  content: "\f14e"; }
+html .mdi-barcode::before, html /deep/ .mdi-barcode::before {
+  content: "\f14f"; }
+html .mdi-barrel::before, html /deep/ .mdi-barrel::before {
+  content: "\f150"; }
+html .mdi-basecamp::before, html /deep/ .mdi-basecamp::before {
+  content: "\f151"; }
+html .mdi-basket::before, html /deep/ .mdi-basket::before {
+  content: "\f152"; }
+html .mdi-basket-fill::before, html /deep/ .mdi-basket-fill::before {
+  content: "\f153"; }
+html .mdi-basket-unfill::before, html /deep/ .mdi-basket-unfill::before {
+  content: "\f154"; }
+html .mdi-battery::before, html /deep/ .mdi-battery::before {
+  content: "\f155"; }
+html .mdi-battery-20::before, html /deep/ .mdi-battery-20::before {
+  content: "\f156"; }
+html .mdi-battery-30::before, html /deep/ .mdi-battery-30::before {
+  content: "\f157"; }
+html .mdi-battery-40::before, html /deep/ .mdi-battery-40::before {
+  content: "\f158"; }
+html .mdi-battery-60::before, html /deep/ .mdi-battery-60::before {
+  content: "\f159"; }
+html .mdi-battery-80::before, html /deep/ .mdi-battery-80::before {
+  content: "\f15a"; }
+html .mdi-battery-90::before, html /deep/ .mdi-battery-90::before {
+  content: "\f15b"; }
+html .mdi-battery-alert::before, html /deep/ .mdi-battery-alert::before {
+  content: "\f15c"; }
+html .mdi-battery-charging-100::before, html /deep/ .mdi-battery-charging-100::before {
+  content: "\f15d"; }
+html .mdi-battery-charging-20::before, html /deep/ .mdi-battery-charging-20::before {
+  content: "\f15e"; }
+html .mdi-battery-charging-30::before, html /deep/ .mdi-battery-charging-30::before {
+  content: "\f15f"; }
+html .mdi-battery-charging-40::before, html /deep/ .mdi-battery-charging-40::before {
+  content: "\f160"; }
+html .mdi-battery-charging-60::before, html /deep/ .mdi-battery-charging-60::before {
+  content: "\f161"; }
+html .mdi-battery-charging-80::before, html /deep/ .mdi-battery-charging-80::before {
+  content: "\f162"; }
+html .mdi-battery-charging-90::before, html /deep/ .mdi-battery-charging-90::before {
+  content: "\f163"; }
+html .mdi-battery-minus::before, html /deep/ .mdi-battery-minus::before {
+  content: "\f164"; }
+html .mdi-battery-negative::before, html /deep/ .mdi-battery-negative::before {
+  content: "\f165"; }
+html .mdi-battery-outline::before, html /deep/ .mdi-battery-outline::before {
+  content: "\f166"; }
+html .mdi-battery-plus::before, html /deep/ .mdi-battery-plus::before {
+  content: "\f167"; }
+html .mdi-battery-positive::before, html /deep/ .mdi-battery-positive::before {
+  content: "\f168"; }
+html .mdi-battery-unknown::before, html /deep/ .mdi-battery-unknown::before {
+  content: "\f169"; }
+html .mdi-beaker::before, html /deep/ .mdi-beaker::before {
+  content: "\f16a"; }
+html .mdi-beaker-empty::before, html /deep/ .mdi-beaker-empty::before {
+  content: "\f16b"; }
+html .mdi-beaker-empty-outline::before, html /deep/ .mdi-beaker-empty-outline::before {
+  content: "\f16c"; }
+html .mdi-beaker-outline::before, html /deep/ .mdi-beaker-outline::before {
+  content: "\f16d"; }
+html .mdi-beats::before, html /deep/ .mdi-beats::before {
+  content: "\f16e"; }
+html .mdi-beer::before, html /deep/ .mdi-beer::before {
+  content: "\f16f"; }
+html .mdi-behance::before, html /deep/ .mdi-behance::before {
+  content: "\f170"; }
+html .mdi-bell::before, html /deep/ .mdi-bell::before {
+  content: "\f171"; }
+html .mdi-bell-off::before, html /deep/ .mdi-bell-off::before {
+  content: "\f172"; }
+html .mdi-bell-outline::before, html /deep/ .mdi-bell-outline::before {
+  content: "\f173"; }
+html .mdi-bell-ring::before, html /deep/ .mdi-bell-ring::before {
+  content: "\f174"; }
+html .mdi-bell-ring-outline::before, html /deep/ .mdi-bell-ring-outline::before {
+  content: "\f175"; }
+html .mdi-bell-sleep::before, html /deep/ .mdi-bell-sleep::before {
+  content: "\f176"; }
+html .mdi-beta::before, html /deep/ .mdi-beta::before {
+  content: "\f177"; }
+html .mdi-bike::before, html /deep/ .mdi-bike::before {
+  content: "\f178"; }
+html .mdi-bing::before, html /deep/ .mdi-bing::before {
+  content: "\f179"; }
+html .mdi-bio::before, html /deep/ .mdi-bio::before {
+  content: "\f17a"; }
+html .mdi-biohazard::before, html /deep/ .mdi-biohazard::before {
+  content: "\f17b"; }
+html .mdi-blackberry::before, html /deep/ .mdi-blackberry::before {
+  content: "\f17c"; }
+html .mdi-blinds::before, html /deep/ .mdi-blinds::before {
+  content: "\f17d"; }
+html .mdi-block-helper::before, html /deep/ .mdi-block-helper::before {
+  content: "\f17e"; }
+html .mdi-blogger::before, html /deep/ .mdi-blogger::before {
+  content: "\f17f"; }
+html .mdi-bluetooth::before, html /deep/ .mdi-bluetooth::before {
+  content: "\f180"; }
+html .mdi-bluetooth-audio::before, html /deep/ .mdi-bluetooth-audio::before {
+  content: "\f181"; }
+html .mdi-bluetooth-connect::before, html /deep/ .mdi-bluetooth-connect::before {
+  content: "\f182"; }
+html .mdi-bluetooth-settings::before, html /deep/ .mdi-bluetooth-settings::before {
+  content: "\f183"; }
+html .mdi-blur::before, html /deep/ .mdi-blur::before {
+  content: "\f184"; }
+html .mdi-blur-linear::before, html /deep/ .mdi-blur-linear::before {
+  content: "\f185"; }
+html .mdi-blur-off::before, html /deep/ .mdi-blur-off::before {
+  content: "\f186"; }
+html .mdi-blur-radial::before, html /deep/ .mdi-blur-radial::before {
+  content: "\f187"; }
+html .mdi-book::before, html /deep/ .mdi-book::before {
+  content: "\f188"; }
+html .mdi-book-multiple::before, html /deep/ .mdi-book-multiple::before {
+  content: "\f189"; }
+html .mdi-book-multiple-variant::before, html /deep/ .mdi-book-multiple-variant::before {
+  content: "\f18a"; }
+html .mdi-book-variant::before, html /deep/ .mdi-book-variant::before {
+  content: "\f18b"; }
+html .mdi-bookmark::before, html /deep/ .mdi-bookmark::before {
+  content: "\f18c"; }
+html .mdi-bookmark-outline::before, html /deep/ .mdi-bookmark-outline::before {
+  content: "\f18d"; }
+html .mdi-border-all::before, html /deep/ .mdi-border-all::before {
+  content: "\f18e"; }
+html .mdi-border-bottom::before, html /deep/ .mdi-border-bottom::before {
+  content: "\f18f"; }
+html .mdi-border-color::before, html /deep/ .mdi-border-color::before {
+  content: "\f190"; }
+html .mdi-border-horizontal::before, html /deep/ .mdi-border-horizontal::before {
+  content: "\f191"; }
+html .mdi-border-inside::before, html /deep/ .mdi-border-inside::before {
+  content: "\f192"; }
+html .mdi-border-left::before, html /deep/ .mdi-border-left::before {
+  content: "\f193"; }
+html .mdi-border-none::before, html /deep/ .mdi-border-none::before {
+  content: "\f194"; }
+html .mdi-border-outside::before, html /deep/ .mdi-border-outside::before {
+  content: "\f195"; }
+html .mdi-border-right::before, html /deep/ .mdi-border-right::before {
+  content: "\f196"; }
+html .mdi-border-top::before, html /deep/ .mdi-border-top::before {
+  content: "\f197"; }
+html .mdi-border-vertical::before, html /deep/ .mdi-border-vertical::before {
+  content: "\f198"; }
+html .mdi-bowling::before, html /deep/ .mdi-bowling::before {
+  content: "\f199"; }
+html .mdi-box::before, html /deep/ .mdi-box::before {
+  content: "\f19a"; }
+html .mdi-briefcase::before, html /deep/ .mdi-briefcase::before {
+  content: "\f19b"; }
+html .mdi-briefcase-check::before, html /deep/ .mdi-briefcase-check::before {
+  content: "\f19c"; }
+html .mdi-briefcase-download::before, html /deep/ .mdi-briefcase-download::before {
+  content: "\f19d"; }
+html .mdi-briefcase-upload::before, html /deep/ .mdi-briefcase-upload::before {
+  content: "\f19e"; }
+html .mdi-brightness-1::before, html /deep/ .mdi-brightness-1::before {
+  content: "\f19f"; }
+html .mdi-brightness-2::before, html /deep/ .mdi-brightness-2::before {
+  content: "\f1a0"; }
+html .mdi-brightness-3::before, html /deep/ .mdi-brightness-3::before {
+  content: "\f1a1"; }
+html .mdi-brightness-4::before, html /deep/ .mdi-brightness-4::before {
+  content: "\f1a2"; }
+html .mdi-brightness-5::before, html /deep/ .mdi-brightness-5::before {
+  content: "\f1a3"; }
+html .mdi-brightness-6::before, html /deep/ .mdi-brightness-6::before {
+  content: "\f1a4"; }
+html .mdi-brightness-7::before, html /deep/ .mdi-brightness-7::before {
+  content: "\f1a5"; }
+html .mdi-brightness-auto::before, html /deep/ .mdi-brightness-auto::before {
+  content: "\f1a6"; }
+html .mdi-broom::before, html /deep/ .mdi-broom::before {
+  content: "\f1a7"; }
+html .mdi-brush::before, html /deep/ .mdi-brush::before {
+  content: "\f1a8"; }
+html .mdi-bug::before, html /deep/ .mdi-bug::before {
+  content: "\f1a9"; }
+html .mdi-bus::before, html /deep/ .mdi-bus::before {
+  content: "\f1aa"; }
+html .mdi-cake::before, html /deep/ .mdi-cake::before {
+  content: "\f1ab"; }
+html .mdi-cake-variant::before, html /deep/ .mdi-cake-variant::before {
+  content: "\f1ac"; }
+html .mdi-calculator::before, html /deep/ .mdi-calculator::before {
+  content: "\f1ad"; }
+html .mdi-calendar::before, html /deep/ .mdi-calendar::before {
+  content: "\f1ae"; }
+html .mdi-calendar-check::before, html /deep/ .mdi-calendar-check::before {
+  content: "\f1af"; }
+html .mdi-calendar-remove::before, html /deep/ .mdi-calendar-remove::before {
+  content: "\f1b0"; }
+html .mdi-calendar-text::before, html /deep/ .mdi-calendar-text::before {
+  content: "\f1b1"; }
+html .mdi-calendar-today::before, html /deep/ .mdi-calendar-today::before {
+  content: "\f1b2"; }
+html .mdi-camcorder::before, html /deep/ .mdi-camcorder::before {
+  content: "\f1b3"; }
+html .mdi-camcorder-box::before, html /deep/ .mdi-camcorder-box::before {
+  content: "\f1b4"; }
+html .mdi-camcorder-box-off::before, html /deep/ .mdi-camcorder-box-off::before {
+  content: "\f1b5"; }
+html .mdi-camcorder-off::before, html /deep/ .mdi-camcorder-off::before {
+  content: "\f1b6"; }
+html .mdi-camera::before, html /deep/ .mdi-camera::before {
+  content: "\f1b7"; }
+html .mdi-camera-iris::before, html /deep/ .mdi-camera-iris::before {
+  content: "\f1b8"; }
+html .mdi-camera-party-mode::before, html /deep/ .mdi-camera-party-mode::before {
+  content: "\f1b9"; }
+html .mdi-camera-switch::before, html /deep/ .mdi-camera-switch::before {
+  content: "\f1ba"; }
+html .mdi-camera-timer::before, html /deep/ .mdi-camera-timer::before {
+  content: "\f1bb"; }
+html .mdi-candycane::before, html /deep/ .mdi-candycane::before {
+  content: "\f1bc"; }
+html .mdi-car::before, html /deep/ .mdi-car::before {
+  content: "\f1bd"; }
+html .mdi-car-wash::before, html /deep/ .mdi-car-wash::before {
+  content: "\f1be"; }
+html .mdi-carrot::before, html /deep/ .mdi-carrot::before {
+  content: "\f1bf"; }
+html .mdi-cart::before, html /deep/ .mdi-cart::before {
+  content: "\f1c0"; }
+html .mdi-cart-outline::before, html /deep/ .mdi-cart-outline::before {
+  content: "\f1c1"; }
+html .mdi-cash::before, html /deep/ .mdi-cash::before {
+  content: "\f1c2"; }
+html .mdi-cast::before, html /deep/ .mdi-cast::before {
+  content: "\f1c3"; }
+html .mdi-cast-connected::before, html /deep/ .mdi-cast-connected::before {
+  content: "\f1c4"; }
+html .mdi-castle::before, html /deep/ .mdi-castle::before {
+  content: "\f1c5"; }
+html .mdi-cellphone::before, html /deep/ .mdi-cellphone::before {
+  content: "\f1c6"; }
+html .mdi-cellphone-android::before, html /deep/ .mdi-cellphone-android::before {
+  content: "\f1c7"; }
+html .mdi-cellphone-dock::before, html /deep/ .mdi-cellphone-dock::before {
+  content: "\f1c8"; }
+html .mdi-cellphone-iphone::before, html /deep/ .mdi-cellphone-iphone::before {
+  content: "\f1c9"; }
+html .mdi-cellphone-link::before, html /deep/ .mdi-cellphone-link::before {
+  content: "\f1ca"; }
+html .mdi-cellphone-link-off::before, html /deep/ .mdi-cellphone-link-off::before {
+  content: "\f1cb"; }
+html .mdi-cellphone-settings::before, html /deep/ .mdi-cellphone-settings::before {
+  content: "\f1cc"; }
+html .mdi-chair-school::before, html /deep/ .mdi-chair-school::before {
+  content: "\f1cd"; }
+html .mdi-chart-bar::before, html /deep/ .mdi-chart-bar::before {
+  content: "\f1ce"; }
+html .mdi-chart-histogram::before, html /deep/ .mdi-chart-histogram::before {
+  content: "\f1cf"; }
+html .mdi-chart-line::before, html /deep/ .mdi-chart-line::before {
+  content: "\f1d0"; }
+html .mdi-check::before, html /deep/ .mdi-check::before {
+  content: "\f1d1"; }
+html .mdi-check-all::before, html /deep/ .mdi-check-all::before {
+  content: "\f1d2"; }
+html .mdi-checkbox-blank::before, html /deep/ .mdi-checkbox-blank::before {
+  content: "\f1d3"; }
+html .mdi-checkbox-blank-circle::before, html /deep/ .mdi-checkbox-blank-circle::before {
+  content: "\f1d4"; }
+html .mdi-checkbox-blank-circle-outline::before, html /deep/ .mdi-checkbox-blank-circle-outline::before {
+  content: "\f1d5"; }
+html .mdi-checkbox-blank-outline::before, html /deep/ .mdi-checkbox-blank-outline::before {
+  content: "\f1d6"; }
+html .mdi-checkbox-marked::before, html /deep/ .mdi-checkbox-marked::before {
+  content: "\f1d7"; }
+html .mdi-checkbox-marked-circle::before, html /deep/ .mdi-checkbox-marked-circle::before {
+  content: "\f1d8"; }
+html .mdi-checkbox-marked-circle-outline::before, html /deep/ .mdi-checkbox-marked-circle-outline::before {
+  content: "\f1d9"; }
+html .mdi-checkbox-marked-outline::before, html /deep/ .mdi-checkbox-marked-outline::before {
+  content: "\f1da"; }
+html .mdi-checkbox-multiple-blank::before, html /deep/ .mdi-checkbox-multiple-blank::before {
+  content: "\f1db"; }
+html .mdi-checkbox-multiple-blank-outline::before, html /deep/ .mdi-checkbox-multiple-blank-outline::before {
+  content: "\f1dc"; }
+html .mdi-checkbox-multiple-marked::before, html /deep/ .mdi-checkbox-multiple-marked::before {
+  content: "\f1dd"; }
+html .mdi-checkbox-multiple-marked-outline::before, html /deep/ .mdi-checkbox-multiple-marked-outline::before {
+  content: "\f1de"; }
+html .mdi-chevron-double-down::before, html /deep/ .mdi-chevron-double-down::before {
+  content: "\f1df"; }
+html .mdi-chevron-double-left::before, html /deep/ .mdi-chevron-double-left::before {
+  content: "\f1e0"; }
+html .mdi-chevron-double-right::before, html /deep/ .mdi-chevron-double-right::before {
+  content: "\f1e1"; }
+html .mdi-chevron-double-up::before, html /deep/ .mdi-chevron-double-up::before {
+  content: "\f1e2"; }
+html .mdi-chevron-down::before, html /deep/ .mdi-chevron-down::before {
+  content: "\f1e3"; }
+html .mdi-chevron-left::before, html /deep/ .mdi-chevron-left::before {
+  content: "\f1e4"; }
+html .mdi-chevron-right::before, html /deep/ .mdi-chevron-right::before {
+  content: "\f1e5"; }
+html .mdi-chevron-up::before, html /deep/ .mdi-chevron-up::before {
+  content: "\f1e6"; }
+html .mdi-church::before, html /deep/ .mdi-church::before {
+  content: "\f1e7"; }
+html .mdi-city::before, html /deep/ .mdi-city::before {
+  content: "\f1e8"; }
+html .mdi-clipboard::before, html /deep/ .mdi-clipboard::before {
+  content: "\f1e9"; }
+html .mdi-clipboard-account::before, html /deep/ .mdi-clipboard-account::before {
+  content: "\f1ea"; }
+html .mdi-clipboard-alert::before, html /deep/ .mdi-clipboard-alert::before {
+  content: "\f1eb"; }
+html .mdi-clipboard-arrow-down::before, html /deep/ .mdi-clipboard-arrow-down::before {
+  content: "\f1ec"; }
+html .mdi-clipboard-arrow-left::before, html /deep/ .mdi-clipboard-arrow-left::before {
+  content: "\f1ed"; }
+html .mdi-clipboard-check::before, html /deep/ .mdi-clipboard-check::before {
+  content: "\f1ee"; }
+html .mdi-clipboard-outline::before, html /deep/ .mdi-clipboard-outline::before {
+  content: "\f1ef"; }
+html .mdi-clipboard-text::before, html /deep/ .mdi-clipboard-text::before {
+  content: "\f1f0"; }
+html .mdi-clippy::before, html /deep/ .mdi-clippy::before {
+  content: "\f1f1"; }
+html .mdi-clock::before, html /deep/ .mdi-clock::before {
+  content: "\f1f2"; }
+html .mdi-clock-fast::before, html /deep/ .mdi-clock-fast::before {
+  content: "\f1f3"; }
+html .mdi-close::before, html /deep/ .mdi-close::before {
+  content: "\f1f4"; }
+html .mdi-close-box::before, html /deep/ .mdi-close-box::before {
+  content: "\f1f5"; }
+html .mdi-close-box-outline::before, html /deep/ .mdi-close-box-outline::before {
+  content: "\f1f6"; }
+html .mdi-close-circle::before, html /deep/ .mdi-close-circle::before {
+  content: "\f1f7"; }
+html .mdi-close-circle-outline::before, html /deep/ .mdi-close-circle-outline::before {
+  content: "\f1f8"; }
+html .mdi-close-network::before, html /deep/ .mdi-close-network::before {
+  content: "\f1f9"; }
+html .mdi-closed-caption::before, html /deep/ .mdi-closed-caption::before {
+  content: "\f1fa"; }
+html .mdi-cloud::before, html /deep/ .mdi-cloud::before {
+  content: "\f1fb"; }
+html .mdi-cloud-check::before, html /deep/ .mdi-cloud-check::before {
+  content: "\f1fc"; }
+html .mdi-cloud-circle::before, html /deep/ .mdi-cloud-circle::before {
+  content: "\f1fd"; }
+html .mdi-cloud-download::before, html /deep/ .mdi-cloud-download::before {
+  content: "\f1fe"; }
+html .mdi-cloud-outline::before, html /deep/ .mdi-cloud-outline::before {
+  content: "\f1ff"; }
+html .mdi-cloud-outline-off::before, html /deep/ .mdi-cloud-outline-off::before {
+  content: "\f200"; }
+html .mdi-cloud-upload::before, html /deep/ .mdi-cloud-upload::before {
+  content: "\f201"; }
+html .mdi-code-array::before, html /deep/ .mdi-code-array::before {
+  content: "\f202"; }
+html .mdi-code-string::before, html /deep/ .mdi-code-string::before {
+  content: "\f203"; }
+html .mdi-coffee::before, html /deep/ .mdi-coffee::before {
+  content: "\f204"; }
+html .mdi-coffee-to-go::before, html /deep/ .mdi-coffee-to-go::before {
+  content: "\f205"; }
+html .mdi-coin::before, html /deep/ .mdi-coin::before {
+  content: "\f206"; }
+html .mdi-color-helper::before, html /deep/ .mdi-color-helper::before {
+  content: "\f207"; }
+html .mdi-comment::before, html /deep/ .mdi-comment::before {
+  content: "\f208"; }
+html .mdi-comment-account::before, html /deep/ .mdi-comment-account::before {
+  content: "\f209"; }
+html .mdi-comment-account-outline::before, html /deep/ .mdi-comment-account-outline::before {
+  content: "\f20a"; }
+html .mdi-comment-alert::before, html /deep/ .mdi-comment-alert::before {
+  content: "\f20b"; }
+html .mdi-comment-alert-outline::before, html /deep/ .mdi-comment-alert-outline::before {
+  content: "\f20c"; }
+html .mdi-comment-check::before, html /deep/ .mdi-comment-check::before {
+  content: "\f20d"; }
+html .mdi-comment-check-outline::before, html /deep/ .mdi-comment-check-outline::before {
+  content: "\f20e"; }
+html .mdi-comment-multipe-outline::before, html /deep/ .mdi-comment-multipe-outline::before {
+  content: "\f20f"; }
+html .mdi-comment-outline::before, html /deep/ .mdi-comment-outline::before {
+  content: "\f210"; }
+html .mdi-comment-plus-outline::before, html /deep/ .mdi-comment-plus-outline::before {
+  content: "\f211"; }
+html .mdi-comment-processing::before, html /deep/ .mdi-comment-processing::before {
+  content: "\f212"; }
+html .mdi-comment-processing-outline::before, html /deep/ .mdi-comment-processing-outline::before {
+  content: "\f213"; }
+html .mdi-comment-remove-outline::before, html /deep/ .mdi-comment-remove-outline::before {
+  content: "\f214"; }
+html .mdi-comment-text::before, html /deep/ .mdi-comment-text::before {
+  content: "\f215"; }
+html .mdi-comment-text-outline::before, html /deep/ .mdi-comment-text-outline::before {
+  content: "\f216"; }
+html .mdi-compare::before, html /deep/ .mdi-compare::before {
+  content: "\f217"; }
+html .mdi-compass::before, html /deep/ .mdi-compass::before {
+  content: "\f218"; }
+html .mdi-compass-outline::before, html /deep/ .mdi-compass-outline::before {
+  content: "\f219"; }
+html .mdi-console::before, html /deep/ .mdi-console::before {
+  content: "\f21a"; }
+html .mdi-content-copy::before, html /deep/ .mdi-content-copy::before {
+  content: "\f21b"; }
+html .mdi-content-cut::before, html /deep/ .mdi-content-cut::before {
+  content: "\f21c"; }
+html .mdi-content-paste::before, html /deep/ .mdi-content-paste::before {
+  content: "\f21d"; }
+html .mdi-content-save::before, html /deep/ .mdi-content-save::before {
+  content: "\f21e"; }
+html .mdi-content-save-all::before, html /deep/ .mdi-content-save-all::before {
+  content: "\f21f"; }
+html .mdi-contrast::before, html /deep/ .mdi-contrast::before {
+  content: "\f220"; }
+html .mdi-contrast-box::before, html /deep/ .mdi-contrast-box::before {
+  content: "\f221"; }
+html .mdi-contrast-circle::before, html /deep/ .mdi-contrast-circle::before {
+  content: "\f222"; }
+html .mdi-cow::before, html /deep/ .mdi-cow::before {
+  content: "\f223"; }
+html .mdi-credit-card::before, html /deep/ .mdi-credit-card::before {
+  content: "\f224"; }
+html .mdi-crop::before, html /deep/ .mdi-crop::before {
+  content: "\f225"; }
+html .mdi-crop-free::before, html /deep/ .mdi-crop-free::before {
+  content: "\f226"; }
+html .mdi-crop-landscape::before, html /deep/ .mdi-crop-landscape::before {
+  content: "\f227"; }
+html .mdi-crop-portrait::before, html /deep/ .mdi-crop-portrait::before {
+  content: "\f228"; }
+html .mdi-crop-square::before, html /deep/ .mdi-crop-square::before {
+  content: "\f229"; }
+html .mdi-crosshairs::before, html /deep/ .mdi-crosshairs::before {
+  content: "\f22a"; }
+html .mdi-crosshairs-gps::before, html /deep/ .mdi-crosshairs-gps::before {
+  content: "\f22b"; }
+html .mdi-cube::before, html /deep/ .mdi-cube::before {
+  content: "\f22c"; }
+html .mdi-cube-outline::before, html /deep/ .mdi-cube-outline::before {
+  content: "\f22d"; }
+html .mdi-cube-unfolded::before, html /deep/ .mdi-cube-unfolded::before {
+  content: "\f22e"; }
+html .mdi-cup::before, html /deep/ .mdi-cup::before {
+  content: "\f22f"; }
+html .mdi-cup-water::before, html /deep/ .mdi-cup-water::before {
+  content: "\f230"; }
+html .mdi-currency-btc::before, html /deep/ .mdi-currency-btc::before {
+  content: "\f231"; }
+html .mdi-currency-usd::before, html /deep/ .mdi-currency-usd::before {
+  content: "\f232"; }
+html .mdi-cursor-default::before, html /deep/ .mdi-cursor-default::before {
+  content: "\f233"; }
+html .mdi-cursor-default-outline::before, html /deep/ .mdi-cursor-default-outline::before {
+  content: "\f234"; }
+html .mdi-cursor-pointer::before, html /deep/ .mdi-cursor-pointer::before {
+  content: "\f235"; }
+html .mdi-database::before, html /deep/ .mdi-database::before {
+  content: "\f236"; }
+html .mdi-database-minus::before, html /deep/ .mdi-database-minus::before {
+  content: "\f237"; }
+html .mdi-database-outline::before, html /deep/ .mdi-database-outline::before {
+  content: "\f238"; }
+html .mdi-database-plus::before, html /deep/ .mdi-database-plus::before {
+  content: "\f239"; }
+html .mdi-debug-step-into::before, html /deep/ .mdi-debug-step-into::before {
+  content: "\f23a"; }
+html .mdi-debug-step-out::before, html /deep/ .mdi-debug-step-out::before {
+  content: "\f23b"; }
+html .mdi-debug-step-over::before, html /deep/ .mdi-debug-step-over::before {
+  content: "\f23c"; }
+html .mdi-delete::before, html /deep/ .mdi-delete::before {
+  content: "\f23d"; }
+html .mdi-delete-variant::before, html /deep/ .mdi-delete-variant::before {
+  content: "\f23e"; }
+html .mdi-deskphone::before, html /deep/ .mdi-deskphone::before {
+  content: "\f23f"; }
+html .mdi-desktop-mac::before, html /deep/ .mdi-desktop-mac::before {
+  content: "\f240"; }
+html .mdi-desktop-tower::before, html /deep/ .mdi-desktop-tower::before {
+  content: "\f241"; }
+html .mdi-details::before, html /deep/ .mdi-details::before {
+  content: "\f242"; }
+html .mdi-deviantart::before, html /deep/ .mdi-deviantart::before {
+  content: "\f243"; }
+html .mdi-dice::before, html /deep/ .mdi-dice::before {
+  content: "\f244"; }
+html .mdi-dice-1::before, html /deep/ .mdi-dice-1::before {
+  content: "\f245"; }
+html .mdi-dice-2::before, html /deep/ .mdi-dice-2::before {
+  content: "\f246"; }
+html .mdi-dice-3::before, html /deep/ .mdi-dice-3::before {
+  content: "\f247"; }
+html .mdi-dice-4::before, html /deep/ .mdi-dice-4::before {
+  content: "\f248"; }
+html .mdi-dice-5::before, html /deep/ .mdi-dice-5::before {
+  content: "\f249"; }
+html .mdi-dice-6::before, html /deep/ .mdi-dice-6::before {
+  content: "\f24a"; }
+html .mdi-directions::before, html /deep/ .mdi-directions::before {
+  content: "\f24b"; }
+html .mdi-disk-alert::before, html /deep/ .mdi-disk-alert::before {
+  content: "\f24c"; }
+html .mdi-disqus::before, html /deep/ .mdi-disqus::before {
+  content: "\f24d"; }
+html .mdi-disqus-outline::before, html /deep/ .mdi-disqus-outline::before {
+  content: "\f24e"; }
+html .mdi-division::before, html /deep/ .mdi-division::before {
+  content: "\f24f"; }
+html .mdi-division-box::before, html /deep/ .mdi-division-box::before {
+  content: "\f250"; }
+html .mdi-dns::before, html /deep/ .mdi-dns::before {
+  content: "\f251"; }
+html .mdi-dots-horizontal::before, html /deep/ .mdi-dots-horizontal::before {
+  content: "\f252"; }
+html .mdi-dots-vertical::before, html /deep/ .mdi-dots-vertical::before {
+  content: "\f253"; }
+html .mdi-download::before, html /deep/ .mdi-download::before {
+  content: "\f254"; }
+html .mdi-drawing::before, html /deep/ .mdi-drawing::before {
+  content: "\f255"; }
+html .mdi-drawing-box::before, html /deep/ .mdi-drawing-box::before {
+  content: "\f256"; }
+html .mdi-dribbble::before, html /deep/ .mdi-dribbble::before {
+  content: "\f257"; }
+html .mdi-dribbble-box::before, html /deep/ .mdi-dribbble-box::before {
+  content: "\f258"; }
+html .mdi-drone::before, html /deep/ .mdi-drone::before {
+  content: "\f259"; }
+html .mdi-dropbox::before, html /deep/ .mdi-dropbox::before {
+  content: "\f25a"; }
+html .mdi-duck::before, html /deep/ .mdi-duck::before {
+  content: "\f25b"; }
+html .mdi-earth::before, html /deep/ .mdi-earth::before {
+  content: "\f25c"; }
+html .mdi-earth-off::before, html /deep/ .mdi-earth-off::before {
+  content: "\f25d"; }
+html .mdi-elevation-decline::before, html /deep/ .mdi-elevation-decline::before {
+  content: "\f25e"; }
+html .mdi-elevation-rise::before, html /deep/ .mdi-elevation-rise::before {
+  content: "\f25f"; }
+html .mdi-email::before, html /deep/ .mdi-email::before {
+  content: "\f260"; }
+html .mdi-email-open::before, html /deep/ .mdi-email-open::before {
+  content: "\f261"; }
+html .mdi-email-outline::before, html /deep/ .mdi-email-outline::before {
+  content: "\f262"; }
+html .mdi-emoticon::before, html /deep/ .mdi-emoticon::before {
+  content: "\f263"; }
+html .mdi-emoticon-cool::before, html /deep/ .mdi-emoticon-cool::before {
+  content: "\f264"; }
+html .mdi-emoticon-devil::before, html /deep/ .mdi-emoticon-devil::before {
+  content: "\f265"; }
+html .mdi-emoticon-happy::before, html /deep/ .mdi-emoticon-happy::before {
+  content: "\f266"; }
+html .mdi-emoticon-neutral::before, html /deep/ .mdi-emoticon-neutral::before {
+  content: "\f267"; }
+html .mdi-emoticon-poop::before, html /deep/ .mdi-emoticon-poop::before {
+  content: "\f268"; }
+html .mdi-emoticon-sad::before, html /deep/ .mdi-emoticon-sad::before {
+  content: "\f269"; }
+html .mdi-emoticon-tongue::before, html /deep/ .mdi-emoticon-tongue::before {
+  content: "\f26a"; }
+html .mdi-equal::before, html /deep/ .mdi-equal::before {
+  content: "\f26b"; }
+html .mdi-equal-box::before, html /deep/ .mdi-equal-box::before {
+  content: "\f26c"; }
+html .mdi-eraser::before, html /deep/ .mdi-eraser::before {
+  content: "\f26d"; }
+html .mdi-escalator::before, html /deep/ .mdi-escalator::before {
+  content: "\f26e"; }
+html .mdi-etsy::before, html /deep/ .mdi-etsy::before {
+  content: "\f26f"; }
+html .mdi-evernote::before, html /deep/ .mdi-evernote::before {
+  content: "\f270"; }
+html .mdi-exit-to-app::before, html /deep/ .mdi-exit-to-app::before {
+  content: "\f271"; }
+html .mdi-eye::before, html /deep/ .mdi-eye::before {
+  content: "\f272"; }
+html .mdi-eye-off::before, html /deep/ .mdi-eye-off::before {
+  content: "\f273"; }
+html .mdi-eyedropper::before, html /deep/ .mdi-eyedropper::before {
+  content: "\f274"; }
+html .mdi-eyedropper-variant::before, html /deep/ .mdi-eyedropper-variant::before {
+  content: "\f275"; }
+html .mdi-facebook::before, html /deep/ .mdi-facebook::before {
+  content: "\f276"; }
+html .mdi-facebook-box::before, html /deep/ .mdi-facebook-box::before {
+  content: "\f277"; }
+html .mdi-facebook-messenger::before, html /deep/ .mdi-facebook-messenger::before {
+  content: "\f278"; }
+html .mdi-factory::before, html /deep/ .mdi-factory::before {
+  content: "\f279"; }
+html .mdi-fast-forward::before, html /deep/ .mdi-fast-forward::before {
+  content: "\f27a"; }
+html .mdi-ferry::before, html /deep/ .mdi-ferry::before {
+  content: "\f27b"; }
+html .mdi-file::before, html /deep/ .mdi-file::before {
+  content: "\f27c"; }
+html .mdi-file-cloud::before, html /deep/ .mdi-file-cloud::before {
+  content: "\f27d"; }
+html .mdi-file-delimited::before, html /deep/ .mdi-file-delimited::before {
+  content: "\f27e"; }
+html .mdi-file-document::before, html /deep/ .mdi-file-document::before {
+  content: "\f27f"; }
+html .mdi-file-document-box::before, html /deep/ .mdi-file-document-box::before {
+  content: "\f280"; }
+html .mdi-file-excel::before, html /deep/ .mdi-file-excel::before {
+  content: "\f281"; }
+html .mdi-file-excel-box::before, html /deep/ .mdi-file-excel-box::before {
+  content: "\f282"; }
+html .mdi-file-find::before, html /deep/ .mdi-file-find::before {
+  content: "\f283"; }
+html .mdi-file-image::before, html /deep/ .mdi-file-image::before {
+  content: "\f284"; }
+html .mdi-file-image-box::before, html /deep/ .mdi-file-image-box::before {
+  content: "\f285"; }
+html .mdi-file-music::before, html /deep/ .mdi-file-music::before {
+  content: "\f286"; }
+html .mdi-file-outline::before, html /deep/ .mdi-file-outline::before {
+  content: "\f287"; }
+html .mdi-file-pdf::before, html /deep/ .mdi-file-pdf::before {
+  content: "\f288"; }
+html .mdi-file-pdf-box::before, html /deep/ .mdi-file-pdf-box::before {
+  content: "\f289"; }
+html .mdi-file-powerpoint::before, html /deep/ .mdi-file-powerpoint::before {
+  content: "\f28a"; }
+html .mdi-file-powerpoint-box::before, html /deep/ .mdi-file-powerpoint-box::before {
+  content: "\f28b"; }
+html .mdi-file-presentation-box::before, html /deep/ .mdi-file-presentation-box::before {
+  content: "\f28c"; }
+html .mdi-file-video::before, html /deep/ .mdi-file-video::before {
+  content: "\f28d"; }
+html .mdi-file-word::before, html /deep/ .mdi-file-word::before {
+  content: "\f28e"; }
+html .mdi-file-word-box::before, html /deep/ .mdi-file-word-box::before {
+  content: "\f28f"; }
+html .mdi-film::before, html /deep/ .mdi-film::before {
+  content: "\f290"; }
+html .mdi-filmstrip::before, html /deep/ .mdi-filmstrip::before {
+  content: "\f291"; }
+html .mdi-filmstrip-off::before, html /deep/ .mdi-filmstrip-off::before {
+  content: "\f292"; }
+html .mdi-filter::before, html /deep/ .mdi-filter::before {
+  content: "\f293"; }
+html .mdi-filter-outline::before, html /deep/ .mdi-filter-outline::before {
+  content: "\f294"; }
+html .mdi-filter-remove::before, html /deep/ .mdi-filter-remove::before {
+  content: "\f295"; }
+html .mdi-filter-remove-outline::before, html /deep/ .mdi-filter-remove-outline::before {
+  content: "\f296"; }
+html .mdi-filter-variant::before, html /deep/ .mdi-filter-variant::before {
+  content: "\f297"; }
+html .mdi-fire::before, html /deep/ .mdi-fire::before {
+  content: "\f298"; }
+html .mdi-firefox::before, html /deep/ .mdi-firefox::before {
+  content: "\f299"; }
+html .mdi-fish::before, html /deep/ .mdi-fish::before {
+  content: "\f29a"; }
+html .mdi-flag::before, html /deep/ .mdi-flag::before {
+  content: "\f29b"; }
+html .mdi-flag-checkered::before, html /deep/ .mdi-flag-checkered::before {
+  content: "\f29c"; }
+html .mdi-flag-outline::before, html /deep/ .mdi-flag-outline::before {
+  content: "\f29d"; }
+html .mdi-flag-outline-variant::before, html /deep/ .mdi-flag-outline-variant::before {
+  content: "\f29e"; }
+html .mdi-flag-variant::before, html /deep/ .mdi-flag-variant::before {
+  content: "\f29f"; }
+html .mdi-flash::before, html /deep/ .mdi-flash::before {
+  content: "\f2a0"; }
+html .mdi-flash-auto::before, html /deep/ .mdi-flash-auto::before {
+  content: "\f2a1"; }
+html .mdi-flash-off::before, html /deep/ .mdi-flash-off::before {
+  content: "\f2a2"; }
+html .mdi-flashlight::before, html /deep/ .mdi-flashlight::before {
+  content: "\f2a3"; }
+html .mdi-flashlight-off::before, html /deep/ .mdi-flashlight-off::before {
+  content: "\f2a4"; }
+html .mdi-flip-to-back::before, html /deep/ .mdi-flip-to-back::before {
+  content: "\f2a5"; }
+html .mdi-flip-to-front::before, html /deep/ .mdi-flip-to-front::before {
+  content: "\f2a6"; }
+html .mdi-floppy::before, html /deep/ .mdi-floppy::before {
+  content: "\f2a7"; }
+html .mdi-flower::before, html /deep/ .mdi-flower::before {
+  content: "\f2a8"; }
+html .mdi-folder::before, html /deep/ .mdi-folder::before {
+  content: "\f2a9"; }
+html .mdi-folder-account::before, html /deep/ .mdi-folder-account::before {
+  content: "\f2aa"; }
+html .mdi-folder-google-drive::before, html /deep/ .mdi-folder-google-drive::before {
+  content: "\f2ab"; }
+html .mdi-folder-image::before, html /deep/ .mdi-folder-image::before {
+  content: "\f2ac"; }
+html .mdi-folder-move::before, html /deep/ .mdi-folder-move::before {
+  content: "\f2ad"; }
+html .mdi-folder-multiple::before, html /deep/ .mdi-folder-multiple::before {
+  content: "\f2ae"; }
+html .mdi-folder-multiple-image::before, html /deep/ .mdi-folder-multiple-image::before {
+  content: "\f2af"; }
+html .mdi-folder-multiple-outline::before, html /deep/ .mdi-folder-multiple-outline::before {
+  content: "\f2b0"; }
+html .mdi-folder-outline::before, html /deep/ .mdi-folder-outline::before {
+  content: "\f2b1"; }
+html .mdi-folder-plus::before, html /deep/ .mdi-folder-plus::before {
+  content: "\f2b2"; }
+html .mdi-folder-remove::before, html /deep/ .mdi-folder-remove::before {
+  content: "\f2b3"; }
+html .mdi-food::before, html /deep/ .mdi-food::before {
+  content: "\f2b4"; }
+html .mdi-food-apple::before, html /deep/ .mdi-food-apple::before {
+  content: "\f2b5"; }
+html .mdi-food-variant::before, html /deep/ .mdi-food-variant::before {
+  content: "\f2b6"; }
+html .mdi-format-align-center::before, html /deep/ .mdi-format-align-center::before {
+  content: "\f2b7"; }
+html .mdi-format-align-justify::before, html /deep/ .mdi-format-align-justify::before {
+  content: "\f2b8"; }
+html .mdi-format-align-left::before, html /deep/ .mdi-format-align-left::before {
+  content: "\f2b9"; }
+html .mdi-format-align-right::before, html /deep/ .mdi-format-align-right::before {
+  content: "\f2ba"; }
+html .mdi-format-bold::before, html /deep/ .mdi-format-bold::before {
+  content: "\f2bb"; }
+html .mdi-format-clear::before, html /deep/ .mdi-format-clear::before {
+  content: "\f2bc"; }
+html .mdi-format-color-fill::before, html /deep/ .mdi-format-color-fill::before {
+  content: "\f2bd"; }
+html .mdi-format-header-1::before, html /deep/ .mdi-format-header-1::before {
+  content: "\f2be"; }
+html .mdi-format-header-2::before, html /deep/ .mdi-format-header-2::before {
+  content: "\f2bf"; }
+html .mdi-format-header-3::before, html /deep/ .mdi-format-header-3::before {
+  content: "\f2c0"; }
+html .mdi-format-header-4::before, html /deep/ .mdi-format-header-4::before {
+  content: "\f2c1"; }
+html .mdi-format-header-5::before, html /deep/ .mdi-format-header-5::before {
+  content: "\f2c2"; }
+html .mdi-format-header-6::before, html /deep/ .mdi-format-header-6::before {
+  content: "\f2c3"; }
+html .mdi-format-header-pound::before, html /deep/ .mdi-format-header-pound::before {
+  content: "\f2c4"; }
+html .mdi-format-indent-decrease::before, html /deep/ .mdi-format-indent-decrease::before {
+  content: "\f2c5"; }
+html .mdi-format-indent-increase::before, html /deep/ .mdi-format-indent-increase::before {
+  content: "\f2c6"; }
+html .mdi-format-italic::before, html /deep/ .mdi-format-italic::before {
+  content: "\f2c7"; }
+html .mdi-format-line-spacing::before, html /deep/ .mdi-format-line-spacing::before {
+  content: "\f2c8"; }
+html .mdi-format-list-bulleted::before, html /deep/ .mdi-format-list-bulleted::before {
+  content: "\f2c9"; }
+html .mdi-format-list-numbers::before, html /deep/ .mdi-format-list-numbers::before {
+  content: "\f2ca"; }
+html .mdi-format-paint::before, html /deep/ .mdi-format-paint::before {
+  content: "\f2cb"; }
+html .mdi-format-paragraph::before, html /deep/ .mdi-format-paragraph::before {
+  content: "\f2cc"; }
+html .mdi-format-quote::before, html /deep/ .mdi-format-quote::before {
+  content: "\f2cd"; }
+html .mdi-format-size::before, html /deep/ .mdi-format-size::before {
+  content: "\f2ce"; }
+html .mdi-format-strikethrough::before, html /deep/ .mdi-format-strikethrough::before {
+  content: "\f2cf"; }
+html .mdi-format-subscript::before, html /deep/ .mdi-format-subscript::before {
+  content: "\f2d0"; }
+html .mdi-format-superscript::before, html /deep/ .mdi-format-superscript::before {
+  content: "\f2d1"; }
+html .mdi-format-textdirection-l-to-r::before, html /deep/ .mdi-format-textdirection-l-to-r::before {
+  content: "\f2d2"; }
+html .mdi-format-textdirection-r-to-l::before, html /deep/ .mdi-format-textdirection-r-to-l::before {
+  content: "\f2d3"; }
+html .mdi-format-underline::before, html /deep/ .mdi-format-underline::before {
+  content: "\f2d4"; }
+html .mdi-forum::before, html /deep/ .mdi-forum::before {
+  content: "\f2d5"; }
+html .mdi-forward::before, html /deep/ .mdi-forward::before {
+  content: "\f2d6"; }
+html .mdi-foursquare::before, html /deep/ .mdi-foursquare::before {
+  content: "\f2d7"; }
+html .mdi-fullscreen::before, html /deep/ .mdi-fullscreen::before {
+  content: "\f2d8"; }
+html .mdi-fullscreen-exit::before, html /deep/ .mdi-fullscreen-exit::before {
+  content: "\f2d9"; }
+html .mdi-gamepad::before, html /deep/ .mdi-gamepad::before {
+  content: "\f2da"; }
+html .mdi-gamepad-variant::before, html /deep/ .mdi-gamepad-variant::before {
+  content: "\f2db"; }
+html .mdi-gas-station::before, html /deep/ .mdi-gas-station::before {
+  content: "\f2dc"; }
+html .mdi-gavel::before, html /deep/ .mdi-gavel::before {
+  content: "\f2dd"; }
+html .mdi-gender-female::before, html /deep/ .mdi-gender-female::before {
+  content: "\f2de"; }
+html .mdi-gender-male::before, html /deep/ .mdi-gender-male::before {
+  content: "\f2df"; }
+html .mdi-gender-transgender::before, html /deep/ .mdi-gender-transgender::before {
+  content: "\f2e0"; }
+html .mdi-gift::before, html /deep/ .mdi-gift::before {
+  content: "\f2e1"; }
+html .mdi-github-box::before, html /deep/ .mdi-github-box::before {
+  content: "\f2e2"; }
+html .mdi-github-circle::before, html /deep/ .mdi-github-circle::before {
+  content: "\f2e3"; }
+html .mdi-gmail::before, html /deep/ .mdi-gmail::before {
+  content: "\f2e4"; }
+html .mdi-google::before, html /deep/ .mdi-google::before {
+  content: "\f2e5"; }
+html .mdi-google-chrome::before, html /deep/ .mdi-google-chrome::before {
+  content: "\f2e6"; }
+html .mdi-google-circles::before, html /deep/ .mdi-google-circles::before {
+  content: "\f2e7"; }
+html .mdi-google-circles-communities::before, html /deep/ .mdi-google-circles-communities::before {
+  content: "\f2e8"; }
+html .mdi-google-circles-extended::before, html /deep/ .mdi-google-circles-extended::before {
+  content: "\f2e9"; }
+html .mdi-google-circles-group::before, html /deep/ .mdi-google-circles-group::before {
+  content: "\f2ea"; }
+html .mdi-google-drive::before, html /deep/ .mdi-google-drive::before {
+  content: "\f2eb"; }
+html .mdi-google-earth::before, html /deep/ .mdi-google-earth::before {
+  content: "\f2ec"; }
+html .mdi-google-glass::before, html /deep/ .mdi-google-glass::before {
+  content: "\f2ed"; }
+html .mdi-google-maps::before, html /deep/ .mdi-google-maps::before {
+  content: "\f2ee"; }
+html .mdi-google-pages::before, html /deep/ .mdi-google-pages::before {
+  content: "\f2ef"; }
+html .mdi-google-play::before, html /deep/ .mdi-google-play::before {
+  content: "\f2f0"; }
+html .mdi-google-plus::before, html /deep/ .mdi-google-plus::before {
+  content: "\f2f1"; }
+html .mdi-google-plus-box::before, html /deep/ .mdi-google-plus-box::before {
+  content: "\f2f2"; }
+html .mdi-guitar-pick::before, html /deep/ .mdi-guitar-pick::before {
+  content: "\f2f3"; }
+html .mdi-guitar-pick-outline::before, html /deep/ .mdi-guitar-pick-outline::before {
+  content: "\f2f4"; }
+html .mdi-hand-pointing-right::before, html /deep/ .mdi-hand-pointing-right::before {
+  content: "\f2f5"; }
+html .mdi-hanger::before, html /deep/ .mdi-hanger::before {
+  content: "\f2f6"; }
+html .mdi-hangouts::before, html /deep/ .mdi-hangouts::before {
+  content: "\f2f7"; }
+html .mdi-harddisk::before, html /deep/ .mdi-harddisk::before {
+  content: "\f2f8"; }
+html .mdi-headphones::before, html /deep/ .mdi-headphones::before {
+  content: "\f2f9"; }
+html .mdi-headphones-box::before, html /deep/ .mdi-headphones-box::before {
+  content: "\f2fa"; }
+html .mdi-headphones-settings::before, html /deep/ .mdi-headphones-settings::before {
+  content: "\f2fb"; }
+html .mdi-headset::before, html /deep/ .mdi-headset::before {
+  content: "\f2fc"; }
+html .mdi-headset-dock::before, html /deep/ .mdi-headset-dock::before {
+  content: "\f2fd"; }
+html .mdi-heart::before, html /deep/ .mdi-heart::before {
+  content: "\f2fe"; }
+html .mdi-heart-box::before, html /deep/ .mdi-heart-box::before {
+  content: "\f2ff"; }
+html .mdi-heart-box-outline::before, html /deep/ .mdi-heart-box-outline::before {
+  content: "\f300"; }
+html .mdi-heart-outline::before, html /deep/ .mdi-heart-outline::before {
+  content: "\f301"; }
+html .mdi-help::before, html /deep/ .mdi-help::before {
+  content: "\f302"; }
+html .mdi-help-circle::before, html /deep/ .mdi-help-circle::before {
+  content: "\f303"; }
+html .mdi-hexagon::before, html /deep/ .mdi-hexagon::before {
+  content: "\f304"; }
+html .mdi-hexagon-outline::before, html /deep/ .mdi-hexagon-outline::before {
+  content: "\f305"; }
+html .mdi-history::before, html /deep/ .mdi-history::before {
+  content: "\f306"; }
+html .mdi-home::before, html /deep/ .mdi-home::before {
+  content: "\f307"; }
+html .mdi-home-modern::before, html /deep/ .mdi-home-modern::before {
+  content: "\f308"; }
+html .mdi-home-variant::before, html /deep/ .mdi-home-variant::before {
+  content: "\f309"; }
+html .mdi-hospital::before, html /deep/ .mdi-hospital::before {
+  content: "\f30a"; }
+html .mdi-hospital-building::before, html /deep/ .mdi-hospital-building::before {
+  content: "\f30b"; }
+html .mdi-hospital-marker::before, html /deep/ .mdi-hospital-marker::before {
+  content: "\f30c"; }
+html .mdi-hotel::before, html /deep/ .mdi-hotel::before {
+  content: "\f30d"; }
+html .mdi-houzz::before, html /deep/ .mdi-houzz::before {
+  content: "\f30e"; }
+html .mdi-houzz-box::before, html /deep/ .mdi-houzz-box::before {
+  content: "\f30f"; }
+html .mdi-human::before, html /deep/ .mdi-human::before {
+  content: "\f310"; }
+html .mdi-human-child::before, html /deep/ .mdi-human-child::before {
+  content: "\f311"; }
+html .mdi-human-male-female::before, html /deep/ .mdi-human-male-female::before {
+  content: "\f312"; }
+html .mdi-image-album::before, html /deep/ .mdi-image-album::before {
+  content: "\f313"; }
+html .mdi-image-area::before, html /deep/ .mdi-image-area::before {
+  content: "\f314"; }
+html .mdi-image-area-close::before, html /deep/ .mdi-image-area-close::before {
+  content: "\f315"; }
+html .mdi-image-filter::before, html /deep/ .mdi-image-filter::before {
+  content: "\f316"; }
+html .mdi-image-filter-black-white::before, html /deep/ .mdi-image-filter-black-white::before {
+  content: "\f317"; }
+html .mdi-image-filter-center-focus::before, html /deep/ .mdi-image-filter-center-focus::before {
+  content: "\f318"; }
+html .mdi-image-filter-drama::before, html /deep/ .mdi-image-filter-drama::before {
+  content: "\f319"; }
+html .mdi-image-filter-frames::before, html /deep/ .mdi-image-filter-frames::before {
+  content: "\f31a"; }
+html .mdi-image-filter-hdr::before, html /deep/ .mdi-image-filter-hdr::before {
+  content: "\f31b"; }
+html .mdi-image-filter-none::before, html /deep/ .mdi-image-filter-none::before {
+  content: "\f31c"; }
+html .mdi-image-filter-tilt-shift::before, html /deep/ .mdi-image-filter-tilt-shift::before {
+  content: "\f31d"; }
+html .mdi-image-filter-vintage::before, html /deep/ .mdi-image-filter-vintage::before {
+  content: "\f31e"; }
+html .mdi-information::before, html /deep/ .mdi-information::before {
+  content: "\f31f"; }
+html .mdi-information-outline::before, html /deep/ .mdi-information-outline::before {
+  content: "\f320"; }
+html .mdi-instagram::before, html /deep/ .mdi-instagram::before {
+  content: "\f321"; }
+html .mdi-instapaper::before, html /deep/ .mdi-instapaper::before {
+  content: "\f322"; }
+html .mdi-internet-explorer::before, html /deep/ .mdi-internet-explorer::before {
+  content: "\f323"; }
+html .mdi-invert-colors::before, html /deep/ .mdi-invert-colors::before {
+  content: "\f324"; }
+html .mdi-key::before, html /deep/ .mdi-key::before {
+  content: "\f325"; }
+html .mdi-key-change::before, html /deep/ .mdi-key-change::before {
+  content: "\f326"; }
+html .mdi-key-minus::before, html /deep/ .mdi-key-minus::before {
+  content: "\f327"; }
+html .mdi-key-plus::before, html /deep/ .mdi-key-plus::before {
+  content: "\f328"; }
+html .mdi-key-remove::before, html /deep/ .mdi-key-remove::before {
+  content: "\f329"; }
+html .mdi-key-variant::before, html /deep/ .mdi-key-variant::before {
+  content: "\f32a"; }
+html .mdi-keyboard::before, html /deep/ .mdi-keyboard::before {
+  content: "\f32b"; }
+html .mdi-keyboard-backspace::before, html /deep/ .mdi-keyboard-backspace::before {
+  content: "\f32c"; }
+html .mdi-keyboard-caps::before, html /deep/ .mdi-keyboard-caps::before {
+  content: "\f32d"; }
+html .mdi-keyboard-close::before, html /deep/ .mdi-keyboard-close::before {
+  content: "\f32e"; }
+html .mdi-keyboard-off::before, html /deep/ .mdi-keyboard-off::before {
+  content: "\f32f"; }
+html .mdi-keyboard-return::before, html /deep/ .mdi-keyboard-return::before {
+  content: "\f330"; }
+html .mdi-keyboard-tab::before, html /deep/ .mdi-keyboard-tab::before {
+  content: "\f331"; }
+html .mdi-label::before, html /deep/ .mdi-label::before {
+  content: "\f332"; }
+html .mdi-label-outline::before, html /deep/ .mdi-label-outline::before {
+  content: "\f333"; }
+html .mdi-laptop::before, html /deep/ .mdi-laptop::before {
+  content: "\f334"; }
+html .mdi-laptop-chromebook::before, html /deep/ .mdi-laptop-chromebook::before {
+  content: "\f335"; }
+html .mdi-laptop-mac::before, html /deep/ .mdi-laptop-mac::before {
+  content: "\f336"; }
+html .mdi-laptop-windows::before, html /deep/ .mdi-laptop-windows::before {
+  content: "\f337"; }
+html .mdi-lastfm::before, html /deep/ .mdi-lastfm::before {
+  content: "\f338"; }
+html .mdi-launch::before, html /deep/ .mdi-launch::before {
+  content: "\f339"; }
+html .mdi-layers::before, html /deep/ .mdi-layers::before {
+  content: "\f33a"; }
+html .mdi-layers-off::before, html /deep/ .mdi-layers-off::before {
+  content: "\f33b"; }
+html .mdi-leaf::before, html /deep/ .mdi-leaf::before {
+  content: "\f33c"; }
+html .mdi-library::before, html /deep/ .mdi-library::before {
+  content: "\f33d"; }
+html .mdi-library-books::before, html /deep/ .mdi-library-books::before {
+  content: "\f33e"; }
+html .mdi-library-music::before, html /deep/ .mdi-library-music::before {
+  content: "\f33f"; }
+html .mdi-library-plus::before, html /deep/ .mdi-library-plus::before {
+  content: "\f340"; }
+html .mdi-lightbulb::before, html /deep/ .mdi-lightbulb::before {
+  content: "\f341"; }
+html .mdi-link::before, html /deep/ .mdi-link::before {
+  content: "\f342"; }
+html .mdi-linkedin::before, html /deep/ .mdi-linkedin::before {
+  content: "\f343"; }
+html .mdi-linux::before, html /deep/ .mdi-linux::before {
+  content: "\f344"; }
+html .mdi-lock::before, html /deep/ .mdi-lock::before {
+  content: "\f345"; }
+html .mdi-lock-open::before, html /deep/ .mdi-lock-open::before {
+  content: "\f346"; }
+html .mdi-lock-open-outline::before, html /deep/ .mdi-lock-open-outline::before {
+  content: "\f347"; }
+html .mdi-lock-outline::before, html /deep/ .mdi-lock-outline::before {
+  content: "\f348"; }
+html .mdi-login::before, html /deep/ .mdi-login::before {
+  content: "\f349"; }
+html .mdi-logout::before, html /deep/ .mdi-logout::before {
+  content: "\f34a"; }
+html .mdi-looks::before, html /deep/ .mdi-looks::before {
+  content: "\f34b"; }
+html .mdi-loupe::before, html /deep/ .mdi-loupe::before {
+  content: "\f34c"; }
+html .mdi-lumx::before, html /deep/ .mdi-lumx::before {
+  content: "\f34d"; }
+html .mdi-magnify::before, html /deep/ .mdi-magnify::before {
+  content: "\f34e"; }
+html .mdi-magnify-minus::before, html /deep/ .mdi-magnify-minus::before {
+  content: "\f34f"; }
+html .mdi-magnify-plus::before, html /deep/ .mdi-magnify-plus::before {
+  content: "\f350"; }
+html .mdi-map::before, html /deep/ .mdi-map::before {
+  content: "\f351"; }
+html .mdi-map-marker::before, html /deep/ .mdi-map-marker::before {
+  content: "\f352"; }
+html .mdi-map-marker-circle::before, html /deep/ .mdi-map-marker-circle::before {
+  content: "\f353"; }
+html .mdi-map-marker-multiple::before, html /deep/ .mdi-map-marker-multiple::before {
+  content: "\f354"; }
+html .mdi-map-marker-off::before, html /deep/ .mdi-map-marker-off::before {
+  content: "\f355"; }
+html .mdi-map-marker-radius::before, html /deep/ .mdi-map-marker-radius::before {
+  content: "\f356"; }
+html .mdi-markdown::before, html /deep/ .mdi-markdown::before {
+  content: "\f357"; }
+html .mdi-marker-check::before, html /deep/ .mdi-marker-check::before {
+  content: "\f358"; }
+html .mdi-martini::before, html /deep/ .mdi-martini::before {
+  content: "\f359"; }
+html .mdi-material-ui::before, html /deep/ .mdi-material-ui::before {
+  content: "\f35a"; }
+html .mdi-math-compass::before, html /deep/ .mdi-math-compass::before {
+  content: "\f35b"; }
+html .mdi-memory::before, html /deep/ .mdi-memory::before {
+  content: "\f35c"; }
+html .mdi-menu::before, html /deep/ .mdi-menu::before {
+  content: "\f35d"; }
+html .mdi-menu-down::before, html /deep/ .mdi-menu-down::before {
+  content: "\f35e"; }
+html .mdi-menu-left::before, html /deep/ .mdi-menu-left::before {
+  content: "\f35f"; }
+html .mdi-menu-right::before, html /deep/ .mdi-menu-right::before {
+  content: "\f360"; }
+html .mdi-menu-up::before, html /deep/ .mdi-menu-up::before {
+  content: "\f361"; }
+html .mdi-message::before, html /deep/ .mdi-message::before {
+  content: "\f362"; }
+html .mdi-message-alert::before, html /deep/ .mdi-message-alert::before {
+  content: "\f363"; }
+html .mdi-message-draw::before, html /deep/ .mdi-message-draw::before {
+  content: "\f364"; }
+html .mdi-message-image::before, html /deep/ .mdi-message-image::before {
+  content: "\f365"; }
+html .mdi-message-processing::before, html /deep/ .mdi-message-processing::before {
+  content: "\f366"; }
+html .mdi-message-reply::before, html /deep/ .mdi-message-reply::before {
+  content: "\f367"; }
+html .mdi-message-video::before, html /deep/ .mdi-message-video::before {
+  content: "\f368"; }
+html .mdi-microphone::before, html /deep/ .mdi-microphone::before {
+  content: "\f369"; }
+html .mdi-microphone-off::before, html /deep/ .mdi-microphone-off::before {
+  content: "\f36a"; }
+html .mdi-microphone-outline::before, html /deep/ .mdi-microphone-outline::before {
+  content: "\f36b"; }
+html .mdi-microphone-settings::before, html /deep/ .mdi-microphone-settings::before {
+  content: "\f36c"; }
+html .mdi-microphone-variant::before, html /deep/ .mdi-microphone-variant::before {
+  content: "\f36d"; }
+html .mdi-microphone-variant-off::before, html /deep/ .mdi-microphone-variant-off::before {
+  content: "\f36e"; }
+html .mdi-minus::before, html /deep/ .mdi-minus::before {
+  content: "\f36f"; }
+html .mdi-minus-box::before, html /deep/ .mdi-minus-box::before {
+  content: "\f370"; }
+html .mdi-minus-circle::before, html /deep/ .mdi-minus-circle::before {
+  content: "\f371"; }
+html .mdi-minus-circle-outline::before, html /deep/ .mdi-minus-circle-outline::before {
+  content: "\f372"; }
+html .mdi-minus-network::before, html /deep/ .mdi-minus-network::before {
+  content: "\f373"; }
+html .mdi-monitor::before, html /deep/ .mdi-monitor::before {
+  content: "\f374"; }
+html .mdi-monitor-multiple::before, html /deep/ .mdi-monitor-multiple::before {
+  content: "\f375"; }
+html .mdi-more::before, html /deep/ .mdi-more::before {
+  content: "\f376"; }
+html .mdi-motorbike::before, html /deep/ .mdi-motorbike::before {
+  content: "\f377"; }
+html .mdi-mouse::before, html /deep/ .mdi-mouse::before {
+  content: "\f378"; }
+html .mdi-mouse-off::before, html /deep/ .mdi-mouse-off::before {
+  content: "\f379"; }
+html .mdi-mouse-variant::before, html /deep/ .mdi-mouse-variant::before {
+  content: "\f37a"; }
+html .mdi-mouse-variant-off::before, html /deep/ .mdi-mouse-variant-off::before {
+  content: "\f37b"; }
+html .mdi-movie::before, html /deep/ .mdi-movie::before {
+  content: "\f37c"; }
+html .mdi-multiplication::before, html /deep/ .mdi-multiplication::before {
+  content: "\f37d"; }
+html .mdi-multiplication-box::before, html /deep/ .mdi-multiplication-box::before {
+  content: "\f37e"; }
+html .mdi-music-box::before, html /deep/ .mdi-music-box::before {
+  content: "\f37f"; }
+html .mdi-music-box-outline::before, html /deep/ .mdi-music-box-outline::before {
+  content: "\f380"; }
+html .mdi-nature::before, html /deep/ .mdi-nature::before {
+  content: "\f381"; }
+html .mdi-nature-people::before, html /deep/ .mdi-nature-people::before {
+  content: "\f382"; }
+html .mdi-navigation::before, html /deep/ .mdi-navigation::before {
+  content: "\f383"; }
+html .mdi-needle::before, html /deep/ .mdi-needle::before {
+  content: "\f384"; }
+html .mdi-nest-protect::before, html /deep/ .mdi-nest-protect::before {
+  content: "\f385"; }
+html .mdi-nest-thermostat::before, html /deep/ .mdi-nest-thermostat::before {
+  content: "\f386"; }
+html .mdi-newspaper::before, html /deep/ .mdi-newspaper::before {
+  content: "\f387"; }
+html .mdi-nfc::before, html /deep/ .mdi-nfc::before {
+  content: "\f388"; }
+html .mdi-nfc-tap::before, html /deep/ .mdi-nfc-tap::before {
+  content: "\f389"; }
+html .mdi-nfc-variant::before, html /deep/ .mdi-nfc-variant::before {
+  content: "\f38a"; }
+html .mdi-numeric::before, html /deep/ .mdi-numeric::before {
+  content: "\f38b"; }
+html .mdi-numeric-0-box::before, html /deep/ .mdi-numeric-0-box::before {
+  content: "\f38c"; }
+html .mdi-numeric-0-box-multiple-outline::before, html /deep/ .mdi-numeric-0-box-multiple-outline::before {
+  content: "\f38d"; }
+html .mdi-numeric-0-box-outline::before, html /deep/ .mdi-numeric-0-box-outline::before {
+  content: "\f38e"; }
+html .mdi-numeric-1-box::before, html /deep/ .mdi-numeric-1-box::before {
+  content: "\f38f"; }
+html .mdi-numeric-1-box-multiple-outline::before, html /deep/ .mdi-numeric-1-box-multiple-outline::before {
+  content: "\f390"; }
+html .mdi-numeric-1-box-outline::before, html /deep/ .mdi-numeric-1-box-outline::before {
+  content: "\f391"; }
+html .mdi-numeric-2-box::before, html /deep/ .mdi-numeric-2-box::before {
+  content: "\f392"; }
+html .mdi-numeric-2-box-multiple-outline::before, html /deep/ .mdi-numeric-2-box-multiple-outline::before {
+  content: "\f393"; }
+html .mdi-numeric-2-box-outline::before, html /deep/ .mdi-numeric-2-box-outline::before {
+  content: "\f394"; }
+html .mdi-numeric-3-box::before, html /deep/ .mdi-numeric-3-box::before {
+  content: "\f395"; }
+html .mdi-numeric-3-box-multiple-outline::before, html /deep/ .mdi-numeric-3-box-multiple-outline::before {
+  content: "\f396"; }
+html .mdi-numeric-3-box-outline::before, html /deep/ .mdi-numeric-3-box-outline::before {
+  content: "\f397"; }
+html .mdi-numeric-4-box::before, html /deep/ .mdi-numeric-4-box::before {
+  content: "\f398"; }
+html .mdi-numeric-4-box-multiple-outline::before, html /deep/ .mdi-numeric-4-box-multiple-outline::before {
+  content: "\f399"; }
+html .mdi-numeric-4-box-outline::before, html /deep/ .mdi-numeric-4-box-outline::before {
+  content: "\f39a"; }
+html .mdi-numeric-5-box::before, html /deep/ .mdi-numeric-5-box::before {
+  content: "\f39b"; }
+html .mdi-numeric-5-box-multiple-outline::before, html /deep/ .mdi-numeric-5-box-multiple-outline::before {
+  content: "\f39c"; }
+html .mdi-numeric-5-box-outline::before, html /deep/ .mdi-numeric-5-box-outline::before {
+  content: "\f39d"; }
+html .mdi-numeric-6-box::before, html /deep/ .mdi-numeric-6-box::before {
+  content: "\f39e"; }
+html .mdi-numeric-6-box-multiple-outline::before, html /deep/ .mdi-numeric-6-box-multiple-outline::before {
+  content: "\f39f"; }
+html .mdi-numeric-6-box-outline::before, html /deep/ .mdi-numeric-6-box-outline::before {
+  content: "\f3a0"; }
+html .mdi-numeric-7-box::before, html /deep/ .mdi-numeric-7-box::before {
+  content: "\f3a1"; }
+html .mdi-numeric-7-box-multiple-outline::before, html /deep/ .mdi-numeric-7-box-multiple-outline::before {
+  content: "\f3a2"; }
+html .mdi-numeric-7-box-outline::before, html /deep/ .mdi-numeric-7-box-outline::before {
+  content: "\f3a3"; }
+html .mdi-numeric-8-box::before, html /deep/ .mdi-numeric-8-box::before {
+  content: "\f3a4"; }
+html .mdi-numeric-8-box-multiple-outline::before, html /deep/ .mdi-numeric-8-box-multiple-outline::before {
+  content: "\f3a5"; }
+html .mdi-numeric-8-box-outline::before, html /deep/ .mdi-numeric-8-box-outline::before {
+  content: "\f3a6"; }
+html .mdi-numeric-9-box::before, html /deep/ .mdi-numeric-9-box::before {
+  content: "\f3a7"; }
+html .mdi-numeric-9-box-multiple-outline::before, html /deep/ .mdi-numeric-9-box-multiple-outline::before {
+  content: "\f3a8"; }
+html .mdi-numeric-9-box-outline::before, html /deep/ .mdi-numeric-9-box-outline::before {
+  content: "\f3a9"; }
+html .mdi-numeric-9-plus-box::before, html /deep/ .mdi-numeric-9-plus-box::before {
+  content: "\f3aa"; }
+html .mdi-numeric-9-plus-box-multiple-outline::before, html /deep/ .mdi-numeric-9-plus-box-multiple-outline::before {
+  content: "\f3ab"; }
+html .mdi-numeric-9-plus-box-outline::before, html /deep/ .mdi-numeric-9-plus-box-outline::before {
+  content: "\f3ac"; }
+html .mdi-nutriton::before, html /deep/ .mdi-nutriton::before {
+  content: "\f3ad"; }
+html .mdi-office::before, html /deep/ .mdi-office::before {
+  content: "\f3ae"; }
+html .mdi-oil::before, html /deep/ .mdi-oil::before {
+  content: "\f3af"; }
+html .mdi-omega::before, html /deep/ .mdi-omega::before {
+  content: "\f3b0"; }
+html .mdi-onedrive::before, html /deep/ .mdi-onedrive::before {
+  content: "\f3b1"; }
+html .mdi-open-in-app::before, html /deep/ .mdi-open-in-app::before {
+  content: "\f3b2"; }
+html .mdi-ornament::before, html /deep/ .mdi-ornament::before {
+  content: "\f3b3"; }
+html .mdi-ornament-variant::before, html /deep/ .mdi-ornament-variant::before {
+  content: "\f3b4"; }
+html .mdi-package::before, html /deep/ .mdi-package::before {
+  content: "\f3b5"; }
+html .mdi-package-down::before, html /deep/ .mdi-package-down::before {
+  content: "\f3b6"; }
+html .mdi-package-up::before, html /deep/ .mdi-package-up::before {
+  content: "\f3b7"; }
+html .mdi-palette::before, html /deep/ .mdi-palette::before {
+  content: "\f3b8"; }
+html .mdi-palette-advanced::before, html /deep/ .mdi-palette-advanced::before {
+  content: "\f3b9"; }
+html .mdi-panda::before, html /deep/ .mdi-panda::before {
+  content: "\f3ba"; }
+html .mdi-pandora::before, html /deep/ .mdi-pandora::before {
+  content: "\f3bb"; }
+html .mdi-panorama::before, html /deep/ .mdi-panorama::before {
+  content: "\f3bc"; }
+html .mdi-panorama-fisheye::before, html /deep/ .mdi-panorama-fisheye::before {
+  content: "\f3bd"; }
+html .mdi-panorama-horizontal::before, html /deep/ .mdi-panorama-horizontal::before {
+  content: "\f3be"; }
+html .mdi-panorama-vertical::before, html /deep/ .mdi-panorama-vertical::before {
+  content: "\f3bf"; }
+html .mdi-panorama-wide-angle::before, html /deep/ .mdi-panorama-wide-angle::before {
+  content: "\f3c0"; }
+html .mdi-paper-cut-vertical::before, html /deep/ .mdi-paper-cut-vertical::before {
+  content: "\f3c1"; }
+html .mdi-paperclip::before, html /deep/ .mdi-paperclip::before {
+  content: "\f3c2"; }
+html .mdi-parking::before, html /deep/ .mdi-parking::before {
+  content: "\f3c3"; }
+html .mdi-pause::before, html /deep/ .mdi-pause::before {
+  content: "\f3c4"; }
+html .mdi-pause-circle::before, html /deep/ .mdi-pause-circle::before {
+  content: "\f3c5"; }
+html .mdi-pause-circle-outline::before, html /deep/ .mdi-pause-circle-outline::before {
+  content: "\f3c6"; }
+html .mdi-pause-octagon::before, html /deep/ .mdi-pause-octagon::before {
+  content: "\f3c7"; }
+html .mdi-pause-octagon-outline::before, html /deep/ .mdi-pause-octagon-outline::before {
+  content: "\f3c8"; }
+html .mdi-pencil::before, html /deep/ .mdi-pencil::before {
+  content: "\f3c9"; }
+html .mdi-pencil-box::before, html /deep/ .mdi-pencil-box::before {
+  content: "\f3ca"; }
+html .mdi-pencil-box-outline::before, html /deep/ .mdi-pencil-box-outline::before {
+  content: "\f3cb"; }
+html .mdi-pharmacy::before, html /deep/ .mdi-pharmacy::before {
+  content: "\f3cc"; }
+html .mdi-phone::before, html /deep/ .mdi-phone::before {
+  content: "\f3cd"; }
+html .mdi-phone-bluetooth::before, html /deep/ .mdi-phone-bluetooth::before {
+  content: "\f3ce"; }
+html .mdi-phone-forward::before, html /deep/ .mdi-phone-forward::before {
+  content: "\f3cf"; }
+html .mdi-phone-hangup::before, html /deep/ .mdi-phone-hangup::before {
+  content: "\f3d0"; }
+html .mdi-phone-in-talk::before, html /deep/ .mdi-phone-in-talk::before {
+  content: "\f3d1"; }
+html .mdi-phone-locked::before, html /deep/ .mdi-phone-locked::before {
+  content: "\f3d2"; }
+html .mdi-phone-missed::before, html /deep/ .mdi-phone-missed::before {
+  content: "\f3d3"; }
+html .mdi-phone-paused::before, html /deep/ .mdi-phone-paused::before {
+  content: "\f3d4"; }
+html .mdi-phone-settings::before, html /deep/ .mdi-phone-settings::before {
+  content: "\f3d5"; }
+html .mdi-pig::before, html /deep/ .mdi-pig::before {
+  content: "\f3d6"; }
+html .mdi-pill::before, html /deep/ .mdi-pill::before {
+  content: "\f3d7"; }
+html .mdi-pin::before, html /deep/ .mdi-pin::before {
+  content: "\f3d8"; }
+html .mdi-pin-off::before, html /deep/ .mdi-pin-off::before {
+  content: "\f3d9"; }
+html .mdi-pine-tree::before, html /deep/ .mdi-pine-tree::before {
+  content: "\f3da"; }
+html .mdi-pine-tree-box::before, html /deep/ .mdi-pine-tree-box::before {
+  content: "\f3db"; }
+html .mdi-pinterest::before, html /deep/ .mdi-pinterest::before {
+  content: "\f3dc"; }
+html .mdi-pizza::before, html /deep/ .mdi-pizza::before {
+  content: "\f3dd"; }
+html .mdi-play::before, html /deep/ .mdi-play::before {
+  content: "\f3de"; }
+html .mdi-play-box-outline::before, html /deep/ .mdi-play-box-outline::before {
+  content: "\f3df"; }
+html .mdi-play-circle::before, html /deep/ .mdi-play-circle::before {
+  content: "\f3e0"; }
+html .mdi-play-circle-outline::before, html /deep/ .mdi-play-circle-outline::before {
+  content: "\f3e1"; }
+html .mdi-playlist-plus::before, html /deep/ .mdi-playlist-plus::before {
+  content: "\f3e2"; }
+html .mdi-plus::before, html /deep/ .mdi-plus::before {
+  content: "\f3e3"; }
+html .mdi-plus-box::before, html /deep/ .mdi-plus-box::before {
+  content: "\f3e4"; }
+html .mdi-plus-circle::before, html /deep/ .mdi-plus-circle::before {
+  content: "\f3e5"; }
+html .mdi-plus-circle-outline::before, html /deep/ .mdi-plus-circle-outline::before {
+  content: "\f3e6"; }
+html .mdi-plus-network::before, html /deep/ .mdi-plus-network::before {
+  content: "\f3e7"; }
+html .mdi-plus-one::before, html /deep/ .mdi-plus-one::before {
+  content: "\f3e8"; }
+html .mdi-pocket::before, html /deep/ .mdi-pocket::before {
+  content: "\f3e9"; }
+html .mdi-poll::before, html /deep/ .mdi-poll::before {
+  content: "\f3ea"; }
+html .mdi-poll-box::before, html /deep/ .mdi-poll-box::before {
+  content: "\f3eb"; }
+html .mdi-polymer::before, html /deep/ .mdi-polymer::before {
+  content: "\f3ec"; }
+html .mdi-popcorn::before, html /deep/ .mdi-popcorn::before {
+  content: "\f3ed"; }
+html .mdi-pound::before, html /deep/ .mdi-pound::before {
+  content: "\f3ee"; }
+html .mdi-pound-box::before, html /deep/ .mdi-pound-box::before {
+  content: "\f3ef"; }
+html .mdi-power::before, html /deep/ .mdi-power::before {
+  content: "\f3f0"; }
+html .mdi-power-settings::before, html /deep/ .mdi-power-settings::before {
+  content: "\f3f1"; }
+html .mdi-presentation::before, html /deep/ .mdi-presentation::before {
+  content: "\f3f2"; }
+html .mdi-printer::before, html /deep/ .mdi-printer::before {
+  content: "\f3f3"; }
+html .mdi-puzzle::before, html /deep/ .mdi-puzzle::before {
+  content: "\f3f4"; }
+html .mdi-qrcode::before, html /deep/ .mdi-qrcode::before {
+  content: "\f3f5"; }
+html .mdi-quadcopter::before, html /deep/ .mdi-quadcopter::before {
+  content: "\f3f6"; }
+html .mdi-quality-high::before, html /deep/ .mdi-quality-high::before {
+  content: "\f3f7"; }
+html .mdi-quicktime::before, html /deep/ .mdi-quicktime::before {
+  content: "\f3f8"; }
+html .mdi-radiator::before, html /deep/ .mdi-radiator::before {
+  content: "\f3f9"; }
+html .mdi-radioactive::before, html /deep/ .mdi-radioactive::before {
+  content: "\f3fa"; }
+html .mdi-radiobox-blank::before, html /deep/ .mdi-radiobox-blank::before {
+  content: "\f3fb"; }
+html .mdi-radiobox-marked::before, html /deep/ .mdi-radiobox-marked::before {
+  content: "\f3fc"; }
+html .mdi-rdio::before, html /deep/ .mdi-rdio::before {
+  content: "\f3fd"; }
+html .mdi-read::before, html /deep/ .mdi-read::before {
+  content: "\f3fe"; }
+html .mdi-readability::before, html /deep/ .mdi-readability::before {
+  content: "\f3ff"; }
+html .mdi-receipt::before, html /deep/ .mdi-receipt::before {
+  content: "\f400"; }
+html .mdi-recycle::before, html /deep/ .mdi-recycle::before {
+  content: "\f401"; }
+html .mdi-redo::before, html /deep/ .mdi-redo::before {
+  content: "\f402"; }
+html .mdi-redo-variant::before, html /deep/ .mdi-redo-variant::before {
+  content: "\f403"; }
+html .mdi-refresh::before, html /deep/ .mdi-refresh::before {
+  content: "\f404"; }
+html .mdi-relative-scale::before, html /deep/ .mdi-relative-scale::before {
+  content: "\f405"; }
+html .mdi-reload::before, html /deep/ .mdi-reload::before {
+  content: "\f406"; }
+html .mdi-remote::before, html /deep/ .mdi-remote::before {
+  content: "\f407"; }
+html .mdi-rename-box::before, html /deep/ .mdi-rename-box::before {
+  content: "\f408"; }
+html .mdi-repeat::before, html /deep/ .mdi-repeat::before {
+  content: "\f409"; }
+html .mdi-repeat-off::before, html /deep/ .mdi-repeat-off::before {
+  content: "\f40a"; }
+html .mdi-repeat-once::before, html /deep/ .mdi-repeat-once::before {
+  content: "\f40b"; }
+html .mdi-replay::before, html /deep/ .mdi-replay::before {
+  content: "\f40c"; }
+html .mdi-reply::before, html /deep/ .mdi-reply::before {
+  content: "\f40d"; }
+html .mdi-reply-all::before, html /deep/ .mdi-reply-all::before {
+  content: "\f40e"; }
+html .mdi-responsive::before, html /deep/ .mdi-responsive::before {
+  content: "\f40f"; }
+html .mdi-rewind::before, html /deep/ .mdi-rewind::before {
+  content: "\f410"; }
+html .mdi-ribbon::before, html /deep/ .mdi-ribbon::before {
+  content: "\f411"; }
+html .mdi-rocket::before, html /deep/ .mdi-rocket::before {
+  content: "\f412"; }
+html .mdi-rotate-3d::before, html /deep/ .mdi-rotate-3d::before {
+  content: "\f413"; }
+html .mdi-rotate-left::before, html /deep/ .mdi-rotate-left::before {
+  content: "\f414"; }
+html .mdi-rotate-left-variant::before, html /deep/ .mdi-rotate-left-variant::before {
+  content: "\f415"; }
+html .mdi-rotate-right::before, html /deep/ .mdi-rotate-right::before {
+  content: "\f416"; }
+html .mdi-rotate-right-variant::before, html /deep/ .mdi-rotate-right-variant::before {
+  content: "\f417"; }
+html .mdi-routes::before, html /deep/ .mdi-routes::before {
+  content: "\f418"; }
+html .mdi-rss::before, html /deep/ .mdi-rss::before {
+  content: "\f419"; }
+html .mdi-rss-box::before, html /deep/ .mdi-rss-box::before {
+  content: "\f41a"; }
+html .mdi-ruler::before, html /deep/ .mdi-ruler::before {
+  content: "\f41b"; }
+html .mdi-run::before, html /deep/ .mdi-run::before {
+  content: "\f41c"; }
+html .mdi-satellite::before, html /deep/ .mdi-satellite::before {
+  content: "\f41d"; }
+html .mdi-satellite-variant::before, html /deep/ .mdi-satellite-variant::before {
+  content: "\f41e"; }
+html .mdi-scale::before, html /deep/ .mdi-scale::before {
+  content: "\f41f"; }
+html .mdi-scale-bathroom::before, html /deep/ .mdi-scale-bathroom::before {
+  content: "\f420"; }
+html .mdi-school::before, html /deep/ .mdi-school::before {
+  content: "\f421"; }
+html .mdi-screen-rotation::before, html /deep/ .mdi-screen-rotation::before {
+  content: "\f422"; }
+html .mdi-screen-rotation-lock::before, html /deep/ .mdi-screen-rotation-lock::before {
+  content: "\f423"; }
+html .mdi-script::before, html /deep/ .mdi-script::before {
+  content: "\f424"; }
+html .mdi-sd::before, html /deep/ .mdi-sd::before {
+  content: "\f425"; }
+html .mdi-security::before, html /deep/ .mdi-security::before {
+  content: "\f426"; }
+html .mdi-security-network::before, html /deep/ .mdi-security-network::before {
+  content: "\f427"; }
+html .mdi-select::before, html /deep/ .mdi-select::before {
+  content: "\f428"; }
+html .mdi-select-inverse::before, html /deep/ .mdi-select-inverse::before {
+  content: "\f429"; }
+html .mdi-select-off::before, html /deep/ .mdi-select-off::before {
+  content: "\f42a"; }
+html .mdi-send::before, html /deep/ .mdi-send::before {
+  content: "\f42b"; }
+html .mdi-server::before, html /deep/ .mdi-server::before {
+  content: "\f42c"; }
+html .mdi-server-minus::before, html /deep/ .mdi-server-minus::before {
+  content: "\f42d"; }
+html .mdi-server-network::before, html /deep/ .mdi-server-network::before {
+  content: "\f42e"; }
+html .mdi-server-network-off::before, html /deep/ .mdi-server-network-off::before {
+  content: "\f42f"; }
+html .mdi-server-off::before, html /deep/ .mdi-server-off::before {
+  content: "\f430"; }
+html .mdi-server-plus::before, html /deep/ .mdi-server-plus::before {
+  content: "\f431"; }
+html .mdi-server-remove::before, html /deep/ .mdi-server-remove::before {
+  content: "\f432"; }
+html .mdi-server-security::before, html /deep/ .mdi-server-security::before {
+  content: "\f433"; }
+html .mdi-settings::before, html /deep/ .mdi-settings::before {
+  content: "\f434"; }
+html .mdi-settings-box::before, html /deep/ .mdi-settings-box::before {
+  content: "\f435"; }
+html .mdi-shape-plus::before, html /deep/ .mdi-shape-plus::before {
+  content: "\f436"; }
+html .mdi-share::before, html /deep/ .mdi-share::before {
+  content: "\f437"; }
+html .mdi-share-variant::before, html /deep/ .mdi-share-variant::before {
+  content: "\f438"; }
+html .mdi-shopping::before, html /deep/ .mdi-shopping::before {
+  content: "\f439"; }
+html .mdi-shopping-music::before, html /deep/ .mdi-shopping-music::before {
+  content: "\f43a"; }
+html .mdi-shuffle::before, html /deep/ .mdi-shuffle::before {
+  content: "\f43b"; }
+html .mdi-sign-caution::before, html /deep/ .mdi-sign-caution::before {
+  content: "\f43c"; }
+html .mdi-silverware::before, html /deep/ .mdi-silverware::before {
+  content: "\f43d"; }
+html .mdi-silverware-fork::before, html /deep/ .mdi-silverware-fork::before {
+  content: "\f43e"; }
+html .mdi-silverware-spoon::before, html /deep/ .mdi-silverware-spoon::before {
+  content: "\f43f"; }
+html .mdi-silverware-variant::before, html /deep/ .mdi-silverware-variant::before {
+  content: "\f440"; }
+html .mdi-sim-alert::before, html /deep/ .mdi-sim-alert::before {
+  content: "\f441"; }
+html .mdi-skip-next::before, html /deep/ .mdi-skip-next::before {
+  content: "\f442"; }
+html .mdi-skip-previous::before, html /deep/ .mdi-skip-previous::before {
+  content: "\f443"; }
+html .mdi-snowman::before, html /deep/ .mdi-snowman::before {
+  content: "\f444"; }
+html .mdi-sort::before, html /deep/ .mdi-sort::before {
+  content: "\f445"; }
+html .mdi-sort-alphabetical::before, html /deep/ .mdi-sort-alphabetical::before {
+  content: "\f446"; }
+html .mdi-sort-ascending::before, html /deep/ .mdi-sort-ascending::before {
+  content: "\f447"; }
+html .mdi-sort-descending::before, html /deep/ .mdi-sort-descending::before {
+  content: "\f448"; }
+html .mdi-sort-numeric::before, html /deep/ .mdi-sort-numeric::before {
+  content: "\f449"; }
+html .mdi-sort-variant::before, html /deep/ .mdi-sort-variant::before {
+  content: "\f44a"; }
+html .mdi-soundcloud::before, html /deep/ .mdi-soundcloud::before {
+  content: "\f44b"; }
+html .mdi-source-fork::before, html /deep/ .mdi-source-fork::before {
+  content: "\f44c"; }
+html .mdi-source-pull::before, html /deep/ .mdi-source-pull::before {
+  content: "\f44d"; }
+html .mdi-speaker::before, html /deep/ .mdi-speaker::before {
+  content: "\f44e"; }
+html .mdi-speaker-off::before, html /deep/ .mdi-speaker-off::before {
+  content: "\f44f"; }
+html .mdi-speedometer::before, html /deep/ .mdi-speedometer::before {
+  content: "\f450"; }
+html .mdi-spellcheck::before, html /deep/ .mdi-spellcheck::before {
+  content: "\f451"; }
+html .mdi-spotify::before, html /deep/ .mdi-spotify::before {
+  content: "\f452"; }
+html .mdi-spotlight::before, html /deep/ .mdi-spotlight::before {
+  content: "\f453"; }
+html .mdi-spotlight-beam::before, html /deep/ .mdi-spotlight-beam::before {
+  content: "\f454"; }
+html .mdi-star::before, html /deep/ .mdi-star::before {
+  content: "\f455"; }
+html .mdi-star-circle::before, html /deep/ .mdi-star-circle::before {
+  content: "\f456"; }
+html .mdi-star-half::before, html /deep/ .mdi-star-half::before {
+  content: "\f457"; }
+html .mdi-star-outline::before, html /deep/ .mdi-star-outline::before {
+  content: "\f458"; }
+html .mdi-stocking::before, html /deep/ .mdi-stocking::before {
+  content: "\f459"; }
+html .mdi-stop::before, html /deep/ .mdi-stop::before {
+  content: "\f45a"; }
+html .mdi-store::before, html /deep/ .mdi-store::before {
+  content: "\f45b"; }
+html .mdi-store-24-hour::before, html /deep/ .mdi-store-24-hour::before {
+  content: "\f45c"; }
+html .mdi-stove::before, html /deep/ .mdi-stove::before {
+  content: "\f45d"; }
+html .mdi-subway::before, html /deep/ .mdi-subway::before {
+  content: "\f45e"; }
+html .mdi-swap-horizontal::before, html /deep/ .mdi-swap-horizontal::before {
+  content: "\f45f"; }
+html .mdi-swap-vertical::before, html /deep/ .mdi-swap-vertical::before {
+  content: "\f460"; }
+html .mdi-swim::before, html /deep/ .mdi-swim::before {
+  content: "\f461"; }
+html .mdi-sword::before, html /deep/ .mdi-sword::before {
+  content: "\f462"; }
+html .mdi-sync::before, html /deep/ .mdi-sync::before {
+  content: "\f463"; }
+html .mdi-sync-alert::before, html /deep/ .mdi-sync-alert::before {
+  content: "\f464"; }
+html .mdi-sync-off::before, html /deep/ .mdi-sync-off::before {
+  content: "\f465"; }
+html .mdi-tab::before, html /deep/ .mdi-tab::before {
+  content: "\f466"; }
+html .mdi-tab-unselected::before, html /deep/ .mdi-tab-unselected::before {
+  content: "\f467"; }
+html .mdi-table::before, html /deep/ .mdi-table::before {
+  content: "\f468"; }
+html .mdi-tablet::before, html /deep/ .mdi-tablet::before {
+  content: "\f469"; }
+html .mdi-tablet-android::before, html /deep/ .mdi-tablet-android::before {
+  content: "\f46a"; }
+html .mdi-tablet-ipad::before, html /deep/ .mdi-tablet-ipad::before {
+  content: "\f46b"; }
+html .mdi-tag::before, html /deep/ .mdi-tag::before {
+  content: "\f46c"; }
+html .mdi-tag-faces::before, html /deep/ .mdi-tag-faces::before {
+  content: "\f46d"; }
+html .mdi-tag-outline::before, html /deep/ .mdi-tag-outline::before {
+  content: "\f46e"; }
+html .mdi-tag-text-outline::before, html /deep/ .mdi-tag-text-outline::before {
+  content: "\f46f"; }
+html .mdi-taxi::before, html /deep/ .mdi-taxi::before {
+  content: "\f470"; }
+html .mdi-television::before, html /deep/ .mdi-television::before {
+  content: "\f471"; }
+html .mdi-television-guide::before, html /deep/ .mdi-television-guide::before {
+  content: "\f472"; }
+html .mdi-temperature-celsius::before, html /deep/ .mdi-temperature-celsius::before {
+  content: "\f473"; }
+html .mdi-temperature-fahrenheit::before, html /deep/ .mdi-temperature-fahrenheit::before {
+  content: "\f474"; }
+html .mdi-temperature-kelvin::before, html /deep/ .mdi-temperature-kelvin::before {
+  content: "\f475"; }
+html .mdi-tent::before, html /deep/ .mdi-tent::before {
+  content: "\f476"; }
+html .mdi-terrain::before, html /deep/ .mdi-terrain::before {
+  content: "\f477"; }
+html .mdi-text-to-speech::before, html /deep/ .mdi-text-to-speech::before {
+  content: "\f478"; }
+html .mdi-text-to-speech-off::before, html /deep/ .mdi-text-to-speech-off::before {
+  content: "\f479"; }
+html .mdi-texture::before, html /deep/ .mdi-texture::before {
+  content: "\f47a"; }
+html .mdi-theater::before, html /deep/ .mdi-theater::before {
+  content: "\f47b"; }
+html .mdi-thermometer::before, html /deep/ .mdi-thermometer::before {
+  content: "\f47c"; }
+html .mdi-thermometer-lines::before, html /deep/ .mdi-thermometer-lines::before {
+  content: "\f47d"; }
+html .mdi-thumb-down::before, html /deep/ .mdi-thumb-down::before {
+  content: "\f47e"; }
+html .mdi-thumb-up::before, html /deep/ .mdi-thumb-up::before {
+  content: "\f47f"; }
+html .mdi-thumbs-up-down::before, html /deep/ .mdi-thumbs-up-down::before {
+  content: "\f480"; }
+html .mdi-ticket::before, html /deep/ .mdi-ticket::before {
+  content: "\f481"; }
+html .mdi-ticket-account::before, html /deep/ .mdi-ticket-account::before {
+  content: "\f482"; }
+html .mdi-tie::before, html /deep/ .mdi-tie::before {
+  content: "\f483"; }
+html .mdi-timelapse::before, html /deep/ .mdi-timelapse::before {
+  content: "\f484"; }
+html .mdi-timer::before, html /deep/ .mdi-timer::before {
+  content: "\f485"; }
+html .mdi-timer-10::before, html /deep/ .mdi-timer-10::before {
+  content: "\f486"; }
+html .mdi-timer-3::before, html /deep/ .mdi-timer-3::before {
+  content: "\f487"; }
+html .mdi-timer-off::before, html /deep/ .mdi-timer-off::before {
+  content: "\f488"; }
+html .mdi-timer-sand::before, html /deep/ .mdi-timer-sand::before {
+  content: "\f489"; }
+html .mdi-timetable::before, html /deep/ .mdi-timetable::before {
+  content: "\f48a"; }
+html .mdi-toggle-switch::before, html /deep/ .mdi-toggle-switch::before {
+  content: "\f48b"; }
+html .mdi-toggle-switch-off::before, html /deep/ .mdi-toggle-switch-off::before {
+  content: "\f48c"; }
+html .mdi-tooltip::before, html /deep/ .mdi-tooltip::before {
+  content: "\f48d"; }
+html .mdi-tooltip-edit::before, html /deep/ .mdi-tooltip-edit::before {
+  content: "\f48e"; }
+html .mdi-tooltip-image::before, html /deep/ .mdi-tooltip-image::before {
+  content: "\f48f"; }
+html .mdi-tooltip-outline::before, html /deep/ .mdi-tooltip-outline::before {
+  content: "\f490"; }
+html .mdi-tooltip-text::before, html /deep/ .mdi-tooltip-text::before {
+  content: "\f491"; }
+html .mdi-tor::before, html /deep/ .mdi-tor::before {
+  content: "\f492"; }
+html .mdi-traffic-light::before, html /deep/ .mdi-traffic-light::before {
+  content: "\f493"; }
+html .mdi-train::before, html /deep/ .mdi-train::before {
+  content: "\f494"; }
+html .mdi-tram::before, html /deep/ .mdi-tram::before {
+  content: "\f495"; }
+html .mdi-transcribe::before, html /deep/ .mdi-transcribe::before {
+  content: "\f496"; }
+html .mdi-transcribe-close::before, html /deep/ .mdi-transcribe-close::before {
+  content: "\f497"; }
+html .mdi-trending-down::before, html /deep/ .mdi-trending-down::before {
+  content: "\f498"; }
+html .mdi-trending-neutral::before, html /deep/ .mdi-trending-neutral::before {
+  content: "\f499"; }
+html .mdi-trending-up::before, html /deep/ .mdi-trending-up::before {
+  content: "\f49a"; }
+html .mdi-trophy::before, html /deep/ .mdi-trophy::before {
+  content: "\f49b"; }
+html .mdi-trophy-award::before, html /deep/ .mdi-trophy-award::before {
+  content: "\f49c"; }
+html .mdi-trophy-variant::before, html /deep/ .mdi-trophy-variant::before {
+  content: "\f49d"; }
+html .mdi-truck::before, html /deep/ .mdi-truck::before {
+  content: "\f49e"; }
+html .mdi-tshirt-crew::before, html /deep/ .mdi-tshirt-crew::before {
+  content: "\f49f"; }
+html .mdi-tshirt-v::before, html /deep/ .mdi-tshirt-v::before {
+  content: "\f4a0"; }
+html .mdi-tumblr::before, html /deep/ .mdi-tumblr::before {
+  content: "\f4a1"; }
+html .mdi-tumblr-reblog::before, html /deep/ .mdi-tumblr-reblog::before {
+  content: "\f4a2"; }
+html .mdi-twitch::before, html /deep/ .mdi-twitch::before {
+  content: "\f4a3"; }
+html .mdi-twitter::before, html /deep/ .mdi-twitter::before {
+  content: "\f4a4"; }
+html .mdi-twitter-box::before, html /deep/ .mdi-twitter-box::before {
+  content: "\f4a5"; }
+html .mdi-twitter-retweet::before, html /deep/ .mdi-twitter-retweet::before {
+  content: "\f4a6"; }
+html .mdi-ubuntu::before, html /deep/ .mdi-ubuntu::before {
+  content: "\f4a7"; }
+html .mdi-undo::before, html /deep/ .mdi-undo::before {
+  content: "\f4a8"; }
+html .mdi-undo-variant::before, html /deep/ .mdi-undo-variant::before {
+  content: "\f4a9"; }
+html .mdi-unfold-less::before, html /deep/ .mdi-unfold-less::before {
+  content: "\f4aa"; }
+html .mdi-unfold-more::before, html /deep/ .mdi-unfold-more::before {
+  content: "\f4ab"; }
+html .mdi-upload::before, html /deep/ .mdi-upload::before {
+  content: "\f4ac"; }
+html .mdi-usb::before, html /deep/ .mdi-usb::before {
+  content: "\f4ad"; }
+html .mdi-vector-curve::before, html /deep/ .mdi-vector-curve::before {
+  content: "\f4ae"; }
+html .mdi-vector-point::before, html /deep/ .mdi-vector-point::before {
+  content: "\f4af"; }
+html .mdi-vector-square::before, html /deep/ .mdi-vector-square::before {
+  content: "\f4b0"; }
+html .mdi-verified::before, html /deep/ .mdi-verified::before {
+  content: "\f4b1"; }
+html .mdi-vibrate::before, html /deep/ .mdi-vibrate::before {
+  content: "\f4b2"; }
+html .mdi-video::before, html /deep/ .mdi-video::before {
+  content: "\f4b3"; }
+html .mdi-video-off::before, html /deep/ .mdi-video-off::before {
+  content: "\f4b4"; }
+html .mdi-video-switch::before, html /deep/ .mdi-video-switch::before {
+  content: "\f4b5"; }
+html .mdi-view-agenda::before, html /deep/ .mdi-view-agenda::before {
+  content: "\f4b6"; }
+html .mdi-view-array::before, html /deep/ .mdi-view-array::before {
+  content: "\f4b7"; }
+html .mdi-view-carousel::before, html /deep/ .mdi-view-carousel::before {
+  content: "\f4b8"; }
+html .mdi-view-column::before, html /deep/ .mdi-view-column::before {
+  content: "\f4b9"; }
+html .mdi-view-dashboard::before, html /deep/ .mdi-view-dashboard::before {
+  content: "\f4ba"; }
+html .mdi-view-day::before, html /deep/ .mdi-view-day::before {
+  content: "\f4bb"; }
+html .mdi-view-headline::before, html /deep/ .mdi-view-headline::before {
+  content: "\f4bc"; }
+html .mdi-view-list::before, html /deep/ .mdi-view-list::before {
+  content: "\f4bd"; }
+html .mdi-view-module::before, html /deep/ .mdi-view-module::before {
+  content: "\f4be"; }
+html .mdi-view-quilt::before, html /deep/ .mdi-view-quilt::before {
+  content: "\f4bf"; }
+html .mdi-view-stream::before, html /deep/ .mdi-view-stream::before {
+  content: "\f4c0"; }
+html .mdi-view-week::before, html /deep/ .mdi-view-week::before {
+  content: "\f4c1"; }
+html .mdi-voicemail::before, html /deep/ .mdi-voicemail::before {
+  content: "\f4c2"; }
+html .mdi-volume-high::before, html /deep/ .mdi-volume-high::before {
+  content: "\f4c3"; }
+html .mdi-volume-low::before, html /deep/ .mdi-volume-low::before {
+  content: "\f4c4"; }
+html .mdi-volume-medium::before, html /deep/ .mdi-volume-medium::before {
+  content: "\f4c5"; }
+html .mdi-volume-off::before, html /deep/ .mdi-volume-off::before {
+  content: "\f4c6"; }
+html .mdi-walk::before, html /deep/ .mdi-walk::before {
+  content: "\f4c7"; }
+html .mdi-wallet::before, html /deep/ .mdi-wallet::before {
+  content: "\f4c8"; }
+html .mdi-wallet-giftcard::before, html /deep/ .mdi-wallet-giftcard::before {
+  content: "\f4c9"; }
+html .mdi-wallet-membership::before, html /deep/ .mdi-wallet-membership::before {
+  content: "\f4ca"; }
+html .mdi-wallet-travel::before, html /deep/ .mdi-wallet-travel::before {
+  content: "\f4cb"; }
+html .mdi-watch::before, html /deep/ .mdi-watch::before {
+  content: "\f4cc"; }
+html .mdi-water::before, html /deep/ .mdi-water::before {
+  content: "\f4cd"; }
+html .mdi-water-off::before, html /deep/ .mdi-water-off::before {
+  content: "\f4ce"; }
+html .mdi-water-pump::before, html /deep/ .mdi-water-pump::before {
+  content: "\f4cf"; }
+html .mdi-weather-cloudy::before, html /deep/ .mdi-weather-cloudy::before {
+  content: "\f4d0"; }
+html .mdi-weather-hail::before, html /deep/ .mdi-weather-hail::before {
+  content: "\f4d1"; }
+html .mdi-weather-lightning::before, html /deep/ .mdi-weather-lightning::before {
+  content: "\f4d2"; }
+html .mdi-weather-night::before, html /deep/ .mdi-weather-night::before {
+  content: "\f4d3"; }
+html .mdi-weather-partlycloudy::before, html /deep/ .mdi-weather-partlycloudy::before {
+  content: "\f4d4"; }
+html .mdi-weather-pouring::before, html /deep/ .mdi-weather-pouring::before {
+  content: "\f4d5"; }
+html .mdi-weather-rainy::before, html /deep/ .mdi-weather-rainy::before {
+  content: "\f4d6"; }
+html .mdi-weather-snowy::before, html /deep/ .mdi-weather-snowy::before {
+  content: "\f4d7"; }
+html .mdi-weather-sunny::before, html /deep/ .mdi-weather-sunny::before {
+  content: "\f4d8"; }
+html .mdi-weather-sunset::before, html /deep/ .mdi-weather-sunset::before {
+  content: "\f4d9"; }
+html .mdi-weather-sunset-down::before, html /deep/ .mdi-weather-sunset-down::before {
+  content: "\f4da"; }
+html .mdi-weather-sunset-up::before, html /deep/ .mdi-weather-sunset-up::before {
+  content: "\f4db"; }
+html .mdi-weather-windy::before, html /deep/ .mdi-weather-windy::before {
+  content: "\f4dc"; }
+html .mdi-weather-windy-variant::before, html /deep/ .mdi-weather-windy-variant::before {
+  content: "\f4dd"; }
+html .mdi-web::before, html /deep/ .mdi-web::before {
+  content: "\f4de"; }
+html .mdi-webcam::before, html /deep/ .mdi-webcam::before {
+  content: "\f4df"; }
+html .mdi-whatsapp::before, html /deep/ .mdi-whatsapp::before {
+  content: "\f4e0"; }
+html .mdi-wheelchair-accessibility::before, html /deep/ .mdi-wheelchair-accessibility::before {
+  content: "\f4e1"; }
+html .mdi-white-balance-auto::before, html /deep/ .mdi-white-balance-auto::before {
+  content: "\f4e2"; }
+html .mdi-white-balance-incandescent::before, html /deep/ .mdi-white-balance-incandescent::before {
+  content: "\f4e3"; }
+html .mdi-white-balance-irradescent::before, html /deep/ .mdi-white-balance-irradescent::before {
+  content: "\f4e4"; }
+html .mdi-white-balance-sunny::before, html /deep/ .mdi-white-balance-sunny::before {
+  content: "\f4e5"; }
+html .mdi-wifi::before, html /deep/ .mdi-wifi::before {
+  content: "\f4e6"; }
+html .mdi-wikipedia::before, html /deep/ .mdi-wikipedia::before {
+  content: "\f4e7"; }
+html .mdi-window-closed::before, html /deep/ .mdi-window-closed::before {
+  content: "\f4e8"; }
+html .mdi-window-open::before, html /deep/ .mdi-window-open::before {
+  content: "\f4e9"; }
+html .mdi-windows::before, html /deep/ .mdi-windows::before {
+  content: "\f4ea"; }
+html .mdi-wordpress::before, html /deep/ .mdi-wordpress::before {
+  content: "\f4eb"; }
+html .mdi-xbox::before, html /deep/ .mdi-xbox::before {
+  content: "\f4ec"; }
+html .mdi-xda::before, html /deep/ .mdi-xda::before {
+  content: "\f4ed"; }
+html .mdi-xml::before, html /deep/ .mdi-xml::before {
+  content: "\f4ee"; }
+html .mdi-youtube-play::before, html /deep/ .mdi-youtube-play::before {
+  content: "\f4ef"; }
+html .mdi-zip-box::before, html /deep/ .mdi-zip-box::before {
+  content: "\f4f0"; }
 
 html {
   background: #fff; }
@@ -516,8 +2555,16 @@ p {
   float: right; }
   .page-with-sidebar #content .wrap .section-sidebar:last-child {
     margin-right: 0; }
-  .page-with-sidebar #content .wrap .section-sidebar aside + aside {
-    margin-top: 40px; }
+  .page-with-sidebar #content .wrap .section-sidebar aside {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    padding: 10px; }
+    .page-with-sidebar #content .wrap .section-sidebar aside + aside {
+      margin-top: 20px; }
+  .page-with-sidebar #content .wrap .section-sidebar h4 {
+    border-bottom: 1px solid #ddd; }
+  .page-with-sidebar #content .wrap .section-sidebar .control-group + .control-group {
+    margin-top: 10px; }
 .page-with-sidebar #content .wrap .section-content {
   float: left;
   display: block;
@@ -574,19 +2621,25 @@ p {
   height: 33px;
   width: 26px; }
 
-.user-list:after {
-  content: "";
-  display: table;
-  clear: both; }
-.user-list > a {
-  color: #777;
-  float: left;
-  line-height: 1em;
-  margin-bottom: 20px;
-  text-align: center;
-  width: 25%; }
-  .user-list > a:nth-child(4n+1) {
+.user-list {
+  margin: -2px; }
+  .user-list:after {
+    content: "";
+    display: table;
     clear: both; }
+  .user-list > a {
+    color: #777;
+    float: left;
+    line-height: 1em;
+    padding: 2px;
+    text-align: center;
+    width: 20%; }
+    .user-list > a:nth-child(5n+1) {
+      clear: both; }
+    .user-list > a img {
+      display: block;
+      height: auto;
+      max-width: 100%; }
 
 .tabular-data {
   border: 1px solid #ddd;

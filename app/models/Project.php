@@ -17,4 +17,9 @@ class Project extends Model
 		'table_name'		=> 'mantis_project_table',
 		'id_key'			=> 'id',
 	];
+	
+	function slug()
+	{
+		return (new \Cocur\Slugify\Slugify())->slugify($this->name);
+	}
 }
