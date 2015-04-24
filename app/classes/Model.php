@@ -180,11 +180,11 @@ abstract class Model
 		
 		if ($echo)
 		{
-			echo trim(implode(' ', array_merge($this->classes, [$append])));
+			echo trim(implode(' ', array_merge($this->classes, (array)$append)));
 		}
 		else
 		{
-			return array_merge($this->classes, [$append]);
+			return array_merge($this->classes, (array)$append);
 		}
 	}
 	

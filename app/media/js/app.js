@@ -1,29 +1,101 @@
 var app = {
 	
+	PUSH_STATE_ACTIVE: false,
+	
 	_listeners: {},
 	
 	params: {},
+	state: {
+		host: null,
+		url: null,
+		title: null,
+		params: {}
+	},
 	
-	addListener: function(type, fn)
+	addListener: function(type, fn, obj)
 	{
 		if (!app._listeners.hasOwnProperty(type))
 		{
 			app._listeners[type] = [];
 		}
 		
-		app._listeners[type].push(fn);
+		app._listeners[type].push({
+			fn: fn,
+			obj: obj
+		});
+	},
+	
+	callListeners: function(type, e)
+	{
+		if (app._listeners.hasOwnProperty(type) && app._listeners[type].length > 0)
+		{
+			for (var i = 0; i < app._listeners[type].length; i++)
+			{
+				if (typeof app._listeners[type][i].obj !== "undefined")
+				{
+					app._listeners[type][i].fn.apply(app._listeners[type][i].obj, [e]);
+				}
+				else
+				{
+					app._listeners[type][i].fn.apply(app, [e]);
+				}
+			}
+		}
+	},
+	
+	getPathnameForURL: function(url)
+	{
+		if (url.indexOf("https://") == 0)
+		{
+			url = url.substr(8);
+		}
+		else if (url.indexOf("http://") == 0)
+		{
+			url = url.substr(7);
+		}
+		else if (url.indexOf("//") == 0)
+		{
+			url = url.substr(2);
+		}
+		
+		if (url.indexOf(app.state.host) == 0)
+		{
+			url = url.substr(app.state.host.length);
+		}
+		
+		if (url.indexOf("#") > 0)
+		{
+			url = url.substr(0, url.indexOf("#"));
+		}
+		
+		if (url.indexOf("?") > 0)
+		{
+			url = url.substr(0, url.indexOf("?"));
+		}
+		
+		if (url.substr(-1) == "/")
+		{
+			url = url.substr(0, url.length-1);
+		}
+		
+		if (url.substr(0, 1) == "/")
+		{
+			url = url.substr(1);
+		}
+		
+		return "/"+url;
 	},
 	
 	init: function()
 	{
+		app.setupPushState();
+		
 		window.addEventListener("load", app.load);
-		app.listeners.hashChange();
+		window.addEventListener("popstate", app.popState);
 	},
 	
 	load: function() 
 	{
-		window.addEventListener("hashchange", app.listeners.hashChange);
-		
 		var name = document.querySelector("html").dataset.controller;
 		
 		if (app.controllers.hasOwnProperty(name) && app.controllers[name].hasOwnProperty("load") && typeof app.controllers[name].load === "function")
@@ -32,47 +104,79 @@ var app = {
 		}
 	},
 	
-	listeners: {
-		hashChange: function(e)
+	refreshPushState: function()
+	{
+		app.state.host = window.location.hostname;
+		app.state.url = app.getPathnameForURL(window.location.pathname);
+		app.updateStateParams();
+	},
+	
+	setupPushState: function()
+	{
+		app.refreshPushState();
+		
+		if (typeof history.pushState !== 'undefined')
 		{
-			var hash = window.location.hash;
-			var args = {};
+			app.PUSH_STATE_ACTIVE = true;
+			history.replaceState(app.state, app.state.title, app.state.url);
+		}
+	},
+	
+	pushState: function(state)
+	{
+		for (var i in state)
+		{
+			app.state[i] = state[i];
+		}
+		
+		app.updateStateParams();
+		history.pushState(app.state, app.state.title, app.state.url);
+		
+		app.callListeners("pushState", state);
+	},
+	
+	popState: function(e)
+	{
+		app.refreshPushState();
+		app.callListeners("popState", e);
+	},
+	
+	updateStateParams: function()
+	{
+		var url = app.state.url;
+		var args = {
+			controller: ""
+		};
+		
+		if (url.indexOf("/") == 0)
+		{
+			url = url.substring(1);
+		}
+		
+		url = url.split("/");
+		
+		for (var i = 0; i < url.length; i++)
+		{
+			var arg = url[i].split(":");
 			
-			if (hash.indexOf("#/") == 0)
+			if (arg.length == 1 && args.length == 1)
 			{
-				hash = hash.substring(2);
+				args.controller = args.controller+"/"+arg[0];
 			}
-			else if (hash.indexOf("#") == 0)
+			else if (arg.length > 1)
 			{
-				hash = hash.substring(1);
+				args[arg[0]] = arg[1];
 			}
-			
-			hash = hash.split("/");
-			
-			for (var i = 0; i < hash.length; i++)
+			else
 			{
-				var arg = hash[i].split(":");
-				
-				if (arg.length > 1)
-				{
-					args[arg[0]] = arg[1];
-				}
-				else if (arg.length == 1 && i == 0)
-				{
-					args.section = arg[0];
-				}
-			}
-			
-			app.params = args;
-			
-			if (app._listeners.hasOwnProperty("hashChange") && app._listeners.hashChange.length > 0)
-			{
-				for (var i = 0; i < app._listeners.hashChange.length; i++)
-				{
-					app._listeners.hashChange[i](e);
-				}
+				args[arg[0]] = null;
 			}
 		}
+		
+		app.state.params = args;
+	},
+	
+	listeners: {
 	},
 
 	controllers: {
@@ -81,23 +185,22 @@ var app = {
 			load: function()
 			{
 				app.controllers.home.tickets = document.querySelectorAll("#tickets-table > *");
-				app.controllers.home.setSection();
-				
-				app.addListener("hashChange", app.controllers.home.setSection);
+				app.addListener("popState", app.controllers.home.setCategory, app.controllers.home);
+				app.addListener("pushState", app.controllers.home.setCategory, app.controllers.home);
 			},
-			setSection: function(e)
+			setCategory: function(e)
 			{
 				var rows = app.controllers.home.tickets;
-				var params = app.params;
+				var params = app.state.params;
 				
-				if (!params.section)
+				if (!params.view)
 				{
-					params.section = "open";
+					params.view = "open";
 				}
 		
 				for (var i = 0; i < rows.length; i++)
 				{
-					if (rows[i].dataset.sections.indexOf(params.section) >= 0)
+					if (rows[i].dataset.category.indexOf(params.view) >= 0)
 					{
 						rows[i].classList.remove("hide");
 					}

@@ -2,22 +2,30 @@
 namespace Controller;
 
 
-use Core\Auth;
-use Core\Config;
 use Core\Controller\Authenticated_Page;
-use Core\Lang;
-use Core\Print_Util;
-
-use Model\Ticket;
-use Model\User;
+use Core\URL;
 
 
 class Home extends Authenticated_Page
 {
-	function action_index()
+	function action_index($category = null)
 	{
+		$categories = [
+			'open'		=> ['label' => 'Open Tickets',		'href' => URL::get('/view:open/'),		'icon' => 'bookmark'],
+			'assigned'	=> ['label' => 'Assigned to You',	'href' => URL::get('/view:assigned/'),	'icon' => 'bookmark'],
+			'reported'	=> ['label' => 'Reported by You',	'href' => URL::get('/view:reported/'),	'icon' => 'bookmark'],
+			'closed'	=> ['label' => 'Recently Closed',	'href' => URL::get('/view:closed/'),	'icon' => 'bookmark-outline'],
+		];
+		
+		if ($category && !in_array($category, array_keys($categories)))
+		{
+			URL::redirect('/');
+		}
+		
 		$this->set([
-			'view' => 'Pages/Home',
+			'current_category'	=> $category ? $category : current(array_keys($categories)),
+			'categories'		=> array_values($categories),
+			'view'				=> 'Pages/Home',
 		]);
 	}
 }

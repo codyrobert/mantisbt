@@ -1,7 +1,7 @@
 <?php return array(
 
 	array(
-		'route'			=> '/?',
+		'route'			=> '(/view:[a:category])?/?',
 		'controller'	=> 'Home',
 		'action'		=> 'index',
 		'method'		=> 'GET',
@@ -68,13 +68,6 @@
 		'controller'	=> 'Ticket',
 		'action'		=> 'view',
 		'method'		=> 'GET',
-	),
-
-	array(
-		'route'			=> '/view_all/?',
-		'controller'	=> 'View_All',
-		'action'		=> 'index',
-		'method'		=> 'GET|POST',
 	),
 	
 );
