@@ -24,7 +24,7 @@ $this->start('before_content');
 	<h4>Filter</h4>
 	
 	<?php
-	$projects_list = [Lang::get('all_projects')];
+	$projects_list = [null => Lang::get('all_projects')];
 	
 	foreach (User::current()->projects() as $project)
 	{
